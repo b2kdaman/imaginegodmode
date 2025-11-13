@@ -2,7 +2,7 @@
  * API functions for fetching data from Grok
  */
 
-import { API_ENDPOINTS } from './constants.js';
+import { API_ENDPOINTS } from '../constants/constants.js';
 
 export const API = {
     /**

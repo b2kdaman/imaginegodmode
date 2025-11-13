@@ -2,12 +2,12 @@
  * Core business logic
  */
 
-import { Utils } from './utils.js';
-import { API } from './api.js';
+import { Utils } from '../lib/utils.js';
+import { API } from '../api/api.js';
 import { State } from './state.js';
-import { UI } from './ui.js';
+import { UI } from '../ui/ui.js';
 import { MediaProcessor } from './mediaProcessor.js';
-import { TIMING } from './constants.js';
+import { TIMING } from '../constants/constants.js';
 
 export const Core = {
     /**

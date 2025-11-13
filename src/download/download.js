@@ -2,8 +2,8 @@
  * Download functionality
  */
 
-import { Utils } from './utils.js';
-import { TIMING, DEFAULTS } from './constants.js';
+import { Utils } from '../lib/utils.js';
+import { TIMING, DEFAULTS } from '../constants/constants.js';
 
 export const Download = {
     /**

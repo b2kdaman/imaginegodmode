@@ -4,8 +4,8 @@
 
 import { Core } from './core.js';
 import { State } from './state.js';
-import { UI } from './ui.js';
-import { Download } from './download.js';
+import { UI } from '../ui/ui.js';
+import { Download } from '../download/download.js';
 
 export const Handlers = {
     /**

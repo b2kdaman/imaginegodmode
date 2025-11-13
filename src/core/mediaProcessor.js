@@ -2,8 +2,8 @@
  * Media processing functions
  */
 
-import { Utils } from './utils.js';
-import { MEDIA_TYPES } from './constants.js';
+import { Utils } from '../lib/utils.js';
+import { MEDIA_TYPES } from '../constants/constants.js';
 
 export const MediaProcessor = {
     /**

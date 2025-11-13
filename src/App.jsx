@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import MediaFetcher from './components/MediaFetcher'
-import './App.css'
+import './styles/App.css'
 
 function App() {
   return (

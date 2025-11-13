@@ -2,7 +2,7 @@
  * Utility functions
  */
 
-import { URL_CONFIG, DEFAULTS } from './constants.js';
+import { URL_CONFIG, DEFAULTS } from '../constants/constants.js';
 
 export const Utils = {
     /**

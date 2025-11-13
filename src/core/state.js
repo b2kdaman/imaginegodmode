@@ -2,6 +2,8 @@
  * State management
  */
 
+// No imports needed for state.js
+
 export const State = {
     lastMediaUrls: [],
     lastVideoIdsToUpscale: [],

@@ -9,7 +9,7 @@ import {
     UI_COLORS,
     UI_TRANSITION,
     DEFAULTS,
-} from './constants.js';
+} from '../constants/constants.js';
 
 export const UI = {
     elements: {

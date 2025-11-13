@@ -2,9 +2,9 @@
  * Main entry point
  */
 
-import { UI } from './ui.js';
-import { UrlWatcher } from './urlWatcher.js';
-import { Handlers } from './handlers.js';
+import { UI } from './ui/ui.js';
+import { UrlWatcher } from './watchers/urlWatcher.js';
+import { Handlers } from './core/handlers.js';
 
 function init() {
     UI.ensure();

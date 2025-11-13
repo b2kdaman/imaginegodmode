@@ -2,10 +2,10 @@
  * URL change watcher
  */
 
-import { Utils } from './utils.js';
-import { State } from './state.js';
-import { UI } from './ui.js';
-import { TIMING, DEFAULTS } from './constants.js';
+import { Utils } from '../lib/utils.js';
+import { State } from '../core/state.js';
+import { UI } from '../ui/ui.js';
+import { TIMING, DEFAULTS } from '../constants/constants.js';
 
 export const UrlWatcher = {
     /**

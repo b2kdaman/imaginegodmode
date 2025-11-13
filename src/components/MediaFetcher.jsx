@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import './MediaFetcher.css'
+import { TIMING, DEFAULTS, API_ENDPOINTS, MEDIA_TYPES, URL_CONFIG } from '../constants/constants.js'
+import '../styles/MediaFetcher.css'
 
 const MediaFetcher = () => {
   const [lastMediaUrls, setLastMediaUrls] = useState([])
@@ -8,7 +9,7 @@ const MediaFetcher = () => {
   const [upscaleTotal, setUpscaleTotal] = useState(0)
   const [upscaleDone, setUpscaleDone] = useState(0)
   const [isUpscaling, setIsUpscaling] = useState(false)
-  const [status, setStatus] = useState('Ready')
+  const [status, setStatus] = useState(DEFAULTS.STATUS_READY)
   const [showDetails, setShowDetails] = useState(false)
   const lastKnownPostIdRef = useRef(null)
 
@@ -18,11 +19,11 @@ const MediaFetcher = () => {
 
   const getPostIdFromUrl = useCallback(() => {
     const parts = window.location.pathname.split('/').filter(Boolean)
-    return parts[2] || null
+    return parts[URL_CONFIG.POST_ID_INDEX] || null
   }, [])
 
   const fetchPostData = useCallback(async (postId) => {
-    const res = await fetch('/rest/media/post/get', {
+    const res = await fetch(API_ENDPOINTS.POST_GET, {
       method: 'POST',
       headers: {
         accept: '*/*',
@@ -39,7 +40,7 @@ const MediaFetcher = () => {
   }, [])
 
   const upscaleVideo = useCallback(async (videoId) => {
-    const res = await fetch('/rest/media/video/upscale', {
+    const res = await fetch(API_ENDPOINTS.VIDEO_UPSCALE, {
       method: 'POST',
       headers: {
         accept: '*/*',
@@ -72,7 +73,7 @@ const MediaFetcher = () => {
     urls.forEach((url, idx) => {
       setTimeout(() => {
         const clean = url.split('?')[0]
-        const name = clean.split('/').filter(Boolean).pop() || `media_${idx + 1}`
+        const name = clean.split('/').filter(Boolean).pop() || `${DEFAULTS.MEDIA_FILENAME_PREFIX}${idx + 1}`
         if (canUseGmDownload) {
           try {
             GM_download({
@@ -91,7 +92,7 @@ const MediaFetcher = () => {
         } else {
           fallbackDownload(url, name)
         }
-      }, idx * 500)
+      }, idx * TIMING.DOWNLOAD_DELAY)
     })
   }, [fallbackDownload])
 
@@ -124,7 +125,7 @@ const MediaFetcher = () => {
             urls.push(url)
           }
 
-          if (cp.mediaType === 'MEDIA_POST_TYPE_VIDEO') {
+          if (cp.mediaType === MEDIA_TYPES.VIDEO) {
             const isHd = !!cp.hdMediaUrl
             if (isHd) {
               hdVideoCount += 1
@@ -164,7 +165,7 @@ const MediaFetcher = () => {
         console.error('[Grok Media Fetcher] Upscale-refetch error:', e)
       }
 
-      const delay = 3000 + Math.random() * 2000
+      const delay = TIMING.UPSCALE_REFETCH_MIN + Math.random() * (TIMING.UPSCALE_REFETCH_MAX - TIMING.UPSCALE_REFETCH_MIN)
       upscaleRefetchTimeoutRef.current = setTimeout(tick, delay)
     }
 
@@ -216,7 +217,7 @@ const MediaFetcher = () => {
     const totalVideos = videosToUpscale.length
     let accumulatedDelay = 0
     videosToUpscale.forEach((videoId, idx) => {
-      const delay = 1000 + Math.random() * 1000
+      const delay = TIMING.UPSCALE_DELAY_MIN + Math.random() * (TIMING.UPSCALE_DELAY_MAX - TIMING.UPSCALE_DELAY_MIN)
       accumulatedDelay += delay
 
       const timeoutId = setTimeout(async () => {
@@ -265,9 +266,9 @@ const MediaFetcher = () => {
     setUpscaleDone(0)
 
     if (newPostId) {
-      setStatus('Ready')
+      setStatus(DEFAULTS.STATUS_READY)
     } else {
-      setStatus('Waiting for post…')
+      setStatus(DEFAULTS.STATUS_WAITING)
     }
   }, [])
 
@@ -282,7 +283,7 @@ const MediaFetcher = () => {
         lastKnownPostIdRef.current = current
         resetStateForNewPost(current)
       }
-    }, 500)
+    }, TIMING.URL_WATCHER_INTERVAL)
 
     return () => {
       if (urlWatcherIntervalRef.current) {
