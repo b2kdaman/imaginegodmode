@@ -19,11 +19,15 @@ export const Handlers = {
     /**
      * Handle download button click
      */
-    download() {
+    async download() {
         UI.showDetails();
 
+        // Fetch latest data to ensure we have all available HD URLs
+        UI.setStatus('🔄 Fetching latest data...');
+        await Core.fetchAndRender();
+
         if (!State.lastMediaUrls || State.lastMediaUrls.length === 0) {
-            UI.setStatus('⚠️ Nothing to download – press Fetch first');
+            UI.setStatus('⚠️ Nothing to download – no media found');
             return;
         }
 
