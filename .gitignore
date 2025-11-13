@@ -8,7 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
+dist/*
+!dist/grokgoondl.user.js
 dist-ssr
 *.local
 
@@ -22,7 +23,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Built userscript (keep source in repo)
-dist/*.user.js
 
