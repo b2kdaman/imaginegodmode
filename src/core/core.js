@@ -108,7 +108,18 @@ export const Core = {
                 // Use captured length instead of global variable to avoid race condition
                 if (idx === totalVideos - 1) {
                     State.isUpscaling = false;
-                    UI.setStatus('✅ Upscale batch finished');
+                    UI.setStatus('✅ Upscale batch finished, fetching results...');
+
+                    // Final fetch to get the upscaled HD URLs
+                    setTimeout(async () => {
+                        try {
+                            await this.fetchAndRender();
+                            UI.setStatus('✅ Upscale complete with updated media');
+                        } catch (e) {
+                            console.error('[Grok Media Fetcher] Final fetch error:', e);
+                            UI.setStatus('✅ Upscale finished (fetch failed)');
+                        }
+                    }, 2000); // Wait 2 seconds for server to process
                 }
             }, accumulatedDelay);
 

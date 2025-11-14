@@ -2,6 +2,9 @@
  * Application constants
  */
 
+// Version
+export const VERSION = '1.3';
+
 // UI Layout & Positioning
 export const UI_POSITION = {
     BOTTOM: '72px',

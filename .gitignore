@@ -9,7 +9,7 @@ lerna-debug.log*
 
 node_modules
 dist/*
-!dist/grokgoondl.user.js
+!dist/grokgoonify.user.js
 dist-ssr
 *.local
 

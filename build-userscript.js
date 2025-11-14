@@ -14,8 +14,14 @@ const __dirname = dirname(__filename);
 async function buildUserscript() {
   console.log('Building Tampermonkey userscript from modules...');
 
+  // Import VERSION from constants
+  const { VERSION } = await import('./src/constants/constants.js');
+
   // Read the userscript header
-  const header = readFileSync(join(__dirname, 'src', 'userscript-header.js'), 'utf8');
+  let header = readFileSync(join(__dirname, 'src', 'userscript-header.js'), 'utf8');
+
+  // Replace version placeholder with actual version
+  header = header.replace(/\/\/ @version\s+[\d.]+/, `// @version      ${VERSION}`);
 
   // Bundle all modules using esbuild
   const result = await build({
@@ -73,7 +79,7 @@ async function buildUserscript() {
   mkdirSync(join(__dirname, 'dist'), { recursive: true });
 
   // Write the built file
-  const outputPath = join(__dirname, 'dist', 'grokgoondl.user.js');
+  const outputPath = join(__dirname, 'dist', 'grokgoonify.user.js');
   writeFileSync(outputPath, output, 'utf8');
 
   console.log(`✅ Built userscript: ${outputPath}`);

@@ -3,6 +3,7 @@
  */
 
 import {
+    VERSION,
     UI_POSITION,
     UI_SPACING,
     UI_SIZE,
@@ -251,6 +252,86 @@ export const UI = {
         });
         this.elements.textInput = textInput;
 
+        // Container for sync and copy buttons
+        const buttonColumn = document.createElement('div');
+        Object.assign(buttonColumn.style, {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: UI_SPACING.GAP_SMALL,
+        });
+
+        // Down arrow button (copy FROM external textarea TO our textarea)
+        const downBtn = this.createButton('↓', false);
+        downBtn.title = 'Copy from page input';
+        Object.assign(downBtn.style, {
+            padding: `${UI_SPACING.PADDING_SMALL} ${UI_SPACING.PADDING_MEDIUM}`,
+            flex: '1',
+            minHeight: '0',
+        });
+        downBtn.addEventListener('click', () => {
+            try {
+                const externalTextarea = document.querySelector('textarea[placeholder="Make a video"]');
+                if (externalTextarea && externalTextarea.value) {
+                    this.textItems[this.currentIndex] = externalTextarea.value;
+                    this.updateTextInput();
+                    this.saveTextItems();
+                    const originalText = downBtn.textContent;
+                    downBtn.textContent = '✓';
+                    setTimeout(() => {
+                        downBtn.textContent = originalText;
+                    }, 1000);
+                } else {
+                    downBtn.textContent = '✗';
+                    setTimeout(() => {
+                        downBtn.textContent = '↓';
+                    }, 1000);
+                }
+            } catch (err) {
+                console.error('Failed to copy from external textarea:', err);
+            }
+        });
+
+        // Up arrow button (copy FROM our textarea TO external textarea)
+        const upBtn = this.createButton('↑', false);
+        upBtn.title = 'Copy to page input';
+        Object.assign(upBtn.style, {
+            padding: `${UI_SPACING.PADDING_SMALL} ${UI_SPACING.PADDING_MEDIUM}`,
+            flex: '1',
+            minHeight: '0',
+        });
+        upBtn.addEventListener('click', () => {
+            try {
+                const externalTextarea = document.querySelector('textarea[placeholder="Make a video"]');
+                if (externalTextarea) {
+                    const text = this.textItems[this.currentIndex] || '';
+
+                    // Use native setter to bypass React's value tracking
+                    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+                        window.HTMLTextAreaElement.prototype,
+                        'value'
+                    ).set;
+                    nativeInputValueSetter.call(externalTextarea, text);
+
+                    // Dispatch input event that React will recognize
+                    const inputEvent = new Event('input', { bubbles: true });
+                    externalTextarea.dispatchEvent(inputEvent);
+
+                    const originalText = upBtn.textContent;
+                    upBtn.textContent = '✓';
+                    setTimeout(() => {
+                        upBtn.textContent = originalText;
+                    }, 1000);
+                } else {
+                    upBtn.textContent = '✗';
+                    setTimeout(() => {
+                        upBtn.textContent = '↑';
+                    }, 1000);
+                }
+            } catch (err) {
+                console.error('Failed to copy to external textarea:', err);
+            }
+        });
+
         // Copy button
         const copyBtn = this.createButton('Copy', false);
         copyBtn.style.padding = `${UI_SPACING.PADDING_MEDIUM} ${UI_SPACING.PADDING_LARGE}`;
@@ -273,7 +354,11 @@ export const UI = {
             }
         });
 
+        buttonColumn.appendChild(downBtn);
+        buttonColumn.appendChild(upBtn);
+
         textPill.appendChild(textInput);
+        textPill.appendChild(buttonColumn);
         textPill.appendChild(copyBtn);
 
         this.updateTextInput();
@@ -339,10 +424,27 @@ export const UI = {
         details.appendChild(status);
         details.appendChild(upscaleInfo);
 
+        // Footer with branding
+        const footer = document.createElement('div');
+        Object.assign(footer.style, {
+            marginTop: UI_SPACING.MARGIN_MEDIUM,
+            padding: `${UI_SPACING.PADDING_SMALL} ${UI_SPACING.PADDING_MEDIUM}`,
+            borderRadius: UI_SIZE.BORDER_RADIUS_SMALL,
+            background: UI_COLORS.BACKGROUND_DARK,
+            border: 'none',
+            fontSize: UI_SIZE.FONT_SIZE_SMALL,
+            color: UI_COLORS.TEXT_SECONDARY,
+            textAlign: 'center',
+            boxShadow: `0 4px 12px ${UI_COLORS.SHADOW}`,
+        });
+        footer.textContent = `grokGoonify ${VERSION} by b2kdaman`;
+        this.elements.footer = footer;
+
         container.appendChild(textNavPill);
         container.appendChild(textPill);
         container.appendChild(pill);
         container.appendChild(details);
+        container.appendChild(footer);
         document.body.appendChild(container);
     },
 

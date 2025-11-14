@@ -1,8 +1,8 @@
-# grkgoondl
+# grokGoonify
 
-Grok Media Post Fetcher + Downloader + Upscaler - Tampermonkey Userscript
+grokGoonify - Grok Media Post Fetcher + Downloader + Upscaler - Tampermonkey Userscript
 
-A Tampermonkey userscript for fetching, downloading, and upscaling media posts from Grok.com.
+A Tampermonkey userscript for fetching, downloading, and upscaling media posts from Grok.com, with text note management.
 
 ## Features
 
@@ -54,11 +54,11 @@ src/
    npm run build
    ```
 
-3. Install the built script from `dist/grokgoondl.user.js`:
+3. Install the built script from `dist/grokgoonify.user.js`:
    - Install [Tampermonkey](https://www.tampermonkey.net/) browser extension
    - Open Tampermonkey dashboard
    - Click "Create a new script"
-   - Copy and paste the contents of `dist/grokgoondl.user.js`
+   - Copy and paste the contents of `dist/grokgoonify.user.js`
    - Save the script
 
 ## Development
@@ -91,9 +91,10 @@ This will:
 1. Bundle all ES6 modules using esbuild
 2. Minify the code with terser
 3. Preserve the Tampermonkey header
-4. Output to `dist/grokgoondl.user.js`
+4. Output to `dist/grokgoonify.user.js`
+5. Copy the built file to your clipboard
 
-The built file (`dist/grokgoondl.user.js`) is ready to install in Tampermonkey.
+The built file (`dist/grokgoonify.user.js`) is ready to install in Tampermonkey.
 
 ## Usage
 
@@ -115,7 +116,7 @@ The built file (`dist/grokgoondl.user.js`) is ready to install in Tampermonkey.
 
 ## Script Details
 
-- **Version:** 1.6
+- **Version:** 1.3
 - **Compatible with:** Tampermonkey, Greasemonkey
 - **Requires:** `GM_download` permission (falls back to standard download if unavailable)
 - **Target pages:** `https://grok.com/imagine/post/*` and `https://www.grok.com/imagine/post/*`
