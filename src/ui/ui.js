@@ -16,9 +16,13 @@ export const UI = {
     elements: {
         container: null,
         pill: null,
-        textNavPill: null,
         textPill: null,
         textInput: null,
+        categoryDropdown: null,
+        addCategoryBtn: null,
+        categoryInput: null,
+        saveCategoryBtn: null,
+        cancelCategoryBtn: null,
         prevBtn: null,
         nextBtn: null,
         addBtn: null,
@@ -33,61 +37,208 @@ export const UI = {
         linksWrap: null,
     },
 
-    textItems: [],
+    categories: {},
+    currentCategory: 'Default',
     currentIndex: 0,
     currentView: 'prompt', // 'prompt' or 'status'
+    isAddingCategory: false,
 
     loadTextItems() {
         try {
             const saved = localStorage.getItem('grok-text-items');
-            this.textItems = saved ? JSON.parse(saved) : [''];
-        } catch {
-            this.textItems = [''];
+            if (!saved) {
+                // No data - initialize with default category
+                this.categories = { 'Default': [''] };
+                this.currentCategory = 'Default';
+                this.currentIndex = 0;
+                return;
+            }
+
+            const parsed = JSON.parse(saved);
+
+            // Migration: convert old array format to categories
+            if (Array.isArray(parsed)) {
+                this.categories = { 'Default': parsed.length > 0 ? parsed : [''] };
+                this.currentCategory = 'Default';
+                this.currentIndex = 0;
+                this.saveTextItems(); // Save migrated data
+            } else {
+                // New format with categories
+                this.categories = parsed.categories || { 'Default': [''] };
+                this.currentCategory = parsed.currentCategory || 'Default';
+                this.currentIndex = parsed.currentIndex || 0;
+
+                // Ensure current category exists
+                if (!this.categories[this.currentCategory]) {
+                    this.currentCategory = 'Default';
+                    this.currentIndex = 0;
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load text items:', e);
+            this.categories = { 'Default': [''] };
+            this.currentCategory = 'Default';
+            this.currentIndex = 0;
         }
-        this.currentIndex = 0;
     },
 
     saveTextItems() {
         try {
-            localStorage.setItem('grok-text-items', JSON.stringify(this.textItems));
+            const data = {
+                categories: this.categories,
+                currentCategory: this.currentCategory,
+                currentIndex: this.currentIndex
+            };
+            localStorage.setItem('grok-text-items', JSON.stringify(data));
         } catch (e) {
             console.error('Failed to save text items:', e);
         }
     },
 
+    getCurrentPrompts() {
+        return this.categories[this.currentCategory] || [''];
+    },
+
+    setCurrentPrompt(index, value) {
+        if (!this.categories[this.currentCategory]) {
+            this.categories[this.currentCategory] = [''];
+        }
+        this.categories[this.currentCategory][index] = value;
+    },
+
     updateTextInput() {
         if (this.elements.textInput) {
-            this.elements.textInput.value = this.textItems[this.currentIndex] || '';
+            const prompts = this.getCurrentPrompts();
+            this.elements.textInput.value = prompts[this.currentIndex] || '';
         }
         this.updateNavButtons();
     },
 
     updateNavButtons() {
+        const prompts = this.getCurrentPrompts();
         if (this.elements.prevBtn) {
             this.elements.prevBtn.disabled = this.currentIndex === 0;
             this.elements.prevBtn.style.opacity = this.currentIndex === 0 ? '0.3' : '1';
         }
         if (this.elements.nextBtn) {
-            this.elements.nextBtn.disabled = this.currentIndex >= this.textItems.length - 1;
-            this.elements.nextBtn.style.opacity = this.currentIndex >= this.textItems.length - 1 ? '0.3' : '1';
+            this.elements.nextBtn.disabled = this.currentIndex >= prompts.length - 1;
+            this.elements.nextBtn.style.opacity = this.currentIndex >= prompts.length - 1 ? '0.3' : '1';
         }
         if (this.elements.removeBtn) {
-            this.elements.removeBtn.disabled = this.textItems.length <= 1;
-            this.elements.removeBtn.style.opacity = this.textItems.length <= 1 ? '0.3' : '1';
+            this.elements.removeBtn.disabled = prompts.length <= 1;
+            this.elements.removeBtn.style.opacity = prompts.length <= 1 ? '0.3' : '1';
         }
+    },
+
+    updateCategoryDropdown() {
+        if (!this.elements.categoryDropdown) return;
+
+        // Clear existing options
+        this.elements.categoryDropdown.innerHTML = '';
+
+        // Add all categories
+        Object.keys(this.categories).forEach(categoryName => {
+            const option = document.createElement('option');
+            option.value = categoryName;
+            option.textContent = categoryName;
+            if (categoryName === this.currentCategory) {
+                option.selected = true;
+            }
+            this.elements.categoryDropdown.appendChild(option);
+        });
+    },
+
+    startAddCategory() {
+        if (this.isAddingCategory) return;
+        this.isAddingCategory = true;
+
+        // Hide dropdown and add button, show input and Save/Cancel buttons
+        if (this.elements.categoryDropdown) {
+            this.elements.categoryDropdown.style.display = 'none';
+        }
+        if (this.elements.addCategoryBtn) {
+            this.elements.addCategoryBtn.style.display = 'none';
+        }
+        if (this.elements.categoryInput) {
+            this.elements.categoryInput.style.display = 'block';
+            this.elements.categoryInput.value = '';
+            this.elements.categoryInput.focus();
+        }
+        if (this.elements.saveCategoryBtn) {
+            this.elements.saveCategoryBtn.style.display = 'inline-flex';
+        }
+        if (this.elements.cancelCategoryBtn) {
+            this.elements.cancelCategoryBtn.style.display = 'inline-flex';
+        }
+    },
+
+    cancelAddCategory() {
+        if (!this.isAddingCategory) return;
+        this.isAddingCategory = false;
+
+        // Hide input and Save/Cancel buttons, show dropdown and add button
+        if (this.elements.categoryDropdown) {
+            this.elements.categoryDropdown.style.display = 'block';
+        }
+        if (this.elements.addCategoryBtn) {
+            this.elements.addCategoryBtn.style.display = 'inline-flex';
+        }
+        if (this.elements.categoryInput) {
+            this.elements.categoryInput.style.display = 'none';
+            this.elements.categoryInput.value = '';
+        }
+        if (this.elements.saveCategoryBtn) {
+            this.elements.saveCategoryBtn.style.display = 'none';
+        }
+        if (this.elements.cancelCategoryBtn) {
+            this.elements.cancelCategoryBtn.style.display = 'none';
+        }
+    },
+
+    saveCategory() {
+        if (!this.isAddingCategory || !this.elements.categoryInput) return;
+
+        const categoryName = this.elements.categoryInput.value.trim();
+        
+        // Validate category name
+        if (!categoryName) {
+            return; // Don't create empty category
+        }
+
+        // Check if category already exists
+        if (this.categories[categoryName]) {
+            // Switch to existing category instead of creating duplicate
+            this.currentCategory = categoryName;
+            this.currentIndex = 0;
+        } else {
+            // Create new category
+            this.categories[categoryName] = [''];
+            this.currentCategory = categoryName;
+            this.currentIndex = 0;
+        }
+
+        // Update UI and save
+        this.updateCategoryDropdown();
+        this.updateTextInput();
+        this.saveTextItems();
+        this.cancelAddCategory();
     },
 
     switchView(view) {
         this.currentView = view;
-        if (this.elements.textNavPill && this.elements.textPill && this.elements.details) {
+        if (this.elements.textPill && this.elements.details) {
             if (view === 'prompt') {
-                this.elements.textNavPill.style.display = 'inline-flex';
                 this.elements.textPill.style.display = 'flex';
                 this.elements.details.style.display = 'none';
+                if (this.elements.categoryPill) {
+                    this.elements.categoryPill.style.display = 'flex';
+                }
             } else {
-                this.elements.textNavPill.style.display = 'none';
                 this.elements.textPill.style.display = 'none';
                 this.elements.details.style.display = 'block';
+                if (this.elements.categoryPill) {
+                    this.elements.categoryPill.style.display = 'none';
+                }
             }
         }
     },
@@ -154,81 +305,143 @@ export const UI = {
         });
         this.elements.container = container;
 
-        // Text navigation buttons pill
-        const textNavPill = document.createElement('div');
-        Object.assign(textNavPill.style, {
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: UI_SPACING.GAP_LARGE,
-            padding: UI_SPACING.PADDING_SMALL,
+        // Category pill (separate background block)
+        const categoryPill = document.createElement('div');
+        Object.assign(categoryPill.style, {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: UI_SPACING.GAP_MEDIUM,
             borderRadius: UI_SIZE.BORDER_RADIUS_MEDIUM,
             background: UI_COLORS.BACKGROUND_DARK,
             border: 'none',
             boxShadow: `0 4px 12px ${UI_COLORS.SHADOW}`,
             marginBottom: UI_SPACING.MARGIN_MEDIUM,
+            padding: UI_SPACING.PADDING_SMALL,
         });
-        this.elements.textNavPill = textNavPill;
+        this.elements.categoryPill = categoryPill;
 
-        // Prev button
-        const prevBtn = this.createButton('←', false);
-        prevBtn.style.padding = `${UI_SPACING.PADDING_MEDIUM} ${UI_SPACING.PADDING_LARGE}`;
-        prevBtn.addEventListener('click', () => {
-            if (this.currentIndex > 0) {
-                this.currentIndex--;
-                this.updateTextInput();
-            }
+        // Category row: dropdown + add button
+        const categoryRow = document.createElement('div');
+        Object.assign(categoryRow.style, {
+            display: 'flex',
+            gap: UI_SPACING.GAP_SMALL,
+            alignItems: 'center',
         });
-        this.elements.prevBtn = prevBtn;
 
-        // Next button
-        const nextBtn = this.createButton('→', false);
-        nextBtn.style.padding = `${UI_SPACING.PADDING_MEDIUM} ${UI_SPACING.PADDING_LARGE}`;
-        nextBtn.addEventListener('click', () => {
-            if (this.currentIndex < this.textItems.length - 1) {
-                this.currentIndex++;
-                this.updateTextInput();
-            }
+        // Category dropdown
+        const categoryDropdown = document.createElement('select');
+        Object.assign(categoryDropdown.style, {
+            flex: '1',
+            padding: `${UI_SPACING.PADDING_MEDIUM} ${UI_SPACING.PADDING_LARGE}`,
+            paddingRight: '32px',
+            border: `1px solid ${UI_COLORS.BORDER}`,
+            borderRadius: UI_SIZE.BORDER_RADIUS_MEDIUM,
+            background: `${UI_COLORS.BACKGROUND_MEDIUM} url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") no-repeat right 8px center`,
+            backgroundSize: '16px',
+            color: UI_COLORS.TEXT_PRIMARY,
+            fontSize: UI_SIZE.FONT_SIZE_NORMAL,
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+            outline: 'none',
+            cursor: 'pointer',
+            transition: `all ${UI_TRANSITION.DURATION} ${UI_TRANSITION.EASING}`,
+            appearance: 'none',
+            WebkitAppearance: 'none',
+            MozAppearance: 'none',
         });
-        this.elements.nextBtn = nextBtn;
-
-        // Add button
-        const addBtn = this.createButton('+', false);
-        addBtn.style.padding = `${UI_SPACING.PADDING_MEDIUM} ${UI_SPACING.PADDING_LARGE}`;
-        addBtn.addEventListener('click', () => {
-            const currentText = this.textItems[this.currentIndex] || '';
-            if (currentText.trim() === '') {
-                return; // Don't add if current text is empty
-            }
-            this.textItems.push('');
-            this.currentIndex = this.textItems.length - 1;
+        categoryDropdown.addEventListener('change', (e) => {
+            this.currentCategory = e.target.value;
+            this.currentIndex = 0;
             this.updateTextInput();
+            this.updateCategoryDropdown();
             this.saveTextItems();
         });
-        this.elements.addBtn = addBtn;
+        categoryDropdown.addEventListener('focus', () => {
+            categoryDropdown.style.background = UI_COLORS.BACKGROUND_LIGHT;
+            categoryDropdown.style.borderColor = UI_COLORS.TEXT_SECONDARY;
+        });
+        categoryDropdown.addEventListener('blur', () => {
+            categoryDropdown.style.background = UI_COLORS.BACKGROUND_MEDIUM;
+            categoryDropdown.style.borderColor = UI_COLORS.BORDER;
+        });
+        this.elements.categoryDropdown = categoryDropdown;
 
-        // Remove button
-        const removeBtn = this.createButton('×', false);
-        removeBtn.style.padding = `${UI_SPACING.PADDING_MEDIUM} ${UI_SPACING.PADDING_LARGE}`;
-        removeBtn.addEventListener('click', () => {
-            if (this.textItems.length > 1) {
-                this.textItems.splice(this.currentIndex, 1);
-                this.currentIndex = Math.min(this.currentIndex, this.textItems.length - 1);
-                this.updateTextInput();
-                this.saveTextItems();
+        // Category input (hidden by default, shown when adding)
+        const categoryInput = document.createElement('input');
+        categoryInput.type = 'text';
+        categoryInput.placeholder = 'Category name';
+        Object.assign(categoryInput.style, {
+            flex: '1',
+            padding: `${UI_SPACING.PADDING_MEDIUM} ${UI_SPACING.PADDING_LARGE}`,
+            border: `1px solid ${UI_COLORS.BORDER}`,
+            borderRadius: UI_SIZE.BORDER_RADIUS_MEDIUM,
+            background: UI_COLORS.BACKGROUND_MEDIUM,
+            color: UI_COLORS.TEXT_PRIMARY,
+            fontSize: UI_SIZE.FONT_SIZE_NORMAL,
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+            outline: 'none',
+            display: 'none',
+            transition: `all ${UI_TRANSITION.DURATION} ${UI_TRANSITION.EASING}`,
+        });
+        categoryInput.addEventListener('focus', () => {
+            categoryInput.style.background = UI_COLORS.BACKGROUND_LIGHT;
+            categoryInput.style.borderColor = UI_COLORS.TEXT_SECONDARY;
+        });
+        categoryInput.addEventListener('blur', () => {
+            categoryInput.style.background = UI_COLORS.BACKGROUND_MEDIUM;
+            categoryInput.style.borderColor = UI_COLORS.BORDER;
+        });
+        categoryInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                this.saveCategory();
+            } else if (e.key === 'Escape') {
+                this.cancelAddCategory();
             }
         });
-        this.elements.removeBtn = removeBtn;
+        this.elements.categoryInput = categoryInput;
 
-        textNavPill.appendChild(prevBtn);
-        textNavPill.appendChild(nextBtn);
-        textNavPill.appendChild(addBtn);
-        textNavPill.appendChild(removeBtn);
+        // Add category button
+        const addCategoryBtn = this.createButton('+', false);
+        Object.assign(addCategoryBtn.style, {
+            minWidth: '32px',
+            minHeight: '32px',
+            fontSize: '20px',
+            fontWeight: 'bold',
+        });
+        addCategoryBtn.innerHTML = '&#43;'; // HTML entity for plus
+        addCategoryBtn.addEventListener('click', () => {
+            this.startAddCategory();
+        });
+        this.elements.addCategoryBtn = addCategoryBtn;
+
+        // Save category button (hidden by default)
+        const saveCategoryBtn = this.createButton('Save', false);
+        saveCategoryBtn.style.display = 'none';
+        saveCategoryBtn.addEventListener('click', () => {
+            this.saveCategory();
+        });
+        this.elements.saveCategoryBtn = saveCategoryBtn;
+
+        // Cancel category button (hidden by default)
+        const cancelCategoryBtn = this.createButton('Cancel', false);
+        cancelCategoryBtn.style.display = 'none';
+        cancelCategoryBtn.addEventListener('click', () => {
+            this.cancelAddCategory();
+        });
+        this.elements.cancelCategoryBtn = cancelCategoryBtn;
+
+        categoryRow.appendChild(categoryDropdown);
+        categoryRow.appendChild(categoryInput);
+        categoryRow.appendChild(addCategoryBtn);
+        categoryRow.appendChild(saveCategoryBtn);
+        categoryRow.appendChild(cancelCategoryBtn);
+
+        categoryPill.appendChild(categoryRow);
 
         // Text input pill
         const textPill = document.createElement('div');
         Object.assign(textPill.style, {
             display: 'flex',
-            alignItems: 'stretch',
+            flexDirection: 'column',
             gap: UI_SPACING.GAP_MEDIUM,
             borderRadius: UI_SIZE.BORDER_RADIUS_MEDIUM,
             background: UI_COLORS.BACKGROUND_DARK,
@@ -238,6 +451,13 @@ export const UI = {
             padding: UI_SPACING.PADDING_SMALL,
         });
         this.elements.textPill = textPill;
+
+        // Top row: textarea + nav buttons
+        const topRow = document.createElement('div');
+        Object.assign(topRow.style, {
+            display: 'flex',
+            gap: UI_SPACING.GAP_MEDIUM,
+        });
 
         // Text input
         const textInput = document.createElement('textarea');
@@ -257,7 +477,7 @@ export const UI = {
             resize: 'vertical',
         });
         textInput.addEventListener('input', (e) => {
-            this.textItems[this.currentIndex] = e.target.value;
+            this.setCurrentPrompt(this.currentIndex, e.target.value);
             this.saveTextItems();
         });
         textInput.addEventListener('focus', () => {
@@ -270,38 +490,107 @@ export const UI = {
         });
         this.elements.textInput = textInput;
 
-        // Container for sync and copy buttons
-        const buttonColumn = document.createElement('div');
-        Object.assign(buttonColumn.style, {
-            display: 'flex',
-            flexDirection: 'column',
+        // Navigation buttons grid (2x2)
+        const navGrid = document.createElement('div');
+        Object.assign(navGrid.style, {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
             gap: UI_SPACING.GAP_SMALL,
         });
 
-        // Down arrow button (copy FROM external textarea TO our textarea)
-        const downBtn = this.createButton('↓', false);
-        downBtn.title = 'Copy from page input';
-        Object.assign(downBtn.style, {
-            padding: `${UI_SPACING.PADDING_SMALL} ${UI_SPACING.PADDING_MEDIUM}`,
-            flex: '1',
-            minHeight: '0',
+        // Prev button
+        const prevBtn = this.createButton('←', false);
+        prevBtn.innerHTML = '&#8592;'; // Left arrow HTML entity
+        prevBtn.style.fontSize = '20px';
+        prevBtn.addEventListener('click', () => {
+            if (this.currentIndex > 0) {
+                this.currentIndex--;
+                this.updateTextInput();
+            }
         });
-        downBtn.addEventListener('click', () => {
+        this.elements.prevBtn = prevBtn;
+
+        // Next button
+        const nextBtn = this.createButton('→', false);
+        nextBtn.innerHTML = '&#8594;'; // Right arrow HTML entity
+        nextBtn.style.fontSize = '20px';
+        nextBtn.addEventListener('click', () => {
+            const prompts = this.getCurrentPrompts();
+            if (this.currentIndex < prompts.length - 1) {
+                this.currentIndex++;
+                this.updateTextInput();
+                this.saveTextItems();
+            }
+        });
+        this.elements.nextBtn = nextBtn;
+
+        // Add button
+        const addBtn = this.createButton('+', false);
+        addBtn.innerHTML = '&#43;'; // Plus HTML entity
+        addBtn.style.fontSize = '20px';
+        addBtn.addEventListener('click', () => {
+            const prompts = this.getCurrentPrompts();
+            const currentText = prompts[this.currentIndex] || '';
+            if (currentText.trim() === '') {
+                return; // Don't add if current text is empty
+            }
+            prompts.push('');
+            this.currentIndex = prompts.length - 1;
+            this.updateTextInput();
+            this.saveTextItems();
+        });
+        this.elements.addBtn = addBtn;
+
+        // Remove button
+        const removeBtn = this.createButton('×', false);
+        removeBtn.innerHTML = '&#215;'; // Multiplication sign HTML entity
+        removeBtn.style.fontSize = '20px';
+        removeBtn.addEventListener('click', () => {
+            const prompts = this.getCurrentPrompts();
+            if (prompts.length > 1) {
+                prompts.splice(this.currentIndex, 1);
+                this.currentIndex = Math.min(this.currentIndex, prompts.length - 1);
+                this.updateTextInput();
+                this.saveTextItems();
+            }
+        });
+        this.elements.removeBtn = removeBtn;
+
+        navGrid.appendChild(prevBtn);
+        navGrid.appendChild(nextBtn);
+        navGrid.appendChild(addBtn);
+        navGrid.appendChild(removeBtn);
+
+        topRow.appendChild(textInput);
+        topRow.appendChild(navGrid);
+
+        // Button row below textarea
+        const buttonRow = document.createElement('div');
+        Object.assign(buttonRow.style, {
+            display: 'flex',
+            gap: UI_SPACING.GAP_MEDIUM,
+            justifyContent: 'flex-start',
+        });
+
+        // From button (copy FROM external textarea TO our textarea)
+        const fromBtn = this.createButton('From', false);
+        fromBtn.title = 'Copy from page input';
+        fromBtn.addEventListener('click', () => {
             try {
                 const externalTextarea = document.querySelector('textarea[placeholder="Make a video"]');
                 if (externalTextarea && externalTextarea.value) {
-                    this.textItems[this.currentIndex] = externalTextarea.value;
+                    this.setCurrentPrompt(this.currentIndex, externalTextarea.value);
                     this.updateTextInput();
                     this.saveTextItems();
-                    const originalText = downBtn.textContent;
-                    downBtn.textContent = '✓';
+                    const originalText = fromBtn.textContent;
+                    fromBtn.innerHTML = '&#10003;'; // Checkmark HTML entity
                     setTimeout(() => {
-                        downBtn.textContent = originalText;
+                        fromBtn.textContent = originalText;
                     }, 1000);
                 } else {
-                    downBtn.textContent = '✗';
+                    fromBtn.innerHTML = '&#10007;'; // X mark HTML entity
                     setTimeout(() => {
-                        downBtn.textContent = '↓';
+                        fromBtn.textContent = 'From';
                     }, 1000);
                 }
             } catch (err) {
@@ -309,19 +598,15 @@ export const UI = {
             }
         });
 
-        // Up arrow button (copy FROM our textarea TO external textarea)
-        const upBtn = this.createButton('↑', false);
-        upBtn.title = 'Copy to page input';
-        Object.assign(upBtn.style, {
-            padding: `${UI_SPACING.PADDING_SMALL} ${UI_SPACING.PADDING_MEDIUM}`,
-            flex: '1',
-            minHeight: '0',
-        });
-        upBtn.addEventListener('click', () => {
+        // To button (copy FROM our textarea TO external textarea)
+        const toBtn = this.createButton('To', false);
+        toBtn.title = 'Copy to page input';
+        toBtn.addEventListener('click', () => {
             try {
                 const externalTextarea = document.querySelector('textarea[placeholder="Make a video"]');
                 if (externalTextarea) {
-                    const text = this.textItems[this.currentIndex] || '';
+                    const prompts = this.getCurrentPrompts();
+                    const text = prompts[this.currentIndex] || '';
 
                     // Use native setter to bypass React's value tracking
                     const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
@@ -334,15 +619,15 @@ export const UI = {
                     const inputEvent = new Event('input', { bubbles: true });
                     externalTextarea.dispatchEvent(inputEvent);
 
-                    const originalText = upBtn.textContent;
-                    upBtn.textContent = '✓';
+                    const originalText = toBtn.textContent;
+                    toBtn.innerHTML = '&#10003;'; // Checkmark HTML entity
                     setTimeout(() => {
-                        upBtn.textContent = originalText;
+                        toBtn.textContent = originalText;
                     }, 1000);
                 } else {
-                    upBtn.textContent = '✗';
+                    toBtn.innerHTML = '&#10007;'; // X mark HTML entity
                     setTimeout(() => {
-                        upBtn.textContent = '↑';
+                        toBtn.textContent = 'To';
                     }, 1000);
                 }
             } catch (err) {
@@ -352,10 +637,9 @@ export const UI = {
 
         // Copy button
         const copyBtn = this.createButton('Copy', false);
-        copyBtn.style.padding = `${UI_SPACING.PADDING_MEDIUM} ${UI_SPACING.PADDING_LARGE}`;
-        copyBtn.style.alignSelf = 'stretch';
         copyBtn.addEventListener('click', async () => {
-            const text = this.textItems[this.currentIndex] || '';
+            const prompts = this.getCurrentPrompts();
+            const text = prompts[this.currentIndex] || '';
             try {
                 await navigator.clipboard.writeText(text);
                 const originalText = copyBtn.textContent;
@@ -372,13 +656,15 @@ export const UI = {
             }
         });
 
-        buttonColumn.appendChild(downBtn);
-        buttonColumn.appendChild(upBtn);
+        buttonRow.appendChild(fromBtn);
+        buttonRow.appendChild(toBtn);
+        buttonRow.appendChild(copyBtn);
 
-        textPill.appendChild(textInput);
-        textPill.appendChild(buttonColumn);
-        textPill.appendChild(copyBtn);
+        textPill.appendChild(topRow);
+        textPill.appendChild(buttonRow);
 
+        // Initialize category dropdown and text input
+        this.updateCategoryDropdown();
         this.updateTextInput();
 
         // Main buttons pill container
@@ -455,8 +741,8 @@ export const UI = {
         footer.textContent = `grokGoonify ${VERSION} by b2kdaman`;
         this.elements.footer = footer;
 
-        // Append in order: prompt/status at top, buttons below, footer at bottom
-        container.appendChild(textNavPill);
+        // Append in order: category at top, prompt/status below, buttons below, footer at bottom
+        container.appendChild(categoryPill);
         container.appendChild(textPill);
         container.appendChild(details);
         container.appendChild(pill);
