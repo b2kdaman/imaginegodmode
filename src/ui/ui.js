@@ -666,7 +666,7 @@ export const UI = {
 
         // Text input
         const textInput = document.createElement('textarea');
-        textInput.rows = 3;
+        textInput.rows = 5;
         textInput.placeholder = 'Enter text...';
         Object.assign(textInput.style, {
             flex: '1',
