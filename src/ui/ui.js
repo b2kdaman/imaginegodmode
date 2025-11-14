@@ -15,6 +15,9 @@ import {
 export const UI = {
     elements: {
         container: null,
+        toggleBtn: null,
+        contentWrapper: null,
+        categoryPill: null,
         pill: null,
         textPill: null,
         textInput: null,
@@ -42,6 +45,7 @@ export const UI = {
     currentIndex: 0,
     currentView: 'prompt', // 'prompt' or 'status'
     isAddingCategory: false,
+    isHidden: false,
 
     loadTextItems() {
         try {
@@ -243,6 +247,20 @@ export const UI = {
         }
     },
 
+    toggleVisibility() {
+        this.isHidden = !this.isHidden;
+        
+        if (this.elements.contentWrapper && this.elements.toggleBtn) {
+            if (this.isHidden) {
+                this.elements.contentWrapper.style.display = 'none';
+                this.elements.toggleBtn.innerHTML = '&#9650;'; // Chevron up HTML entity (▲)
+            } else {
+                this.elements.contentWrapper.style.display = 'flex';
+                this.elements.toggleBtn.innerHTML = '&#9660;'; // Chevron down HTML entity (▼)
+            }
+        }
+    },
+
     /**
      * Create a styled button element
      * @param {string} label - Button label
@@ -302,8 +320,54 @@ export const UI = {
             fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
             color: UI_COLORS.TEXT_PRIMARY,
             pointerEvents: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
         });
         this.elements.container = container;
+
+        // Toggle button (always visible at top)
+        const toggleBtn = document.createElement('button');
+        Object.assign(toggleBtn.style, {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '40px',
+            height: '40px',
+            padding: '0',
+            marginBottom: UI_SPACING.MARGIN_SMALL,
+            border: 'none',
+            borderRadius: UI_SIZE.BORDER_RADIUS_MEDIUM,
+            background: UI_COLORS.BACKGROUND_DARK,
+            color: UI_COLORS.TEXT_SECONDARY,
+            fontSize: UI_SIZE.FONT_SIZE_LARGE,
+            cursor: 'pointer',
+            outline: 'none',
+            transition: `all ${UI_TRANSITION.DURATION} ${UI_TRANSITION.EASING}`,
+            boxShadow: `0 4px 12px ${UI_COLORS.SHADOW}`,
+        });
+        toggleBtn.innerHTML = '&#9660;'; // Chevron down HTML entity (▼)
+        toggleBtn.title = 'Toggle UI';
+        toggleBtn.addEventListener('click', () => {
+            this.toggleVisibility();
+        });
+        toggleBtn.addEventListener('mouseenter', () => {
+            toggleBtn.style.background = UI_COLORS.BACKGROUND_LIGHT;
+            toggleBtn.style.color = UI_COLORS.TEXT_HOVER;
+        });
+        toggleBtn.addEventListener('mouseleave', () => {
+            toggleBtn.style.background = UI_COLORS.BACKGROUND_DARK;
+            toggleBtn.style.color = UI_COLORS.TEXT_SECONDARY;
+        });
+        this.elements.toggleBtn = toggleBtn;
+
+        // Content wrapper (contains all UI except toggle button)
+        const contentWrapper = document.createElement('div');
+        Object.assign(contentWrapper.style, {
+            display: 'flex',
+            flexDirection: 'column',
+        });
+        this.elements.contentWrapper = contentWrapper;
 
         // Category pill (separate background block)
         const categoryPill = document.createElement('div');
@@ -741,12 +805,16 @@ export const UI = {
         footer.textContent = `grokGoonify ${VERSION} by b2kdaman`;
         this.elements.footer = footer;
 
-        // Append in order: category at top, prompt/status below, buttons below, footer at bottom
-        container.appendChild(categoryPill);
-        container.appendChild(textPill);
-        container.appendChild(details);
-        container.appendChild(pill);
-        container.appendChild(footer);
+        // Append to content wrapper: category at top, prompt/status below, buttons below, footer at bottom
+        contentWrapper.appendChild(categoryPill);
+        contentWrapper.appendChild(textPill);
+        contentWrapper.appendChild(details);
+        contentWrapper.appendChild(pill);
+        contentWrapper.appendChild(footer);
+
+        // Append toggle button and content wrapper to container
+        container.appendChild(toggleBtn);
+        container.appendChild(contentWrapper);
         document.body.appendChild(container);
 
         // Set initial view to prompt
