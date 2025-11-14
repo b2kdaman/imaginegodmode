@@ -36,6 +36,7 @@ export const UI_SIZE = {
     FONT_SIZE_XXLARGE: '20px',
     MIN_HEIGHT: '36px',
     MIN_WIDTH: '36px',
+    ICON_BUTTON_SIZE: '36px',
     BORDER_RADIUS: '999px',
     BORDER_RADIUS_MEDIUM: '16px',
     BORDER_RADIUS_SMALL: '8px',

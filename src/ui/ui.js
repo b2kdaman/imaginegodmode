@@ -23,6 +23,7 @@ export const UI = {
         textInput: null,
         categoryDropdown: null,
         addCategoryBtn: null,
+        deleteCategoryBtn: null,
         categoryInput: null,
         saveCategoryBtn: null,
         cancelCategoryBtn: null,
@@ -30,6 +31,7 @@ export const UI = {
         nextBtn: null,
         addBtn: null,
         removeBtn: null,
+        starRating: null,
         details: null,
         status: null,
         upscaleInfo: null,
@@ -46,13 +48,14 @@ export const UI = {
     currentView: 'prompt', // 'prompt' or 'status'
     isAddingCategory: false,
     isHidden: false,
+    lastDeleteClickTime: 0,
 
     loadTextItems() {
         try {
             const saved = localStorage.getItem('grok-text-items');
             if (!saved) {
                 // No data - initialize with default category
-                this.categories = { 'Default': [''] };
+                this.categories = { 'Default': [{ text: '', rating: 0 }] };
                 this.currentCategory = 'Default';
                 this.currentIndex = 0;
                 return;
@@ -78,9 +81,24 @@ export const UI = {
                     this.currentIndex = 0;
                 }
             }
+
+            // Migration: convert string prompts to objects with ratings
+            Object.keys(this.categories).forEach(categoryName => {
+                this.categories[categoryName] = this.categories[categoryName].map(prompt => {
+                    // If it's a string, convert to object
+                    if (typeof prompt === 'string') {
+                        return { text: prompt, rating: 0 };
+                    }
+                    // If it's already an object, ensure it has both properties
+                    return {
+                        text: prompt.text || '',
+                        rating: prompt.rating || 0
+                    };
+                });
+            });
         } catch (e) {
             console.error('Failed to load text items:', e);
-            this.categories = { 'Default': [''] };
+            this.categories = { 'Default': [{ text: '', rating: 0 }] };
             this.currentCategory = 'Default';
             this.currentIndex = 0;
         }
@@ -105,17 +123,28 @@ export const UI = {
 
     setCurrentPrompt(index, value) {
         if (!this.categories[this.currentCategory]) {
-            this.categories[this.currentCategory] = [''];
+            this.categories[this.currentCategory] = [{ text: '', rating: 0 }];
         }
-        this.categories[this.currentCategory][index] = value;
+        // If value is a string, update only text; preserve rating
+        if (typeof value === 'string') {
+            const currentPrompt = this.categories[this.currentCategory][index];
+            this.categories[this.currentCategory][index] = {
+                text: value,
+                rating: currentPrompt?.rating || 0
+            };
+        } else {
+            // If value is an object, replace entirely
+            this.categories[this.currentCategory][index] = value;
+        }
     },
 
     updateTextInput() {
         if (this.elements.textInput) {
             const prompts = this.getCurrentPrompts();
-            this.elements.textInput.value = prompts[this.currentIndex] || '';
+            this.elements.textInput.value = prompts[this.currentIndex]?.text || '';
         }
         this.updateNavButtons();
+        this.updateStarRating();
     },
 
     updateNavButtons() {
@@ -131,6 +160,35 @@ export const UI = {
         if (this.elements.removeBtn) {
             this.elements.removeBtn.disabled = prompts.length <= 1;
             this.elements.removeBtn.style.opacity = prompts.length <= 1 ? '0.3' : '1';
+        }
+    },
+
+    setRating(rating) {
+        const prompts = this.getCurrentPrompts();
+        const currentPrompt = prompts[this.currentIndex];
+        if (currentPrompt) {
+            currentPrompt.rating = rating;
+            this.updateStarRating();
+            this.saveTextItems();
+        }
+    },
+
+    updateStarRating() {
+        if (!this.elements.starRating) return;
+
+        const prompts = this.getCurrentPrompts();
+        const currentRating = prompts[this.currentIndex]?.rating || 0;
+
+        // Update each star element
+        const stars = this.elements.starRating.children;
+        for (let i = 0; i < stars.length; i++) {
+            if (i < currentRating) {
+                stars[i].innerHTML = '&#9733;'; // Filled star ★
+                stars[i].style.color = '#FFD700'; // Gold
+            } else {
+                stars[i].innerHTML = '&#9734;'; // Empty star ☆
+                stars[i].style.color = '#666'; // Gray
+            }
         }
     },
 
@@ -156,12 +214,15 @@ export const UI = {
         if (this.isAddingCategory) return;
         this.isAddingCategory = true;
 
-        // Hide dropdown and add button, show input and Save/Cancel buttons
+        // Hide dropdown and add/delete buttons, show input and Save/Cancel buttons
         if (this.elements.categoryDropdown) {
             this.elements.categoryDropdown.style.display = 'none';
         }
         if (this.elements.addCategoryBtn) {
             this.elements.addCategoryBtn.style.display = 'none';
+        }
+        if (this.elements.deleteCategoryBtn) {
+            this.elements.deleteCategoryBtn.style.display = 'none';
         }
         if (this.elements.categoryInput) {
             this.elements.categoryInput.style.display = 'block';
@@ -180,12 +241,15 @@ export const UI = {
         if (!this.isAddingCategory) return;
         this.isAddingCategory = false;
 
-        // Hide input and Save/Cancel buttons, show dropdown and add button
+        // Hide input and Save/Cancel buttons, show dropdown and add/delete buttons
         if (this.elements.categoryDropdown) {
             this.elements.categoryDropdown.style.display = 'block';
         }
         if (this.elements.addCategoryBtn) {
             this.elements.addCategoryBtn.style.display = 'inline-flex';
+        }
+        if (this.elements.deleteCategoryBtn) {
+            this.elements.deleteCategoryBtn.style.display = 'inline-flex';
         }
         if (this.elements.categoryInput) {
             this.elements.categoryInput.style.display = 'none';
@@ -203,7 +267,7 @@ export const UI = {
         if (!this.isAddingCategory || !this.elements.categoryInput) return;
 
         const categoryName = this.elements.categoryInput.value.trim();
-        
+
         // Validate category name
         if (!categoryName) {
             return; // Don't create empty category
@@ -216,7 +280,7 @@ export const UI = {
             this.currentIndex = 0;
         } else {
             // Create new category
-            this.categories[categoryName] = [''];
+            this.categories[categoryName] = [{ text: '', rating: 0 }];
             this.currentCategory = categoryName;
             this.currentIndex = 0;
         }
@@ -226,6 +290,61 @@ export const UI = {
         this.updateTextInput();
         this.saveTextItems();
         this.cancelAddCategory();
+    },
+
+    deleteCategory() {
+        const categoryNames = Object.keys(this.categories);
+
+        // Prevent deleting the last category
+        if (categoryNames.length <= 1) {
+            return;
+        }
+
+        // Double-click detection (within 500ms)
+        const now = Date.now();
+        const timeSinceLastClick = now - this.lastDeleteClickTime;
+
+        if (timeSinceLastClick < 500) {
+            // Second click within threshold - perform delete
+            const categoryToDelete = this.currentCategory;
+
+            // Delete the category
+            delete this.categories[categoryToDelete];
+
+            // Switch to first available category
+            const remainingCategories = Object.keys(this.categories);
+            this.currentCategory = remainingCategories[0];
+            this.currentIndex = 0;
+
+            // Update UI and save
+            this.updateCategoryDropdown();
+            this.updateTextInput();
+            this.saveTextItems();
+
+            // Reset click time
+            this.lastDeleteClickTime = 0;
+
+            // Visual feedback
+            if (this.elements.deleteCategoryBtn) {
+                const originalText = this.elements.deleteCategoryBtn.innerHTML;
+                this.elements.deleteCategoryBtn.innerHTML = '&#10003;'; // Checkmark
+                setTimeout(() => {
+                    this.elements.deleteCategoryBtn.innerHTML = originalText;
+                }, 1000);
+            }
+        } else {
+            // First click - update time and show feedback
+            this.lastDeleteClickTime = now;
+
+            // Visual feedback: indicate that another click is needed
+            if (this.elements.deleteCategoryBtn) {
+                const originalBg = this.elements.deleteCategoryBtn.style.background;
+                this.elements.deleteCategoryBtn.style.background = '#ff6b6b';
+                setTimeout(() => {
+                    this.elements.deleteCategoryBtn.style.background = originalBg;
+                }, 500);
+            }
+        }
     },
 
     switchView(view) {
@@ -332,8 +451,8 @@ export const UI = {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '40px',
-            height: '40px',
+            width: UI_SIZE.ICON_BUTTON_SIZE,
+            height: UI_SIZE.ICON_BUTTON_SIZE,
             padding: '0',
             marginBottom: UI_SPACING.MARGIN_SMALL,
             border: 'none',
@@ -466,8 +585,11 @@ export const UI = {
         // Add category button
         const addCategoryBtn = this.createButton('+', false);
         Object.assign(addCategoryBtn.style, {
-            minWidth: '32px',
-            minHeight: '32px',
+            width: UI_SIZE.ICON_BUTTON_SIZE,
+            height: UI_SIZE.ICON_BUTTON_SIZE,
+            minWidth: UI_SIZE.ICON_BUTTON_SIZE,
+            minHeight: UI_SIZE.ICON_BUTTON_SIZE,
+            padding: '0',
             fontSize: '20px',
             fontWeight: 'bold',
         });
@@ -476,6 +598,24 @@ export const UI = {
             this.startAddCategory();
         });
         this.elements.addCategoryBtn = addCategoryBtn;
+
+        // Delete category button
+        const deleteCategoryBtn = this.createButton('−', false);
+        Object.assign(deleteCategoryBtn.style, {
+            width: UI_SIZE.ICON_BUTTON_SIZE,
+            height: UI_SIZE.ICON_BUTTON_SIZE,
+            minWidth: UI_SIZE.ICON_BUTTON_SIZE,
+            minHeight: UI_SIZE.ICON_BUTTON_SIZE,
+            padding: '0',
+            fontSize: '20px',
+            fontWeight: 'bold',
+        });
+        deleteCategoryBtn.innerHTML = '&#8722;'; // HTML entity for minus
+        deleteCategoryBtn.title = 'Double-click to delete category';
+        deleteCategoryBtn.addEventListener('click', () => {
+            this.deleteCategory();
+        });
+        this.elements.deleteCategoryBtn = deleteCategoryBtn;
 
         // Save category button (hidden by default)
         const saveCategoryBtn = this.createButton('Save', false);
@@ -496,6 +636,7 @@ export const UI = {
         categoryRow.appendChild(categoryDropdown);
         categoryRow.appendChild(categoryInput);
         categoryRow.appendChild(addCategoryBtn);
+        categoryRow.appendChild(deleteCategoryBtn);
         categoryRow.appendChild(saveCategoryBtn);
         categoryRow.appendChild(cancelCategoryBtn);
 
@@ -564,8 +705,15 @@ export const UI = {
 
         // Prev button
         const prevBtn = this.createButton('←', false);
+        Object.assign(prevBtn.style, {
+            width: UI_SIZE.ICON_BUTTON_SIZE,
+            height: UI_SIZE.ICON_BUTTON_SIZE,
+            minWidth: UI_SIZE.ICON_BUTTON_SIZE,
+            minHeight: UI_SIZE.ICON_BUTTON_SIZE,
+            padding: '0',
+            fontSize: '20px',
+        });
         prevBtn.innerHTML = '&#8592;'; // Left arrow HTML entity
-        prevBtn.style.fontSize = '20px';
         prevBtn.addEventListener('click', () => {
             if (this.currentIndex > 0) {
                 this.currentIndex--;
@@ -576,8 +724,15 @@ export const UI = {
 
         // Next button
         const nextBtn = this.createButton('→', false);
+        Object.assign(nextBtn.style, {
+            width: UI_SIZE.ICON_BUTTON_SIZE,
+            height: UI_SIZE.ICON_BUTTON_SIZE,
+            minWidth: UI_SIZE.ICON_BUTTON_SIZE,
+            minHeight: UI_SIZE.ICON_BUTTON_SIZE,
+            padding: '0',
+            fontSize: '20px',
+        });
         nextBtn.innerHTML = '&#8594;'; // Right arrow HTML entity
-        nextBtn.style.fontSize = '20px';
         nextBtn.addEventListener('click', () => {
             const prompts = this.getCurrentPrompts();
             if (this.currentIndex < prompts.length - 1) {
@@ -590,15 +745,22 @@ export const UI = {
 
         // Add button
         const addBtn = this.createButton('+', false);
+        Object.assign(addBtn.style, {
+            width: UI_SIZE.ICON_BUTTON_SIZE,
+            height: UI_SIZE.ICON_BUTTON_SIZE,
+            minWidth: UI_SIZE.ICON_BUTTON_SIZE,
+            minHeight: UI_SIZE.ICON_BUTTON_SIZE,
+            padding: '0',
+            fontSize: '20px',
+        });
         addBtn.innerHTML = '&#43;'; // Plus HTML entity
-        addBtn.style.fontSize = '20px';
         addBtn.addEventListener('click', () => {
             const prompts = this.getCurrentPrompts();
-            const currentText = prompts[this.currentIndex] || '';
+            const currentText = prompts[this.currentIndex]?.text || '';
             if (currentText.trim() === '') {
                 return; // Don't add if current text is empty
             }
-            prompts.push('');
+            prompts.push({ text: '', rating: 0 });
             this.currentIndex = prompts.length - 1;
             this.updateTextInput();
             this.saveTextItems();
@@ -607,8 +769,15 @@ export const UI = {
 
         // Remove button
         const removeBtn = this.createButton('×', false);
+        Object.assign(removeBtn.style, {
+            width: UI_SIZE.ICON_BUTTON_SIZE,
+            height: UI_SIZE.ICON_BUTTON_SIZE,
+            minWidth: UI_SIZE.ICON_BUTTON_SIZE,
+            minHeight: UI_SIZE.ICON_BUTTON_SIZE,
+            padding: '0',
+            fontSize: '20px',
+        });
         removeBtn.innerHTML = '&#215;'; // Multiplication sign HTML entity
-        removeBtn.style.fontSize = '20px';
         removeBtn.addEventListener('click', () => {
             const prompts = this.getCurrentPrompts();
             if (prompts.length > 1) {
@@ -670,7 +839,7 @@ export const UI = {
                 const externalTextarea = document.querySelector('textarea[placeholder="Make a video"]');
                 if (externalTextarea) {
                     const prompts = this.getCurrentPrompts();
-                    const text = prompts[this.currentIndex] || '';
+                    const text = prompts[this.currentIndex]?.text || '';
 
                     // Use native setter to bypass React's value tracking
                     const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
@@ -703,7 +872,7 @@ export const UI = {
         const copyBtn = this.createButton('Copy', false);
         copyBtn.addEventListener('click', async () => {
             const prompts = this.getCurrentPrompts();
-            const text = prompts[this.currentIndex] || '';
+            const text = prompts[this.currentIndex]?.text || '';
             try {
                 await navigator.clipboard.writeText(text);
                 const originalText = copyBtn.textContent;
@@ -720,9 +889,59 @@ export const UI = {
             }
         });
 
+        // Star rating component
+        const starRating = document.createElement('div');
+        Object.assign(starRating.style, {
+            display: 'flex',
+            gap: '2px',
+            alignItems: 'center',
+            marginLeft: 'auto', // Push to right side
+        });
+
+        // Create 5 star elements
+        for (let i = 1; i <= 5; i++) {
+            const star = document.createElement('span');
+            star.innerHTML = '&#9734;'; // Empty star by default
+            Object.assign(star.style, {
+                cursor: 'pointer',
+                fontSize: '18px',
+                color: '#666',
+                transition: 'color 0.1s ease',
+                userSelect: 'none',
+            });
+
+            // Click handler - set rating
+            star.addEventListener('click', () => {
+                this.setRating(i);
+            });
+
+            // Hover handler - preview rating
+            star.addEventListener('mouseenter', () => {
+                const stars = starRating.children;
+                for (let j = 0; j < stars.length; j++) {
+                    if (j < i) {
+                        stars[j].innerHTML = '&#9733;'; // Filled star
+                        stars[j].style.color = '#FFD700'; // Gold
+                    } else {
+                        stars[j].innerHTML = '&#9734;'; // Empty star
+                        stars[j].style.color = '#666'; // Gray
+                    }
+                }
+            });
+
+            // Mouse leave handler - reset to actual rating
+            star.addEventListener('mouseleave', () => {
+                this.updateStarRating();
+            });
+
+            starRating.appendChild(star);
+        }
+        this.elements.starRating = starRating;
+
         buttonRow.appendChild(fromBtn);
         buttonRow.appendChild(toBtn);
         buttonRow.appendChild(copyBtn);
+        buttonRow.appendChild(starRating);
 
         textPill.appendChild(topRow);
         textPill.appendChild(buttonRow);
