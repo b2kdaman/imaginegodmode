@@ -23,15 +23,15 @@ export const Handlers = {
         UI.showDetails();
 
         // Fetch latest data to ensure we have all available HD URLs
-        UI.setStatus('🔄 Fetching latest data...');
+        UI.setStatus('\uD83D\uDD04 Fetching latest data...');
         await Core.fetchAndRender();
 
         if (!State.lastMediaUrls || State.lastMediaUrls.length === 0) {
-            UI.setStatus('⚠️ Nothing to download – no media found');
+            UI.setStatus('\u26A0\uFE0F Nothing to download – no media found');
             return;
         }
 
-        UI.setStatus(`⬇ Downloading ${State.lastMediaUrls.length} item(s)...`);
+        UI.setStatus(`\u2B07 Downloading ${State.lastMediaUrls.length} item(s)...`);
         Download.trigger(State.lastMediaUrls);
     },
 
@@ -42,14 +42,14 @@ export const Handlers = {
         UI.showDetails();
 
         if (State.isUpscaling) {
-            UI.setStatus('⏳ Already upscaling...');
+            UI.setStatus('\u23F3 Already upscaling...');
             return;
         }
 
         await Core.fetchAndRender();
 
         if (!State.lastVideoIdsToUpscale || State.lastVideoIdsToUpscale.length === 0) {
-            UI.setStatus('⚠️ No videos to upscale (either none or already HD)');
+            UI.setStatus('\u26A0\uFE0F No videos to upscale (either none or already HD)');
             return;
         }
 

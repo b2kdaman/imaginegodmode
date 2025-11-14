@@ -18,7 +18,7 @@ export const Core = {
 
         const postId = Utils.getPostIdFromUrl();
         if (!postId) {
-            UI.setStatus('❌ Could not detect post ID');
+            UI.setStatus('\u274C Could not detect post ID');
             return;
         }
 
@@ -28,7 +28,7 @@ export const Core = {
             console.log('[Grok Media Fetcher] Response:', json);
 
             const post = json.post || {};
-            UI.setStatus('✅ Fetched @ ' + Utils.getCurrentTime());
+            UI.setStatus('\u2705 Fetched @ ' + Utils.getCurrentTime());
 
             const processed = MediaProcessor.processPostData(post);
             State.lastMediaUrls = processed.urls;
@@ -45,7 +45,7 @@ export const Core = {
             UI.setUpscaleInfo(State.upscaleDone, State.upscaleTotal, State.lastHdVideoCount);
         } catch (err) {
             console.error('[Grok Media Fetcher] Error:', err);
-            UI.setStatus('❌ Error (see console)');
+            UI.setStatus('\u274C Error (see console)');
         }
     },
 
@@ -82,7 +82,7 @@ export const Core = {
         State.upscaleTotal = State.lastVideoIdsToUpscale.length;
         State.upscaleDone = 0;
         UI.setUpscaleInfo(State.upscaleDone, State.upscaleTotal, State.lastHdVideoCount);
-        UI.setStatus('🚀 Upscaling started...');
+        UI.setStatus('\uD83D\uDE80 Upscaling started...');
 
         this.startUpscaleRefetchLoop();
 
@@ -108,16 +108,16 @@ export const Core = {
                 // Use captured length instead of global variable to avoid race condition
                 if (idx === totalVideos - 1) {
                     State.isUpscaling = false;
-                    UI.setStatus('✅ Upscale batch finished, fetching results...');
+                    UI.setStatus('\u2705 Upscale batch finished, fetching results...');
 
                     // Final fetch to get the upscaled HD URLs
                     setTimeout(async () => {
                         try {
                             await this.fetchAndRender();
-                            UI.setStatus('✅ Upscale complete with updated media');
+                            UI.setStatus('\u2705 Upscale complete with updated media');
                         } catch (e) {
                             console.error('[Grok Media Fetcher] Final fetch error:', e);
-                            UI.setStatus('✅ Upscale finished (fetch failed)');
+                            UI.setStatus('\u2705 Upscale finished (fetch failed)');
                         }
                     }, 2000); // Wait 2 seconds for server to process
                 }
