@@ -16,6 +16,7 @@ export const UI = {
     elements: {
         container: null,
         pill: null,
+        textNavPill: null,
         textPill: null,
         textInput: null,
         prevBtn: null,
@@ -28,12 +29,13 @@ export const UI = {
         fetchBtn: null,
         downloadBtn: null,
         upscaleBtn: null,
-        moreBtn: null,
+        promptBtn: null,
         linksWrap: null,
     },
 
     textItems: [],
     currentIndex: 0,
+    currentView: 'prompt', // 'prompt' or 'status'
 
     loadTextItems() {
         try {
@@ -75,6 +77,21 @@ export const UI = {
         }
     },
 
+    switchView(view) {
+        this.currentView = view;
+        if (this.elements.textNavPill && this.elements.textPill && this.elements.details) {
+            if (view === 'prompt') {
+                this.elements.textNavPill.style.display = 'inline-flex';
+                this.elements.textPill.style.display = 'flex';
+                this.elements.details.style.display = 'none';
+            } else {
+                this.elements.textNavPill.style.display = 'none';
+                this.elements.textPill.style.display = 'none';
+                this.elements.details.style.display = 'block';
+            }
+        }
+    },
+
     /**
      * Create a styled button element
      * @param {string} label - Button label
@@ -91,15 +108,15 @@ export const UI = {
             border: 'none',
             background: UI_COLORS.BACKGROUND_MEDIUM,
             color: UI_COLORS.TEXT_SECONDARY,
-            padding: `${UI_SPACING.PADDING_MEDIUM} ${UI_SPACING.PADDING_XLARGE}`,
+            padding: `${UI_SPACING.PADDING_SMALL} ${UI_SPACING.PADDING_LARGE}`,
             borderRadius: UI_SIZE.BORDER_RADIUS_MEDIUM,
             cursor: 'pointer',
-            fontSize: UI_SIZE.FONT_SIZE_LARGE,
+            fontSize: UI_SIZE.FONT_SIZE_NORMAL,
             fontWeight: '500',
             lineHeight: '1.2',
             outline: 'none',
             transition: `all ${UI_TRANSITION.DURATION} ${UI_TRANSITION.EASING}`,
-            minHeight: UI_SIZE.MIN_HEIGHT,
+            minHeight: 'auto',
         });
         btn.onmouseenter = () => {
             btn.style.background = UI_COLORS.BACKGROUND_LIGHT;
@@ -150,9 +167,10 @@ export const UI = {
             boxShadow: `0 4px 12px ${UI_COLORS.SHADOW}`,
             marginBottom: UI_SPACING.MARGIN_MEDIUM,
         });
+        this.elements.textNavPill = textNavPill;
 
         // Prev button
-        const prevBtn = this.createButton('Prev', false);
+        const prevBtn = this.createButton('←', false);
         prevBtn.style.padding = `${UI_SPACING.PADDING_MEDIUM} ${UI_SPACING.PADDING_LARGE}`;
         prevBtn.addEventListener('click', () => {
             if (this.currentIndex > 0) {
@@ -163,7 +181,7 @@ export const UI = {
         this.elements.prevBtn = prevBtn;
 
         // Next button
-        const nextBtn = this.createButton('Next', false);
+        const nextBtn = this.createButton('→', false);
         nextBtn.style.padding = `${UI_SPACING.PADDING_MEDIUM} ${UI_SPACING.PADDING_LARGE}`;
         nextBtn.addEventListener('click', () => {
             if (this.currentIndex < this.textItems.length - 1) {
@@ -174,7 +192,7 @@ export const UI = {
         this.elements.nextBtn = nextBtn;
 
         // Add button
-        const addBtn = this.createButton('Add', false);
+        const addBtn = this.createButton('+', false);
         addBtn.style.padding = `${UI_SPACING.PADDING_MEDIUM} ${UI_SPACING.PADDING_LARGE}`;
         addBtn.addEventListener('click', () => {
             const currentText = this.textItems[this.currentIndex] || '';
@@ -189,7 +207,7 @@ export const UI = {
         this.elements.addBtn = addBtn;
 
         // Remove button
-        const removeBtn = this.createButton('Remove', false);
+        const removeBtn = this.createButton('×', false);
         removeBtn.style.padding = `${UI_SPACING.PADDING_MEDIUM} ${UI_SPACING.PADDING_LARGE}`;
         removeBtn.addEventListener('click', () => {
             if (this.textItems.length > 1) {
@@ -385,16 +403,13 @@ export const UI = {
         this.elements.upscaleBtn = this.createButton('Upscale', false);
         this.elements.downloadBtn = this.createButton('Download', false);
 
-        const moreBtn = this.createButton('⋯', false);
-        moreBtn.style.fontSize = UI_SIZE.FONT_SIZE_XXLARGE;
-        moreBtn.style.padding = `${UI_SPACING.PADDING_MEDIUM} ${UI_SPACING.PADDING_LARGE}`;
-        moreBtn.style.minWidth = UI_SIZE.MIN_WIDTH;
-        this.elements.moreBtn = moreBtn;
+        const promptBtn = this.createButton('Prompt', false);
+        this.elements.promptBtn = promptBtn;
 
+        pill.appendChild(promptBtn);
         pill.appendChild(fetchBtn);
         pill.appendChild(this.elements.upscaleBtn);
         pill.appendChild(this.elements.downloadBtn);
-        pill.appendChild(moreBtn);
 
         // Details panel
         const details = document.createElement('div');
@@ -440,12 +455,16 @@ export const UI = {
         footer.textContent = `grokGoonify ${VERSION} by b2kdaman`;
         this.elements.footer = footer;
 
+        // Append in order: prompt/status at top, buttons below, footer at bottom
         container.appendChild(textNavPill);
         container.appendChild(textPill);
-        container.appendChild(pill);
         container.appendChild(details);
+        container.appendChild(pill);
         container.appendChild(footer);
         document.body.appendChild(container);
+
+        // Set initial view to prompt
+        this.switchView('prompt');
     },
 
     /**
@@ -457,7 +476,9 @@ export const UI = {
             this.elements.fetchBtn.addEventListener('click', handlers.fetch);
             this.elements.downloadBtn.addEventListener('click', handlers.download);
             this.elements.upscaleBtn.addEventListener('click', handlers.upscale);
-            this.elements.moreBtn.addEventListener('click', handlers.toggleDetails);
+            this.elements.promptBtn.addEventListener('click', () => {
+                this.switchView('prompt');
+            });
         }
     },
 
@@ -466,7 +487,7 @@ export const UI = {
      */
     showDetails() {
         this.ensure();
-        this.elements.details.style.display = 'block';
+        this.switchView('status');
     },
 
     /**
@@ -474,7 +495,7 @@ export const UI = {
      */
     hideDetails() {
         this.ensure();
-        this.elements.details.style.display = 'none';
+        this.switchView('prompt');
     },
 
     /**

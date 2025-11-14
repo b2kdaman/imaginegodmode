@@ -116,7 +116,7 @@ The built file (`dist/grokgoonify.user.js`) is ready to install in Tampermonkey.
 
 ## Script Details
 
-- **Version:** 1.3
+- **Version:** 1.4
 - **Compatible with:** Tampermonkey, Greasemonkey
 - **Requires:** `GM_download` permission (falls back to standard download if unavailable)
 - **Target pages:** `https://grok.com/imagine/post/*` and `https://www.grok.com/imagine/post/*`

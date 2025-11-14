@@ -54,15 +54,6 @@ export const Handlers = {
         }
 
         await Core.processUpscaleBatch();
-    },
-
-    /**
-     * Handle more button click (toggle details)
-     */
-    toggleDetails() {
-        UI.ensure();
-        UI.elements.details.style.display =
-            UI.elements.details.style.display === 'none' ? 'block' : 'none';
     }
 };
 
