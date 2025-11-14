@@ -3,6 +3,10 @@ import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { minify } from 'terser';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -76,6 +80,24 @@ async function buildUserscript() {
   console.log(`   Bundled size: ${(bundledCode.length / 1024).toFixed(2)} KB`);
   console.log(`   Minified size: ${(output.length / 1024).toFixed(2)} KB`);
   console.log(`   Reduction: ${((1 - output.length / bundledCode.length) * 100).toFixed(1)}%`);
+
+  // Copy to clipboard
+  try {
+    if (process.platform === 'darwin') {
+      await execAsync(`cat "${outputPath}" | pbcopy`);
+      console.log('📋 Copied to clipboard!');
+    } else if (process.platform === 'win32') {
+      await execAsync(`type "${outputPath}" | clip`);
+      console.log('📋 Copied to clipboard!');
+    } else if (process.platform === 'linux') {
+      await execAsync(`cat "${outputPath}" | xclip -selection clipboard`);
+      console.log('📋 Copied to clipboard!');
+    } else {
+      console.log('⚠️  Clipboard copy not supported on this platform');
+    }
+  } catch (err) {
+    console.log('⚠️  Could not copy to clipboard:', err.message);
+  }
 }
 
 buildUserscript().catch((err) => {

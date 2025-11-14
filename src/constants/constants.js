@@ -48,6 +48,7 @@ export const UI_COLORS = {
     TEXT_SECONDARY: '#b0b0b0',
     TEXT_HOVER: '#d0d0d0',
     SHADOW: 'rgba(0,0,0,0.4)',
+    BORDER: 'rgba(255, 255, 255, 0.2)',
 };
 
 // UI Transitions
