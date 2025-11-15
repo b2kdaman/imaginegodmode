@@ -870,12 +870,21 @@ export const UI = {
         navGrid.appendChild(removeBtn);
         navGrid.appendChild(playBtn);
 
-        // Add keyboard shortcut for Ctrl+Enter or Cmd+Enter to trigger play button
+        // Add keyboard shortcuts
         document.addEventListener('keydown', (e) => {
-            // Check for Ctrl+Enter (Windows/Linux) or Cmd+Enter (Mac)
             if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                 e.preventDefault(); // Prevent default behavior
-                playBtn.click(); // Simulate play button click
+
+                if (e.shiftKey) {
+                    // Ctrl/Cmd+Shift+Enter: Copy prompt and click "Make a Video" (play button)
+                    playBtn.click();
+                } else {
+                    // Ctrl/Cmd+Enter: Just click "Make a Video" button without copying
+                    const makeVideoButton = document.querySelector('button[aria-label="Make video"]');
+                    if (makeVideoButton) {
+                        makeVideoButton.click();
+                    }
+                }
             }
         });
 
