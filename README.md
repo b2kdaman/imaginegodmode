@@ -118,6 +118,7 @@ The built file (`dist/grokgoonify.user.js`) is ready to install in Tampermonkey.
 - **Add**: Create a new prompt entry (requires current text to be non-empty)
 - **Remove**: Delete current prompt entry
 - **▶ Play**: Copy current prompt to page and click "Make a Video" button
+- **Ctrl+Enter / Cmd+Enter**: Keyboard shortcut to trigger the Play button
 - **From/To**: Copy text from/to the page's video input field
 - **Copy**: Copy current prompt to clipboard
 

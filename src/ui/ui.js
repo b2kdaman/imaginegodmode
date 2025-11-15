@@ -870,6 +870,15 @@ export const UI = {
         navGrid.appendChild(removeBtn);
         navGrid.appendChild(playBtn);
 
+        // Add keyboard shortcut for Ctrl+Enter or Cmd+Enter to trigger play button
+        document.addEventListener('keydown', (e) => {
+            // Check for Ctrl+Enter (Windows/Linux) or Cmd+Enter (Mac)
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault(); // Prevent default behavior
+                playBtn.click(); // Simulate play button click
+            }
+        });
+
         topRow.appendChild(textInput);
         topRow.appendChild(navGrid);
 
