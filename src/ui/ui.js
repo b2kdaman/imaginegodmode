@@ -32,6 +32,7 @@ export const UI = {
         nextBtn: null,
         addBtn: null,
         removeBtn: null,
+        playBtn: null,
         starRating: null,
         details: null,
         status: null,
@@ -804,10 +805,70 @@ export const UI = {
         });
         this.elements.removeBtn = removeBtn;
 
+        // Play button (2 columns wide)
+        const playBtn = this.createButton('▶', false);
+        Object.assign(playBtn.style, {
+            width: '100%',
+            height: UI_SIZE.ICON_BUTTON_SIZE,
+            minHeight: UI_SIZE.ICON_BUTTON_SIZE,
+            padding: '0',
+            fontSize: '20px',
+            gridColumn: '1 / 3',
+        });
+        playBtn.innerHTML = '&#9654;'; // Play triangle HTML entity
+        playBtn.title = 'Copy to page and Make a Video';
+        playBtn.addEventListener('click', () => {
+            try {
+                const externalTextarea = document.querySelector('textarea[placeholder="Make a video"]');
+                if (externalTextarea) {
+                    const prompts = this.getCurrentPrompts();
+                    const text = prompts[this.currentIndex]?.text || '';
+
+                    // Use native setter to bypass React's value tracking
+                    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+                        window.HTMLTextAreaElement.prototype,
+                        'value'
+                    ).set;
+                    nativeInputValueSetter.call(externalTextarea, text);
+
+                    // Dispatch input event that React will recognize
+                    const inputEvent = new Event('input', { bubbles: true });
+                    externalTextarea.dispatchEvent(inputEvent);
+
+                    // Wait a moment then click "Make a Video" button
+                    setTimeout(() => {
+                        const makeVideoButton = document.querySelector('button[aria-label="Make video"]');
+                        if (makeVideoButton) {
+                            makeVideoButton.click();
+                            const originalText = playBtn.innerHTML;
+                            playBtn.innerHTML = '&#10003;'; // Checkmark
+                            setTimeout(() => {
+                                playBtn.innerHTML = originalText;
+                            }, 1000);
+                        } else {
+                            playBtn.innerHTML = '&#10007;'; // X mark
+                            setTimeout(() => {
+                                playBtn.innerHTML = '&#9654;';
+                            }, 1000);
+                        }
+                    }, 100);
+                } else {
+                    playBtn.innerHTML = '&#10007;'; // X mark
+                    setTimeout(() => {
+                        playBtn.innerHTML = '&#9654;';
+                    }, 1000);
+                }
+            } catch (err) {
+                console.error('Failed to play:', err);
+            }
+        });
+        this.elements.playBtn = playBtn;
+
         navGrid.appendChild(prevBtn);
         navGrid.appendChild(nextBtn);
         navGrid.appendChild(addBtn);
         navGrid.appendChild(removeBtn);
+        navGrid.appendChild(playBtn);
 
         topRow.appendChild(textInput);
         topRow.appendChild(navGrid);
@@ -1056,6 +1117,9 @@ export const UI = {
         Object.assign(spinBtn.style, {
             padding: `${UI_SPACING.PADDING_SMALL} ${UI_SPACING.PADDING_MEDIUM}`,
             flex: '1',
+            height: UI_SIZE.ICON_BUTTON_SIZE,
+            minHeight: UI_SIZE.ICON_BUTTON_SIZE,
+            maxHeight: UI_SIZE.ICON_BUTTON_SIZE,
         });
         spinBtn.title = 'Spin through list items and run them';
         this.elements.spinBtn = spinBtn;
