@@ -5,6 +5,7 @@
 import { UI } from './ui/ui.js';
 import { UrlWatcher } from './watchers/urlWatcher.js';
 import { Handlers } from './core/handlers.js';
+import { VERSION } from './constants/constants.js';
 
 function makeButtonGlow(button) {
     if (button && !button.dataset.grokGlowApplied) {
@@ -131,6 +132,11 @@ function watchForButton() {
 }
 
 function init() {
+    // Init
+    console.log(`%c grokGoonify v${VERSION}.0 %c by b2kdaman `,
+        'background: #1a1a1a; color: #fff; padding: 4px 8px; border-radius: 3px 0 0 3px; font-weight: bold;',
+        'background: #3a3a3a; color: #b0b0b0; padding: 4px 8px; border-radius: 0 3px 3px 0;');
+
     UI.ensure();
     UI.attachHandlers(Handlers);
     UrlWatcher.start();
