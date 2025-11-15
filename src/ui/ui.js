@@ -886,6 +886,20 @@ export const UI = {
                         makeVideoButton.click();
                     }
                 }
+            } else if (e.key === 'ArrowLeft') {
+                // Left arrow: Click "Previous video" button
+                const prevVideoButton = document.querySelector('button[aria-label="Previous video"]');
+                if (prevVideoButton) {
+                    e.preventDefault();
+                    prevVideoButton.click();
+                }
+            } else if (e.key === 'ArrowRight') {
+                // Right arrow: Click "Next video" button
+                const nextVideoButton = document.querySelector('button[aria-label="Next video"]');
+                if (nextVideoButton) {
+                    e.preventDefault();
+                    nextVideoButton.click();
+                }
             }
         });
 
@@ -1149,7 +1163,7 @@ export const UI = {
         this.elements.spinBtn = spinBtn;
 
         // Fullscreen button (square)
-        const fullscreenBtn = this.createButton('⛶', false);
+        const fullscreenBtn = this.createButton('[ ]', false);
         Object.assign(fullscreenBtn.style, {
             width: UI_SIZE.ICON_BUTTON_SIZE,
             height: UI_SIZE.ICON_BUTTON_SIZE,
@@ -1159,6 +1173,7 @@ export const UI = {
             maxHeight: UI_SIZE.ICON_BUTTON_SIZE,
             padding: '0',
             fontSize: '20px',
+            lineHeight: UI_SIZE.ICON_BUTTON_SIZE,
             flexShrink: '0',
         });
         fullscreenBtn.title = 'Enter fullscreen mode';
