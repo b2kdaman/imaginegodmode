@@ -6,6 +6,8 @@
 // @author       b2kdaman
 // @match        https://grok.com/imagine/post/*
 // @match        https://www.grok.com/imagine/post/*
+// @match        https://grok.com/imagine/favorites
+// @match        https://www.grok.com/imagine/favorites
 // @run-at       document-idle
 // @grant        GM_download
 // ==/UserScript==

@@ -10,6 +10,7 @@ import {
     UI_COLORS,
     UI_TRANSITION,
     DEFAULTS,
+    TIMING,
 } from '../constants/constants.js';
 
 export const UI = {
@@ -40,6 +41,7 @@ export const UI = {
         upscaleBtn: null,
         promptBtn: null,
         linksWrap: null,
+        spinBtn: null,
     },
 
     categories: {},
@@ -49,6 +51,7 @@ export const UI = {
     isAddingCategory: false,
     isHidden: false,
     lastDeleteClickTime: 0,
+    isSpinning: false,
 
     loadTextItems() {
         try {
@@ -1020,9 +1023,32 @@ export const UI = {
             color: UI_COLORS.TEXT_SECONDARY,
             textAlign: 'center',
             boxShadow: `0 4px 12px ${UI_COLORS.SHADOW}`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: UI_SPACING.GAP_MEDIUM,
         });
-        footer.textContent = `grokGoonify ${VERSION} by b2kdaman`;
+
+        // Spin button
+        const spinBtn = this.createButton('Spin', false);
+        Object.assign(spinBtn.style, {
+            padding: `${UI_SPACING.PADDING_SMALL} ${UI_SPACING.PADDING_MEDIUM}`,
+        });
+        spinBtn.title = 'Spin through list items and run them';
+        this.elements.spinBtn = spinBtn;
+
+        // Version text
+        const versionText = document.createElement('span');
+        versionText.textContent = `grokGoonify ${VERSION} by b2kdaman`;
+
+        footer.appendChild(spinBtn);
+        footer.appendChild(versionText);
         this.elements.footer = footer;
+
+        // Attach spin button click handler
+        spinBtn.addEventListener('click', () => {
+            this.spin();
+        });
 
         // Append to content wrapper: category at top, prompt/status below, buttons below, footer at bottom
         contentWrapper.appendChild(categoryPill);
@@ -1098,6 +1124,350 @@ export const UI = {
         if (this.elements.linksWrap) {
             this.elements.linksWrap.remove();
             this.elements.linksWrap = null;
+        }
+    },
+
+    /**
+     * Find run button (the one with percentage text that glows)
+     * @returns {HTMLButtonElement|null} The run button or null if not found
+     */
+    findRunButton() {
+        const buttons = document.querySelectorAll('button');
+        for (const btn of buttons) {
+            const text = btn.textContent || btn.innerText || '';
+            // Look for button with percentage pattern (like "50%") or the glowing one
+            if (text.match(/\d+%/) || btn.dataset.grokGlowApplied === 'true') {
+                return btn;
+            }
+        }
+        return null;
+    },
+
+    /**
+     * Wait for run button to complete (percentage reaches 100% or disappears)
+     * @returns {Promise<void>}
+     */
+    async waitForRunCompletion() {
+        return new Promise((resolve) => {
+            const checkInterval = setInterval(() => {
+                const runButton = this.findRunButton();
+                if (!runButton) {
+                    // Button disappeared, likely completed
+                    clearInterval(checkInterval);
+                    resolve();
+                    return;
+                }
+
+                const buttonText = runButton.textContent || runButton.innerText || '';
+                const percentageMatch = buttonText.match(/(\d+)%/);
+                
+                if (percentageMatch) {
+                    const percentage = parseInt(percentageMatch[1], 10);
+                    if (percentage >= 100) {
+                        // Wait a bit more to ensure it's truly done
+                        setTimeout(() => {
+                            clearInterval(checkInterval);
+                            resolve();
+                        }, TIMING.SPIN_COMPLETION_FINAL_WAIT);
+                        return;
+                    }
+                } else if (runButton.dataset.grokGlowApplied === 'true') {
+                    // Still glowing but no percentage - might be in transition
+                    // Continue checking
+                } else {
+                    // No percentage and not glowing - likely done
+                    clearInterval(checkInterval);
+                    resolve();
+                }
+            }, TIMING.SPIN_COMPLETION_CHECK_INTERVAL);
+
+            // Timeout to prevent infinite waiting
+            setTimeout(() => {
+                clearInterval(checkInterval);
+                resolve();
+            }, TIMING.SPIN_COMPLETION_MAX_TIMEOUT);
+        });
+    },
+
+    /**
+     * Click on a list item element - tries to find and click lower/nested divs
+     * @param {HTMLElement} item - The list item element to click
+     * @returns {boolean} True if click was attempted, false otherwise
+     */
+    clickListItem(item) {
+        if (!item) return false;
+
+        // Try to find nested divs first (lower in the DOM tree)
+        const nestedDivs = item.querySelectorAll('div');
+        let targetDiv = null;
+
+        // Look for the deepest div or a div that looks clickable
+        if (nestedDivs.length > 0) {
+            // Try to find the last/most nested div first
+            for (let i = nestedDivs.length - 1; i >= 0; i--) {
+                const div = nestedDivs[i];
+                // Skip divs that contain buttons (they're probably containers)
+                if (!div.querySelector('button') && div.offsetHeight > 0 && div.offsetWidth > 0) {
+                    targetDiv = div;
+                    break;
+                }
+            }
+            // If no suitable div found, use the last div anyway
+            if (!targetDiv && nestedDivs.length > 0) {
+                targetDiv = nestedDivs[nestedDivs.length - 1];
+            }
+        }
+
+        // If we found a nested div, try clicking it
+        if (targetDiv) {
+            console.log(`[Grok Spin] Clicking nested div in item (depth: ${nestedDivs.length})`);
+            
+            try {
+                // Method 1: Standard click
+                targetDiv.click();
+                
+                // Method 2: Mouse events (sometimes needed for React)
+                const mouseEvent = new MouseEvent('click', {
+                    view: window,
+                    bubbles: true,
+                    cancelable: true,
+                });
+                targetDiv.dispatchEvent(mouseEvent);
+                
+                // Method 3: Pointer events
+                const pointerEvent = new PointerEvent('click', {
+                    view: window,
+                    bubbles: true,
+                    cancelable: true,
+                    pointerId: 1,
+                    pointerType: 'mouse',
+                });
+                targetDiv.dispatchEvent(pointerEvent);
+                
+                return true;
+            } catch (err) {
+                console.warn('[Grok Spin] Error clicking nested div:', err);
+            }
+        }
+
+        // Try to find other clickable elements inside the item
+        const clickableElements = [
+            item.querySelector('button'),
+            item.querySelector('a'),
+            item.querySelector('[role="button"]'),
+            item.querySelector('[onclick]'),
+        ].filter(el => el !== null);
+
+        // If we found clickable elements, click the first one
+        if (clickableElements.length > 0) {
+            const clickable = clickableElements[0];
+            console.log(`[Grok Spin] Clicking clickable element inside item:`, clickable.tagName);
+            
+            try {
+                clickable.click();
+                const mouseEvent = new MouseEvent('click', {
+                    view: window,
+                    bubbles: true,
+                    cancelable: true,
+                });
+                clickable.dispatchEvent(mouseEvent);
+                return true;
+            } catch (err) {
+                console.warn('[Grok Spin] Error clicking clickable element:', err);
+            }
+        }
+
+        // Final fallback: Try clicking the item itself
+        try {
+            console.log(`[Grok Spin] Clicking item directly as fallback:`, item.tagName);
+            
+            item.click();
+            const mouseEvent = new MouseEvent('click', {
+                view: window,
+                bubbles: true,
+                cancelable: true,
+            });
+            item.dispatchEvent(mouseEvent);
+            
+            return true;
+        } catch (err) {
+            console.error('[Grok Spin] Error clicking item:', err);
+            return false;
+        }
+    },
+
+    /**
+     * Find and click the "Make video" button
+     * @returns {boolean} True if button was found and clicked, false otherwise
+     */
+    clickMakeVideoButton() {
+        const makeVideoButton = document.querySelector('button[aria-label="Make video"]');
+        if (makeVideoButton) {
+            console.log('[Grok Spin] Clicking "Make video" button');
+            makeVideoButton.click();
+            return true;
+        }
+        return false;
+    },
+
+    /**
+     * Find and click the Back button
+     * @returns {boolean} True if button was found and clicked, false otherwise
+     */
+    clickBackButton() {
+        const backButton = document.querySelector('button[aria-label="Back"]');
+        if (backButton) {
+            backButton.click();
+            return true;
+        }
+        return false;
+    },
+
+    /**
+     * Spin through list items - click each, run, wait, go back, repeat
+     */
+    async spin() {
+        if (this.isSpinning) {
+            console.log('[Grok Spin] Already spinning, skipping...');
+            return;
+        }
+
+        this.isSpinning = true;
+        const spinBtn = this.elements.spinBtn;
+        if (spinBtn) {
+            spinBtn.disabled = true;
+            spinBtn.style.opacity = '0.5';
+            const originalText = spinBtn.textContent;
+            spinBtn.textContent = 'Spinning...';
+        }
+
+        try {
+            // Find the list container
+            const listContainer = document.querySelector('div[role="list"]');
+            if (!listContainer) {
+                console.warn('[Grok Spin] No list container found with role="list"');
+                if (spinBtn) {
+                    spinBtn.textContent = 'No list found';
+                    setTimeout(() => {
+                        spinBtn.textContent = originalText;
+                        spinBtn.disabled = false;
+                        spinBtn.style.opacity = '1';
+                        this.isSpinning = false;
+                    }, TIMING.SPIN_ERROR_MSG_TIMEOUT);
+                }
+                return;
+            }
+
+            // Find all list items
+            const listItems = listContainer.querySelectorAll('[role="listitem"]');
+            // If no role="listitem", try direct children or common list item selectors
+            const items = listItems.length > 0 
+                ? Array.from(listItems)
+                : Array.from(listContainer.children).filter(el => 
+                    el.tagName === 'LI' || el.getAttribute('role') === 'listitem' || el.querySelector('button')
+                );
+
+            if (items.length === 0) {
+                console.warn('[Grok Spin] No list items found');
+                if (spinBtn) {
+                    spinBtn.textContent = 'No items found';
+                    setTimeout(() => {
+                        spinBtn.textContent = originalText;
+                        spinBtn.disabled = false;
+                        spinBtn.style.opacity = '1';
+                        this.isSpinning = false;
+                    }, TIMING.SPIN_ERROR_MSG_TIMEOUT);
+                }
+                return;
+            }
+
+            console.log(`[Grok Spin] Found ${items.length} items to process`);
+
+            // Iterate through each item
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                
+                if (spinBtn) {
+                    spinBtn.textContent = `Spinning ${i + 1}/${items.length}`;
+                }
+
+                try {
+                    // Click on the list item
+                    console.log(`[Grok Spin] Clicking item ${i + 1}...`);
+                    this.clickListItem(item);
+                    
+                    // Wait a bit for UI to update
+                    await new Promise(resolve => setTimeout(resolve, TIMING.SPIN_AFTER_ITEM_CLICK));
+
+                    // Click the "Make video" button after clicking list item
+                    let makeVideoClicked = this.clickMakeVideoButton();
+                    if (!makeVideoClicked) {
+                        // Wait a bit more and try again
+                        await new Promise(resolve => setTimeout(resolve, TIMING.SPIN_RETRY_RUN_BUTTON));
+                        makeVideoClicked = this.clickMakeVideoButton();
+                    }
+
+                    if (makeVideoClicked) {
+                        // Wait a bit for the video creation to start
+                        await new Promise(resolve => setTimeout(resolve, TIMING.SPIN_RETRY_RUN_BUTTON));
+                        
+                        // Click Back button after "Make video"
+                        await new Promise(resolve => setTimeout(resolve, TIMING.SPIN_AFTER_BACK_CLICK));
+                        if (this.clickBackButton()) {
+                            console.log(`[Grok Spin] Clicked Back after "Make video" for item ${i + 1}`);
+                            // Wait a bit for navigation
+                            await new Promise(resolve => setTimeout(resolve, TIMING.SPIN_AFTER_NAVIGATION));
+                        } else {
+                            console.warn(`[Grok Spin] Back button not found after "Make video" for item ${i + 1}`);
+                        }
+                    }
+
+                    // Find and click the run button
+                    let runButton = this.findRunButton();
+                    if (!runButton) {
+                        // Wait a bit more and try again
+                        await new Promise(resolve => setTimeout(resolve, TIMING.SPIN_RETRY_RUN_BUTTON));
+                        runButton = this.findRunButton();
+                    }
+
+                    if (runButton) {
+                        console.log(`[Grok Spin] Clicking run button for item ${i + 1}...`);
+                        runButton.click();
+                        
+                        // Wait for completion
+                        console.log(`[Grok Spin] Waiting for item ${i + 1} to complete...`);
+                        await this.waitForRunCompletion();
+                        console.log(`[Grok Spin] Item ${i + 1} completed`);
+                    } else {
+                        console.warn(`[Grok Spin] No run button found for item ${i + 1}`);
+                    }
+
+                    // Click Back button
+                    await new Promise(resolve => setTimeout(resolve, TIMING.SPIN_AFTER_BACK_CLICK));
+                    if (this.clickBackButton()) {
+                        console.log(`[Grok Spin] Clicked Back after item ${i + 1}`);
+                        // Wait a bit for navigation
+                        await new Promise(resolve => setTimeout(resolve, TIMING.SPIN_AFTER_NAVIGATION));
+                    } else {
+                        console.warn(`[Grok Spin] Back button not found after item ${i + 1}`);
+                    }
+
+                } catch (err) {
+                    console.error(`[Grok Spin] Error processing item ${i + 1}:`, err);
+                }
+            }
+
+            console.log('[Grok Spin] Finished spinning through all items');
+
+        } catch (err) {
+            console.error('[Grok Spin] Error during spin:', err);
+        } finally {
+            this.isSpinning = false;
+            if (spinBtn) {
+                spinBtn.disabled = false;
+                spinBtn.style.opacity = '1';
+                spinBtn.textContent = 'Spin';
+            }
         }
     },
 

@@ -69,6 +69,15 @@ export const TIMING = {
     UPSCALE_REFETCH_MAX: 5000, // ms
     UPSCALE_DELAY_MIN: 1000, // ms
     UPSCALE_DELAY_MAX: 2000, // ms
+    // Spin delays
+    SPIN_ERROR_MSG_TIMEOUT: 2000, // ms - timeout for error message display
+    SPIN_AFTER_ITEM_CLICK: 1000, // ms - wait after clicking list item for UI update
+    SPIN_RETRY_RUN_BUTTON: 1000, // ms - wait before retrying to find run button
+    SPIN_AFTER_BACK_CLICK: 1000, // ms - wait after clicking Back button
+    SPIN_AFTER_NAVIGATION: 1000, // ms - wait after navigation following Back click
+    SPIN_COMPLETION_CHECK_INTERVAL: 500, // ms - interval to check run button completion
+    SPIN_COMPLETION_FINAL_WAIT: 1000, // ms - extra wait when percentage reaches 100%
+    SPIN_COMPLETION_MAX_TIMEOUT: 300000, // ms - max timeout per item (5 minutes)
 };
 
 // URL Parsing
