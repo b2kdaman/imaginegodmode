@@ -19,6 +19,7 @@ A Tampermonkey userscript for fetching, downloading, and upscaling media posts f
 - Fullscreen video player support (HD/SD)
 - One-click play button (copy prompt and make video)
 - Spin feature to batch process list items
+- Keyboard shortcuts for video navigation (arrow keys)
 
 ## Project Structure
 
@@ -131,7 +132,9 @@ The built file (`dist/grokgoonify.user.js`) is ready to install in Tampermonkey.
 
 ### Video Controls
 - **Spin**: Batch process list items - click each, run, wait for completion, and repeat
-- **⛶ Fullscreen**: Enter fullscreen mode for HD/SD video player
+- **[ ] Fullscreen**: Enter fullscreen mode for HD/SD video player
+- **Left Arrow**: Navigate to previous video
+- **Right Arrow**: Navigate to next video
 
 ## Script Details
 
