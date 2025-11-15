@@ -42,6 +42,7 @@ export const UI = {
         promptBtn: null,
         linksWrap: null,
         spinBtn: null,
+        fullscreenBtn: null,
     },
 
     categories: {},
@@ -429,6 +430,17 @@ export const UI = {
 
         // Load text items from localStorage
         this.loadTextItems();
+
+        // Add fullscreen video styles
+        const style = document.createElement('style');
+        style.textContent = `
+            video:fullscreen {
+                width: 100vw;
+                height: 100vh;
+                object-fit: contain;
+            }
+        `;
+        document.head.appendChild(style);
 
         // Container
         const container = document.createElement('div');
@@ -994,7 +1006,7 @@ export const UI = {
             fontSize: UI_SIZE.FONT_SIZE_MEDIUM,
             color: UI_COLORS.TEXT_SECONDARY,
             display: 'none',
-            maxWidth: UI_SIZE.MAX_WIDTH_DETAILS,
+            width: '100%',
             boxShadow: `0 4px 12px ${UI_COLORS.SHADOW}`,
         });
         this.elements.details = details;
@@ -1024,30 +1036,65 @@ export const UI = {
             textAlign: 'center',
             boxShadow: `0 4px 12px ${UI_COLORS.SHADOW}`,
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: UI_SPACING.GAP_MEDIUM,
+            gap: UI_SPACING.GAP_SMALL,
         });
 
-        // Spin button
+        // Footer button row (spin and fullscreen buttons)
+        const footerButtonRow = document.createElement('div');
+        Object.assign(footerButtonRow.style, {
+            display: 'flex',
+            gap: UI_SPACING.GAP_MEDIUM,
+            alignItems: 'center',
+            width: '100%',
+        });
+
+        // Spin button (full width)
         const spinBtn = this.createButton('Spin', false);
         Object.assign(spinBtn.style, {
             padding: `${UI_SPACING.PADDING_SMALL} ${UI_SPACING.PADDING_MEDIUM}`,
+            flex: '1',
         });
         spinBtn.title = 'Spin through list items and run them';
         this.elements.spinBtn = spinBtn;
+
+        // Fullscreen button (square)
+        const fullscreenBtn = this.createButton('⛶', false);
+        Object.assign(fullscreenBtn.style, {
+            width: UI_SIZE.ICON_BUTTON_SIZE,
+            height: UI_SIZE.ICON_BUTTON_SIZE,
+            minWidth: UI_SIZE.ICON_BUTTON_SIZE,
+            minHeight: UI_SIZE.ICON_BUTTON_SIZE,
+            maxWidth: UI_SIZE.ICON_BUTTON_SIZE,
+            maxHeight: UI_SIZE.ICON_BUTTON_SIZE,
+            padding: '0',
+            fontSize: '20px',
+            flexShrink: '0',
+        });
+        fullscreenBtn.title = 'Enter fullscreen mode';
+        this.elements.fullscreenBtn = fullscreenBtn;
+
+        footerButtonRow.appendChild(spinBtn);
+        footerButtonRow.appendChild(fullscreenBtn);
 
         // Version text
         const versionText = document.createElement('span');
         versionText.textContent = `grokGoonify ${VERSION} by b2kdaman`;
 
-        footer.appendChild(spinBtn);
+        footer.appendChild(footerButtonRow);
         footer.appendChild(versionText);
         this.elements.footer = footer;
 
         // Attach spin button click handler
         spinBtn.addEventListener('click', () => {
             this.spin();
+        });
+
+        // Attach fullscreen button click handler
+        fullscreenBtn.addEventListener('click', () => {
+            this.enterFullscreen();
         });
 
         // Append to content wrapper: category at top, prompt/status below, buttons below, footer at bottom
@@ -1468,6 +1515,89 @@ export const UI = {
                 spinBtn.style.opacity = '1';
                 spinBtn.textContent = 'Spin';
             }
+        }
+    },
+
+    /**
+     * Enter fullscreen mode for the HD video
+     */
+    enterFullscreen() {
+        try {
+            // Find the visible video element
+            const hdVideo = document.getElementById('hd-video');
+            const sdVideo = document.getElementById('sd-video');
+
+            let video = null;
+
+            // Check if HD video is visible
+            if (hdVideo && hdVideo.offsetWidth > 0 && hdVideo.offsetHeight > 0 &&
+                getComputedStyle(hdVideo).display !== 'none' &&
+                getComputedStyle(hdVideo).visibility !== 'hidden') {
+                video = hdVideo;
+            }
+            // Otherwise check if SD video is visible
+            else if (sdVideo && sdVideo.offsetWidth > 0 && sdVideo.offsetHeight > 0 &&
+                     getComputedStyle(sdVideo).display !== 'none' &&
+                     getComputedStyle(sdVideo).visibility !== 'hidden') {
+                video = sdVideo;
+            }
+            // Fallback to whichever exists
+            else {
+                video = hdVideo || sdVideo;
+            }
+
+            if (!video) {
+                if (this.elements.fullscreenBtn) {
+                    const originalText = this.elements.fullscreenBtn.innerHTML;
+                    this.elements.fullscreenBtn.innerHTML = '&#10007;';
+                    setTimeout(() => {
+                        this.elements.fullscreenBtn.innerHTML = originalText;
+                    }, 1000);
+                }
+                return;
+            }
+
+            // Try to find the video container/wrapper for better fullscreen experience
+            let targetElement = video;
+
+            // Look for common video player container patterns
+            const parent = video.parentElement;
+            const grandparent = parent?.parentElement;
+
+            // Use container if it looks like a video player wrapper
+            if (grandparent && (
+                grandparent.classList.contains('video-player') ||
+                grandparent.classList.contains('player') ||
+                grandparent.getAttribute('role') === 'region' ||
+                grandparent.tagName === 'VIDEO-PLAYER'
+            )) {
+                targetElement = grandparent;
+            } else if (parent && (
+                parent.classList.contains('video-player') ||
+                parent.classList.contains('player') ||
+                parent.getAttribute('role') === 'region'
+            )) {
+                targetElement = parent;
+            }
+
+            if (targetElement.requestFullscreen) {
+                targetElement.requestFullscreen();
+            } else if (targetElement.webkitRequestFullscreen) {
+                targetElement.webkitRequestFullscreen();
+            } else if (targetElement.msRequestFullscreen) {
+                targetElement.msRequestFullscreen();
+            }
+
+            // Visual feedback
+            if (this.elements.fullscreenBtn) {
+                const originalText = this.elements.fullscreenBtn.innerHTML;
+                this.elements.fullscreenBtn.innerHTML = '&#10003;';
+                setTimeout(() => {
+                    this.elements.fullscreenBtn.innerHTML = originalText;
+                }, 1000);
+            }
+        } catch (err) {
+            console.error('[Grok Fullscreen] Error:', err);
         }
     },
 
