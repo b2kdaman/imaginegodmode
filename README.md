@@ -14,6 +14,11 @@ A Tampermonkey userscript for fetching, downloading, and upscaling media posts f
 - HD-aware video detection
 - Automatic refetch during upscale operations
 - Text notes with localStorage persistence and navigation
+- Category system for organizing prompts
+- 5-star rating system for prompts
+- Fullscreen video player support (HD/SD)
+- One-click play button (copy prompt and make video)
+- Spin feature to batch process list items
 
 ## Project Structure
 
@@ -101,22 +106,34 @@ The built file (`dist/grokgoonify.user.js`) is ready to install in Tampermonkey.
 1. Navigate to a Grok.com post page: `https://grok.com/imagine/post/*`
 2. The script will automatically inject a pill UI in the bottom-right corner
 
-### Text Notes
-- **Text area**: Enter and save notes (stored in localStorage)
-- **Prev/Next**: Navigate between saved text entries
-- **Add**: Create a new text entry (requires current text to be non-empty)
-- **Remove**: Delete current text entry
-- **Copy**: Copy current text to clipboard
+### Categories & Organization
+- **Category dropdown**: Select and switch between different prompt categories
+- **+ button**: Add a new category
+- **− button**: Delete current category (double-click to confirm)
+- **Star rating**: Rate prompts from 0-5 stars
+
+### Text Prompts
+- **Text area**: Enter and save prompts (stored in localStorage)
+- **Prev/Next**: Navigate between saved prompts in current category
+- **Add**: Create a new prompt entry (requires current text to be non-empty)
+- **Remove**: Delete current prompt entry
+- **▶ Play**: Copy current prompt to page and click "Make a Video" button
+- **From/To**: Copy text from/to the page's video input field
+- **Copy**: Copy current prompt to clipboard
 
 ### Media Operations
+- **Prompt**: Show prompt/category view
 - **Fetch**: Fetch media data from the current post
 - **Download**: Download all media files
 - **Upscale**: Upscale videos to HD quality
-- **⋯**: Toggle details view
+
+### Video Controls
+- **Spin**: Batch process list items - click each, run, wait for completion, and repeat
+- **⛶ Fullscreen**: Enter fullscreen mode for HD/SD video player
 
 ## Script Details
 
-- **Version:** 1.4
+- **Version:** 1.5
 - **Compatible with:** Tampermonkey, Greasemonkey
 - **Requires:** `GM_download` permission (falls back to standard download if unavailable)
 - **Target pages:** `https://grok.com/imagine/post/*` and `https://www.grok.com/imagine/post/*`
