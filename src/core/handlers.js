@@ -9,14 +9,6 @@ import { Download } from '../download/download.js';
 
 export const Handlers = {
     /**
-     * Handle fetch button click
-     */
-    async fetch() {
-        await Core.fetchAndRender();
-        UI.showDetails();
-    },
-
-    /**
      * Handle download button click
      */
     async download() {

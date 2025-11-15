@@ -43,6 +43,11 @@ export const Core = {
             }
 
             UI.setUpscaleInfo(State.upscaleDone, State.upscaleTotal, State.lastHdVideoCount);
+
+            // Enable download button if there's nothing to upscale
+            if (processed.videosToUpscale.length === 0) {
+                UI.enableDownloadButton();
+            }
         } catch (err) {
             console.error('[Grok Media Fetcher] Error:', err);
             UI.setStatus('\u274C Error (see console)');
@@ -83,6 +88,7 @@ export const Core = {
         State.upscaleDone = 0;
         UI.setUpscaleInfo(State.upscaleDone, State.upscaleTotal, State.lastHdVideoCount);
         UI.setStatus('\uD83D\uDE80 Upscaling started...');
+        UI.disableDownloadButton();
 
         this.startUpscaleRefetchLoop();
 
@@ -115,9 +121,11 @@ export const Core = {
                         try {
                             await this.fetchAndRender();
                             UI.setStatus('\u2705 Upscale complete with updated media');
+                            UI.enableDownloadButton();
                         } catch (e) {
                             console.error('[Grok Media Fetcher] Final fetch error:', e);
                             UI.setStatus('\u2705 Upscale finished (fetch failed)');
+                            UI.enableDownloadButton();
                         }
                     }, 2000); // Wait 2 seconds for server to process
                 }

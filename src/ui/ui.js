@@ -37,7 +37,6 @@ export const UI = {
         details: null,
         status: null,
         upscaleInfo: null,
-        fetchBtn: null,
         downloadBtn: null,
         upscaleBtn: null,
         promptBtn: null,
@@ -1059,18 +1058,23 @@ export const UI = {
         this.elements.pill = pill;
 
         // Buttons
-        const fetchBtn = this.createButton('Fetch', false);
-        fetchBtn.style.color = UI_COLORS.TEXT_SECONDARY;
-        this.elements.fetchBtn = fetchBtn;
-
         this.elements.upscaleBtn = this.createButton('Upscale', false);
         this.elements.downloadBtn = this.createButton('Download', false);
 
         const promptBtn = this.createButton('Prompt', false);
         this.elements.promptBtn = promptBtn;
 
+        // Make buttons fill their container
+        Object.assign(promptBtn.style, { flex: '1' });
+        Object.assign(this.elements.upscaleBtn.style, { flex: '1' });
+        Object.assign(this.elements.downloadBtn.style, { flex: '1' });
+
+        // Disable download button by default
+        this.elements.downloadBtn.disabled = true;
+        this.elements.downloadBtn.style.opacity = '0.5';
+        this.elements.downloadBtn.style.cursor = 'not-allowed';
+
         pill.appendChild(promptBtn);
-        pill.appendChild(fetchBtn);
         pill.appendChild(this.elements.upscaleBtn);
         pill.appendChild(this.elements.downloadBtn);
 
@@ -1201,7 +1205,6 @@ export const UI = {
      */
     attachHandlers(handlers) {
         if (this.elements.container) {
-            this.elements.fetchBtn.addEventListener('click', handlers.fetch);
             this.elements.downloadBtn.addEventListener('click', handlers.download);
             this.elements.upscaleBtn.addEventListener('click', handlers.upscale);
             this.elements.promptBtn.addEventListener('click', () => {
@@ -1244,6 +1247,30 @@ export const UI = {
     setUpscaleInfo(done, total, hdCount) {
         this.ensure();
         this.elements.upscaleInfo.textContent = `Upscaled ${done} / ${total} (HD ${hdCount})`;
+    },
+
+    /**
+     * Enable the download button
+     */
+    enableDownloadButton() {
+        this.ensure();
+        if (this.elements.downloadBtn) {
+            this.elements.downloadBtn.disabled = false;
+            this.elements.downloadBtn.style.opacity = '1';
+            this.elements.downloadBtn.style.cursor = 'pointer';
+        }
+    },
+
+    /**
+     * Disable the download button
+     */
+    disableDownloadButton() {
+        this.ensure();
+        if (this.elements.downloadBtn) {
+            this.elements.downloadBtn.disabled = true;
+            this.elements.downloadBtn.style.opacity = '0.5';
+            this.elements.downloadBtn.style.cursor = 'not-allowed';
+        }
     },
 
     /**
