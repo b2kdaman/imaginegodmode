@@ -14,8 +14,8 @@ export const SettingsView: React.FC = () => {
       {/* Theme Setting */}
       <div className="flex flex-col gap-2">
         <label
-          className="text-sm font-medium"
-          style={{ color: colors.TEXT_PRIMARY }}
+          className="text-xs"
+          style={{ color: colors.TEXT_SECONDARY }}
         >
           Theme
         </label>
@@ -45,8 +45,8 @@ export const SettingsView: React.FC = () => {
       {/* Size Setting */}
       <div className="flex flex-col gap-2">
         <label
-          className="text-sm font-medium"
-          style={{ color: colors.TEXT_PRIMARY }}
+          className="text-xs"
+          style={{ color: colors.TEXT_SECONDARY }}
         >
           Size
         </label>
