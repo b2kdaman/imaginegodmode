@@ -9,7 +9,7 @@ import { fetchPost, downloadMedia, upscaleVideoById } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
 import { randomDelay } from '@/utils/helpers';
 import { TIMING } from '@/utils/constants';
-import { Icon } from './Icon';
+import { Button } from './Button';
 import { mdiDownload, mdiImageSizeSelectLarge } from '@mdi/js';
 
 export const StatusView: React.FC = () => {
@@ -152,22 +152,22 @@ export const StatusView: React.FC = () => {
 
       {/* Action buttons */}
       <div className="flex gap-2">
-        <button
+        <Button
           onClick={handleDownload}
-          className="flex-1 px-3 py-2 rounded-full bg-grok-gray text-white border border-white/20 text-xs hover:bg-grok-light transition-colors flex items-center justify-center gap-1"
+          icon={mdiDownload}
+          className="flex-1"
         >
-          <Icon path={mdiDownload} size={0.6} />
           Download
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={handleUpscale}
+          icon={mdiImageSizeSelectLarge}
           disabled={videoIdsToUpscale.length === 0 || isUpscaling}
-          className="flex-1 px-3 py-2 rounded-full bg-grok-gray text-white border border-white/20 text-xs hover:bg-grok-light transition-colors disabled:opacity-30 flex items-center justify-center gap-1"
+          className="flex-1"
         >
-          <Icon path={mdiImageSizeSelectLarge} size={0.6} />
           Upscale
-        </button>
+        </Button>
       </div>
     </div>
   );

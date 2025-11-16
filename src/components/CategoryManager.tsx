@@ -4,7 +4,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
-import { Icon } from './Icon';
+import { Button } from './Button';
 import { mdiPlus, mdiClose, mdiCheck, mdiDelete } from '@mdi/js';
 
 export const CategoryManager: React.FC = () => {
@@ -72,18 +72,18 @@ export const CategoryManager: React.FC = () => {
             ))}
           </select>
 
-          <button
+          <Button
             onClick={() => setIsAdding(true)}
-            className="px-3 py-2 rounded-full bg-grok-gray text-white border border-white/20 text-xs hover:bg-grok-light transition-colors flex items-center justify-center"
+            icon={mdiPlus}
+            iconSize={0.7}
             title="Add category"
-          >
-            <Icon path={mdiPlus} size={0.7} />
-          </button>
+          />
 
-          <button
+          <Button
             onClick={handleDeleteCategory}
+            icon={mdiDelete}
+            iconSize={0.7}
             disabled={categoryNames.length <= 1}
-            className="px-3 py-2 rounded-full border border-white/20 text-xs transition-colors disabled:opacity-30 flex items-center justify-center"
             style={{
               backgroundColor: isDeleteHighlighted ? '#ff4444' : '#2a2a2a',
               color: 'white',
@@ -93,9 +93,7 @@ export const CategoryManager: React.FC = () => {
                 ? 'Cannot delete last category'
                 : 'Double-click to delete category'
             }
-          >
-            <Icon path={mdiDelete} size={0.7} />
-          </button>
+          />
         </>
       ) : (
         <>
@@ -115,22 +113,20 @@ export const CategoryManager: React.FC = () => {
             className="flex-1 px-3 py-2 rounded-full bg-grok-gray text-white border border-white/20 text-sm focus:outline-none focus:border-white/40"
           />
 
-          <button
+          <Button
             onClick={handleAddCategory}
-            className="px-3 py-2 rounded-full bg-grok-gray text-white border border-white/20 text-xs hover:bg-grok-light transition-colors flex items-center justify-center"
-          >
-            <Icon path={mdiCheck} size={0.7} />
-          </button>
+            icon={mdiCheck}
+            iconSize={0.7}
+          />
 
-          <button
+          <Button
             onClick={() => {
               setIsAdding(false);
               setNewCategoryName('');
             }}
-            className="px-3 py-2 rounded-full bg-grok-gray text-white border border-white/20 text-xs hover:bg-grok-light transition-colors flex items-center justify-center"
-          >
-            <Icon path={mdiClose} size={0.7} />
-          </button>
+            icon={mdiClose}
+            iconSize={0.7}
+          />
         </>
       )}
     </div>

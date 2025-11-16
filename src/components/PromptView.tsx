@@ -6,7 +6,7 @@ import React from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
 import { CategoryManager } from './CategoryManager';
 import { RatingSystem } from './RatingSystem';
-import { Icon } from './Icon';
+import { Button } from './Button';
 import {
   mdiChevronLeft,
   mdiChevronRight,
@@ -71,25 +71,23 @@ export const PromptView: React.FC = () => {
       <div className="flex flex-col gap-3">
         {/* Prompt counter and navigation */}
         <div className="flex items-center justify-between gap-2">
-          <button
+          <Button
+            variant="icon"
+            icon={mdiChevronLeft}
             onClick={prevPrompt}
             disabled={currentIndex === 0}
-            className="w-9 h-9 rounded-full bg-grok-gray text-white border border-white/20 hover:bg-grok-light transition-colors disabled:opacity-30 flex items-center justify-center"
-          >
-            <Icon path={mdiChevronLeft} size={0.8} />
-          </button>
+          />
 
           <span className="text-sm text-white/70">
             {currentIndex + 1} / {promptCount}
           </span>
 
-          <button
+          <Button
+            variant="icon"
+            icon={mdiChevronRight}
             onClick={nextPrompt}
             disabled={currentIndex >= promptCount - 1}
-            className="w-9 h-9 rounded-full bg-grok-gray text-white border border-white/20 hover:bg-grok-light transition-colors disabled:opacity-30 flex items-center justify-center"
-          >
-            <Icon path={mdiChevronRight} size={0.8} />
-          </button>
+          />
         </div>
 
         {/* Rating system */}
@@ -110,67 +108,67 @@ export const PromptView: React.FC = () => {
 
         {/* Action buttons row 1 */}
         <div className="flex gap-2">
-          <button
+          <Button
             onClick={handleCopyToPage}
-            className="flex-1 px-3 py-2 rounded-full bg-grok-gray text-white border border-white/20 text-xs hover:bg-grok-light transition-colors flex items-center justify-center gap-1"
+            icon={mdiArrowDown}
+            className="flex-1"
             title="Copy prompt to page textarea"
           >
-            <Icon path={mdiArrowDown} size={0.6} />
             To
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={handleCopyFromPage}
-            className="flex-1 px-3 py-2 rounded-full bg-grok-gray text-white border border-white/20 text-xs hover:bg-grok-light transition-colors flex items-center justify-center gap-1"
+            icon={mdiArrowUp}
+            className="flex-1"
             title="Copy from page textarea"
           >
-            <Icon path={mdiArrowUp} size={0.6} />
             From
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => {
               if (currentPrompt) {
                 navigator.clipboard.writeText(currentPrompt.text);
               }
             }}
-            className="flex-1 px-3 py-2 rounded-full bg-grok-gray text-white border border-white/20 text-xs hover:bg-grok-light transition-colors flex items-center justify-center gap-1"
+            icon={mdiContentCopy}
+            className="flex-1"
             title="Copy to clipboard"
           >
-            <Icon path={mdiContentCopy} size={0.6} />
             Copy
-          </button>
+          </Button>
         </div>
 
         {/* Action buttons row 2 */}
         <div className="flex gap-2">
-          <button
+          <Button
             onClick={addPrompt}
-            className="flex-1 px-3 py-2 rounded-full bg-grok-gray text-white border border-white/20 text-xs hover:bg-grok-light transition-colors flex items-center justify-center gap-1"
+            icon={mdiPlus}
+            className="flex-1"
             title="Add new prompt"
           >
-            <Icon path={mdiPlus} size={0.6} />
             Add
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={removePrompt}
+            icon={mdiMinus}
             disabled={promptCount <= 1}
-            className="flex-1 px-3 py-2 rounded-full bg-grok-gray text-white border border-white/20 text-xs hover:bg-grok-light transition-colors disabled:opacity-30 flex items-center justify-center gap-1"
+            className="flex-1"
             title="Remove current prompt"
           >
-            <Icon path={mdiMinus} size={0.6} />
             Remove
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={handlePlayClick}
-            className="flex-1 px-3 py-2 rounded-full bg-grok-gray text-white border border-white/20 text-xs hover:bg-grok-light transition-colors flex items-center justify-center gap-1"
+            icon={mdiPlay}
+            className="flex-1"
             title="Copy prompt and click Make a Video (Ctrl/Cmd+Enter)"
           >
-            <Icon path={mdiPlay} size={0.6} />
             Play
-          </button>
+          </Button>
         </div>
       </div>
     </div>
