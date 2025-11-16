@@ -4,9 +4,11 @@
 
 import React from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
+import { useSettingsStore } from '@/store/useSettingsStore';
 import { CategoryManager } from './CategoryManager';
 import { RatingSystem } from './RatingSystem';
 import { Button } from './Button';
+import { UI_COLORS } from '@/utils/constants';
 import {
   mdiChevronLeft,
   mdiChevronRight,
@@ -30,6 +32,8 @@ export const PromptView: React.FC = () => {
     addPrompt,
     removePrompt,
   } = usePromptStore();
+  const { getThemeColors } = useSettingsStore();
+  const colors = getThemeColors();
 
   const currentPrompt = getCurrentPrompt();
   const promptCount = getCurrentPromptCount();
@@ -68,43 +72,49 @@ export const PromptView: React.FC = () => {
     <div className="flex flex-col w-full">
       <CategoryManager />
 
-      <div className="flex flex-col gap-3">
-        {/* Prompt counter and navigation */}
+      {/* Prompt textarea */}
+      <textarea
+        value={currentPrompt?.text || ''}
+        onChange={(e) => updatePromptText(e.target.value)}
+        placeholder="Enter your prompt..."
+        className="w-full h-32 px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar mt-3"
+        style={{
+          backgroundColor: colors.BACKGROUND_MEDIUM,
+          color: colors.TEXT_PRIMARY,
+          border: `1px solid ${colors.BORDER}`,
+        }}
+      />
+
+      <div className="flex flex-col gap-3 mt-3">
+        {/* Rating and pagination merged */}
         <div className="flex items-center justify-between gap-2">
-          <Button
-            variant="icon"
-            icon={mdiChevronLeft}
-            onClick={prevPrompt}
-            disabled={currentIndex === 0}
-          />
-
-          <span className="text-sm text-white/70">
-            {currentIndex + 1} / {promptCount}
-          </span>
-
-          <Button
-            variant="icon"
-            icon={mdiChevronRight}
-            onClick={nextPrompt}
-            disabled={currentIndex >= promptCount - 1}
-          />
-        </div>
-
-        {/* Rating system */}
-        <div className="flex justify-center">
+          {/* Rating on the left */}
           <RatingSystem
             rating={currentPrompt?.rating || 0}
             onChange={updatePromptRating}
           />
-        </div>
 
-        {/* Prompt textarea */}
-        <textarea
-          value={currentPrompt?.text || ''}
-          onChange={(e) => updatePromptText(e.target.value)}
-          placeholder="Enter your prompt..."
-          className="w-full h-32 px-3 py-2 rounded-lg bg-grok-gray text-white border border-white/20 text-sm resize-none focus:outline-none focus:border-white/40 custom-scrollbar"
-        />
+          {/* Pagination on the right */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="icon"
+              icon={mdiChevronLeft}
+              onClick={prevPrompt}
+              disabled={currentIndex === 0}
+            />
+
+            <span className="text-sm" style={{ color: colors.TEXT_SECONDARY }}>
+              {currentIndex + 1} / {promptCount}
+            </span>
+
+            <Button
+              variant="icon"
+              icon={mdiChevronRight}
+              onClick={nextPrompt}
+              disabled={currentIndex >= promptCount - 1}
+            />
+          </div>
+        </div>
 
         {/* Action buttons row 1 */}
         <div className="flex gap-2">
@@ -164,10 +174,11 @@ export const PromptView: React.FC = () => {
           <Button
             onClick={handlePlayClick}
             icon={mdiPlay}
-            className="flex-1"
+            iconColor={UI_COLORS.BLACK}
+            className="flex-1 !bg-white !text-black hover:!bg-white/90"
             title="Copy prompt and click Make a Video (Ctrl/Cmd+Enter)"
           >
-            Play
+            Make
           </Button>
         </div>
       </div>

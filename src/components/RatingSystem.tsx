@@ -5,6 +5,7 @@
 import React, { useState } from 'react';
 import { Icon } from './Icon';
 import { mdiStar, mdiStarOutline } from '@mdi/js';
+import { UI_COLORS } from '@/utils/constants';
 
 interface RatingSystemProps {
   rating: number;
@@ -30,7 +31,7 @@ export const RatingSystem: React.FC<RatingSystemProps> = ({ rating, onChange }) 
           <Icon
             path={displayRating >= star ? mdiStar : mdiStarOutline}
             size={1}
-            color={displayRating >= star ? '#FFD700' : '#666'}
+            color={UI_COLORS.WHITE}
           />
         </button>
       ))}

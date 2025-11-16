@@ -4,6 +4,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useMediaStore } from '@/store/useMediaStore';
+import { useSettingsStore } from '@/store/useSettingsStore';
 import { getPostIdFromUrl } from '@/utils/helpers';
 import { fetchPost, downloadMedia, upscaleVideoById } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
@@ -27,6 +28,8 @@ export const OpsView: React.FC = () => {
     setHdVideoCount,
     setStatusText,
   } = useMediaStore();
+  const { getThemeColors } = useSettingsStore();
+  const colors = getThemeColors();
 
   const [refetchInterval, setRefetchInterval] = useState<number | null>(null);
 
@@ -155,21 +158,32 @@ export const OpsView: React.FC = () => {
   return (
     <div className="flex flex-col gap-3">
       {/* Status text */}
-      <div className="text-sm text-white/70 text-center">{statusText}</div>
+      <div className="text-sm text-center" style={{ color: colors.TEXT_SECONDARY }}>
+        {statusText}
+      </div>
 
       {/* Progress bar */}
       {isUpscaling && (
-        <div className="w-full bg-grok-gray rounded-full h-2 overflow-hidden">
+        <div
+          className="w-full rounded-full h-2 overflow-hidden"
+          style={{ backgroundColor: colors.BACKGROUND_MEDIUM }}
+        >
           <div
-            className="bg-green-500 h-full transition-all duration-300"
-            style={{ width: `${upscaleProgress}%` }}
+            className="h-full transition-all duration-300"
+            style={{
+              width: `${upscaleProgress}%`,
+              backgroundColor: colors.GLOW_PRIMARY,
+            }}
           />
         </div>
       )}
 
       {/* Media info */}
       {urls.length > 0 && (
-        <div className="text-xs text-white/50 text-center">
+        <div
+          className="text-xs text-center"
+          style={{ color: `${colors.TEXT_SECONDARY}80` }}
+        >
           {urls.length} media files • {hdVideoCount} HD videos
         </div>
       )}

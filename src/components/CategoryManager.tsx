@@ -4,7 +4,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
+import { useSettingsStore } from '@/store/useSettingsStore';
 import { Button } from './Button';
+import { UI_COLORS } from '@/utils/constants';
 import { mdiPlus, mdiClose, mdiCheck, mdiDelete } from '@mdi/js';
 
 export const CategoryManager: React.FC = () => {
@@ -15,6 +17,8 @@ export const CategoryManager: React.FC = () => {
     addCategory,
     deleteCategory,
   } = usePromptStore();
+  const { getThemeColors } = useSettingsStore();
+  const colors = getThemeColors();
 
   const [isAdding, setIsAdding] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
@@ -63,7 +67,19 @@ export const CategoryManager: React.FC = () => {
           <select
             value={currentCategory}
             onChange={(e) => setCurrentCategory(e.target.value)}
-            className="flex-1 px-3 py-2 rounded-full bg-grok-gray text-white border border-white/20 text-sm cursor-pointer focus:outline-none focus:border-white/40"
+            className="flex-1 pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none"
+            style={{
+              backgroundColor: colors.BACKGROUND_MEDIUM,
+              color: colors.TEXT_PRIMARY,
+              border: `1px solid ${colors.BORDER}`,
+              backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(colors.TEXT_PRIMARY)}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 12px center',
+              backgroundSize: '16px',
+              appearance: 'none',
+              WebkitAppearance: 'none',
+              MozAppearance: 'none',
+            }}
           >
             {categoryNames.map((name) => (
               <option key={name} value={name}>
@@ -76,6 +92,7 @@ export const CategoryManager: React.FC = () => {
             onClick={() => setIsAdding(true)}
             icon={mdiPlus}
             iconSize={0.7}
+            variant="icon"
             title="Add category"
           />
 
@@ -83,10 +100,11 @@ export const CategoryManager: React.FC = () => {
             onClick={handleDeleteCategory}
             icon={mdiDelete}
             iconSize={0.7}
+            variant="icon"
             disabled={categoryNames.length <= 1}
             style={{
-              backgroundColor: isDeleteHighlighted ? '#ff4444' : '#2a2a2a',
-              color: 'white',
+              backgroundColor: isDeleteHighlighted ? UI_COLORS.DANGER : UI_COLORS.BACKGROUND_MEDIUM,
+              color: UI_COLORS.WHITE,
             }}
             title={
               categoryNames.length <= 1
@@ -110,13 +128,19 @@ export const CategoryManager: React.FC = () => {
               }
             }}
             placeholder="Category name..."
-            className="flex-1 px-3 py-2 rounded-full bg-grok-gray text-white border border-white/20 text-sm focus:outline-none focus:border-white/40"
+            className="flex-1 px-3 py-2 rounded-full text-sm focus:outline-none"
+            style={{
+              backgroundColor: colors.BACKGROUND_MEDIUM,
+              color: colors.TEXT_PRIMARY,
+              border: `1px solid ${colors.BORDER}`,
+            }}
           />
 
           <Button
             onClick={handleAddCategory}
             icon={mdiCheck}
             iconSize={0.7}
+            variant="icon"
           />
 
           <Button
@@ -126,6 +150,7 @@ export const CategoryManager: React.FC = () => {
             }}
             icon={mdiClose}
             iconSize={0.7}
+            variant="icon"
           />
         </>
       )}

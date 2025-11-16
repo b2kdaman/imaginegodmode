@@ -3,6 +3,7 @@
  */
 
 import { useEffect } from 'react';
+import { UI_COLORS } from '@/utils/constants';
 
 export const useVideoProgress = () => {
   useEffect(() => {
@@ -22,7 +23,7 @@ export const useVideoProgress = () => {
         left: '0',
         height: '7px',
         width: '0%',
-        background: 'rgba(255, 255, 255, 0.5)',
+        background: UI_COLORS.PROGRESS_BAR,
         zIndex: '999999',
         transition: 'width 0.3s ease',
         pointerEvents: 'none',
@@ -45,7 +46,7 @@ export const useVideoProgress = () => {
         button.dataset.grokGlowApplied = 'true';
 
         // Add glow effect
-        button.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.4)';
+        button.style.boxShadow = `0 0 20px ${UI_COLORS.GLOW_PRIMARY}, 0 0 40px ${UI_COLORS.GLOW_SECONDARY}`;
         button.style.transition = 'box-shadow 0.3s ease';
 
         // Add pulsing animation (only once)
@@ -55,10 +56,10 @@ export const useVideoProgress = () => {
           style.textContent = `
             @keyframes grok-glow-pulse {
               0%, 100% {
-                box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.4);
+                box-shadow: 0 0 20px ${UI_COLORS.GLOW_PRIMARY}, 0 0 40px ${UI_COLORS.GLOW_SECONDARY};
               }
               50% {
-                box-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 60px rgba(255, 255, 255, 0.6);
+                box-shadow: 0 0 30px ${UI_COLORS.GLOW_HOVER_PRIMARY}, 0 0 60px ${UI_COLORS.GLOW_HOVER_SECONDARY};
               }
             }
             button[data-grok-glow-applied="true"] {

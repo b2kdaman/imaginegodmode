@@ -10,6 +10,8 @@ Create a commit with all current changes and push to the remote repository. Foll
    - Update Components/Hooks sections if new components or hooks were created
    - Update Usage section if UI or workflows changed
    - Update Notes section for any architectural or styling changes
+   - Update Settings section if settings/preferences were added
+   - Ensure Help section in SettingsView component is updated if new features were added
 3. Build the project first (run `npm run build`)
 4. Stage all changes including the built files and updated docs
 5. Create an appropriate commit message following the repository's style

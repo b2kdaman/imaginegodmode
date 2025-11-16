@@ -11,6 +11,8 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Video Upscaling**: Batch upscale videos to HD quality with auto-fetch on Ops view
 - **Video Progress Tracking**: Real-time progress bar and button glow during video generation
 - **Fullscreen Video Player**: Intelligent fullscreen button that detects visible video (HD or SD)
+- **Theme Customization**: Choose from Dark, Light, or Dracula themes with full UI color adaptation
+- **UI Scaling**: Adjust panel size from Tiny (70%) to Large (115%)
 - **Keyboard Shortcuts**:
   - `Ctrl/Cmd + Enter`: Click "Make a Video" button
   - `Ctrl/Cmd + Shift + Enter`: Copy prompt and click "Make a Video"
@@ -18,8 +20,8 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - `Right Arrow`: Navigate to next video
 - **Arrow Key Navigation**: Navigate videos with Left/Right arrow keys
 - **URL Watcher**: Automatically resets state when navigating between posts
-- **Persistent Storage**: All data saved with `chrome.storage.local`
-- **Modern UI**: Bottom-placed tabs, pill-shaped buttons, Material Design Icons, subtle hover states
+- **Persistent Storage**: All data saved with `chrome.storage.local` (prompts) and `localStorage` (settings)
+- **Modern UI**: Bottom-placed tabs, pill-shaped buttons, Material Design Icons, dynamic theming
 - **Spin Feature**: Batch process list items (from userscript version)
 
 ## Technology Stack
@@ -62,13 +64,21 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 
 1. Navigate to any Grok post: `https://grok.com/imagine/post/*`
 2. The extension UI will appear in the bottom-right corner
-3. Click the `+` button to expand the panel
-4. Switch between "Prompt" and "Ops" tabs (bottom-placed navigation)
-5. **Ops View**: Automatically fetches post data when opened
+3. Click the expand button to open the panel
+4. Switch between "Prompt", "Ops", and "Settings" tabs (bottom navigation)
+5. **Prompt View**: Manage and organize your prompts
+   - Rate prompts with stars
+   - Navigate with arrow buttons or keyboard
+   - Copy and play prompts
+6. **Ops View**: Automatically fetches post data when opened
    - Primary action: Upscale video
    - Secondary action: Download media
    - Real-time status updates and progress tracking
-6. **Fullscreen**: Click the fullscreen button next to the collapse button to enter fullscreen mode
+7. **Settings View**: Customize your experience
+   - Choose theme: Dark, Light, or Dracula
+   - Adjust UI size: Tiny to Large
+   - View help and keyboard shortcuts
+8. **Fullscreen**: Click the fullscreen button next to the collapse button to enter fullscreen mode
 
 ## Project Structure
 
@@ -102,6 +112,7 @@ grkgoondl/
 - **usePromptStore**: Manages prompts, categories, and ratings
 - **useMediaStore**: Handles media URLs, upscaling, and status
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
+- **useSettingsStore**: Manages theme and size preferences with localStorage persistence
 
 ### Hooks
 
@@ -112,13 +123,14 @@ grkgoondl/
 
 ### Components
 
-- **MainPanel**: Floating panel container with fullscreen and collapse buttons
+- **MainPanel**: Floating panel container with fullscreen, collapse buttons, and version badge
 - **PromptView**: Prompt management interface
 - **OpsView**: Media controls and operations with auto-fetch functionality
+- **SettingsView**: Theme and size preferences with help documentation
 - **CategoryManager**: Category dropdown and CRUD operations
-- **RatingSystem**: 5-star rating component
-- **Button**: Reusable button component with variants and subtle hover states
-- **Tabs**: Tab navigation component with directional support (up/down) and bottom placement
+- **RatingSystem**: 5-star rating component with white icons
+- **Button**: Reusable button component with theme-aware styling and hover states
+- **Tabs**: Tab navigation component with theme support and bottom placement
 - **FullscreenButton**: Intelligent fullscreen toggle with video detection
 - **Icon**: Material Design Icons wrapper
 
@@ -143,10 +155,9 @@ Uses `chrome.runtime.sendMessage()` for communication:
 - `upscaleVideo()` - Upscale video with authentication
 
 ### Storage
-Uses `chrome.storage.local` for persistent data:
-- Categories with prompts and ratings
-- Current category and index
-- Automatic migration from old format
+Uses multiple storage mechanisms:
+- **chrome.storage.local**: Categories with prompts and ratings, automatic migration from old format
+- **localStorage**: Theme and size preferences for instant loading
 
 ## Development
 
@@ -195,13 +206,16 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Custom icons included (gold "G" logo at 16px, 48px, 128px)
 - Extension requires permissions for `storage`, `downloads`, and `activeTab`
 - Works on `https://grok.com/*` and `https://www.grok.com/*`
-- All buttons use pill shape with unified dark theme and subtle hover states (70% opacity text, 90% on hover)
+- **Theme System**: Three built-in themes (Dark, Light, Dracula) with full color palette adaptation
+- **UI Scaling**: CSS transform-based scaling maintains crisp rendering at all sizes
+- All buttons use pill shape with theme-aware styling and hover states
 - Material Design Icons for professional appearance
-- Tab-style navigation with bottom placement and active state using button color (grok-gray)
+- Tab-style navigation with bottom placement and theme-aware active states
 - Fullscreen mode with proper CSS styling for video display
 - Video progress polling every 500ms with auto-removal on completion
-- Console initialization tag with styled branding
+- Console initialization tag with styled branding using theme colors
 - API architecture refactored: content script handles authenticated calls, background worker handles downloads
+- Settings persist in localStorage for instant theme/size application on load
 
 ## Commands
 
@@ -218,9 +232,11 @@ npm run generate-icons  # Regenerate extension icons
 - [ ] Spin automation (batch process list items)
 - [x] Fullscreen video player support
 - [x] Video progress tracking
+- [x] Theme customization (Dark, Light, Dracula)
+- [x] UI scaling (Tiny to Large)
 - [ ] Export/import prompts
 - [ ] Sync across devices with `chrome.storage.sync`
-- [ ] Dark mode toggle
+- [ ] Custom theme builder
 - [ ] Prompt search and filtering
 - [ ] Chrome Web Store publication
 

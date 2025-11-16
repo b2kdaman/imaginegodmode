@@ -43,16 +43,84 @@ export const UI_SIZE = {
   MAX_WIDTH_DETAILS: '280px',
 } as const;
 
-// UI Colors
+// Theme Colors
+export const THEMES = {
+  dark: {
+    // Backgrounds
+    BACKGROUND_DARK: '#1a1a1a',
+    BACKGROUND_MEDIUM: '#2a2a2a',
+    BACKGROUND_LIGHT: '#3a3a3a',
+
+    // Text
+    TEXT_PRIMARY: '#fff',
+    TEXT_SECONDARY: '#b0b0b0',
+    TEXT_HOVER: '#d0d0d0',
+
+    // UI Elements
+    SHADOW: 'rgba(0,0,0,0.4)',
+    BORDER: 'rgba(255, 255, 255, 0.2)',
+
+    // Progress & Effects
+    PROGRESS_BAR: 'rgba(255, 255, 255, 0.5)',
+    GLOW_PRIMARY: 'rgba(255, 255, 255, 0.6)',
+    GLOW_SECONDARY: 'rgba(255, 255, 255, 0.4)',
+    GLOW_HOVER_PRIMARY: 'rgba(255, 255, 255, 0.8)',
+    GLOW_HOVER_SECONDARY: 'rgba(255, 255, 255, 0.6)',
+  },
+  light: {
+    // Backgrounds
+    BACKGROUND_DARK: '#f5f5f5',
+    BACKGROUND_MEDIUM: '#ffffff',
+    BACKGROUND_LIGHT: '#e8e8e8',
+
+    // Text
+    TEXT_PRIMARY: '#1a1a1a',
+    TEXT_SECONDARY: '#666666',
+    TEXT_HOVER: '#333333',
+
+    // UI Elements
+    SHADOW: 'rgba(0,0,0,0.15)',
+    BORDER: 'rgba(0, 0, 0, 0.2)',
+
+    // Progress & Effects
+    PROGRESS_BAR: 'rgba(0, 0, 0, 0.3)',
+    GLOW_PRIMARY: 'rgba(0, 0, 0, 0.4)',
+    GLOW_SECONDARY: 'rgba(0, 0, 0, 0.2)',
+    GLOW_HOVER_PRIMARY: 'rgba(0, 0, 0, 0.5)',
+    GLOW_HOVER_SECONDARY: 'rgba(0, 0, 0, 0.3)',
+  },
+  dracula: {
+    // Backgrounds - Dracula palette
+    BACKGROUND_DARK: '#282a36',   // Dracula background
+    BACKGROUND_MEDIUM: '#44475a', // Dracula current line
+    BACKGROUND_LIGHT: '#6272a4',  // Dracula comment
+
+    // Text - Dracula palette
+    TEXT_PRIMARY: '#f8f8f2',      // Dracula foreground
+    TEXT_SECONDARY: '#bd93f9',    // Dracula purple (soft)
+    TEXT_HOVER: '#ff79c6',        // Dracula pink
+
+    // UI Elements
+    SHADOW: 'rgba(0,0,0,0.5)',
+    BORDER: 'rgba(189, 147, 249, 0.3)', // Purple border
+
+    // Progress & Effects - Dracula cyan/green
+    PROGRESS_BAR: 'rgba(139, 233, 253, 0.5)',  // Dracula cyan
+    GLOW_PRIMARY: 'rgba(80, 250, 123, 0.6)',   // Dracula green
+    GLOW_SECONDARY: 'rgba(139, 233, 253, 0.4)', // Dracula cyan
+    GLOW_HOVER_PRIMARY: 'rgba(80, 250, 123, 0.8)',
+    GLOW_HOVER_SECONDARY: 'rgba(139, 233, 253, 0.6)',
+  },
+} as const;
+
+// Static Colors (same across themes)
 export const UI_COLORS = {
-  BACKGROUND_DARK: '#1a1a1a',
-  BACKGROUND_MEDIUM: '#2a2a2a',
-  BACKGROUND_LIGHT: '#3a3a3a',
-  TEXT_PRIMARY: '#fff',
-  TEXT_SECONDARY: '#b0b0b0',
-  TEXT_HOVER: '#d0d0d0',
-  SHADOW: 'rgba(0,0,0,0.4)',
-  BORDER: 'rgba(255, 255, 255, 0.2)',
+  // Accent Colors
+  DANGER: '#ff4444',
+  WHITE: '#FFFFFF',
+  BLACK: '#000000',
+  TEXT_BLACK: '#000000',
+  TEXT_WHITE: '#FFFFFF',
 } as const;
 
 // UI Transitions
