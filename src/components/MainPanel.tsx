@@ -8,6 +8,7 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 import { PromptView } from './PromptView';
 import { OpsView } from './OpsView';
 import { SettingsView } from './SettingsView';
+import { HelpView } from './HelpView';
 import { UI_POSITION, VERSION } from '@/utils/constants';
 import { Button } from './Button';
 import { Tabs } from './Tabs';
@@ -24,6 +25,7 @@ export const MainPanel: React.FC = () => {
     { id: 'prompt', label: 'Prompt' },
     { id: 'ops', label: 'Ops' },
     { id: 'settings', label: 'Settings' },
+    { id: 'help', label: 'Help' },
   ];
 
   return (
@@ -78,6 +80,7 @@ export const MainPanel: React.FC = () => {
             {currentView === 'prompt' && <PromptView />}
             {currentView === 'ops' && <OpsView />}
             {currentView === 'settings' && <SettingsView />}
+            {currentView === 'help' && <HelpView />}
 
             {/* Tabs */}
             <Tabs

@@ -67,7 +67,7 @@ export interface PostData {
   };
 }
 
-export type ViewMode = 'prompt' | 'ops' | 'settings';
+export type ViewMode = 'prompt' | 'ops' | 'settings' | 'help';
 
 export interface MessagePayload {
   type: 'FETCH_POST' | 'UPSCALE_VIDEO' | 'DOWNLOAD_MEDIA' | 'GET_STORAGE' | 'SET_STORAGE';
