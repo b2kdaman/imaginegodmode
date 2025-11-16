@@ -8,7 +8,9 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Star Ratings**: Rate your prompts with 1-5 stars (Material Design Icons)
 - **Category System**: Create custom categories to organize prompts
 - **Media Downloading**: Download images and videos from Grok posts
-- **Video Upscaling**: Batch upscale videos to HD quality
+- **Video Upscaling**: Batch upscale videos to HD quality with auto-fetch on Ops view
+- **Video Progress Tracking**: Real-time progress bar and button glow during video generation
+- **Fullscreen Video Player**: Intelligent fullscreen button that detects visible video (HD or SD)
 - **Keyboard Shortcuts**:
   - `Ctrl/Cmd + Enter`: Click "Make a Video" button
   - `Ctrl/Cmd + Shift + Enter`: Copy prompt and click "Make a Video"
@@ -17,7 +19,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Arrow Key Navigation**: Navigate videos with Left/Right arrow keys
 - **URL Watcher**: Automatically resets state when navigating between posts
 - **Persistent Storage**: All data saved with `chrome.storage.local`
-- **Modern UI**: Tab-style navigation, pill-shaped buttons, Material Design Icons
+- **Modern UI**: Bottom-placed tabs, pill-shaped buttons, Material Design Icons, subtle hover states
 - **Spin Feature**: Batch process list items (from userscript version)
 
 ## Technology Stack
@@ -61,7 +63,12 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 1. Navigate to any Grok post: `https://grok.com/imagine/post/*`
 2. The extension UI will appear in the bottom-right corner
 3. Click the `+` button to expand the panel
-4. Switch between "Prompt" and "Ops" tabs
+4. Switch between "Prompt" and "Ops" tabs (bottom-placed navigation)
+5. **Ops View**: Automatically fetches post data when opened
+   - Primary action: Upscale video
+   - Secondary action: Download media
+   - Real-time status updates and progress tracking
+6. **Fullscreen**: Click the fullscreen button next to the collapse button to enter fullscreen mode
 
 ## Project Structure
 
@@ -101,16 +108,19 @@ grkgoondl/
 - **useKeyboardShortcuts**: Global keyboard shortcut handlers
 - **useUrlWatcher**: Monitors URL changes and resets state
 - **useArrowKeyNavigation**: Arrow key navigation for video controls
+- **useVideoProgress**: Real-time video generation progress tracking with polling
 
 ### Components
 
-- **MainPanel**: Floating panel container
+- **MainPanel**: Floating panel container with fullscreen and collapse buttons
 - **PromptView**: Prompt management interface
-- **OpsView**: Media controls and operations
+- **OpsView**: Media controls and operations with auto-fetch functionality
 - **CategoryManager**: Category dropdown and CRUD operations
 - **RatingSystem**: 5-star rating component
-- **Button**: Reusable button component with variants
-- **Tabs**: Tab navigation component with active state styling
+- **Button**: Reusable button component with variants and subtle hover states
+- **Tabs**: Tab navigation component with directional support (up/down) and bottom placement
+- **FullscreenButton**: Intelligent fullscreen toggle with video detection
+- **Icon**: Material Design Icons wrapper
 
 ## Architecture
 
@@ -119,15 +129,18 @@ Injects the React app into Grok pages at `document_idle`.
 
 ### Background Service Worker
 Handles:
-- API calls to Grok endpoints
 - File downloads via `chrome.downloads.download()`
 - Message passing between content script and background
 
+**Note**: API calls (`fetchPost`, `upscaleVideo`) moved to content script for direct page context and cookie access. Background worker now only handles downloads which require `chrome.downloads` API.
+
 ### Message Passing
 Uses `chrome.runtime.sendMessage()` for communication:
-- `FETCH_POST` - Fetch post data from API
-- `UPSCALE_VIDEO` - Upscale a video
-- `DOWNLOAD_MEDIA` - Download media files
+- `DOWNLOAD_MEDIA` - Download media files (background worker)
+
+**Direct API calls** (content script with credentials):
+- `fetchPost()` - Fetch post data from Grok API
+- `upscaleVideo()` - Upscale video with authentication
 
 ### Storage
 Uses `chrome.storage.local` for persistent data:
@@ -182,9 +195,13 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Custom icons included (gold "G" logo at 16px, 48px, 128px)
 - Extension requires permissions for `storage`, `downloads`, and `activeTab`
 - Works on `https://grok.com/*` and `https://www.grok.com/*`
-- All buttons use pill shape with unified dark theme and subtle hover states
+- All buttons use pill shape with unified dark theme and subtle hover states (70% opacity text, 90% on hover)
 - Material Design Icons for professional appearance
-- Tab-style navigation with active state using button color (grok-gray)
+- Tab-style navigation with bottom placement and active state using button color (grok-gray)
+- Fullscreen mode with proper CSS styling for video display
+- Video progress polling every 500ms with auto-removal on completion
+- Console initialization tag with styled branding
+- API architecture refactored: content script handles authenticated calls, background worker handles downloads
 
 ## Commands
 
@@ -199,7 +216,8 @@ npm run generate-icons  # Regenerate extension icons
 ## Future Enhancements
 
 - [ ] Spin automation (batch process list items)
-- [ ] Fullscreen video player support
+- [x] Fullscreen video player support
+- [x] Video progress tracking
 - [ ] Export/import prompts
 - [ ] Sync across devices with `chrome.storage.sync`
 - [ ] Dark mode toggle
