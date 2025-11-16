@@ -55,17 +55,51 @@ export const HelpView: React.FC = () => {
           Keyboard Shortcuts
         </label>
         <div
-          className="text-xs p-3 rounded-lg"
+          className="text-xs p-3 rounded-lg flex flex-col gap-2"
           style={{
             backgroundColor: colors.BACKGROUND_LIGHT,
             color: colors.TEXT_SECONDARY,
           }}
         >
-          <ul className="space-y-1 ml-3" style={{ listStyleType: 'disc' }}>
-            <li><code>Ctrl/Cmd + Enter</code> - Make a Video</li>
-            <li><code>Ctrl/Cmd + Shift + Enter</code> - Copy & Make</li>
-            <li><code>Left/Right Arrow</code> - Navigate videos</li>
-          </ul>
+          <div className="flex items-center gap-2">
+            <span
+              className="px-2 py-1 rounded text-[10px] font-medium whitespace-nowrap"
+              style={{
+                backgroundColor: colors.BACKGROUND_MEDIUM,
+                color: colors.TEXT_PRIMARY,
+                border: `1px solid ${colors.BORDER}`,
+              }}
+            >
+              Ctrl/Cmd + Enter
+            </span>
+            <span>Make a Video</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span
+              className="px-2 py-1 rounded text-[10px] font-medium whitespace-nowrap"
+              style={{
+                backgroundColor: colors.BACKGROUND_MEDIUM,
+                color: colors.TEXT_PRIMARY,
+                border: `1px solid ${colors.BORDER}`,
+              }}
+            >
+              Ctrl/Cmd + Shift + Enter
+            </span>
+            <span>Copy & Make</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span
+              className="px-2 py-1 rounded text-[10px] font-medium whitespace-nowrap"
+              style={{
+                backgroundColor: colors.BACKGROUND_MEDIUM,
+                color: colors.TEXT_PRIMARY,
+                border: `1px solid ${colors.BORDER}`,
+              }}
+            >
+              Left/Right Arrow
+            </span>
+            <span>Navigate videos</span>
+          </div>
         </div>
       </div>
 
