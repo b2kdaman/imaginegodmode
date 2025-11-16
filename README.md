@@ -18,6 +18,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - `Ctrl/Cmd + Shift + Enter`: Copy prompt and click "Make a Video"
   - `Left Arrow`: Navigate to previous video
   - `Right Arrow`: Navigate to next video
+  - `F`: Toggle fullscreen (when not typing in text fields)
 - **Arrow Key Navigation**: Navigate videos with Left/Right arrow keys
 - **URL Watcher**: Automatically resets state when navigating between posts
 - **Persistent Storage**: All data saved with `chrome.storage.local` (prompts) and `localStorage` (settings)

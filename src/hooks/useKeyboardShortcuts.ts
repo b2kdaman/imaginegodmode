@@ -13,6 +13,24 @@ export const useKeyboardShortcuts = () => {
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
       const modifierKey = isMac ? e.metaKey : e.ctrlKey;
 
+      // Check if user is typing in a text input
+      const target = e.target as HTMLElement;
+      const isTyping = target.tagName === 'TEXTAREA' ||
+                       target.tagName === 'INPUT' ||
+                       target.isContentEditable;
+
+      // F key: Toggle fullscreen (only when not typing)
+      if (e.key === 'f' && !modifierKey && !isTyping) {
+        e.preventDefault();
+
+        // Find the fullscreen button in the extension UI
+        const fullscreenBtn = document.querySelector('[title*="fullscreen" i]') as HTMLButtonElement;
+
+        if (fullscreenBtn) {
+          fullscreenBtn.click();
+        }
+      }
+
       // Ctrl/Cmd + Enter: Click "Make a Video" button
       if (modifierKey && e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();

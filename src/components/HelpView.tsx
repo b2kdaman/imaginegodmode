@@ -172,6 +172,21 @@ export const HelpView: React.FC = () => {
             </div>
             <span>Navigate videos</span>
           </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1">
+              <span
+                className="px-2 py-1 rounded text-[10px] font-medium"
+                style={{
+                  backgroundColor: colors.BACKGROUND_MEDIUM,
+                  color: colors.TEXT_PRIMARY,
+                  border: `1px solid ${colors.BORDER}`,
+                }}
+              >
+                F
+              </span>
+            </div>
+            <span>Toggle fullscreen</span>
+          </div>
         </div>
       </div>
 
