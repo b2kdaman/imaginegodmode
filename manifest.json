@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "GrokGoonify",
+  "version": "2.0.0",
+  "description": "Media fetching, downloading, upscaling, and prompt management for Grok",
+  "permissions": [
+    "storage",
+    "downloads",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://grok.com/*",
+    "https://www.grok.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background/service-worker.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://grok.com/imagine/post/*",
+        "https://www.grok.com/imagine/post/*",
+        "https://grok.com/imagine/favorites",
+        "https://www.grok.com/imagine/favorites"
+      ],
+      "js": ["src/content/content-script.tsx"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "GrokGoonify"
+  }
+}

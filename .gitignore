@@ -7,11 +7,20 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
-dist/*
-!dist/grokgoonify.user.js
-dist-ssr
+archive/userscript/node_modules
 *.local
+
+# Build outputs
+dist
+dist-ssr
+build
+.crx
+.pem
+
+# Archived userscript build
+!archive/userscript/dist/grokgoonify.user.js
 
 # Editor directories and files
 .vscode/*
@@ -23,4 +32,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-

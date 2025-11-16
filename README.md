@@ -1,148 +1,204 @@
-# grokGoonify
+# GrokGoonify Chrome Extension
 
-grokGoonify - Grok Media Post Fetcher + Downloader + Upscaler - Tampermonkey Userscript
-
-A Tampermonkey userscript for fetching, downloading, and upscaling media posts from Grok.com, with text note management.
+A Chrome extension for Grok media management built with React, TypeScript, and Tailwind CSS.
 
 ## Features
 
-- Fetch media post data from Grok.com
-- Download media files (images/videos)
-- Upscale videos to HD quality
-- Modern pill-style UI with text note management
-- Real-time status updates
-- HD-aware video detection
-- Automatic refetch during upscale operations
-- Text notes with localStorage persistence and navigation
-- Category system for organizing prompts
-- 5-star rating system for prompts
-- Fullscreen video player support (HD/SD)
-- One-click play button (copy prompt and make video)
-- Spin feature to batch process list items
-- Keyboard shortcuts for video navigation (arrow keys)
+- **Prompt Management**: Save, organize, and manage prompts with categories
+- **Star Ratings**: Rate your prompts with 1-5 stars (Material Design Icons)
+- **Category System**: Create custom categories to organize prompts
+- **Media Downloading**: Download images and videos from Grok posts
+- **Video Upscaling**: Batch upscale videos to HD quality
+- **Keyboard Shortcuts**:
+  - `Ctrl/Cmd + Enter`: Click "Make a Video" button
+  - `Ctrl/Cmd + Shift + Enter`: Copy prompt and click "Make a Video"
+- **URL Watcher**: Automatically resets state when navigating between posts
+- **Persistent Storage**: All data saved with `chrome.storage.local`
+- **Modern UI**: Pill-shaped buttons with Material Design Icons
+- **Spin Feature**: Batch process list items (from userscript version)
 
-## Project Structure
+## Technology Stack
 
-The project is organized into modular ES6 modules:
-
-```
-src/
-├── userscript-header.js  # Tampermonkey header metadata
-├── main.js               # Main entry point
-├── constants/
-│   └── constants.js      # UI constants and configuration
-├── api/
-│   └── api.js            # API calls to Grok
-├── core/
-│   ├── core.js           # Core business logic
-│   ├── handlers.js       # Event handlers
-│   ├── mediaProcessor.js # Media data processing
-│   └── state.js          # State management
-├── download/
-│   └── download.js       # Download functionality
-├── lib/
-│   └── utils.js          # Utility functions
-├── ui/
-│   └── ui.js             # UI components and rendering
-└── watchers/
-    └── urlWatcher.js     # URL change detection
-```
+- **React 18** - UI framework
+- **TypeScript** - Type safety
+- **Zustand** - Lightweight state management
+- **Tailwind CSS** - Utility-first styling
+- **Vite** - Fast build tool
+- **CRXJS** - Vite plugin for Chrome extensions
+- **Chrome Manifest V3** - Latest extension API
 
 ## Installation
 
-1. Install dependencies:
+### Development Mode
+
+1. **Install dependencies**:
    ```bash
    npm install
    ```
 
-2. Build the userscript:
+2. **Build the extension**:
    ```bash
    npm run build
    ```
 
-3. Install the built script from `dist/grokgoonify.user.js`:
-   - Install [Tampermonkey](https://www.tampermonkey.net/) browser extension
-   - Open Tampermonkey dashboard
-   - Click "Create a new script"
-   - Copy and paste the contents of `dist/grokgoonify.user.js`
-   - Save the script
+3. **Load in Chrome**:
+   - Open Chrome and navigate to `chrome://extensions/`
+   - Enable "Developer mode" (toggle in top right)
+   - Click "Load unpacked"
+   - Select the `dist` folder from this project
+
+4. **Development with auto-reload**:
+   ```bash
+   npm run dev
+   ```
+   This will watch for changes and rebuild automatically.
+
+### Usage
+
+1. Navigate to any Grok post: `https://grok.com/imagine/post/*`
+2. The extension UI will appear in the bottom-right corner
+3. Click the `+` button to expand the panel
+4. Switch between "Prompt" and "Status" views
+
+## Project Structure
+
+```
+grkgoondl/
+├── src/
+│   ├── api/              # API layer for Grok endpoints
+│   ├── background/       # Background service worker
+│   ├── components/       # React components
+│   ├── content/          # Content script (injection point)
+│   ├── hooks/            # Custom React hooks
+│   ├── store/            # Zustand stores
+│   ├── types/            # TypeScript type definitions
+│   ├── utils/            # Utility functions
+│   ├── App.tsx           # Main app component
+│   └── index.css         # Global styles (Tailwind)
+├── public/               # Static assets (icons)
+├── scripts/              # Build scripts
+├── dist/                 # Build output (load this in Chrome)
+├── archive/              # Archived Tampermonkey userscript
+├── manifest.json         # Extension manifest
+├── vite.config.ts        # Vite configuration
+├── tailwind.config.js    # Tailwind configuration
+└── package.json          # Dependencies
+```
+
+## Key Components
+
+### Stores (Zustand)
+
+- **usePromptStore**: Manages prompts, categories, and ratings
+- **useMediaStore**: Handles media URLs, upscaling, and status
+- **useUIStore**: Controls UI state (expanded/collapsed, view mode)
+
+### Hooks
+
+- **useKeyboardShortcuts**: Global keyboard shortcut handlers
+- **useUrlWatcher**: Monitors URL changes and resets state
+
+### Components
+
+- **MainPanel**: Floating panel container
+- **PromptView**: Prompt management interface
+- **StatusView**: Media controls and status
+- **CategoryManager**: Category dropdown and CRUD operations
+- **RatingSystem**: 5-star rating component
+
+## Architecture
+
+### Content Script
+Injects the React app into Grok pages at `document_idle`.
+
+### Background Service Worker
+Handles:
+- API calls to Grok endpoints
+- File downloads via `chrome.downloads.download()`
+- Message passing between content script and background
+
+### Message Passing
+Uses `chrome.runtime.sendMessage()` for communication:
+- `FETCH_POST` - Fetch post data from API
+- `UPSCALE_VIDEO` - Upscale a video
+- `DOWNLOAD_MEDIA` - Download media files
+
+### Storage
+Uses `chrome.storage.local` for persistent data:
+- Categories with prompts and ratings
+- Current category and index
+- Automatic migration from old format
 
 ## Development
 
-### Working with Modules
-
-The source code is split into separate ES6 modules in the `src/` directory. Edit the modules directly:
-
-- `src/main.js` - Entry point
-- `src/constants/constants.js` - UI constants and configuration
-- `src/api/api.js` - API functions
-- `src/core/core.js` - Core business logic
-- `src/core/handlers.js` - Event handlers
-- `src/core/mediaProcessor.js` - Media processing
-- `src/core/state.js` - State management
-- `src/download/download.js` - Download logic
-- `src/lib/utils.js` - Utility functions
-- `src/ui/ui.js` - UI components with text note management
-- `src/watchers/urlWatcher.js` - URL watching
+### Type Checking
+```bash
+npm run type-check
+```
 
 ### Building
-
-To build a bundled and minified version from the modules:
-
 ```bash
 npm run build
 ```
 
-This will:
-1. Bundle all ES6 modules using esbuild
-2. Minify the code with terser
-3. Preserve the Tampermonkey header
-4. Output to `dist/grokgoonify.user.js`
-5. Copy the built file to your clipboard
+### Development Server
+```bash
+npm run dev
+```
 
-The built file (`dist/grokgoonify.user.js`) is ready to install in Tampermonkey.
+## Migration from Tampermonkey
 
-## Usage
+This Chrome extension is a complete rewrite of the original Tampermonkey userscript with:
 
-1. Navigate to a Grok.com post page: `https://grok.com/imagine/post/*`
-2. The script will automatically inject a pill UI in the bottom-right corner
+- ✅ Modern React architecture
+- ✅ Full TypeScript type safety
+- ✅ Chrome extension APIs (no Tampermonkey dependency)
+- ✅ Improved state management with Zustand
+- ✅ Tailwind CSS for styling
+- ✅ Component-based architecture
+- ✅ Better separation of concerns
 
-### Categories & Organization
-- **Category dropdown**: Select and switch between different prompt categories
-- **+ button**: Add a new category
-- **− button**: Delete current category (double-click to confirm)
-- **Star rating**: Rate prompts from 0-5 stars
+### Key Differences
 
-### Text Prompts
-- **Text area**: Enter and save prompts (stored in localStorage)
-- **Prev/Next**: Navigate between saved prompts in current category
-- **Add**: Create a new prompt entry (requires current text to be non-empty)
-- **Remove**: Delete current prompt entry
-- **▶ Play**: Copy current prompt to page and click "Make a Video" button
-- **Ctrl+Enter / Cmd+Enter**: Click "Make a Video" button (without copying prompt)
-- **Ctrl+Shift+Enter / Cmd+Shift+Enter**: Copy prompt and click "Make a Video" button (same as Play button)
-- **From/To**: Copy text from/to the page's video input field
-- **Copy**: Copy current prompt to clipboard
+| Feature | Tampermonkey | Chrome Extension |
+|---------|--------------|------------------|
+| Storage | `localStorage` | `chrome.storage.local` |
+| Downloads | `GM_download()` | `chrome.downloads.download()` |
+| State | Global object | Zustand stores |
+| UI | Vanilla JS + DOM | React components |
+| Styling | Inline styles | Tailwind CSS |
+| Build | esbuild | Vite + CRXJS |
 
-### Media Operations
-- **Prompt**: Show prompt/category view
-- **Fetch**: Fetch media data from the current post
-- **Download**: Download all media files
-- **Upscale**: Upscale videos to HD quality
+## Notes
 
-### Video Controls
-- **Spin**: Batch process list items - click each, run, wait for completion, and repeat
-- **[ ] Fullscreen**: Enter fullscreen mode for HD/SD video player
-- **Left Arrow**: Navigate to previous video
-- **Right Arrow**: Navigate to next video
+- **Archived Userscript**: The original Tampermonkey version is in `archive/userscript/`
+- Spin automation feature not yet implemented in extension (was in userscript)
+- Custom icons included (gold "G" logo at 16px, 48px, 128px)
+- Extension requires permissions for `storage`, `downloads`, and `activeTab`
+- Works on `https://grok.com/*` and `https://www.grok.com/*`
+- All buttons use pill shape with unified dark theme
+- Material Design Icons for professional appearance
 
-## Script Details
+## Commands
 
-- **Version:** 1.5
-- **Compatible with:** Tampermonkey, Greasemonkey
-- **Requires:** `GM_download` permission (falls back to standard download if unavailable)
-- **Target pages:** `https://grok.com/imagine/post/*` and `https://www.grok.com/imagine/post/*`
+```bash
+npm install          # Install dependencies
+npm run build        # Build extension for production
+npm run dev          # Development mode with hot reload
+npm run type-check   # TypeScript type checking
+npm run generate-icons  # Regenerate extension icons
+```
+
+## Future Enhancements
+
+- [ ] Spin automation (batch process list items)
+- [ ] Fullscreen video player support
+- [ ] Export/import prompts
+- [ ] Sync across devices with `chrome.storage.sync`
+- [ ] Dark mode toggle
+- [ ] Prompt search and filtering
+- [ ] Chrome Web Store publication
 
 ## License
 
-See LICENSE file for details.
+See LICENSE file.

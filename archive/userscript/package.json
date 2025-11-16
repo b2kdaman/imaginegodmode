@@ -1,0 +1,15 @@
+{
+  "name": "grokgoonify",
+  "version": "1.5.0",
+  "description": "grokGoonify - Grok Media Post Fetcher + Downloader + Upscaler - Tampermonkey Userscript",
+  "type": "module",
+  "scripts": {
+    "build:userscript": "node build-userscript.js",
+    "build": "npm run build:userscript"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.11",
+    "terser": "^5.26.0"
+  }
+}
+
