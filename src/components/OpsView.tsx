@@ -1,5 +1,5 @@
 /**
- * Status and media controls view component
+ * Ops and media controls view component
  */
 
 import React, { useEffect, useState } from 'react';
@@ -12,7 +12,7 @@ import { TIMING } from '@/utils/constants';
 import { Button } from './Button';
 import { mdiDownload, mdiImageSizeSelectLarge } from '@mdi/js';
 
-export const StatusView: React.FC = () => {
+export const OpsView: React.FC = () => {
   const {
     urls,
     videoIdsToUpscale,

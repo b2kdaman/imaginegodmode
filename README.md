@@ -12,9 +12,12 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Keyboard Shortcuts**:
   - `Ctrl/Cmd + Enter`: Click "Make a Video" button
   - `Ctrl/Cmd + Shift + Enter`: Copy prompt and click "Make a Video"
+  - `Left Arrow`: Navigate to previous video
+  - `Right Arrow`: Navigate to next video
+- **Arrow Key Navigation**: Navigate videos with Left/Right arrow keys
 - **URL Watcher**: Automatically resets state when navigating between posts
 - **Persistent Storage**: All data saved with `chrome.storage.local`
-- **Modern UI**: Pill-shaped buttons with Material Design Icons
+- **Modern UI**: Tab-style navigation, pill-shaped buttons, Material Design Icons
 - **Spin Feature**: Batch process list items (from userscript version)
 
 ## Technology Stack
@@ -58,7 +61,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 1. Navigate to any Grok post: `https://grok.com/imagine/post/*`
 2. The extension UI will appear in the bottom-right corner
 3. Click the `+` button to expand the panel
-4. Switch between "Prompt" and "Status" views
+4. Switch between "Prompt" and "Ops" tabs
 
 ## Project Structure
 
@@ -97,14 +100,17 @@ grkgoondl/
 
 - **useKeyboardShortcuts**: Global keyboard shortcut handlers
 - **useUrlWatcher**: Monitors URL changes and resets state
+- **useArrowKeyNavigation**: Arrow key navigation for video controls
 
 ### Components
 
 - **MainPanel**: Floating panel container
 - **PromptView**: Prompt management interface
-- **StatusView**: Media controls and status
+- **OpsView**: Media controls and operations
 - **CategoryManager**: Category dropdown and CRUD operations
 - **RatingSystem**: 5-star rating component
+- **Button**: Reusable button component with variants
+- **Tabs**: Tab navigation component with active state styling
 
 ## Architecture
 
@@ -176,8 +182,9 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Custom icons included (gold "G" logo at 16px, 48px, 128px)
 - Extension requires permissions for `storage`, `downloads`, and `activeTab`
 - Works on `https://grok.com/*` and `https://www.grok.com/*`
-- All buttons use pill shape with unified dark theme
+- All buttons use pill shape with unified dark theme and subtle hover states
 - Material Design Icons for professional appearance
+- Tab-style navigation with active state using button color (grok-gray)
 
 ## Commands
 

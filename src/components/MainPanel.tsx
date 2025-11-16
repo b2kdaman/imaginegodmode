@@ -5,13 +5,19 @@
 import React from 'react';
 import { useUIStore } from '@/store/useUIStore';
 import { PromptView } from './PromptView';
-import { StatusView } from './StatusView';
+import { OpsView } from './OpsView';
 import { UI_POSITION } from '@/utils/constants';
 import { Button } from './Button';
+import { Tabs } from './Tabs';
 import { mdiChevronUp, mdiChevronDown } from '@mdi/js';
 
 export const MainPanel: React.FC = () => {
   const { isExpanded, currentView, toggleExpanded, setCurrentView } = useUIStore();
+
+  const tabs = [
+    { id: 'prompt', label: 'Prompt' },
+    { id: 'ops', label: 'Ops' },
+  ];
 
   return (
     <div
@@ -36,29 +42,15 @@ export const MainPanel: React.FC = () => {
         {/* Content wrapper */}
         {isExpanded && (
           <div className="bg-grok-dark border border-white/20 rounded-2xl p-4 shadow-2xl w-[320px]">
-            {/* View switcher */}
-            <div className="flex gap-2 mb-4">
-              <Button
-                variant="view-switcher"
-                onClick={() => setCurrentView('prompt')}
-                isActive={currentView === 'prompt'}
-                className="flex-1"
-              >
-                Prompt
-              </Button>
-
-              <Button
-                variant="view-switcher"
-                onClick={() => setCurrentView('status')}
-                isActive={currentView === 'status'}
-                className="flex-1"
-              >
-                Status
-              </Button>
-            </div>
+            {/* Tabs */}
+            <Tabs
+              tabs={tabs}
+              activeTab={currentView}
+              onChange={(tabId) => setCurrentView(tabId as any)}
+            />
 
             {/* View content */}
-            {currentView === 'prompt' ? <PromptView /> : <StatusView />}
+            {currentView === 'prompt' ? <PromptView /> : <OpsView />}
           </div>
         )}
       </div>
