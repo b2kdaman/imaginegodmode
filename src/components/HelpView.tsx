@@ -61,43 +61,115 @@ export const HelpView: React.FC = () => {
             color: colors.TEXT_SECONDARY,
           }}
         >
-          <div className="flex items-center gap-2">
-            <span
-              className="px-2 py-1 rounded text-[10px] font-medium whitespace-nowrap"
-              style={{
-                backgroundColor: colors.BACKGROUND_MEDIUM,
-                color: colors.TEXT_PRIMARY,
-                border: `1px solid ${colors.BORDER}`,
-              }}
-            >
-              Ctrl/Cmd + Enter
-            </span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1">
+              <span
+                className="px-2 py-1 rounded text-[10px] font-medium"
+                style={{
+                  backgroundColor: colors.BACKGROUND_MEDIUM,
+                  color: colors.TEXT_PRIMARY,
+                  border: `1px solid ${colors.BORDER}`,
+                }}
+              >
+                Ctrl
+              </span>
+              <span className="text-[10px]">/</span>
+              <span
+                className="px-2 py-1 rounded text-[10px] font-medium"
+                style={{
+                  backgroundColor: colors.BACKGROUND_MEDIUM,
+                  color: colors.TEXT_PRIMARY,
+                  border: `1px solid ${colors.BORDER}`,
+                }}
+              >
+                Cmd
+              </span>
+              <span className="text-[10px]">+</span>
+              <span
+                className="px-2 py-1 rounded text-[10px] font-medium"
+                style={{
+                  backgroundColor: colors.BACKGROUND_MEDIUM,
+                  color: colors.TEXT_PRIMARY,
+                  border: `1px solid ${colors.BORDER}`,
+                }}
+              >
+                Enter
+              </span>
+            </div>
             <span>Make a Video</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span
-              className="px-2 py-1 rounded text-[10px] font-medium whitespace-nowrap"
-              style={{
-                backgroundColor: colors.BACKGROUND_MEDIUM,
-                color: colors.TEXT_PRIMARY,
-                border: `1px solid ${colors.BORDER}`,
-              }}
-            >
-              Ctrl/Cmd + Shift + Enter
-            </span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1">
+              <span
+                className="px-2 py-1 rounded text-[10px] font-medium"
+                style={{
+                  backgroundColor: colors.BACKGROUND_MEDIUM,
+                  color: colors.TEXT_PRIMARY,
+                  border: `1px solid ${colors.BORDER}`,
+                }}
+              >
+                Ctrl
+              </span>
+              <span className="text-[10px]">/</span>
+              <span
+                className="px-2 py-1 rounded text-[10px] font-medium"
+                style={{
+                  backgroundColor: colors.BACKGROUND_MEDIUM,
+                  color: colors.TEXT_PRIMARY,
+                  border: `1px solid ${colors.BORDER}`,
+                }}
+              >
+                Cmd
+              </span>
+              <span className="text-[10px]">+</span>
+              <span
+                className="px-2 py-1 rounded text-[10px] font-medium"
+                style={{
+                  backgroundColor: colors.BACKGROUND_MEDIUM,
+                  color: colors.TEXT_PRIMARY,
+                  border: `1px solid ${colors.BORDER}`,
+                }}
+              >
+                Shift
+              </span>
+              <span className="text-[10px]">+</span>
+              <span
+                className="px-2 py-1 rounded text-[10px] font-medium"
+                style={{
+                  backgroundColor: colors.BACKGROUND_MEDIUM,
+                  color: colors.TEXT_PRIMARY,
+                  border: `1px solid ${colors.BORDER}`,
+                }}
+              >
+                Enter
+              </span>
+            </div>
             <span>Copy & Make</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span
-              className="px-2 py-1 rounded text-[10px] font-medium whitespace-nowrap"
-              style={{
-                backgroundColor: colors.BACKGROUND_MEDIUM,
-                color: colors.TEXT_PRIMARY,
-                border: `1px solid ${colors.BORDER}`,
-              }}
-            >
-              Left/Right Arrow
-            </span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1">
+              <span
+                className="px-2 py-1 rounded text-[10px] font-medium"
+                style={{
+                  backgroundColor: colors.BACKGROUND_MEDIUM,
+                  color: colors.TEXT_PRIMARY,
+                  border: `1px solid ${colors.BORDER}`,
+                }}
+              >
+                ←
+              </span>
+              <span className="text-[10px]">/</span>
+              <span
+                className="px-2 py-1 rounded text-[10px] font-medium"
+                style={{
+                  backgroundColor: colors.BACKGROUND_MEDIUM,
+                  color: colors.TEXT_PRIMARY,
+                  border: `1px solid ${colors.BORDER}`,
+                }}
+              >
+                →
+              </span>
+            </div>
             <span>Navigate videos</span>
           </div>
         </div>
