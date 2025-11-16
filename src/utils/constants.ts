@@ -104,8 +104,8 @@ export const THEMES = {
     SHADOW: 'rgba(0,0,0,0.5)',
     BORDER: 'rgba(189, 147, 249, 0.3)', // Purple border
 
-    // Progress & Effects - Dracula cyan/green
-    PROGRESS_BAR: 'rgba(139, 233, 253, 0.5)',  // Dracula cyan
+    // Progress & Effects - White for progress, Dracula green/cyan for glow
+    PROGRESS_BAR: 'rgba(255, 255, 255, 1)',    // White
     GLOW_PRIMARY: 'rgba(80, 250, 123, 0.6)',   // Dracula green
     GLOW_SECONDARY: 'rgba(139, 233, 253, 0.4)', // Dracula cyan
     GLOW_HOVER_PRIMARY: 'rgba(80, 250, 123, 0.8)',

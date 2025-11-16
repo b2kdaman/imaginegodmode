@@ -32,3 +32,6 @@ build
 *.njsproj
 *.sln
 *.sw?
+package-lock.json
+.claude/settings.local.json
+package-lock.json

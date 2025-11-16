@@ -57,11 +57,9 @@ export const PromptView: React.FC = () => {
     // Copy prompt to page
     handleCopyToPage();
 
-    // Find and click the "Make a Video" button
+    // Find and click the "Make a video" button by aria-label
     setTimeout(() => {
-      const makeVideoBtn = Array.from(document.querySelectorAll('button')).find(
-        (btn) => btn.textContent?.includes('Make a Video')
-      );
+      const makeVideoBtn = document.querySelector('button[aria-label="Make a video"]') as HTMLButtonElement;
       if (makeVideoBtn) {
         makeVideoBtn.click();
       }

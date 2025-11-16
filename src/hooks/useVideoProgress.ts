@@ -3,9 +3,11 @@
  */
 
 import { useEffect } from 'react';
-import { UI_COLORS } from '@/utils/constants';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 export const useVideoProgress = () => {
+  const { getThemeColors } = useSettingsStore();
+
   useEffect(() => {
     let buttonRef: HTMLButtonElement | null = null;
     let lastPercentage: number | null = null;
@@ -15,6 +17,7 @@ export const useVideoProgress = () => {
     function createProgressBar() {
       if (progressBar) return progressBar;
 
+      const colors = getThemeColors();
       progressBar = document.createElement('div');
       progressBar.id = 'grok-progress-bar';
       Object.assign(progressBar.style, {
@@ -23,7 +26,7 @@ export const useVideoProgress = () => {
         left: '0',
         height: '7px',
         width: '0%',
-        background: UI_COLORS.PROGRESS_BAR,
+        background: colors.PROGRESS_BAR,
         zIndex: '999999',
         transition: 'width 0.3s ease',
         pointerEvents: 'none',
@@ -45,8 +48,9 @@ export const useVideoProgress = () => {
       if (button && !button.dataset.grokGlowApplied) {
         button.dataset.grokGlowApplied = 'true';
 
+        const colors = getThemeColors();
         // Add glow effect
-        button.style.boxShadow = `0 0 20px ${UI_COLORS.GLOW_PRIMARY}, 0 0 40px ${UI_COLORS.GLOW_SECONDARY}`;
+        button.style.boxShadow = `0 0 20px ${colors.GLOW_PRIMARY}, 0 0 40px ${colors.GLOW_SECONDARY}`;
         button.style.transition = 'box-shadow 0.3s ease';
 
         // Add pulsing animation (only once)
@@ -56,10 +60,10 @@ export const useVideoProgress = () => {
           style.textContent = `
             @keyframes grok-glow-pulse {
               0%, 100% {
-                box-shadow: 0 0 20px ${UI_COLORS.GLOW_PRIMARY}, 0 0 40px ${UI_COLORS.GLOW_SECONDARY};
+                box-shadow: 0 0 20px ${colors.GLOW_PRIMARY}, 0 0 40px ${colors.GLOW_SECONDARY};
               }
               50% {
-                box-shadow: 0 0 30px ${UI_COLORS.GLOW_HOVER_PRIMARY}, 0 0 60px ${UI_COLORS.GLOW_HOVER_SECONDARY};
+                box-shadow: 0 0 30px ${colors.GLOW_HOVER_PRIMARY}, 0 0 60px ${colors.GLOW_HOVER_SECONDARY};
               }
             }
             button[data-grok-glow-applied="true"] {
@@ -138,5 +142,5 @@ export const useVideoProgress = () => {
       clearInterval(interval);
       removeProgressBar();
     };
-  }, []);
+  }, [getThemeColors]);
 };
