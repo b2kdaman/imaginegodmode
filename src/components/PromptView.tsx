@@ -101,6 +101,7 @@ export const PromptView: React.FC = () => {
               icon={mdiChevronLeft}
               onClick={prevPrompt}
               disabled={currentIndex === 0}
+              tooltip="Previous prompt (Left arrow)"
             />
 
             <span className="text-sm" style={{ color: colors.TEXT_SECONDARY }}>
@@ -112,6 +113,7 @@ export const PromptView: React.FC = () => {
               icon={mdiChevronRight}
               onClick={nextPrompt}
               disabled={currentIndex >= promptCount - 1}
+              tooltip="Next prompt (Right arrow)"
             />
           </div>
         </div>
@@ -122,7 +124,7 @@ export const PromptView: React.FC = () => {
             onClick={handleCopyToPage}
             icon={mdiArrowDown}
             className="flex-1"
-            title="Copy prompt to page textarea"
+            tooltip="Copy prompt to page textarea"
           >
             To
           </Button>
@@ -131,7 +133,7 @@ export const PromptView: React.FC = () => {
             onClick={handleCopyFromPage}
             icon={mdiArrowUp}
             className="flex-1"
-            title="Copy from page textarea"
+            tooltip="Copy from page textarea"
           >
             From
           </Button>
@@ -144,7 +146,7 @@ export const PromptView: React.FC = () => {
             }}
             icon={mdiContentCopy}
             className="flex-1"
-            title="Copy to clipboard"
+            tooltip="Copy to clipboard"
           >
             Copy
           </Button>
@@ -156,7 +158,7 @@ export const PromptView: React.FC = () => {
             onClick={addPrompt}
             icon={mdiPlus}
             className="flex-1"
-            title="Add new prompt"
+            tooltip="Add new prompt"
           >
             Add
           </Button>
@@ -166,7 +168,7 @@ export const PromptView: React.FC = () => {
             icon={mdiMinus}
             disabled={promptCount <= 1}
             className="flex-1"
-            title="Remove current prompt"
+            tooltip="Remove current prompt"
           >
             Remove
           </Button>
@@ -176,7 +178,7 @@ export const PromptView: React.FC = () => {
             icon={mdiPlay}
             iconColor={UI_COLORS.BLACK}
             className="flex-1 !bg-white !text-black hover:!bg-white/90"
-            title="Copy prompt and click Make a Video (Ctrl/Cmd+Enter)"
+            tooltip="Copy prompt and click Make a Video (Ctrl/Cmd+Enter)"
           >
             Make
           </Button>

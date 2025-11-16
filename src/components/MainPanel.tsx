@@ -63,7 +63,7 @@ export const MainPanel: React.FC = () => {
             icon={isExpanded ? mdiChevronDown : mdiChevronUp}
             iconSize={0.9}
             className="shadow-lg"
-            title={isExpanded ? 'Collapse panel' : 'Expand panel'}
+            tooltip={isExpanded ? 'Collapse panel' : 'Expand panel'}
           />
         </div>
 

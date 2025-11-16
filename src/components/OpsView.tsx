@@ -195,6 +195,7 @@ export const OpsView: React.FC = () => {
           icon={mdiImageSizeSelectLarge}
           disabled={videoIdsToUpscale.length === 0 || isUpscaling}
           className="flex-1"
+          tooltip="Upscale videos to HD quality"
         >
           Upscale
         </Button>
@@ -204,6 +205,7 @@ export const OpsView: React.FC = () => {
           icon={mdiDownload}
           disabled={urls.length === 0}
           className="flex-1"
+          tooltip="Download all media files"
         >
           Download
         </Button>

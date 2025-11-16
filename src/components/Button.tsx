@@ -11,6 +11,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: string;
   iconSize?: number;
   iconColor?: string;
+  tooltip?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -18,6 +19,7 @@ export const Button: React.FC<ButtonProps> = ({
   icon,
   iconSize = 0.6,
   iconColor,
+  tooltip,
   className = '',
   children,
   disabled,
@@ -48,6 +50,8 @@ export const Button: React.FC<ButtonProps> = ({
       className={`${baseStyles} ${variantStyles[variant]} ${className}`}
       disabled={disabled}
       style={buttonStyle}
+      data-tooltip-id={tooltip ? 'app-tooltip' : undefined}
+      data-tooltip-content={tooltip}
       onMouseEnter={(e) => {
         if (!disabled && !className.includes('!bg-white')) {
           e.currentTarget.style.backgroundColor = colors.BACKGROUND_LIGHT;

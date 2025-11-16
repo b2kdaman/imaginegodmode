@@ -73,7 +73,7 @@ export const FullscreenButton: React.FC = () => {
       variant="icon"
       icon={mdiFullscreen}
       onClick={handleFullscreen}
-      title="Enter fullscreen"
+      tooltip="Enter fullscreen (F)"
       className={errorShown ? 'opacity-50' : ''}
     />
   );

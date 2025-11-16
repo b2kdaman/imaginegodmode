@@ -3,6 +3,7 @@
  */
 
 import React, { useEffect } from 'react';
+import { Tooltip } from 'react-tooltip';
 import { MainPanel } from './components/MainPanel';
 import { usePromptStore } from './store/usePromptStore';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
@@ -30,5 +31,10 @@ export const App: React.FC = () => {
   // Set up video progress watcher (button glow + progress bar)
   useVideoProgress();
 
-  return <MainPanel />;
+  return (
+    <>
+      <MainPanel />
+      <Tooltip id="app-tooltip" className="z-[999999]" />
+    </>
+  );
 };

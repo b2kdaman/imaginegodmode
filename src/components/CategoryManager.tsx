@@ -93,7 +93,7 @@ export const CategoryManager: React.FC = () => {
             icon={mdiPlus}
             iconSize={0.7}
             variant="icon"
-            title="Add category"
+            tooltip="Add category"
           />
 
           <Button
@@ -106,7 +106,7 @@ export const CategoryManager: React.FC = () => {
               backgroundColor: isDeleteHighlighted ? UI_COLORS.DANGER : UI_COLORS.BACKGROUND_MEDIUM,
               color: UI_COLORS.WHITE,
             }}
-            title={
+            tooltip={
               categoryNames.length <= 1
                 ? 'Cannot delete last category'
                 : 'Double-click to delete category'
@@ -141,6 +141,7 @@ export const CategoryManager: React.FC = () => {
             icon={mdiCheck}
             iconSize={0.7}
             variant="icon"
+            tooltip="Confirm add category"
           />
 
           <Button
@@ -151,6 +152,7 @@ export const CategoryManager: React.FC = () => {
             icon={mdiClose}
             iconSize={0.7}
             variant="icon"
+            tooltip="Cancel"
           />
         </>
       )}
