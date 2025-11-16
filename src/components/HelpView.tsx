@@ -11,7 +11,7 @@ export const HelpView: React.FC = () => {
   const colors = getThemeColors();
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-4 w-full max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
       {/* Features Section */}
       <div className="flex flex-col gap-2">
         <label
