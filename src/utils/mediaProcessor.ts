@@ -4,7 +4,7 @@
 
 import { pickDownloadUrl } from './helpers';
 import { MEDIA_TYPES } from './constants';
-import { MediaUrl } from '@/types';
+import { MediaUrl, PostData, ChildPost } from '@/types';
 
 interface ProcessedMedia {
   urls: string[];
@@ -15,17 +15,35 @@ interface ProcessedMedia {
 
 /**
  * Process post data and extract media information
- * @param post - Post data object
+ * @param data - Post data response object
  * @returns Processed media data
  */
-export const processPostData = (post: any): ProcessedMedia => {
+export const processPostData = (data: PostData): ProcessedMedia => {
   const urls: string[] = [];
   const videosNeedingUpscale: string[] = [];
   const mediaUrls: MediaUrl[] = [];
   let hdVideoCount = 0;
 
+  console.log('[GrokGoonify] Processing post data:', data);
+
+  // Extract the post from the response
+  const post = data.post;
+
+  if (!post) {
+    console.error('[GrokGoonify] No post in response data');
+    return {
+      urls: [],
+      videosToUpscale: [],
+      hdVideoCount: 0,
+      mediaUrls: [],
+    };
+  }
+
+  // Process child posts
   if (Array.isArray(post.childPosts) && post.childPosts.length > 0) {
-    post.childPosts.forEach((cp: any) => {
+    console.log('[GrokGoonify] Processing', post.childPosts.length, 'child posts');
+
+    post.childPosts.forEach((cp: ChildPost) => {
       const url = pickDownloadUrl(cp);
       if (url) {
         urls.push(url);
@@ -39,23 +57,33 @@ export const processPostData = (post: any): ProcessedMedia => {
           type: isVideo ? 'video' : 'image',
           isHD: isVideo ? isHD : undefined,
         });
+
+        console.log('[GrokGoonify] Added media:', { url, type: isVideo ? 'video' : 'image', isHD });
       }
 
       if (cp.mediaType === MEDIA_TYPES.VIDEO) {
         const isHd = !!cp.hdMediaUrl;
         if (isHd) {
           hdVideoCount += 1;
+          console.log('[GrokGoonify] Found HD video:', cp.id);
         } else if (cp.id) {
           videosNeedingUpscale.push(cp.id);
+          console.log('[GrokGoonify] Video needs upscale:', cp.id);
         }
       }
     });
+  } else {
+    console.log('[GrokGoonify] No child posts found');
   }
 
-  return {
+  const result = {
     urls: Array.from(new Set(urls)),
     videosToUpscale: Array.from(new Set(videosNeedingUpscale)),
     hdVideoCount,
     mediaUrls,
   };
+
+  console.log('[GrokGoonify] Processing complete:', result);
+
+  return result;
 };

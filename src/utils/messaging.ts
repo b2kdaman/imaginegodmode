@@ -2,7 +2,8 @@
  * Message passing utilities for Chrome extension
  */
 
-import { MessagePayload, MessageResponse } from '@/types';
+import { MessagePayload, MessageResponse, PostData } from '@/types';
+import { fetchPostData, upscaleVideo } from '@/api/grokApi';
 
 /**
  * Send message to background service worker
@@ -33,21 +34,39 @@ export const downloadMedia = async (urls: string[]): Promise<MessageResponse> =>
 };
 
 /**
- * Fetch post data via background script
+ * Fetch post data directly from content script
  */
-export const fetchPost = async (postId: string): Promise<MessageResponse> => {
-  return sendMessageToBackground({
-    type: 'FETCH_POST',
-    data: { postId },
-  });
+export const fetchPost = async (postId: string): Promise<MessageResponse<PostData>> => {
+  try {
+    const data = await fetchPostData(postId);
+    return {
+      success: true,
+      data,
+    };
+  } catch (error) {
+    console.error('[GrokGoonify] Fetch failed:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to fetch post',
+    };
+  }
 };
 
 /**
- * Upscale video via background script
+ * Upscale video directly from content script
  */
 export const upscaleVideoById = async (videoId: string): Promise<MessageResponse> => {
-  return sendMessageToBackground({
-    type: 'UPSCALE_VIDEO',
-    data: { videoId },
-  });
+  try {
+    const data = await upscaleVideo(videoId);
+    return {
+      success: true,
+      data,
+    };
+  } catch (error) {
+    console.error('[GrokGoonify] Upscale failed:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to upscale video',
+    };
+  }
 };

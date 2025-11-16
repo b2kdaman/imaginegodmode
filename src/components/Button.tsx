@@ -24,8 +24,8 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variantStyles = {
     default:
-      'px-3 py-2 bg-grok-gray text-white border border-white/20 text-xs hover:bg-grok-gray-hover disabled:opacity-30',
-    icon: 'w-9 h-9 bg-grok-gray text-white border border-white/20 hover:bg-grok-gray-hover disabled:opacity-30',
+      'px-3 py-2 bg-grok-gray text-white/70 border border-white/20 text-xs hover:bg-grok-gray-hover hover:text-white/90 disabled:opacity-30',
+    icon: 'w-9 h-9 bg-grok-gray text-white/70 border border-white/20 hover:bg-grok-gray-hover hover:text-white/90 disabled:opacity-30',
   };
 
   return (

@@ -8,6 +8,7 @@ import { usePromptStore } from './store/usePromptStore';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useUrlWatcher } from './hooks/useUrlWatcher';
 import { useArrowKeyNavigation } from './hooks/useArrowKeyNavigation';
+import { useVideoProgress } from './hooks/useVideoProgress';
 
 export const App: React.FC = () => {
   const { loadFromStorage } = usePromptStore();
@@ -25,6 +26,9 @@ export const App: React.FC = () => {
 
   // Set up arrow key navigation
   useArrowKeyNavigation();
+
+  // Set up video progress watcher (button glow + progress bar)
+  useVideoProgress();
 
   return <MainPanel />;
 };

@@ -1,10 +1,9 @@
 /**
  * Background service worker for Chrome extension
- * Handles API calls and downloads
+ * Handles downloads only - API calls made directly from content script
  */
 
 import { MessagePayload, MessageResponse } from '../types';
-import { fetchPostData, upscaleVideo } from '../api/grokApi';
 import { extractFilename } from '../utils/helpers';
 import { TIMING } from '../utils/constants';
 
@@ -28,12 +27,6 @@ chrome.runtime.onMessage.addListener((message: MessagePayload, _sender, sendResp
  */
 async function handleMessage(message: MessagePayload): Promise<MessageResponse> {
   switch (message.type) {
-    case 'FETCH_POST':
-      return handleFetchPost(message.data.postId);
-
-    case 'UPSCALE_VIDEO':
-      return handleUpscaleVideo(message.data.videoId);
-
     case 'DOWNLOAD_MEDIA':
       return handleDownloadMedia(message.data.urls);
 
@@ -42,42 +35,6 @@ async function handleMessage(message: MessagePayload): Promise<MessageResponse> 
         success: false,
         error: 'Unknown message type',
       };
-  }
-}
-
-/**
- * Fetch post data from Grok API
- */
-async function handleFetchPost(postId: string): Promise<MessageResponse> {
-  try {
-    const data = await fetchPostData(postId);
-    return {
-      success: true,
-      data,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch post',
-    };
-  }
-}
-
-/**
- * Upscale video
- */
-async function handleUpscaleVideo(videoId: string): Promise<MessageResponse> {
-  try {
-    const data = await upscaleVideo(videoId);
-    return {
-      success: true,
-      data,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to upscale video',
-    };
   }
 }
 

@@ -33,16 +33,23 @@ export const OpsView: React.FC = () => {
   // Fetch post data
   const handleFetchPost = async () => {
     const postId = getPostIdFromUrl();
+    console.log('[GrokGoonify] Post ID:', postId);
+
     if (!postId) {
       setStatusText('No post ID found');
       return;
     }
 
     setStatusText('Fetching post data...');
+    console.log('[GrokGoonify] Fetching post:', postId);
+
     const response = await fetchPost(postId);
+    console.log('[GrokGoonify] Fetch response:', response);
 
     if (response.success && response.data) {
       const processed = processPostData(response.data);
+      console.log('[GrokGoonify] Processed data:', processed);
+
       setMediaUrls(processed.mediaUrls);
       setVideoIdsToUpscale(processed.videosToUpscale);
       setHdVideoCount(processed.hdVideoCount);
@@ -50,17 +57,19 @@ export const OpsView: React.FC = () => {
         `Found ${processed.urls.length} media (${processed.hdVideoCount} HD videos)`
       );
     } else {
+      console.error('[GrokGoonify] Fetch failed:', response);
       setStatusText('Failed to fetch post data');
     }
   };
 
+  // Auto-fetch on mount
+  useEffect(() => {
+    handleFetchPost();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Download media
   const handleDownload = async () => {
-    if (urls.length === 0) {
-      await handleFetchPost();
-      return;
-    }
-
     setStatusText('Downloading...');
     const urlStrings = urls.map((m) => m.url);
     const response = await downloadMedia(urlStrings);
@@ -102,16 +111,31 @@ export const OpsView: React.FC = () => {
 
   const startRefetchLoop = () => {
     const interval = window.setInterval(async () => {
-      await handleFetchPost();
+      const postId = getPostIdFromUrl();
+      if (!postId) return;
 
-      // Check if all videos are HD now
-      if (videoIdsToUpscale.length === 0) {
-        setIsUpscaling(false);
-        setUpscaleProgress(100);
-        setStatusText('Upscale complete!');
-        if (refetchInterval !== null) {
-          clearInterval(refetchInterval);
+      const response = await fetchPost(postId);
+      console.log('[GrokGoonify] Refetch response:', response);
+
+      if (response.success && response.data) {
+        const processed = processPostData(response.data);
+        console.log('[GrokGoonify] Refetch processed:', processed);
+
+        setMediaUrls(processed.mediaUrls);
+        setVideoIdsToUpscale(processed.videosToUpscale);
+        setHdVideoCount(processed.hdVideoCount);
+        setStatusText(
+          `Found ${processed.urls.length} media (${processed.hdVideoCount} HD videos)`
+        );
+
+        // Check if all videos are HD now (use fresh data, not state)
+        if (processed.videosToUpscale.length === 0) {
+          setIsUpscaling(false);
+          setUpscaleProgress(100);
+          setStatusText('Upscale complete!');
+          clearInterval(interval);
           setRefetchInterval(null);
+          console.log('[GrokGoonify] Upscale complete, stopped refetch loop');
         }
       }
     }, randomDelay(TIMING.UPSCALE_REFETCH_MIN, TIMING.UPSCALE_REFETCH_MAX));
@@ -153,20 +177,21 @@ export const OpsView: React.FC = () => {
       {/* Action buttons */}
       <div className="flex gap-2">
         <Button
-          onClick={handleDownload}
-          icon={mdiDownload}
-          className="flex-1"
-        >
-          Download
-        </Button>
-
-        <Button
           onClick={handleUpscale}
           icon={mdiImageSizeSelectLarge}
           disabled={videoIdsToUpscale.length === 0 || isUpscaling}
           className="flex-1"
         >
           Upscale
+        </Button>
+
+        <Button
+          onClick={handleDownload}
+          icon={mdiDownload}
+          disabled={urls.length === 0}
+          className="flex-1"
+        >
+          Download
         </Button>
       </div>
     </div>

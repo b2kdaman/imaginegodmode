@@ -9,6 +9,7 @@ import { OpsView } from './OpsView';
 import { UI_POSITION } from '@/utils/constants';
 import { Button } from './Button';
 import { Tabs } from './Tabs';
+import { FullscreenButton } from './FullscreenButton';
 import { mdiChevronUp, mdiChevronDown } from '@mdi/js';
 
 export const MainPanel: React.FC = () => {
@@ -29,28 +30,32 @@ export const MainPanel: React.FC = () => {
     >
       {/* Main container */}
       <div className="flex flex-col items-end gap-2">
-        {/* Toggle button */}
-        <Button
-          variant="icon"
-          onClick={toggleExpanded}
-          icon={isExpanded ? mdiChevronDown : mdiChevronUp}
-          iconSize={0.9}
-          className="bg-grok-dark shadow-lg"
-          title={isExpanded ? 'Collapse panel' : 'Expand panel'}
-        />
+        {/* Toggle and fullscreen buttons */}
+        <div className="flex gap-2">
+          <FullscreenButton />
+          <Button
+            variant="icon"
+            onClick={toggleExpanded}
+            icon={isExpanded ? mdiChevronDown : mdiChevronUp}
+            iconSize={0.9}
+            className="bg-grok-dark shadow-lg"
+            title={isExpanded ? 'Collapse panel' : 'Expand panel'}
+          />
+        </div>
 
         {/* Content wrapper */}
         {isExpanded && (
           <div className="bg-grok-dark border border-white/20 rounded-2xl p-4 shadow-2xl w-[320px]">
+            {/* View content */}
+            {currentView === 'prompt' ? <PromptView /> : <OpsView />}
+
             {/* Tabs */}
             <Tabs
               tabs={tabs}
               activeTab={currentView}
               onChange={(tabId) => setCurrentView(tabId as any)}
+              direction="up"
             />
-
-            {/* View content */}
-            {currentView === 'prompt' ? <PromptView /> : <OpsView />}
           </div>
         )}
       </div>

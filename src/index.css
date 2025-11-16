@@ -37,4 +37,29 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
   }
+
+  /* Fullscreen video styles */
+  video:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;
+  }
+
+  video:-webkit-full-screen {
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;
+  }
+
+  video:-moz-full-screen {
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;
+  }
+
+  video:-ms-fullscreen {
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;
+  }
 }

@@ -11,6 +11,8 @@ import { PostData } from '@/types';
  * @returns Post data
  */
 export const fetchPostData = async (postId: string): Promise<PostData> => {
+  console.log('[GrokGoonify API] Fetching post:', postId, 'URL:', API_ENDPOINTS.POST_GET);
+
   const res = await fetch(API_ENDPOINTS.POST_GET, {
     method: 'POST',
     headers: {
@@ -18,13 +20,20 @@ export const fetchPostData = async (postId: string): Promise<PostData> => {
       'content-type': 'application/json',
     },
     body: JSON.stringify({ id: postId }),
+    credentials: 'include', // Include cookies for authentication
   });
 
+  console.log('[GrokGoonify API] Response status:', res.status, res.statusText);
+
   if (!res.ok) {
-    throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    console.error('[GrokGoonify API] Error response:', text);
+    throw new Error(`HTTP ${res.status}: ${text}`);
   }
 
-  return res.json();
+  const data = await res.json();
+  console.log('[GrokGoonify API] Success:', data);
+  return data;
 };
 
 /**

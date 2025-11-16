@@ -5,6 +5,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { App } from '../App';
+import { VERSION } from '../utils/constants';
 import '../index.css';
 
 // Wait for document to be ready
@@ -15,7 +16,12 @@ if (document.readyState === 'loading') {
 }
 
 function init() {
-  console.log('[GrokGoonify] Initializing Chrome extension...');
+  // Cool initialization tag
+  console.log(
+    `%c GrokGoonify v${VERSION} %c by b2kdaman `,
+    'background: #1a1a1a; color: #fff; padding: 4px 8px; border-radius: 3px 0 0 3px; font-weight: bold;',
+    'background: #3a3a3a; color: #b0b0b0; padding: 4px 8px; border-radius: 0 3px 3px 0;'
+  );
 
   // Create root container
   const rootId = 'grokgoonify-root';
@@ -34,6 +40,4 @@ function init() {
       <App />
     </React.StrictMode>
   );
-
-  console.log('[GrokGoonify] Extension loaded successfully');
 }

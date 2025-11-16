@@ -29,14 +29,42 @@ export interface MediaState {
   hdVideoCount: number;
 }
 
-export interface PostData {
+export interface ChildPost {
   id: string;
-  media?: Array<{
-    url?: string;
-    hdUrl?: string;
-    videoId?: string;
-    type: string;
-  }>;
+  userId: string;
+  createTime: string;
+  prompt: string;
+  mediaType: string;
+  mediaUrl: string;
+  mimeType: string;
+  originalPostId?: string;
+  audioUrls: string[];
+  childPosts: ChildPost[];
+  originalPrompt?: string;
+  mode?: string;
+  resolution?: {
+    width: number;
+    height: number;
+  };
+  modelName?: string;
+  thumbnailImageUrl?: string;
+  hdMediaUrl?: string;
+}
+
+export interface PostData {
+  post: {
+    id: string;
+    userId: string;
+    createTime: string;
+    prompt: string;
+    mediaType: string;
+    mediaUrl: string;
+    mimeType: string;
+    audioUrls: string[];
+    childPosts: ChildPost[];
+    originalPrompt?: string;
+    mode?: string;
+  };
 }
 
 export type ViewMode = 'prompt' | 'ops';
