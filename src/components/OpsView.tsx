@@ -2,7 +2,7 @@
  * Ops and media controls view component
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useMediaStore } from '@/store/useMediaStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { getPostIdFromUrl, randomDelay } from '@/utils/helpers';
@@ -11,6 +11,7 @@ import { processPostData } from '@/utils/mediaProcessor';
 import { TIMING } from '@/utils/constants';
 import { Button } from './Button';
 import { mdiDownload, mdiImageSizeSelectLarge } from '@mdi/js';
+import { useUrlWatcher } from '@/hooks/useUrlWatcher';
 
 export const OpsView: React.FC = () => {
   const {
@@ -33,7 +34,7 @@ export const OpsView: React.FC = () => {
   const [refetchInterval, setRefetchInterval] = useState<number | null>(null);
 
   // Fetch post data
-  const handleFetchPost = async () => {
+  const handleFetchPost = useCallback(async () => {
     const postId = getPostIdFromUrl();
     console.log('[GrokGoonify] Post ID:', postId);
 
@@ -62,7 +63,10 @@ export const OpsView: React.FC = () => {
       console.error('[GrokGoonify] Fetch failed:', response);
       setStatusText('Failed to fetch post data');
     }
-  };
+  }, [setMediaUrls, setVideoIdsToUpscale, setHdVideoCount, setStatusText]);
+
+  // Watch for URL changes and refetch data
+  useUrlWatcher(handleFetchPost);
 
   // Auto-fetch on mount
   useEffect(() => {

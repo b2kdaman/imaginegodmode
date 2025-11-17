@@ -22,7 +22,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - `F`: Toggle fullscreen (when not typing in text fields)
   - `Space`: Play/pause video
 - **Arrow Key Navigation**: Navigate videos with Left/Right arrow keys
-- **URL Watcher**: Automatically resets state when navigating between posts
+- **Automatic Data Refetch**: Automatically refetches post data when navigating between posts
 - **Persistent Storage**: All data saved with `chrome.storage.local` (prompts) and `localStorage` (settings)
 - **Extension Context Validation**: Graceful handling of extension reloads with proper error suppression
 - **Modern UI**: Bottom-placed tabs, pill-shaped buttons, Material Design Icons, dynamic theming
@@ -122,7 +122,7 @@ grkgoondl/
 ### Hooks
 
 - **useKeyboardShortcuts**: Global keyboard shortcut handlers
-- **useUrlWatcher**: Monitors URL changes and resets state
+- **useUrlWatcher**: Monitors URL changes, resets state, and triggers data refetch callback
 - **useArrowKeyNavigation**: Arrow key navigation for video controls
 - **useVideoProgress**: Real-time video generation progress tracking with polling
 
@@ -227,6 +227,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - **Download Protection**: Download button disabled until all videos are HD quality
 - **Video State Sync**: Play/pause button automatically syncs with video element state via event listeners
 - **Extension Reload Handling**: Storage operations validate extension context and fail gracefully during reloads
+- **Smart URL Watching**: URL changes trigger automatic data refetch via callback pattern in OpsView component
 
 ## Commands
 
