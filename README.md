@@ -7,9 +7,10 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Prompt Management**: Save, organize, and manage prompts with categories
 - **Star Ratings**: Rate your prompts with 1-5 stars (Material Design Icons)
 - **Category System**: Create custom categories to organize prompts
-- **Media Downloading**: Download images and videos from Grok posts
-- **Video Upscaling**: Batch upscale videos to HD quality with auto-fetch on Ops view
+- **Media Downloading**: Download images and videos from Grok posts (disabled until all videos are HD)
+- **Video Upscaling**: Parallel upscale requests with staggered start times for optimal performance
 - **Video Progress Tracking**: Real-time progress bar and button glow during video generation
+- **Video Controls**: Play/pause button with synchronized state tracking
 - **Fullscreen Video Player**: Intelligent fullscreen button that detects visible video (HD or SD)
 - **Theme Customization**: Choose from Dark, Light, or Dracula themes with full UI color adaptation
 - **UI Scaling**: Adjust panel size from Tiny (70%) to Large (115%)
@@ -19,9 +20,11 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - `Left Arrow`: Navigate to previous video
   - `Right Arrow`: Navigate to next video
   - `F`: Toggle fullscreen (when not typing in text fields)
+  - `Space`: Play/pause video
 - **Arrow Key Navigation**: Navigate videos with Left/Right arrow keys
 - **URL Watcher**: Automatically resets state when navigating between posts
 - **Persistent Storage**: All data saved with `chrome.storage.local` (prompts) and `localStorage` (settings)
+- **Extension Context Validation**: Graceful handling of extension reloads with proper error suppression
 - **Modern UI**: Bottom-placed tabs, pill-shaped buttons, Material Design Icons, dynamic theming
 - **Spin Feature**: Batch process list items (from userscript version)
 
@@ -72,14 +75,15 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Navigate with arrow buttons or keyboard
    - Copy and play prompts
 6. **Ops View**: Automatically fetches post data when opened
-   - Primary action: Upscale video
-   - Secondary action: Download media
+   - Primary action: Upscale videos (parallel processing with staggered starts)
+   - Secondary action: Download media (enabled only when all videos are HD)
    - Real-time status updates and progress tracking
 7. **Settings View**: Customize your experience
    - Choose theme: Dark, Light, or Dracula
    - Adjust UI size: Tiny to Large
    - View help and keyboard shortcuts
-8. **Fullscreen**: Click the fullscreen button next to the collapse button to enter fullscreen mode
+8. **Video Controls**: Use the play/pause button or press Space to control video playback
+9. **Fullscreen**: Click the fullscreen button or press F to enter fullscreen mode
 
 ## Project Structure
 
@@ -124,14 +128,15 @@ grkgoondl/
 
 ### Components
 
-- **MainPanel**: Floating panel container with fullscreen, collapse buttons, and version badge
+- **MainPanel**: Floating panel container with pause, fullscreen, collapse buttons, and version badge
 - **PromptView**: Prompt management interface
-- **OpsView**: Media controls and operations with auto-fetch functionality
+- **OpsView**: Media controls with parallel upscaling and HD-gated downloads
 - **SettingsView**: Theme and size preferences with help documentation
 - **CategoryManager**: Category dropdown and CRUD operations
 - **RatingSystem**: 5-star rating component with white icons
 - **Button**: Reusable button component with theme-aware styling and hover states
 - **Tabs**: Tab navigation component with theme support and bottom placement
+- **PauseButton**: Play/pause control with synchronized video state tracking
 - **FullscreenButton**: Intelligent fullscreen toggle with video detection
 - **Icon**: Material Design Icons wrapper
 
@@ -156,9 +161,10 @@ Uses `chrome.runtime.sendMessage()` for communication:
 - `upscaleVideo()` - Upscale video with authentication
 
 ### Storage
-Uses multiple storage mechanisms:
+Uses multiple storage mechanisms with context validation:
 - **chrome.storage.local**: Categories with prompts and ratings, automatic migration from old format
 - **localStorage**: Theme and size preferences for instant loading
+- **Extension Context Validation**: All storage operations check for valid extension context to gracefully handle extension reloads
 
 ## Development
 
@@ -217,6 +223,10 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Console initialization tag with styled branding using theme colors
 - API architecture refactored: content script handles authenticated calls, background worker handles downloads
 - Settings persist in localStorage for instant theme/size application on load
+- **Upscaling Strategy**: Videos upscale in parallel with random delays between starts (avoids rate limiting while maximizing speed)
+- **Download Protection**: Download button disabled until all videos are HD quality
+- **Video State Sync**: Play/pause button automatically syncs with video element state via event listeners
+- **Extension Reload Handling**: Storage operations validate extension context and fail gracefully during reloads
 
 ## Commands
 

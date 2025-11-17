@@ -13,6 +13,7 @@ import { UI_POSITION, VERSION } from '@/utils/constants';
 import { Button } from './Button';
 import { Tabs } from './Tabs';
 import { FullscreenButton } from './FullscreenButton';
+import { PauseButton } from './PauseButton';
 import { mdiChevronUp, mdiChevronDown } from '@mdi/js';
 
 export const MainPanel: React.FC = () => {
@@ -56,6 +57,7 @@ export const MainPanel: React.FC = () => {
               by b2kdaman
             </span>
           </div>
+          <PauseButton />
           <FullscreenButton />
           <Button
             variant="icon"

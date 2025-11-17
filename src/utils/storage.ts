@@ -13,14 +13,35 @@ export interface StorageData {
 }
 
 /**
+ * Check if the extension context is still valid
+ */
+const isExtensionContextValid = (): boolean => {
+  try {
+    // Try to access chrome.runtime.id - if it throws, context is invalidated
+    return !!chrome?.runtime?.id;
+  } catch {
+    return false;
+  }
+};
+
+/**
  * Get data from chrome.storage.local
  */
 export const getStorage = async (): Promise<StorageData | null> => {
+  if (!isExtensionContextValid()) {
+    console.warn('[GrokGoonify] Extension context invalidated - storage unavailable');
+    return null;
+  }
+
   try {
     const result = await chrome.storage.local.get(STORAGE_KEY);
     return result[STORAGE_KEY] || null;
   } catch (error) {
-    console.error('Failed to get storage:', error);
+    if (error instanceof Error && error.message.includes('Extension context invalidated')) {
+      console.warn('[GrokGoonify] Extension context invalidated during storage read');
+    } else {
+      console.error('Failed to get storage:', error);
+    }
     return null;
   }
 };
@@ -29,10 +50,19 @@ export const getStorage = async (): Promise<StorageData | null> => {
  * Set data to chrome.storage.local
  */
 export const setStorage = async (data: StorageData): Promise<boolean> => {
+  if (!isExtensionContextValid()) {
+    // Silently fail when context is invalidated - this is expected after extension reload
+    return false;
+  }
+
   try {
     await chrome.storage.local.set({ [STORAGE_KEY]: data });
     return true;
   } catch (error) {
+    if (error instanceof Error && error.message.includes('Extension context invalidated')) {
+      // Don't log error for expected context invalidation
+      return false;
+    }
     console.error('Failed to set storage:', error);
     return false;
   }
@@ -44,6 +74,11 @@ export const setStorage = async (data: StorageData): Promise<boolean> => {
 export const onStorageChange = (
   callback: (newData: StorageData | null) => void
 ): (() => void) => {
+  if (!isExtensionContextValid()) {
+    console.warn('[GrokGoonify] Extension context invalidated - cannot listen to storage changes');
+    return () => {}; // Return no-op cleanup function
+  }
+
   const listener = (
     changes: { [key: string]: chrome.storage.StorageChange },
     areaName: string
@@ -53,10 +88,21 @@ export const onStorageChange = (
     }
   };
 
-  chrome.storage.onChanged.addListener(listener);
+  try {
+    chrome.storage.onChanged.addListener(listener);
+  } catch (error) {
+    console.warn('[GrokGoonify] Failed to add storage listener:', error);
+    return () => {}; // Return no-op cleanup function
+  }
 
   // Return cleanup function
   return () => {
-    chrome.storage.onChanged.removeListener(listener);
+    try {
+      if (isExtensionContextValid()) {
+        chrome.storage.onChanged.removeListener(listener);
+      }
+    } catch {
+      // Silently fail if context is invalidated during cleanup
+    }
   };
 };

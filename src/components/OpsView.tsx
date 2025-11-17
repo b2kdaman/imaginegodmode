@@ -5,10 +5,9 @@
 import React, { useEffect, useState } from 'react';
 import { useMediaStore } from '@/store/useMediaStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
-import { getPostIdFromUrl } from '@/utils/helpers';
+import { getPostIdFromUrl, randomDelay } from '@/utils/helpers';
 import { fetchPost, downloadMedia, upscaleVideoById } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
-import { randomDelay } from '@/utils/helpers';
 import { TIMING } from '@/utils/constants';
 import { Button } from './Button';
 import { mdiDownload, mdiImageSizeSelectLarge } from '@mdi/js';
@@ -97,16 +96,30 @@ export const OpsView: React.FC = () => {
     const total = videoIdsToUpscale.length;
     let completed = 0;
 
-    for (const videoId of videoIdsToUpscale) {
-      await upscaleVideoById(videoId);
-      completed++;
-      setUpscaleProgress((completed / total) * 100);
+    // Fire off upscale requests with staggered start times
+    const upscalePromises = [];
 
-      if (completed < total) {
+    for (let i = 0; i < videoIdsToUpscale.length; i++) {
+      const videoId = videoIdsToUpscale[i];
+
+      // Start the upscale (don't await it)
+      const promise = upscaleVideoById(videoId).then(() => {
+        completed++;
+        setUpscaleProgress((completed / total) * 100);
+        console.log(`[GrokGoonify] Upscaled ${completed}/${total}: ${videoId}`);
+      });
+
+      upscalePromises.push(promise);
+
+      // Add random delay before starting next one (except for the last one)
+      if (i < videoIdsToUpscale.length - 1) {
         const delay = randomDelay(TIMING.UPSCALE_DELAY_MIN, TIMING.UPSCALE_DELAY_MAX);
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
+
+    // Wait for all to complete
+    await Promise.all(upscalePromises);
 
     // Start refetch loop
     startRefetchLoop();
@@ -203,9 +216,13 @@ export const OpsView: React.FC = () => {
         <Button
           onClick={handleDownload}
           icon={mdiDownload}
-          disabled={urls.length === 0}
+          disabled={urls.length === 0 || videoIdsToUpscale.length > 0}
           className="flex-1"
-          tooltip="Download all media files"
+          tooltip={
+            videoIdsToUpscale.length > 0
+              ? 'Upscale all videos to HD first'
+              : 'Download all media files'
+          }
         >
           Download
         </Button>

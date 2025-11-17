@@ -36,9 +36,10 @@ export const HelpView: React.FC = () => {
             <li>Save and organize prompts with categories</li>
             <li>Rate prompts with 1-5 star ratings</li>
             <li>Navigate prompts with arrow keys</li>
-            <li>Download images and videos</li>
-            <li>Upscale videos to HD quality</li>
+            <li>Download images and videos (when all videos are HD)</li>
+            <li>Parallel video upscaling to HD quality</li>
             <li>Real-time video generation progress</li>
+            <li>Play/pause video control</li>
             <li>Fullscreen video playback</li>
             <li>Theme customization (Dark, Light, Dracula)</li>
             <li>UI size scaling (Tiny to Large)</li>
@@ -186,6 +187,21 @@ export const HelpView: React.FC = () => {
               </span>
             </div>
             <span>Toggle fullscreen</span>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1">
+              <span
+                className="px-2 py-1 rounded text-[10px] font-medium"
+                style={{
+                  backgroundColor: colors.BACKGROUND_MEDIUM,
+                  color: colors.TEXT_PRIMARY,
+                  border: `1px solid ${colors.BORDER}`,
+                }}
+              >
+                Space
+              </span>
+            </div>
+            <span>Play/pause video</span>
           </div>
         </div>
       </div>
