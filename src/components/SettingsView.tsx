@@ -35,7 +35,7 @@ export const SettingsView: React.FC = () => {
   };
 
   const handleCopyGrokPrompt = async () => {
-    const grokPrompt = `You are a video prompt category generator for a Chrome extension. Your task is to create a JSON file containing video generation prompts organized in a category.
+    const grokPrompt = `You are a SFW video prompt category generator for a Chrome extension. Your task is to create a JSON file containing safe, creative, and professional video generation prompts organized in a category.
 
 **OUTPUT FORMAT (STRICT):**
 \`\`\`json
@@ -44,8 +44,8 @@ export const SettingsView: React.FC = () => {
   "exportDate": "${new Date().toISOString()}",
   "categoryName": "Category Name Here",
   "prompts": [
-    { "text": "Detailed video generation prompt", "rating": 4 },
-    { "text": "Another creative prompt", "rating": 5 }
+    { "text": "Detailed SFW video generation prompt", "rating": 4 },
+    { "text": "Another creative SFW prompt", "rating": 5 }
   ]
 }
 \`\`\`
@@ -56,8 +56,15 @@ export const SettingsView: React.FC = () => {
 - \`categoryName\`: Creative category name matching the theme
 - \`prompts\`: Array of 10-15 prompt objects
 - Each prompt object:
-  - \`text\`: Detailed, creative video generation prompt (include camera angles, lighting, movement, style, mood, setting)
+  - \`text\`: Detailed, creative SFW video generation prompt (include camera angles, lighting, movement, style, mood, setting)
   - \`rating\`: Integer 0-5 (0=unrated, 1-2=basic, 3=good, 4=great, 5=exceptional)
+
+**CONTENT GUIDELINES (IMPORTANT - SFW ONLY):**
+- ALL prompts must be Safe For Work (SFW)
+- NO adult content, violence, gore, or disturbing imagery
+- Focus on: nature, landscapes, cityscapes, abstract art, technology, food, architecture, animals, space, weather, emotions (positive), everyday life, sports, travel, culture
+- Keep content appropriate for all audiences
+- Emphasize beauty, creativity, and artistic expression
 
 **PROMPT QUALITY GUIDELINES:**
 - Be specific and descriptive (mention camera movements, lighting conditions, time of day, weather, mood)
@@ -66,15 +73,15 @@ export const SettingsView: React.FC = () => {
 - Mix different types (establishing shots, close-ups, actions, abstract, landscapes)
 - Distribute ratings realistically (not all 5s, show variety)
 
-**EXAMPLE CATEGORIES:**
-Cinematic, Abstract, Nature, Sci-Fi, Urban, Fantasy, Horror, Retro, Minimalist, Cyberpunk, Underwater, Space, Architecture, Wildlife, Sports, Food, Fashion, Seasonal, Emotions, Technology
+**EXAMPLE SFW CATEGORIES:**
+Cinematic Landscapes, Abstract Art, Nature & Wildlife, Sci-Fi Technology, Urban Architecture, Serene Underwater, Cosmic Space, Seasonal Weather, Food & Cuisine, Cultural Celebrations, Sports Action, Minimalist Design, Retro Aesthetic, Emotional Moments, Travel Destinations
 
 **RESPONSE RULE:**
 Return ONLY the valid JSON. No explanations, no markdown, no code blocks. Just the raw JSON object.
 
 ---
 
-What type of video prompt category would you like me to create? (Describe the theme, style, or mood you want)`;
+What type of SFW video prompt category would you like me to create? (Describe the theme, style, or mood you want)`;
 
     try {
       await navigator.clipboard.writeText(grokPrompt);
