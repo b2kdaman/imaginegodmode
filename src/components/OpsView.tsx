@@ -197,7 +197,7 @@ export const OpsView: React.FC = () => {
       {/* Status text */}
       <div className="text-sm text-center flex items-center justify-center gap-2" style={{ color: colors.TEXT_SECONDARY }}>
         {allVideosHD && (
-          <Icon path={mdiCheckCircle} size={0.7} color="#10b981" />
+          <Icon path={mdiCheckCircle} size={0.7} color={colors.SUCCESS} />
         )}
         <span>{statusText}</span>
       </div>

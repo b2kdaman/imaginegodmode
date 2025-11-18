@@ -94,8 +94,8 @@ export const SettingsView: React.FC = () => {
           <div
             className="w-full h-full rounded-full transition-colors peer-checked:bg-green-500"
             style={{
-              backgroundColor: autoDownload ? '#10b981' : colors.BACKGROUND_MEDIUM,
-              border: `2px solid ${autoDownload ? '#10b981' : colors.BORDER}`,
+              backgroundColor: autoDownload ? colors.SUCCESS : colors.BACKGROUND_MEDIUM,
+              border: `2px solid ${autoDownload ? colors.SUCCESS : colors.BORDER}`,
             }}
           >
             <div

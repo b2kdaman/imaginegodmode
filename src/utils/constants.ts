@@ -60,6 +60,9 @@ export const THEMES = {
     SHADOW: 'rgba(0,0,0,0.4)',
     BORDER: 'rgba(255, 255, 255, 0.2)',
 
+    // Accent Colors
+    SUCCESS: '#10b981',
+
     // Progress & Effects
     PROGRESS_BAR: 'rgba(255, 255, 255, 0.5)',
     GLOW_PRIMARY: 'rgba(255, 255, 255, 0.6)',
@@ -82,6 +85,9 @@ export const THEMES = {
     SHADOW: 'rgba(0,0,0,0.15)',
     BORDER: 'rgba(0, 0, 0, 0.2)',
 
+    // Accent Colors
+    SUCCESS: '#059669',
+
     // Progress & Effects
     PROGRESS_BAR: 'rgba(0, 0, 0, 0.3)',
     GLOW_PRIMARY: 'rgba(0, 0, 0, 0.4)',
@@ -103,6 +109,9 @@ export const THEMES = {
     // UI Elements
     SHADOW: 'rgba(0,0,0,0.5)',
     BORDER: 'rgba(189, 147, 249, 0.3)', // Purple border
+
+    // Accent Colors
+    SUCCESS: '#50fa7b',           // Dracula green
 
     // Progress & Effects - White for progress, Dracula green/cyan for glow
     PROGRESS_BAR: 'rgba(255, 255, 255, 1)',    // White

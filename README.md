@@ -216,7 +216,8 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Custom icons included (gold "G" logo at 16px, 48px, 128px)
 - Extension requires permissions for `storage`, `downloads`, and `activeTab`
 - Works on `https://grok.com/*` and `https://www.grok.com/*`
-- **Theme System**: Three built-in themes (Dark, Light, Dracula) with full color palette adaptation
+- **Theme System**: Three built-in themes (Dark, Light, Dracula) with full color palette adaptation including theme-aware accent colors
+- **Theme-Aware Accents**: Success indicators (HD checkmark, auto-download toggle) adapt to each theme's color scheme
 - **UI Scaling**: CSS transform-based scaling maintains crisp rendering at all sizes
 - All buttons use pill shape with theme-aware styling and hover states
 - Material Design Icons for professional appearance
