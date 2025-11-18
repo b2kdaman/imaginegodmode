@@ -260,10 +260,12 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 ## Commands
 
 ```bash
-npm install          # Install dependencies
-npm run build        # Build extension for production
-npm run dev          # Development mode with hot reload
-npm run type-check   # TypeScript type checking
+npm install             # Install dependencies
+npm run build           # Build extension for production
+npm run build:zip       # Build and create zip for Chrome Web Store
+npm run zip             # Create zip from existing dist folder
+npm run dev             # Development mode with hot reload
+npm run type-check      # TypeScript type checking
 npm run generate-icons  # Regenerate extension icons
 ```
 

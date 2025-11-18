@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "build:check": "tsc --noEmit && vite build",
+    "build:zip": "vite build && node scripts/zip-dist.js",
+    "zip": "node scripts/zip-dist.js",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "generate-icons": "node scripts/generate-icons.js"
@@ -25,6 +27,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "archiver": "^7.0.1",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
     "sharp": "^0.34.5",

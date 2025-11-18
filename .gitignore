@@ -18,6 +18,7 @@ dist-ssr
 build
 .crx
 .pem
+*.zip
 
 # Archived userscript build
 !archive/userscript/dist/grokgoonify.user.js
