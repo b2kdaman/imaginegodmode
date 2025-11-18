@@ -8,8 +8,10 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Star Ratings**: Rate your prompts with 1-5 stars (Material Design Icons)
 - **Category System**: Create custom categories to organize prompts
 - **Media Downloading**: Download images and videos from Grok posts (disabled until all videos are HD)
+- **Auto Download**: Optional setting to automatically download all media after upscaling completes
 - **Video Upscaling**: Parallel upscale requests with staggered start times for optimal performance
 - **Video Progress Tracking**: Real-time progress bar and button glow during video generation
+- **HD Status Indicator**: Green check icon appears when all videos are HD quality
 - **Video Controls**: Play/pause button with synchronized state tracking
 - **Fullscreen Video Player**: Intelligent fullscreen button that detects visible video (HD or SD)
 - **Theme Customization**: Choose from Dark, Light, or Dracula themes with full UI color adaptation
@@ -78,10 +80,11 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Primary action: Upscale videos (parallel processing with staggered starts)
    - Secondary action: Download media (enabled only when all videos are HD)
    - Real-time status updates and progress tracking
+   - Green check icon appears when all videos are HD quality
 7. **Settings View**: Customize your experience
    - Choose theme: Dark, Light, or Dracula
    - Adjust UI size: Tiny to Large
-   - View help and keyboard shortcuts
+   - Enable Auto Download to automatically download media after upscaling
 8. **Video Controls**: Use the play/pause button or press Space to control video playback
 9. **Fullscreen**: Click the fullscreen button or press F to enter fullscreen mode
 
@@ -117,7 +120,7 @@ grkgoondl/
 - **usePromptStore**: Manages prompts, categories, and ratings
 - **useMediaStore**: Handles media URLs, upscaling, and status
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
-- **useSettingsStore**: Manages theme and size preferences with localStorage persistence
+- **useSettingsStore**: Manages theme, size, and auto-download preferences with localStorage persistence
 
 ### Hooks
 
@@ -130,8 +133,8 @@ grkgoondl/
 
 - **MainPanel**: Floating panel container with pause, fullscreen, collapse buttons, and version badge
 - **PromptView**: Prompt management interface
-- **OpsView**: Media controls with parallel upscaling and HD-gated downloads
-- **SettingsView**: Theme and size preferences with help documentation
+- **OpsView**: Media controls with parallel upscaling, HD-gated downloads, and auto-download support
+- **SettingsView**: Theme, size, and auto-download preferences
 - **CategoryManager**: Category dropdown and CRUD operations
 - **RatingSystem**: 5-star rating component with white icons
 - **Button**: Reusable button component with theme-aware styling and hover states
@@ -222,9 +225,11 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Video progress polling every 500ms with auto-removal on completion
 - Console initialization tag with styled branding using theme colors
 - API architecture refactored: content script handles authenticated calls, background worker handles downloads
-- Settings persist in localStorage for instant theme/size application on load
+- Settings persist in localStorage for instant theme/size/auto-download application on load
 - **Upscaling Strategy**: Videos upscale in parallel with random delays between starts (avoids rate limiting while maximizing speed)
 - **Download Protection**: Download button disabled until all videos are HD quality
+- **Auto Download**: Optional toggle in Settings to automatically download all media after upscaling completes
+- **HD Status Visual**: Green check icon displays in Ops view when all videos are HD quality
 - **Video State Sync**: Play/pause button automatically syncs with video element state via event listeners
 - **Extension Reload Handling**: Storage operations validate extension context and fail gracefully during reloads
 - **Smart URL Watching**: URL changes trigger automatic data refetch via callback pattern in OpsView component

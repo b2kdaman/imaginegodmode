@@ -1,6 +1,6 @@
 {
   "name": "grokgoonify-chrome-extension",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Chrome extension for Grok media management with React",
   "type": "module",
   "scripts": {

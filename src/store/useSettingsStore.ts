@@ -11,8 +11,10 @@ export type Size = 'tiny' | 'small' | 'medium' | 'large';
 interface SettingsState {
   theme: Theme;
   size: Size;
+  autoDownload: boolean;
   setTheme: (theme: Theme) => void;
   setSize: (size: Size) => void;
+  setAutoDownload: (autoDownload: boolean) => void;
   getThemeColors: () => typeof THEMES.dark;
   getScale: () => number;
 }
@@ -28,7 +30,7 @@ const SIZE_SCALE_MAP: Record<Size, number> = {
 };
 
 // Load settings from localStorage
-const loadSettings = (): { theme: Theme; size: Size } => {
+const loadSettings = (): { theme: Theme; size: Size; autoDownload: boolean } => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
@@ -38,18 +40,19 @@ const loadSettings = (): { theme: Theme; size: Size } => {
       return {
         theme: validThemes.includes(parsed.theme) ? parsed.theme : 'dark',
         size: validSizes.includes(parsed.size) ? parsed.size : 'medium',
+        autoDownload: typeof parsed.autoDownload === 'boolean' ? parsed.autoDownload : false,
       };
     }
   } catch (error) {
     console.error('[Settings] Failed to load from localStorage:', error);
   }
-  return { theme: 'dark', size: 'medium' };
+  return { theme: 'dark', size: 'medium', autoDownload: false };
 };
 
 // Save settings to localStorage
-const saveSettings = (theme: Theme, size: Size) => {
+const saveSettings = (theme: Theme, size: Size, autoDownload: boolean) => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ theme, size }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ theme, size, autoDownload }));
   } catch (error) {
     console.error('[Settings] Failed to save to localStorage:', error);
   }
@@ -59,15 +62,21 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   ...loadSettings(),
 
   setTheme: (theme: Theme) => {
-    const { size } = get();
-    saveSettings(theme, size);
+    const { size, autoDownload } = get();
+    saveSettings(theme, size, autoDownload);
     set({ theme });
   },
 
   setSize: (size: Size) => {
-    const { theme } = get();
-    saveSettings(theme, size);
+    const { theme, autoDownload } = get();
+    saveSettings(theme, size, autoDownload);
     set({ size });
+  },
+
+  setAutoDownload: (autoDownload: boolean) => {
+    const { theme, size } = get();
+    saveSettings(theme, size, autoDownload);
+    set({ autoDownload });
   },
 
   getThemeColors: () => {

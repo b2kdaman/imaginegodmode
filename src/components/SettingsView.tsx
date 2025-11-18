@@ -6,7 +6,7 @@ import React from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, setTheme, setSize, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, setTheme, setSize, setAutoDownload, getThemeColors } = useSettingsStore();
   const colors = getThemeColors();
 
   return (
@@ -72,6 +72,41 @@ export const SettingsView: React.FC = () => {
           <option value="medium">Medium (100%)</option>
           <option value="large">Large (115%)</option>
         </select>
+      </div>
+
+      {/* Auto Download Setting */}
+      <div className="flex items-center justify-between gap-2">
+        <label
+          className="text-sm cursor-pointer"
+          style={{ color: colors.TEXT_PRIMARY }}
+          htmlFor="auto-download-toggle"
+        >
+          Auto Download
+        </label>
+        <label className="relative inline-block w-12 h-6 cursor-pointer">
+          <input
+            id="auto-download-toggle"
+            type="checkbox"
+            checked={autoDownload}
+            onChange={(e) => setAutoDownload(e.target.checked)}
+            className="sr-only peer"
+          />
+          <div
+            className="w-full h-full rounded-full transition-colors peer-checked:bg-green-500"
+            style={{
+              backgroundColor: autoDownload ? '#10b981' : colors.BACKGROUND_MEDIUM,
+              border: `2px solid ${autoDownload ? '#10b981' : colors.BORDER}`,
+            }}
+          >
+            <div
+              className="absolute top-[2px] left-[2px] w-5 h-5 rounded-full transition-transform"
+              style={{
+                backgroundColor: colors.TEXT_PRIMARY,
+                transform: autoDownload ? 'translateX(24px)' : 'translateX(0)',
+              }}
+            />
+          </div>
+        </label>
       </div>
 
     </div>

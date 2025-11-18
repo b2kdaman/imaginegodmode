@@ -10,7 +10,8 @@ import { fetchPost, downloadMedia, upscaleVideoById } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
 import { TIMING } from '@/utils/constants';
 import { Button } from './Button';
-import { mdiDownload, mdiImageSizeSelectLarge } from '@mdi/js';
+import { Icon } from './Icon';
+import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle } from '@mdi/js';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
 
 export const OpsView: React.FC = () => {
@@ -28,7 +29,7 @@ export const OpsView: React.FC = () => {
     setHdVideoCount,
     setStatusText,
   } = useMediaStore();
-  const { getThemeColors } = useSettingsStore();
+  const { autoDownload, getThemeColors } = useSettingsStore();
   const colors = getThemeColors();
 
   const [refetchInterval, setRefetchInterval] = useState<number | null>(null);
@@ -156,6 +157,22 @@ export const OpsView: React.FC = () => {
           clearInterval(interval);
           setRefetchInterval(null);
           console.log('[GrokGoonify] Upscale complete, stopped refetch loop');
+
+          // Auto-download if enabled
+          if (autoDownload) {
+            console.log('[GrokGoonify] Auto-download enabled, starting download...');
+            setTimeout(async () => {
+              setStatusText('Auto-downloading...');
+              const urlStrings = processed.mediaUrls.map((m) => m.url);
+              const response = await downloadMedia(urlStrings);
+
+              if (response.success) {
+                setStatusText(`Auto-downloaded ${response.data.count} files`);
+              } else {
+                setStatusText('Auto-download failed');
+              }
+            }, 500); // Small delay to ensure UI updates properly
+          }
         }
       }
     }, randomDelay(TIMING.UPSCALE_REFETCH_MIN, TIMING.UPSCALE_REFETCH_MAX));
@@ -172,11 +189,17 @@ export const OpsView: React.FC = () => {
     };
   }, [refetchInterval]);
 
+  // Check if all videos are HD
+  const allVideosHD = urls.length > 0 && videoIdsToUpscale.length === 0 && hdVideoCount > 0;
+
   return (
     <div className="flex flex-col gap-3">
       {/* Status text */}
-      <div className="text-sm text-center" style={{ color: colors.TEXT_SECONDARY }}>
-        {statusText}
+      <div className="text-sm text-center flex items-center justify-center gap-2" style={{ color: colors.TEXT_SECONDARY }}>
+        {allVideosHD && (
+          <Icon path={mdiCheckCircle} size={0.7} color="#10b981" />
+        )}
+        <span>{statusText}</span>
       </div>
 
       {/* Progress bar */}
