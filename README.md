@@ -6,7 +6,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 
 - **Prompt Management**: Save, organize, and manage prompts with categories
 - **Star Ratings**: Rate your prompts with 1-5 stars (Material Design Icons)
-- **Category System**: Create custom categories to organize prompts
+- **Category System**: Create custom categories to organize prompts with confirmation dialog for deletion and text truncation
 - **Import/Export**: Backup and restore categories with JSON files (merge or replace modes)
 - **Media Downloading**: Download images and videos from Grok posts (disabled until all videos are HD)
 - **Auto Download**: Optional setting to automatically download all media after upscaling completes
@@ -141,9 +141,10 @@ grkgoondl/
 - **PromptView**: Prompt management interface
 - **OpsView**: Media controls with parallel upscaling, HD-gated downloads, and auto-download support
 - **SettingsView**: Theme, size, auto-download preferences, and data management with import/export
-- **CategoryManager**: Category dropdown and CRUD operations
+- **CategoryManager**: Category dropdown with text truncation and CRUD operations
 - **CategorySelectModal**: Modal for selecting which category to export
 - **ImportCategoryModal**: Modal for importing categories via paste or file upload with validation
+- **ConfirmDeleteModal**: Confirmation dialog for category deletion with warning message
 - **RatingSystem**: 5-star rating component with white icons
 - **Button**: Reusable button component with theme-aware styling and hover states
 - **Tabs**: Tab navigation component with theme support and bottom placement

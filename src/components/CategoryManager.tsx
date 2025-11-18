@@ -6,7 +6,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { Button } from './Button';
-import { UI_COLORS } from '@/utils/constants';
+import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 import { mdiPlus, mdiClose, mdiCheck, mdiDelete } from '@mdi/js';
 
 export const CategoryManager: React.FC = () => {
@@ -22,7 +22,7 @@ export const CategoryManager: React.FC = () => {
 
   const [isAdding, setIsAdding] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
-  const [lastDeleteClickTime, setLastDeleteClickTime] = useState(0);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const categoryNames = Object.keys(categories);
@@ -43,22 +43,8 @@ export const CategoryManager: React.FC = () => {
 
   const handleDeleteCategory = () => {
     if (categoryNames.length <= 1) return;
-
-    const now = Date.now();
-    const timeSinceLastClick = now - lastDeleteClickTime;
-
-    if (timeSinceLastClick < 500) {
-      // Double click confirmed - delete
-      deleteCategory(currentCategory);
-      setLastDeleteClickTime(0);
-    } else {
-      // First click
-      setLastDeleteClickTime(now);
-      setTimeout(() => setLastDeleteClickTime(0), 500);
-    }
+    deleteCategory(currentCategory);
   };
-
-  const isDeleteHighlighted = Date.now() - lastDeleteClickTime < 500;
 
   return (
     <div className="flex items-center gap-2 mb-3">
@@ -67,7 +53,7 @@ export const CategoryManager: React.FC = () => {
           <select
             value={currentCategory}
             onChange={(e) => setCurrentCategory(e.target.value)}
-            className="flex-1 pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none"
+            className="pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none"
             style={{
               backgroundColor: colors.BACKGROUND_MEDIUM,
               color: colors.TEXT_PRIMARY,
@@ -79,6 +65,12 @@ export const CategoryManager: React.FC = () => {
               appearance: 'none',
               WebkitAppearance: 'none',
               MozAppearance: 'none',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              minWidth: 0,
+              maxWidth: '100%',
+              flex: 1,
             }}
           >
             {categoryNames.map((name) => (
@@ -97,19 +89,15 @@ export const CategoryManager: React.FC = () => {
           />
 
           <Button
-            onClick={handleDeleteCategory}
+            onClick={() => setShowDeleteModal(true)}
             icon={mdiDelete}
             iconSize={0.7}
             variant="icon"
             disabled={categoryNames.length <= 1}
-            style={{
-              backgroundColor: isDeleteHighlighted ? UI_COLORS.DANGER : UI_COLORS.BACKGROUND_MEDIUM,
-              color: UI_COLORS.WHITE,
-            }}
             tooltip={
               categoryNames.length <= 1
                 ? 'Cannot delete last category'
-                : 'Double-click to delete category'
+                : 'Delete category'
             }
           />
         </>
@@ -156,6 +144,15 @@ export const CategoryManager: React.FC = () => {
           />
         </>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={showDeleteModal}
+        categoryName={currentCategory}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteCategory}
+        getThemeColors={getThemeColors}
+      />
     </div>
   );
 };

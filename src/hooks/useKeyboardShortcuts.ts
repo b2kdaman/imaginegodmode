@@ -35,16 +35,18 @@ export const useKeyboardShortcuts = () => {
       if (modifierKey && e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
 
-        const makeVideoBtn = Array.from(document.querySelectorAll('button')).find(
-          (btn) => btn.textContent?.includes('Make a Video')
-        );
+        setTimeout(() => {
+          const makeVideoBtn = Array.from(document.querySelectorAll('button')).find(
+            (btn) => btn.textContent?.includes('Make a Video')
+          );
 
-        if (makeVideoBtn) {
-          makeVideoBtn.click();
-        }
+          if (makeVideoBtn) {
+            makeVideoBtn.click();
+          }
+        }, 100);
       }
 
-      // Ctrl/Cmd + Shift + Enter: Copy prompt and click "Make a Video"
+      // Ctrl/Cmd + Shift + Enter: Copy prompt and click "Make video"
       if (modifierKey && e.key === 'Enter' && e.shiftKey) {
         e.preventDefault();
 
@@ -55,15 +57,38 @@ export const useKeyboardShortcuts = () => {
           textarea.value = currentPrompt.text;
           textarea.dispatchEvent(new Event('input', { bubbles: true }));
 
+          // Trigger React's synthetic event
+          const inputEvent = new Event('input', { bubbles: true });
+          Object.defineProperty(inputEvent, 'target', { value: textarea, enumerable: true });
+          textarea.dispatchEvent(inputEvent);
+
           setTimeout(() => {
-            const makeVideoBtn = Array.from(document.querySelectorAll('button')).find(
-              (btn) => btn.textContent?.includes('Make a Video')
-            );
+            // Try multiple selectors to find the Make video button
+            let makeVideoBtn = document.querySelector('button[aria-label="Make video"]') as HTMLButtonElement;
+
+            if (!makeVideoBtn) {
+              makeVideoBtn = document.querySelector('button[aria-label*="Make" i]') as HTMLButtonElement;
+            }
+
+            if (!makeVideoBtn) {
+              makeVideoBtn = Array.from(document.querySelectorAll('button')).find(
+                (btn) => btn.textContent?.trim() === 'Make a Video'
+              ) as HTMLButtonElement;
+            }
+
+            if (!makeVideoBtn) {
+              makeVideoBtn = Array.from(document.querySelectorAll('button')).find(
+                (btn) => btn.textContent?.includes('Make') && btn.textContent?.includes('Video')
+              ) as HTMLButtonElement;
+            }
 
             if (makeVideoBtn) {
+              console.log('[ImagineGodMode] Found Make video button, clicking:', makeVideoBtn);
               makeVideoBtn.click();
+            } else {
+              console.warn('[ImagineGodMode] Make video button not found');
             }
-          }, 100);
+          }, 200);
         }
       }
     };
