@@ -106,3 +106,140 @@ export const onStorageChange = (
     }
   };
 };
+
+/**
+ * Export data structure for import/export
+ */
+export interface ExportData {
+  version: string;
+  exportDate: string;
+  categoryName: string;
+  prompts: PromptItem[];
+}
+
+/**
+ * Export single category to JSON file
+ */
+export const exportCategory = (categoryName: string, prompts: PromptItem[]): void => {
+  const exportData: ExportData = {
+    version: '1.0',
+    exportDate: new Date().toISOString(),
+    categoryName,
+    prompts,
+  };
+
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+    type: 'application/json',
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+
+  // Format: grokgoonify-category-CategoryName-YYYY-MM-DD.json
+  const dateStr = new Date().toISOString().split('T')[0];
+  const safeCategoryName = categoryName.replace(/[^a-z0-9]/gi, '_');
+  a.download = `grokgoonify-category-${safeCategoryName}-${dateStr}.json`;
+
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+/**
+ * Validate import data structure (per-category)
+ */
+const validateImportData = (data: unknown): data is ExportData => {
+  if (!data || typeof data !== 'object') return false;
+
+  const obj = data as Record<string, unknown>;
+
+  // Check required fields
+  if (typeof obj.version !== 'string') return false;
+  if (typeof obj.exportDate !== 'string') return false;
+  if (typeof obj.categoryName !== 'string' || obj.categoryName.trim() === '') return false;
+  if (!Array.isArray(obj.prompts)) return false;
+
+  const prompts = obj.prompts as unknown[];
+
+  // Validate each prompt
+  for (const prompt of prompts) {
+    if (!prompt || typeof prompt !== 'object') return false;
+    const p = prompt as Record<string, unknown>;
+
+    if (typeof p.text !== 'string') return false;
+    if (typeof p.rating !== 'number') return false;
+    if (p.rating < 0 || p.rating > 5) return false;
+  }
+
+  return true;
+};
+
+/**
+ * Import category from JSON file
+ */
+export const importCategory = (
+  file: File,
+  mode: 'add' | 'replace',
+  currentCategories: Categories
+): Promise<{
+  success: boolean;
+  categoryName?: string;
+  prompts?: PromptItem[];
+  categories?: Categories;
+  error?: string
+}> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const data = JSON.parse(content);
+
+        // Validate structure
+        if (!validateImportData(data)) {
+          resolve({ success: false, error: 'Invalid file format' });
+          return;
+        }
+
+        let resultCategories: Categories = { ...currentCategories };
+
+        if (mode === 'replace') {
+          // Replace: overwrite category if exists, otherwise add new
+          resultCategories[data.categoryName] = data.prompts;
+        } else {
+          // Add: only add if category doesn't exist
+          if (!resultCategories[data.categoryName]) {
+            resultCategories[data.categoryName] = data.prompts;
+          } else {
+            resolve({
+              success: false,
+              error: `Category "${data.categoryName}" already exists. Use Replace mode to overwrite.`
+            });
+            return;
+          }
+        }
+
+        resolve({
+          success: true,
+          categoryName: data.categoryName,
+          prompts: data.prompts,
+          categories: resultCategories
+        });
+      } catch (error) {
+        resolve({
+          success: false,
+          error: error instanceof Error ? error.message : 'Failed to parse file',
+        });
+      }
+    };
+
+    reader.onerror = () => {
+      resolve({ success: false, error: 'Failed to read file' });
+    };
+
+    reader.readAsText(file);
+  });
+};

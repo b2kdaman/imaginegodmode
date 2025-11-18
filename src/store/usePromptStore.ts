@@ -4,7 +4,7 @@
 
 import { create } from 'zustand';
 import { PromptItem, Categories } from '@/types';
-import { getStorage, setStorage } from '@/utils/storage';
+import { getStorage, setStorage, exportCategory, importCategory } from '@/utils/storage';
 
 interface PromptStore {
   // State
@@ -34,6 +34,10 @@ interface PromptStore {
   // Computed
   getCurrentPrompt: () => PromptItem | null;
   getCurrentPromptCount: () => number;
+
+  // Import/Export
+  exportCurrentCategory: () => void;
+  importCategory: (file: File, mode: 'add' | 'replace') => Promise<{ success: boolean; error?: string; categoryName?: string }>;
 }
 
 export const usePromptStore = create<PromptStore>((set, get) => ({
@@ -215,5 +219,33 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
   getCurrentPromptCount: () => {
     const { categories, currentCategory } = get();
     return (categories[currentCategory] || []).length;
+  },
+
+  // Import/Export
+  exportCurrentCategory: () => {
+    const { categories, currentCategory } = get();
+    const prompts = categories[currentCategory] || [];
+    exportCategory(currentCategory, prompts);
+  },
+
+  importCategory: async (file: File, mode: 'add' | 'replace') => {
+    const { categories } = get();
+    const result = await importCategory(file, mode, categories);
+
+    if (result.success && result.categories && result.categoryName) {
+      // Update categories
+      set({
+        categories: result.categories,
+        currentCategory: result.categoryName, // Switch to imported category
+        currentIndex: 0,
+      });
+
+      // Save to storage
+      await get().saveToStorage();
+
+      return { success: true, categoryName: result.categoryName };
+    }
+
+    return { success: false, error: result.error };
   },
 }));

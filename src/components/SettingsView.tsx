@@ -2,12 +2,104 @@
  * Settings view component
  */
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import { usePromptStore } from '@/store/usePromptStore';
+import { exportCategory } from '@/utils/storage';
+import { Button } from './Button';
+import { Icon } from './Icon';
+import { CategorySelectModal } from './CategorySelectModal';
+import { ImportCategoryModal } from './ImportCategoryModal';
+import { mdiDownload, mdiUpload, mdiContentCopy } from '@mdi/js';
 
 export const SettingsView: React.FC = () => {
   const { theme, size, autoDownload, setTheme, setSize, setAutoDownload, getThemeColors } = useSettingsStore();
+  const { exportCurrentCategory, importCategory, currentCategory, categories } = usePromptStore();
   const colors = getThemeColors();
+
+  const [importMode, setImportMode] = useState<'add' | 'replace'>('add');
+  const [statusMessage, setStatusMessage] = useState<string>('');
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+
+  const handleExportClick = () => {
+    setIsExportModalOpen(true);
+  };
+
+  const handleExportCategory = (categoryName: string) => {
+    const prompts = categories[categoryName] || [];
+    exportCategory(categoryName, prompts);
+    setStatusMessage(`Category "${categoryName}" exported successfully!`);
+    setTimeout(() => setStatusMessage(''), 3000);
+    setIsExportModalOpen(false);
+  };
+
+  const handleCopyGrokPrompt = async () => {
+    const grokPrompt = `You are a video prompt category generator for a Chrome extension. Your task is to create a JSON file containing video generation prompts organized in a category.
+
+**OUTPUT FORMAT (STRICT):**
+\`\`\`json
+{
+  "version": "1.0",
+  "exportDate": "${new Date().toISOString()}",
+  "categoryName": "Category Name Here",
+  "prompts": [
+    { "text": "Detailed video generation prompt", "rating": 4 },
+    { "text": "Another creative prompt", "rating": 5 }
+  ]
+}
+\`\`\`
+
+**FIELD REQUIREMENTS:**
+- \`version\`: Must be exactly "1.0"
+- \`exportDate\`: ISO 8601 timestamp (use current date/time)
+- \`categoryName\`: Creative category name matching the theme
+- \`prompts\`: Array of 10-15 prompt objects
+- Each prompt object:
+  - \`text\`: Detailed, creative video generation prompt (include camera angles, lighting, movement, style, mood, setting)
+  - \`rating\`: Integer 0-5 (0=unrated, 1-2=basic, 3=good, 4=great, 5=exceptional)
+
+**PROMPT QUALITY GUIDELINES:**
+- Be specific and descriptive (mention camera movements, lighting conditions, time of day, weather, mood)
+- Include cinematic details (focal length, framing, speed, effects)
+- Vary complexity and style across prompts
+- Mix different types (establishing shots, close-ups, actions, abstract, landscapes)
+- Distribute ratings realistically (not all 5s, show variety)
+
+**EXAMPLE CATEGORIES:**
+Cinematic, Abstract, Nature, Sci-Fi, Urban, Fantasy, Horror, Retro, Minimalist, Cyberpunk, Underwater, Space, Architecture, Wildlife, Sports, Food, Fashion, Seasonal, Emotions, Technology
+
+**RESPONSE RULE:**
+Return ONLY the valid JSON. No explanations, no markdown, no code blocks. Just the raw JSON object.
+
+---
+
+What type of video prompt category would you like me to create? (Describe the theme, style, or mood you want)`;
+
+    try {
+      await navigator.clipboard.writeText(grokPrompt);
+      setStatusMessage('Grok prompt copied to clipboard!');
+      setTimeout(() => setStatusMessage(''), 3000);
+    } catch (error) {
+      setStatusMessage('Failed to copy prompt');
+      setTimeout(() => setStatusMessage(''), 3000);
+    }
+  };
+
+  const handleImportClick = () => {
+    setIsImportModalOpen(true);
+  };
+
+  const handleImport = async (file: File) => {
+    const result = await importCategory(file, importMode);
+
+    if (result.success && result.categoryName) {
+      setStatusMessage(`Category "${result.categoryName}" imported successfully (${importMode} mode)!`);
+      setTimeout(() => setStatusMessage(''), 3000);
+    } else {
+      throw new Error(result.error || 'Unknown error');
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4 w-full">
@@ -108,6 +200,149 @@ export const SettingsView: React.FC = () => {
           </div>
         </label>
       </div>
+
+      {/* Divider */}
+      <div
+        className="w-full h-px"
+        style={{ backgroundColor: colors.BORDER }}
+      />
+
+      {/* Data Management Section */}
+      <div className="flex flex-col gap-3">
+        <label
+          className="text-xs"
+          style={{ color: colors.TEXT_SECONDARY }}
+        >
+          Data Management
+        </label>
+
+        {/* Import Mode Selection */}
+        <div className="flex flex-col gap-2">
+          <label
+            className="text-xs"
+            style={{ color: colors.TEXT_SECONDARY }}
+          >
+            Import Mode
+          </label>
+          <div className="flex gap-2">
+            <label
+              className="flex items-center gap-2 cursor-pointer text-sm"
+              style={{ color: colors.TEXT_PRIMARY }}
+            >
+              <input
+                type="radio"
+                name="import-mode"
+                value="add"
+                checked={importMode === 'add'}
+                onChange={(e) => setImportMode(e.target.value as 'add')}
+                className="cursor-pointer"
+                style={{ accentColor: colors.SUCCESS }}
+              />
+              Add
+            </label>
+            <label
+              className="flex items-center gap-2 cursor-pointer text-sm"
+              style={{ color: colors.TEXT_PRIMARY }}
+            >
+              <input
+                type="radio"
+                name="import-mode"
+                value="replace"
+                checked={importMode === 'replace'}
+                onChange={(e) => setImportMode(e.target.value as 'replace')}
+                className="cursor-pointer"
+                style={{ accentColor: colors.SUCCESS }}
+              />
+              Replace
+            </label>
+          </div>
+        </div>
+
+        {/* Export/Import Buttons */}
+        <div className="flex gap-2 items-center">
+          <Button
+            onClick={handleExportClick}
+            icon={mdiDownload}
+            className="flex-1"
+            tooltip={`Export category to JSON
+For backup or sharing`}
+          >
+            Export
+          </Button>
+          <button
+            onClick={handleCopyGrokPrompt}
+            className="flex items-center justify-center transition-all rounded-full"
+            style={{
+              width: '36px',
+              height: '36px',
+              minWidth: '36px',
+              minHeight: '36px',
+              backgroundColor: colors.BACKGROUND_MEDIUM,
+              border: `1px solid ${colors.BORDER}`,
+              color: colors.TEXT_PRIMARY,
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = colors.BACKGROUND_LIGHT;
+              e.currentTarget.style.borderColor = colors.TEXT_SECONDARY;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
+              e.currentTarget.style.borderColor = colors.BORDER;
+            }}
+            data-tooltip-id="app-tooltip"
+            data-tooltip-content={`Copy Grok system prompt
+Paste → describe category theme
+Grok generates JSON (10-15 prompts)
+Includes: format, quality rules, ratings`}
+          >
+            <Icon path={mdiContentCopy} size={0.6} color={colors.TEXT_PRIMARY} />
+          </button>
+          <Button
+            onClick={handleImportClick}
+            icon={mdiUpload}
+            className="flex-1"
+            tooltip={`Import category from JSON
+Mode: ${importMode}
+${importMode === 'add' ? 'Add: Creates new (fails if exists)' : 'Replace: Overwrites or creates new'}`}
+          >
+            Import
+          </Button>
+        </div>
+
+        {/* Status Message */}
+        {statusMessage && (
+          <div
+            className="text-xs text-center p-2 rounded-lg"
+            style={{
+              backgroundColor: colors.BACKGROUND_MEDIUM,
+              color: statusMessage.includes('failed') ? colors.TEXT_SECONDARY : colors.SUCCESS,
+              border: `1px solid ${colors.BORDER}`,
+            }}
+          >
+            {statusMessage}
+          </div>
+        )}
+      </div>
+
+      {/* Category Select Modal */}
+      <CategorySelectModal
+        isOpen={isExportModalOpen}
+        categories={Object.keys(categories)}
+        currentCategory={currentCategory}
+        onClose={() => setIsExportModalOpen(false)}
+        onSelectCategory={handleExportCategory}
+        getThemeColors={getThemeColors}
+      />
+
+      {/* Import Category Modal */}
+      <ImportCategoryModal
+        isOpen={isImportModalOpen}
+        importMode={importMode}
+        onClose={() => setIsImportModalOpen(false)}
+        onImport={handleImport}
+        getThemeColors={getThemeColors}
+      />
 
     </div>
   );
