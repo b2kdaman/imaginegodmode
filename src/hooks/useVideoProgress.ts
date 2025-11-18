@@ -27,6 +27,7 @@ export const useVideoProgress = () => {
         height: '7px',
         width: '0%',
         background: colors.PROGRESS_BAR,
+        opacity: '0.5',
         zIndex: '999999',
         transition: 'width 0.3s ease',
         pointerEvents: 'none',

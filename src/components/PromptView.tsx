@@ -41,8 +41,16 @@ export const PromptView: React.FC = () => {
   const handleCopyToPage = () => {
     const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
     if (textarea && currentPrompt) {
-      textarea.value = currentPrompt.text;
+      // Set the value using the native setter to bypass React's control
+      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+        window.HTMLTextAreaElement.prototype,
+        'value'
+      )?.set;
+      nativeInputValueSetter?.call(textarea, currentPrompt.text);
+
+      // Dispatch both input and change events for compatibility
       textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      textarea.dispatchEvent(new Event('change', { bubbles: true }));
     }
   };
 
