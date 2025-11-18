@@ -76,4 +76,4 @@ async function handleDownloadMedia(urls: string[]): Promise<MessageResponse> {
   }
 }
 
-console.log('[GrokGoonify] Background service worker loaded');
+console.log('[ImagineGodMode] Background service worker loaded');

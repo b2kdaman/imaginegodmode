@@ -1,4 +1,4 @@
-# GrokGoonify Chrome Extension
+# ImagineGodMode Chrome Extension
 
 A Chrome extension for Grok media management built with React, TypeScript, and Tailwind CSS.
 
@@ -249,7 +249,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - **Extension Reload Handling**: Storage operations validate extension context and fail gracefully during reloads
 - **Smart URL Watching**: URL changes trigger automatic data refetch via callback pattern in OpsView component
 - **Category Import/Export**:
-  - Per-category exports with descriptive filenames (grokgoonify-category-Name-Date.json)
+  - Per-category exports with descriptive filenames (imaginegodmode-category-Name-Date.json)
   - CategorySelectModal for choosing which category to export
   - ImportCategoryModal with paste/upload options and live JSON validation
   - Real-time validation showing category name, prompt count, and error details

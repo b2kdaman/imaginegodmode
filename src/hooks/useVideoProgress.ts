@@ -114,7 +114,7 @@ export const useVideoProgress = () => {
 
             if (percentage !== lastPercentage) {
               lastPercentage = percentage;
-              console.log('[GrokGoonify] Video generation progress:', percentage + '%');
+              console.log('[ImagineGodMode] Video generation progress:', percentage + '%');
             }
           }
         } else if (lastPercentage !== null) {

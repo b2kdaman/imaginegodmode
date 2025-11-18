@@ -29,7 +29,7 @@ const isExtensionContextValid = (): boolean => {
  */
 export const getStorage = async (): Promise<StorageData | null> => {
   if (!isExtensionContextValid()) {
-    console.warn('[GrokGoonify] Extension context invalidated - storage unavailable');
+    console.warn('[ImagineGodMode] Extension context invalidated - storage unavailable');
     return null;
   }
 
@@ -38,7 +38,7 @@ export const getStorage = async (): Promise<StorageData | null> => {
     return result[STORAGE_KEY] || null;
   } catch (error) {
     if (error instanceof Error && error.message.includes('Extension context invalidated')) {
-      console.warn('[GrokGoonify] Extension context invalidated during storage read');
+      console.warn('[ImagineGodMode] Extension context invalidated during storage read');
     } else {
       console.error('Failed to get storage:', error);
     }
@@ -75,7 +75,7 @@ export const onStorageChange = (
   callback: (newData: StorageData | null) => void
 ): (() => void) => {
   if (!isExtensionContextValid()) {
-    console.warn('[GrokGoonify] Extension context invalidated - cannot listen to storage changes');
+    console.warn('[ImagineGodMode] Extension context invalidated - cannot listen to storage changes');
     return () => {}; // Return no-op cleanup function
   }
 
@@ -91,7 +91,7 @@ export const onStorageChange = (
   try {
     chrome.storage.onChanged.addListener(listener);
   } catch (error) {
-    console.warn('[GrokGoonify] Failed to add storage listener:', error);
+    console.warn('[ImagineGodMode] Failed to add storage listener:', error);
     return () => {}; // Return no-op cleanup function
   }
 
@@ -136,10 +136,10 @@ export const exportCategory = (categoryName: string, prompts: PromptItem[]): voi
   const a = document.createElement('a');
   a.href = url;
 
-  // Format: grokgoonify-category-CategoryName-YYYY-MM-DD.json
+  // Format: imaginegodmode-category-CategoryName-YYYY-MM-DD.json
   const dateStr = new Date().toISOString().split('T')[0];
   const safeCategoryName = categoryName.replace(/[^a-z0-9]/gi, '_');
-  a.download = `grokgoonify-category-${safeCategoryName}-${dateStr}.json`;
+  a.download = `imaginegodmode-category-${safeCategoryName}-${dateStr}.json`;
 
   document.body.appendChild(a);
   a.click();

@@ -24,13 +24,13 @@ export const processPostData = (data: PostData): ProcessedMedia => {
   const mediaUrls: MediaUrl[] = [];
   let hdVideoCount = 0;
 
-  console.log('[GrokGoonify] Processing post data:', data);
+  console.log('[ImagineGodMode] Processing post data:', data);
 
   // Extract the post from the response
   const post = data.post;
 
   if (!post) {
-    console.error('[GrokGoonify] No post in response data');
+    console.error('[ImagineGodMode] No post in response data');
     return {
       urls: [],
       videosToUpscale: [],
@@ -41,7 +41,7 @@ export const processPostData = (data: PostData): ProcessedMedia => {
 
   // Process child posts
   if (Array.isArray(post.childPosts) && post.childPosts.length > 0) {
-    console.log('[GrokGoonify] Processing', post.childPosts.length, 'child posts');
+    console.log('[ImagineGodMode] Processing', post.childPosts.length, 'child posts');
 
     post.childPosts.forEach((cp: ChildPost) => {
       const url = pickDownloadUrl(cp);
@@ -58,22 +58,22 @@ export const processPostData = (data: PostData): ProcessedMedia => {
           isHD: isVideo ? isHD : undefined,
         });
 
-        console.log('[GrokGoonify] Added media:', { url, type: isVideo ? 'video' : 'image', isHD });
+        console.log('[ImagineGodMode] Added media:', { url, type: isVideo ? 'video' : 'image', isHD });
       }
 
       if (cp.mediaType === MEDIA_TYPES.VIDEO) {
         const isHd = !!cp.hdMediaUrl;
         if (isHd) {
           hdVideoCount += 1;
-          console.log('[GrokGoonify] Found HD video:', cp.id);
+          console.log('[ImagineGodMode] Found HD video:', cp.id);
         } else if (cp.id) {
           videosNeedingUpscale.push(cp.id);
-          console.log('[GrokGoonify] Video needs upscale:', cp.id);
+          console.log('[ImagineGodMode] Video needs upscale:', cp.id);
         }
       }
     });
   } else {
-    console.log('[GrokGoonify] No child posts found');
+    console.log('[ImagineGodMode] No child posts found');
   }
 
   const result = {
@@ -83,7 +83,7 @@ export const processPostData = (data: PostData): ProcessedMedia => {
     mediaUrls,
   };
 
-  console.log('[GrokGoonify] Processing complete:', result);
+  console.log('[ImagineGodMode] Processing complete:', result);
 
   return result;
 };

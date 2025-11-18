@@ -37,7 +37,7 @@ export const OpsView: React.FC = () => {
   // Fetch post data
   const handleFetchPost = useCallback(async () => {
     const postId = getPostIdFromUrl();
-    console.log('[GrokGoonify] Post ID:', postId);
+    console.log('[ImagineGodMode] Post ID:', postId);
 
     if (!postId) {
       setStatusText('No post ID found');
@@ -45,14 +45,14 @@ export const OpsView: React.FC = () => {
     }
 
     setStatusText('Fetching post data...');
-    console.log('[GrokGoonify] Fetching post:', postId);
+    console.log('[ImagineGodMode] Fetching post:', postId);
 
     const response = await fetchPost(postId);
-    console.log('[GrokGoonify] Fetch response:', response);
+    console.log('[ImagineGodMode] Fetch response:', response);
 
     if (response.success && response.data) {
       const processed = processPostData(response.data);
-      console.log('[GrokGoonify] Processed data:', processed);
+      console.log('[ImagineGodMode] Processed data:', processed);
 
       setMediaUrls(processed.mediaUrls);
       setVideoIdsToUpscale(processed.videosToUpscale);
@@ -61,7 +61,7 @@ export const OpsView: React.FC = () => {
         `Found ${processed.urls.length} media (${processed.hdVideoCount} HD videos)`
       );
     } else {
-      console.error('[GrokGoonify] Fetch failed:', response);
+      console.error('[ImagineGodMode] Fetch failed:', response);
       setStatusText('Failed to fetch post data');
     }
   }, [setMediaUrls, setVideoIdsToUpscale, setHdVideoCount, setStatusText]);
@@ -111,7 +111,7 @@ export const OpsView: React.FC = () => {
       const promise = upscaleVideoById(videoId).then(() => {
         completed++;
         setUpscaleProgress((completed / total) * 100);
-        console.log(`[GrokGoonify] Upscaled ${completed}/${total}: ${videoId}`);
+        console.log(`[ImagineGodMode] Upscaled ${completed}/${total}: ${videoId}`);
       });
 
       upscalePromises.push(promise);
@@ -136,11 +136,11 @@ export const OpsView: React.FC = () => {
       if (!postId) return;
 
       const response = await fetchPost(postId);
-      console.log('[GrokGoonify] Refetch response:', response);
+      console.log('[ImagineGodMode] Refetch response:', response);
 
       if (response.success && response.data) {
         const processed = processPostData(response.data);
-        console.log('[GrokGoonify] Refetch processed:', processed);
+        console.log('[ImagineGodMode] Refetch processed:', processed);
 
         setMediaUrls(processed.mediaUrls);
         setVideoIdsToUpscale(processed.videosToUpscale);
@@ -156,11 +156,11 @@ export const OpsView: React.FC = () => {
           setStatusText('Upscale complete!');
           clearInterval(interval);
           setRefetchInterval(null);
-          console.log('[GrokGoonify] Upscale complete, stopped refetch loop');
+          console.log('[ImagineGodMode] Upscale complete, stopped refetch loop');
 
           // Auto-download if enabled
           if (autoDownload) {
-            console.log('[GrokGoonify] Auto-download enabled, starting download...');
+            console.log('[ImagineGodMode] Auto-download enabled, starting download...');
             setTimeout(async () => {
               setStatusText('Auto-downloading...');
               const urlStrings = processed.mediaUrls.map((m) => m.url);

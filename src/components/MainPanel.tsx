@@ -48,7 +48,7 @@ export const MainPanel: React.FC = () => {
               className="text-[10px] font-medium"
               style={{ color: colors.TEXT_SECONDARY }}
             >
-              GrokGoonify {VERSION}
+              ImagineGodMode {VERSION}
             </span>
             <span
               className="text-[9px]"

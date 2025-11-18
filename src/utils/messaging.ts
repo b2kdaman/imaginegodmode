@@ -44,7 +44,7 @@ export const fetchPost = async (postId: string): Promise<MessageResponse<PostDat
       data,
     };
   } catch (error) {
-    console.error('[GrokGoonify] Fetch failed:', error);
+    console.error('[ImagineGodMode] Fetch failed:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to fetch post',
@@ -63,7 +63,7 @@ export const upscaleVideoById = async (videoId: string): Promise<MessageResponse
       data,
     };
   } catch (error) {
-    console.error('[GrokGoonify] Upscale failed:', error);
+    console.error('[ImagineGodMode] Upscale failed:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to upscale video',

@@ -19,7 +19,7 @@ interface SettingsState {
   getScale: () => number;
 }
 
-const STORAGE_KEY = 'grokgoonify-settings';
+const STORAGE_KEY = 'imaginegodmode-settings';
 
 // Size to scale mapping
 const SIZE_SCALE_MAP: Record<Size, number> = {

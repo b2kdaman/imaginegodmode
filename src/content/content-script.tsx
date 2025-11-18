@@ -18,13 +18,13 @@ if (document.readyState === 'loading') {
 function init() {
   // Cool initialization tag
   console.log(
-    `%c GrokGoonify v${VERSION} %c by b2kdaman `,
+    `%c ImagineGodMode v${VERSION} %c by b2kdaman `,
     `background: ${UI_COLORS.BACKGROUND_DARK}; color: ${UI_COLORS.TEXT_PRIMARY}; padding: 4px 8px; border-radius: 3px 0 0 3px; font-weight: bold;`,
     `background: ${UI_COLORS.BACKGROUND_LIGHT}; color: ${UI_COLORS.TEXT_SECONDARY}; padding: 4px 8px; border-radius: 0 3px 3px 0;`
   );
 
   // Create root container
-  const rootId = 'grokgoonify-root';
+  const rootId = 'imaginegodmode-root';
   let root = document.getElementById(rootId);
 
   if (!root) {

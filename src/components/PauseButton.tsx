@@ -89,21 +89,21 @@ export const PauseButton: React.FC = () => {
       const video = getActiveVideo();
 
       if (!video) {
-        console.error('[GrokGoonify] No video element found for play/pause');
+        console.error('[ImagineGodMode] No video element found for play/pause');
         setErrorShown(true);
         setTimeout(() => setErrorShown(false), 1000);
         return;
       }
 
       if (video.paused) {
-        console.log('[GrokGoonify] Playing video:', video.id);
+        console.log('[ImagineGodMode] Playing video:', video.id);
         video.play();
       } else {
-        console.log('[GrokGoonify] Pausing video:', video.id);
+        console.log('[ImagineGodMode] Pausing video:', video.id);
         video.pause();
       }
     } catch (error) {
-      console.error('[GrokGoonify] Play/Pause error:', error);
+      console.error('[ImagineGodMode] Play/Pause error:', error);
       setErrorShown(true);
       setTimeout(() => setErrorShown(false), 1000);
     }

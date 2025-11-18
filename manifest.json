@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "GrokGoonify",
+  "name": "ImagineGodMode",
   "version": "2.2.0",
   "description": "Media fetching, downloading, upscaling, and prompt management for Grok",
   "permissions": [
@@ -39,6 +39,6 @@
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     },
-    "default_title": "GrokGoonify"
+    "default_title": "ImagineGodMode"
   }
 }

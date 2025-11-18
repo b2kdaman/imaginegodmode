@@ -222,7 +222,7 @@ export const HelpView: React.FC = () => {
           }}
         >
           <p className="mb-1">
-            <strong style={{ color: colors.TEXT_PRIMARY }}>GrokGoonify v{VERSION}</strong>
+            <strong style={{ color: colors.TEXT_PRIMARY }}>ImagineGodMode v{VERSION}</strong>
           </p>
           <p>Chrome extension for Grok media management</p>
           <p className="mt-2">by b2kdaman</p>

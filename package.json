@@ -1,7 +1,7 @@
 {
-  "name": "grokgoonify-chrome-extension",
+  "name": "imaginegodmode-chrome-extension",
   "version": "2.2.0",
-  "description": "Chrome extension for Grok media management with React",
+  "description": "ImagineGodMode - Chrome extension for Grok media management with React",
   "type": "module",
   "scripts": {
     "dev": "vite",

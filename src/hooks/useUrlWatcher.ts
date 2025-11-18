@@ -15,7 +15,7 @@ export const useUrlWatcher = (onUrlChange?: () => void) => {
       const currentUrl = window.location.href;
 
       if (currentUrl !== lastUrl.current) {
-        console.log('[GrokGoonify] URL changed, resetting state and refetching data');
+        console.log('[ImagineGodMode] URL changed, resetting state and refetching data');
         reset();
         lastUrl.current = currentUrl;
 

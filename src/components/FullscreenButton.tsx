@@ -43,13 +43,13 @@ export const FullscreenButton: React.FC = () => {
       }
 
       if (!video) {
-        console.error('[GrokGoonify] No video element found for fullscreen');
+        console.error('[ImagineGodMode] No video element found for fullscreen');
         setErrorShown(true);
         setTimeout(() => setErrorShown(false), 1000);
         return;
       }
 
-      console.log('[GrokGoonify] Entering fullscreen for video:', video.id);
+      console.log('[ImagineGodMode] Entering fullscreen for video:', video.id);
 
       // Request fullscreen on the video element
       if (video.requestFullscreen) {
@@ -62,7 +62,7 @@ export const FullscreenButton: React.FC = () => {
         (video as any).msRequestFullscreen();
       }
     } catch (error) {
-      console.error('[GrokGoonify] Fullscreen error:', error);
+      console.error('[ImagineGodMode] Fullscreen error:', error);
       setErrorShown(true);
       setTimeout(() => setErrorShown(false), 1000);
     }

@@ -11,7 +11,7 @@ import { PostData } from '@/types';
  * @returns Post data
  */
 export const fetchPostData = async (postId: string): Promise<PostData> => {
-  console.log('[GrokGoonify API] Fetching post:', postId, 'URL:', API_ENDPOINTS.POST_GET);
+  console.log('[ImagineGodMode API] Fetching post:', postId, 'URL:', API_ENDPOINTS.POST_GET);
 
   const res = await fetch(API_ENDPOINTS.POST_GET, {
     method: 'POST',
@@ -23,16 +23,16 @@ export const fetchPostData = async (postId: string): Promise<PostData> => {
     credentials: 'include', // Include cookies for authentication
   });
 
-  console.log('[GrokGoonify API] Response status:', res.status, res.statusText);
+  console.log('[ImagineGodMode API] Response status:', res.status, res.statusText);
 
   if (!res.ok) {
     const text = await res.text();
-    console.error('[GrokGoonify API] Error response:', text);
+    console.error('[ImagineGodMode API] Error response:', text);
     throw new Error(`HTTP ${res.status}: ${text}`);
   }
 
   const data = await res.json();
-  console.log('[GrokGoonify API] Success:', data);
+  console.log('[ImagineGodMode API] Success:', data);
   return data;
 };
 
@@ -56,6 +56,6 @@ export const upscaleVideo = async (videoId: string): Promise<any> => {
   }
 
   const json = await res.json().catch(() => null);
-  console.log('[GrokGoonify] Upscale response for', videoId, json);
+  console.log('[ImagineGodMode] Upscale response for', videoId, json);
   return json;
 };

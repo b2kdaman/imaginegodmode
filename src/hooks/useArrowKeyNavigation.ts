@@ -27,7 +27,7 @@ export const useArrowKeyNavigation = () => {
 
         if (prevButton && !prevButton.disabled) {
           prevButton.click();
-          console.log('[GrokGoonify] Previous video clicked via arrow key');
+          console.log('[ImagineGodMode] Previous video clicked via arrow key');
         }
       }
 
@@ -40,7 +40,7 @@ export const useArrowKeyNavigation = () => {
 
         if (nextButton && !nextButton.disabled) {
           nextButton.click();
-          console.log('[GrokGoonify] Next video clicked via arrow key');
+          console.log('[ImagineGodMode] Next video clicked via arrow key');
         }
       }
     };
