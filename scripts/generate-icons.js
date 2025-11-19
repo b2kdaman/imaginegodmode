@@ -1,5 +1,5 @@
 /**
- * Generate PNG icons from SVG using sharp
+ * Generate PNG icons from godmode.jpeg using sharp
  * Run with: node scripts/generate-icons.js
  */
 
@@ -13,24 +13,26 @@ const __dirname = path.dirname(__filename);
 
 const sizes = [16, 48, 128];
 const iconsDir = path.join(__dirname, '../public/icons');
+const sourceImage = path.join(iconsDir, 'godmode.jpeg');
 
-console.log('🎨 Generating extension icons...\n');
+console.log('🎨 Generating extension icons from godmode.jpeg...\n');
 
 async function generateIcons() {
-  for (const size of sizes) {
-    const svgContent = `
-<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
-  <rect width="${size}" height="${size}" rx="${Math.floor(size * 0.15)}" fill="#1a1a1a"/>
-  <circle cx="${size/2}" cy="${size/2}" r="${size * 0.35}" fill="#2a2a2a" stroke="#FFD700" stroke-width="${Math.max(1, size/32)}"/>
-  <text x="${size/2}" y="${size * 0.65}" font-family="Arial, sans-serif" font-size="${size * 0.5}" fill="#FFD700" text-anchor="middle" font-weight="bold">G</text>
-</svg>`.trim();
+  // Check if source image exists
+  if (!fs.existsSync(sourceImage)) {
+    throw new Error(`Source image not found: ${sourceImage}`);
+  }
 
+  for (const size of sizes) {
     const pngFilename = `icon${size}.png`;
     const pngPath = path.join(iconsDir, pngFilename);
 
-    // Convert SVG to PNG using sharp
-    await sharp(Buffer.from(svgContent))
-      .resize(size, size)
+    // Resize godmode.jpeg to each icon size
+    await sharp(sourceImage)
+      .resize(size, size, {
+        fit: 'cover',
+        position: 'center'
+      })
       .png()
       .toFile(pngPath);
 
