@@ -44,7 +44,10 @@
   "web_accessible_resources": [
     {
       "resources": ["themes.json"],
-      "matches": ["<all_urls>"]
+      "matches": [
+        "https://grok.com/*",
+        "https://www.grok.com/*"
+      ]
     }
   ]
 }
