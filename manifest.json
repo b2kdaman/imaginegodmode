@@ -40,5 +40,11 @@
       "128": "icons/icon128.png"
     },
     "default_title": "ImagineGodMode"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["themes.json"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

@@ -120,7 +120,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
         </label>
         <select
           value={theme}
-          onChange={(e) => setTheme(e.target.value as 'dark' | 'light' | 'dracula')}
+          onChange={(e) => setTheme(e.target.value as 'dark' | 'light' | 'dracula' | 'winamp')}
           className="pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none transition-colors"
           style={{
             backgroundColor: colors.BACKGROUND_MEDIUM,
@@ -138,6 +138,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
           <option value="dark">Dark</option>
           <option value="light">Light</option>
           <option value="dracula">Dracula</option>
+          <option value="winamp">Winamp</option>
         </select>
       </div>
 

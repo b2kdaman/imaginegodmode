@@ -3,19 +3,21 @@
  */
 
 import { create } from 'zustand';
-import { THEMES } from '@/utils/constants';
+import { loadThemes, type ThemeColors } from '@/utils/themeLoader';
 
-export type Theme = 'dark' | 'light' | 'dracula';
+export type Theme = 'dark' | 'light' | 'dracula' | 'winamp';
 export type Size = 'tiny' | 'small' | 'medium' | 'large';
 
 interface SettingsState {
   theme: Theme;
   size: Size;
   autoDownload: boolean;
+  themes: Record<string, ThemeColors>;
+  loadThemes: () => Promise<void>;
   setTheme: (theme: Theme) => void;
   setSize: (size: Size) => void;
   setAutoDownload: (autoDownload: boolean) => void;
-  getThemeColors: () => typeof THEMES.dark;
+  getThemeColors: () => ThemeColors;
   getScale: () => number;
 }
 
@@ -35,7 +37,7 @@ const loadSettings = (): { theme: Theme; size: Size; autoDownload: boolean } => 
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      const validThemes: Theme[] = ['dark', 'light', 'dracula'];
+      const validThemes: Theme[] = ['dark', 'light', 'dracula', 'winamp'];
       const validSizes: Size[] = ['tiny', 'small', 'medium', 'large'];
       return {
         theme: validThemes.includes(parsed.theme) ? parsed.theme : 'dark',
@@ -60,6 +62,12 @@ const saveSettings = (theme: Theme, size: Size, autoDownload: boolean) => {
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   ...loadSettings(),
+  themes: {},
+
+  loadThemes: async () => {
+    const themes = await loadThemes();
+    set({ themes });
+  },
 
   setTheme: (theme: Theme) => {
     const { size, autoDownload } = get();
@@ -80,8 +88,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   },
 
   getThemeColors: () => {
-    const { theme } = get();
-    return THEMES[theme];
+    const { theme, themes } = get();
+    return themes[theme] || themes['dark'] || {};
   },
 
   getScale: () => {
