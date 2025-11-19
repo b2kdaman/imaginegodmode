@@ -65,11 +65,24 @@ export const PromptView: React.FC = () => {
     // Copy prompt to page
     handleCopyToPage();
 
-    // Find and click the "Make a video" button by aria-label
+    // Find and click the "Make video" button by aria-label
     setTimeout(() => {
-      const makeVideoBtn = document.querySelector('button[aria-label="Make a video"]') as HTMLButtonElement;
+      const makeVideoBtn = document.querySelector('button[aria-label="Make video"]') as HTMLElement;
       if (makeVideoBtn) {
-        makeVideoBtn.click();
+        console.log('[ImagineGodMode] Found Make video button:', makeVideoBtn);
+
+        // Dispatch a proper pointer/mouse event sequence to trigger React handlers
+        const events = [
+          new PointerEvent('pointerdown', { bubbles: true, cancelable: true, composed: true }),
+          new MouseEvent('mousedown', { bubbles: true, cancelable: true, composed: true }),
+          new PointerEvent('pointerup', { bubbles: true, cancelable: true, composed: true }),
+          new MouseEvent('mouseup', { bubbles: true, cancelable: true, composed: true }),
+          new MouseEvent('click', { bubbles: true, cancelable: true, composed: true })
+        ];
+
+        events.forEach(event => makeVideoBtn.dispatchEvent(event));
+      } else {
+        console.warn('[ImagineGodMode] Make video button not found');
       }
     }, 100);
   };
@@ -184,7 +197,7 @@ export const PromptView: React.FC = () => {
             icon={mdiPlay}
             iconColor={UI_COLORS.BLACK}
             className="flex-1 !bg-white !text-black hover:!bg-white/90"
-            tooltip="Copy prompt and click Make a Video (Ctrl/Cmd+Enter)"
+            tooltip="Copy prompt and click Make video (Ctrl/Cmd+Shift+Enter)"
           >
             Make
           </Button>
