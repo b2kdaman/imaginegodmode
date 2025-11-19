@@ -72,17 +72,29 @@ export const useKeyboardShortcuts = () => {
         }
       }
 
-      // Ctrl/Cmd + Enter: Click "Make a Video" button
+      // Ctrl/Cmd + Enter: Click "Make video" button
       if (modifierKey && e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
 
         setTimeout(() => {
-          const makeVideoBtn = Array.from(document.querySelectorAll('button')).find(
-            (btn) => btn.textContent?.includes('Make a Video')
-          );
+          // Use exact aria-label selector
+          const makeVideoBtn = document.querySelector('button[aria-label="Make video"]') as HTMLElement;
 
           if (makeVideoBtn) {
-            makeVideoBtn.click();
+            console.log('[ImagineGodMode] Found Make video button:', makeVideoBtn);
+
+            // Dispatch a proper pointer/mouse event sequence to trigger React handlers
+            const events = [
+              new PointerEvent('pointerdown', { bubbles: true, cancelable: true, composed: true }),
+              new MouseEvent('mousedown', { bubbles: true, cancelable: true, composed: true }),
+              new PointerEvent('pointerup', { bubbles: true, cancelable: true, composed: true }),
+              new MouseEvent('mouseup', { bubbles: true, cancelable: true, composed: true }),
+              new MouseEvent('click', { bubbles: true, cancelable: true, composed: true })
+            ];
+
+            events.forEach(event => makeVideoBtn.dispatchEvent(event));
+          } else {
+            console.warn('[ImagineGodMode] Make video button not found');
           }
         }, 100);
       }
@@ -104,28 +116,22 @@ export const useKeyboardShortcuts = () => {
           textarea.dispatchEvent(inputEvent);
 
           setTimeout(() => {
-            // Try multiple selectors to find the Make video button
-            let makeVideoBtn = document.querySelector('button[aria-label="Make video"]') as HTMLButtonElement;
-
-            if (!makeVideoBtn) {
-              makeVideoBtn = document.querySelector('button[aria-label*="Make" i]') as HTMLButtonElement;
-            }
-
-            if (!makeVideoBtn) {
-              makeVideoBtn = Array.from(document.querySelectorAll('button')).find(
-                (btn) => btn.textContent?.trim() === 'Make a Video'
-              ) as HTMLButtonElement;
-            }
-
-            if (!makeVideoBtn) {
-              makeVideoBtn = Array.from(document.querySelectorAll('button')).find(
-                (btn) => btn.textContent?.includes('Make') && btn.textContent?.includes('Video')
-              ) as HTMLButtonElement;
-            }
+            // Use exact aria-label selector
+            const makeVideoBtn = document.querySelector('button[aria-label="Make video"]') as HTMLElement;
 
             if (makeVideoBtn) {
               console.log('[ImagineGodMode] Found Make video button, clicking:', makeVideoBtn);
-              makeVideoBtn.click();
+
+              // Dispatch a proper pointer/mouse event sequence to trigger React handlers
+              const events = [
+                new PointerEvent('pointerdown', { bubbles: true, cancelable: true, composed: true }),
+                new MouseEvent('mousedown', { bubbles: true, cancelable: true, composed: true }),
+                new PointerEvent('pointerup', { bubbles: true, cancelable: true, composed: true }),
+                new MouseEvent('mouseup', { bubbles: true, cancelable: true, composed: true }),
+                new MouseEvent('click', { bubbles: true, cancelable: true, composed: true })
+              ];
+
+              events.forEach(event => makeVideoBtn.dispatchEvent(event));
             } else {
               console.warn('[ImagineGodMode] Make video button not found');
             }
