@@ -4,6 +4,7 @@
 
 import { useEffect } from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
+import { SELECTORS } from '@/utils/constants';
 
 export const useKeyboardShortcuts = () => {
   const { getCurrentPrompt } = usePromptStore();
@@ -24,18 +25,18 @@ export const useKeyboardShortcuts = () => {
         e.preventDefault();
 
         // Try to find fullscreen button in extension UI first
-        let fullscreenBtn = document.querySelector('[title*="fullscreen" i]') as HTMLButtonElement;
+        let fullscreenBtn = document.querySelector(SELECTORS.FULLSCREEN_BUTTON) as HTMLButtonElement;
 
         // If not found in extension, look for video fullscreen controls on page
         if (!fullscreenBtn) {
-          fullscreenBtn = document.querySelector('button[aria-label*="fullscreen" i]') as HTMLButtonElement;
+          fullscreenBtn = document.querySelector(SELECTORS.FULLSCREEN_BUTTON_ALT) as HTMLButtonElement;
         }
 
         if (fullscreenBtn) {
           fullscreenBtn.click();
         } else {
           // Fallback: try to fullscreen any visible video element
-          const video = document.querySelector('video') as HTMLVideoElement;
+          const video = document.querySelector(SELECTORS.VIDEO_ELEMENT) as HTMLVideoElement;
           if (video) {
             if (document.fullscreenElement) {
               document.exitFullscreen();
@@ -53,13 +54,13 @@ export const useKeyboardShortcuts = () => {
         e.preventDefault();
 
         // Try to find play/pause button in extension UI first
-        let playPauseBtn = document.querySelector('[title*="play" i], [title*="pause" i]') as HTMLButtonElement;
+        let playPauseBtn = document.querySelector(SELECTORS.PLAY_PAUSE_BUTTON) as HTMLButtonElement;
 
         if (playPauseBtn) {
           playPauseBtn.click();
         } else {
           // Fallback: directly control any visible video element
-          const video = document.querySelector('video') as HTMLVideoElement;
+          const video = document.querySelector(SELECTORS.VIDEO_ELEMENT) as HTMLVideoElement;
           if (video) {
             if (video.paused) {
               video.play().catch(err => {
@@ -78,7 +79,7 @@ export const useKeyboardShortcuts = () => {
 
         setTimeout(() => {
           // Use exact aria-label selector
-          const makeVideoBtn = document.querySelector('button[aria-label="Make video"]') as HTMLElement;
+          const makeVideoBtn = document.querySelector(SELECTORS.MAKE_VIDEO_BUTTON) as HTMLElement;
 
           if (makeVideoBtn) {
             console.log('[ImagineGodMode] Found Make video button:', makeVideoBtn);
@@ -104,7 +105,7 @@ export const useKeyboardShortcuts = () => {
         e.preventDefault();
 
         const currentPrompt = getCurrentPrompt();
-        const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
+        const textarea = document.querySelector(SELECTORS.TEXTAREA) as HTMLTextAreaElement;
 
         if (textarea && currentPrompt) {
           textarea.value = currentPrompt.text;
@@ -117,7 +118,7 @@ export const useKeyboardShortcuts = () => {
 
           setTimeout(() => {
             // Use exact aria-label selector
-            const makeVideoBtn = document.querySelector('button[aria-label="Make video"]') as HTMLElement;
+            const makeVideoBtn = document.querySelector(SELECTORS.MAKE_VIDEO_BUTTON) as HTMLElement;
 
             if (makeVideoBtn) {
               console.log('[ImagineGodMode] Found Make video button, clicking:', makeVideoBtn);

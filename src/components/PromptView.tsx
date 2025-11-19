@@ -8,7 +8,7 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 import { PackManager } from './PackManager';
 import { RatingSystem } from './RatingSystem';
 import { Button } from './Button';
-import { UI_COLORS } from '@/utils/constants';
+import { UI_COLORS, SELECTORS } from '@/utils/constants';
 import {
   mdiChevronLeft,
   mdiChevronRight,
@@ -39,7 +39,7 @@ export const PromptView: React.FC = () => {
   const promptCount = getCurrentPromptCount();
 
   const handleCopyToPage = () => {
-    const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
+    const textarea = document.querySelector(SELECTORS.TEXTAREA) as HTMLTextAreaElement;
     if (textarea && currentPrompt) {
       // Set the value using the native setter to bypass React's control
       const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
@@ -55,7 +55,7 @@ export const PromptView: React.FC = () => {
   };
 
   const handleCopyFromPage = () => {
-    const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
+    const textarea = document.querySelector(SELECTORS.TEXTAREA) as HTMLTextAreaElement;
     if (textarea) {
       updatePromptText(textarea.value);
     }
@@ -67,7 +67,7 @@ export const PromptView: React.FC = () => {
 
     // Find and click the "Make video" button by aria-label
     setTimeout(() => {
-      const makeVideoBtn = document.querySelector('button[aria-label="Make video"]') as HTMLElement;
+      const makeVideoBtn = document.querySelector(SELECTORS.MAKE_VIDEO_BUTTON) as HTMLElement;
       if (makeVideoBtn) {
         console.log('[ImagineGodMode] Found Make video button:', makeVideoBtn);
 

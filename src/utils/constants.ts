@@ -103,3 +103,13 @@ export const DEFAULTS = {
   STATUS_WAITING: 'Waiting for post…',
   MEDIA_FILENAME_PREFIX: 'media_',
 } as const;
+
+// DOM Selectors
+export const SELECTORS = {
+  MAKE_VIDEO_BUTTON: 'button[aria-label="Make video"]',
+  TEXTAREA: 'textarea',
+  VIDEO_ELEMENT: 'video',
+  FULLSCREEN_BUTTON: '[title*="fullscreen" i]',
+  FULLSCREEN_BUTTON_ALT: 'button[aria-label*="fullscreen" i]',
+  PLAY_PAUSE_BUTTON: '[title*="play" i], [title*="pause" i]',
+} as const;
