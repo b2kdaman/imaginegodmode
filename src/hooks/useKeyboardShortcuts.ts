@@ -19,15 +19,56 @@ export const useKeyboardShortcuts = () => {
                        target.tagName === 'INPUT' ||
                        target.isContentEditable;
 
-      // F key: Toggle fullscreen (only when not typing)
+      // F key: Toggle fullscreen (only when not typing) - works globally
       if (e.key === 'f' && !modifierKey && !isTyping) {
         e.preventDefault();
 
-        // Find the fullscreen button in the extension UI
-        const fullscreenBtn = document.querySelector('[title*="fullscreen" i]') as HTMLButtonElement;
+        // Try to find fullscreen button in extension UI first
+        let fullscreenBtn = document.querySelector('[title*="fullscreen" i]') as HTMLButtonElement;
+
+        // If not found in extension, look for video fullscreen controls on page
+        if (!fullscreenBtn) {
+          fullscreenBtn = document.querySelector('button[aria-label*="fullscreen" i]') as HTMLButtonElement;
+        }
 
         if (fullscreenBtn) {
           fullscreenBtn.click();
+        } else {
+          // Fallback: try to fullscreen any visible video element
+          const video = document.querySelector('video') as HTMLVideoElement;
+          if (video) {
+            if (document.fullscreenElement) {
+              document.exitFullscreen();
+            } else {
+              video.requestFullscreen().catch(err => {
+                console.warn('[ImagineGodMode] Fullscreen request failed:', err);
+              });
+            }
+          }
+        }
+      }
+
+      // Space key: Play/pause video (only when not typing) - works globally
+      if (e.key === ' ' && !modifierKey && !isTyping) {
+        e.preventDefault();
+
+        // Try to find play/pause button in extension UI first
+        let playPauseBtn = document.querySelector('[title*="play" i], [title*="pause" i]') as HTMLButtonElement;
+
+        if (playPauseBtn) {
+          playPauseBtn.click();
+        } else {
+          // Fallback: directly control any visible video element
+          const video = document.querySelector('video') as HTMLVideoElement;
+          if (video) {
+            if (video.paused) {
+              video.play().catch(err => {
+                console.warn('[ImagineGodMode] Video play failed:', err);
+              });
+            } else {
+              video.pause();
+            }
+          }
         }
       }
 

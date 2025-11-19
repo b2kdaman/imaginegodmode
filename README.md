@@ -23,8 +23,8 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - `Ctrl/Cmd + Shift + Enter`: Copy prompt and click "Make a Video"
   - `Left Arrow`: Navigate to previous video
   - `Right Arrow`: Navigate to next video
-  - `F`: Toggle fullscreen (when not typing in text fields)
-  - `Space`: Play/pause video
+  - `F`: Toggle fullscreen (works globally, even without extension panel open)
+  - `Space`: Play/pause video (works globally, even without extension panel open)
 - **Arrow Key Navigation**: Navigate videos with Left/Right arrow keys
 - **Automatic Data Refetch**: Automatically refetches post data when navigating between posts
 - **Persistent Storage**: All data saved with `chrome.storage.local` (prompts) and `localStorage` (settings)
@@ -250,6 +250,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - **Auto Download**: Optional toggle in Settings to automatically download all media after upscaling completes
 - **HD Status Visual**: Green check icon displays in Ops view when all videos are HD quality
 - **Video State Sync**: Play/pause button automatically syncs with video element state via event listeners
+- **Global Keyboard Shortcuts**: F (fullscreen) and Space (play/pause) work globally across the page, with fallbacks to direct video element control
 - **Extension Reload Handling**: Storage operations validate extension context and fail gracefully during reloads
 - **Smart URL Watching**: URL changes trigger automatic data refetch via callback pattern in OpsView component
 - **Pack Import/Export**:
