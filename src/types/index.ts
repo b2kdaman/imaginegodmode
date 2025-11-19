@@ -5,13 +5,13 @@ export interface PromptItem {
   rating: number; // 0-5 stars
 }
 
-export interface Categories {
-  [categoryName: string]: PromptItem[];
+export interface Packs {
+  [packName: string]: PromptItem[];
 }
 
 export interface AppState {
-  categories: Categories;
-  currentCategory: string;
+  packs: Packs;
+  currentPack: string;
   currentIndex: number;
 }
 

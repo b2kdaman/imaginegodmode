@@ -5,16 +5,16 @@
 import React, { useState, useRef } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { usePromptStore } from '@/store/usePromptStore';
-import { exportCategory } from '@/utils/storage';
+import { exportPack } from '@/utils/storage';
 import { Button } from './Button';
 import { Icon } from './Icon';
-import { CategorySelectModal } from './CategorySelectModal';
-import { ImportCategoryModal } from './ImportCategoryModal';
+import { PackSelectModal } from './PackSelectModal';
+import { ImportPackModal } from './ImportPackModal';
 import { mdiDownload, mdiUpload, mdiContentCopy } from '@mdi/js';
 
 export const SettingsView: React.FC = () => {
   const { theme, size, autoDownload, setTheme, setSize, setAutoDownload, getThemeColors } = useSettingsStore();
-  const { exportCurrentCategory, importCategory, currentCategory, categories } = usePromptStore();
+  const { exportCurrentPack, importPack, currentPack, packs } = usePromptStore();
   const colors = getThemeColors();
 
   const [importMode, setImportMode] = useState<'add' | 'replace'>('add');
@@ -26,23 +26,23 @@ export const SettingsView: React.FC = () => {
     setIsExportModalOpen(true);
   };
 
-  const handleExportCategory = (categoryName: string) => {
-    const prompts = categories[categoryName] || [];
-    exportCategory(categoryName, prompts);
-    setStatusMessage(`Category "${categoryName}" exported successfully!`);
+  const handleExportPack = (packName: string) => {
+    const prompts = packs[packName] || [];
+    exportPack(packName, prompts);
+    setStatusMessage(`Pack "${packName}" exported successfully!`);
     setTimeout(() => setStatusMessage(''), 3000);
     setIsExportModalOpen(false);
   };
 
   const handleCopyGrokPrompt = async () => {
-    const grokPrompt = `You are a SFW video prompt category generator for a Chrome extension. Your task is to create a JSON file containing safe, creative, and professional video generation prompts organized in a category.
+    const grokPrompt = `You are a SFW video prompt pack generator for a Chrome extension. Your task is to create a JSON file containing safe, creative, and professional video generation prompts organized in a pack.
 
 **OUTPUT FORMAT (STRICT):**
 \`\`\`json
 {
   "version": "1.0",
   "exportDate": "${new Date().toISOString()}",
-  "categoryName": "Category Name Here",
+  "packName": "Pack Name Here",
   "prompts": [
     { "text": "Detailed SFW video generation prompt", "rating": 4 },
     { "text": "Another creative SFW prompt", "rating": 5 }
@@ -53,7 +53,7 @@ export const SettingsView: React.FC = () => {
 **FIELD REQUIREMENTS:**
 - \`version\`: Must be exactly "1.0"
 - \`exportDate\`: ISO 8601 timestamp (use current date/time)
-- \`categoryName\`: Creative category name matching the theme
+- \`packName\`: Creative pack name matching the theme
 - \`prompts\`: Array of 10-15 prompt objects
 - Each prompt object:
   - \`text\`: Detailed, creative SFW video generation prompt (include camera angles, lighting, movement, style, mood, setting)
@@ -73,7 +73,7 @@ export const SettingsView: React.FC = () => {
 - Mix different types (establishing shots, close-ups, actions, abstract, landscapes)
 - Distribute ratings realistically (not all 5s, show variety)
 
-**EXAMPLE SFW CATEGORIES:**
+**EXAMPLE SFW PACKS:**
 Cinematic Landscapes, Abstract Art, Nature & Wildlife, Sci-Fi Technology, Urban Architecture, Serene Underwater, Cosmic Space, Seasonal Weather, Food & Cuisine, Cultural Celebrations, Sports Action, Minimalist Design, Retro Aesthetic, Emotional Moments, Travel Destinations
 
 **RESPONSE RULE:**
@@ -81,7 +81,7 @@ Return ONLY the valid JSON. No explanations, no markdown, no code blocks. Just t
 
 ---
 
-What type of SFW video prompt category would you like me to create? (Describe the theme, style, or mood you want)`;
+What type of SFW video prompt pack would you like me to create? (Describe the theme, style, or mood you want)`;
 
     try {
       await navigator.clipboard.writeText(grokPrompt);
@@ -98,10 +98,10 @@ What type of SFW video prompt category would you like me to create? (Describe th
   };
 
   const handleImport = async (file: File) => {
-    const result = await importCategory(file, importMode);
+    const result = await importPack(file, importMode);
 
-    if (result.success && result.categoryName) {
-      setStatusMessage(`Category "${result.categoryName}" imported successfully (${importMode} mode)!`);
+    if (result.success && result.packName) {
+      setStatusMessage(`Pack "${result.packName}" imported successfully (${importMode} mode)!`);
       setTimeout(() => setStatusMessage(''), 3000);
     } else {
       throw new Error(result.error || 'Unknown error');
@@ -271,7 +271,7 @@ What type of SFW video prompt category would you like me to create? (Describe th
             onClick={handleExportClick}
             icon={mdiDownload}
             className="flex-1"
-            tooltip={`Export category to JSON
+            tooltip={`Export pack to JSON
 For backup or sharing`}
           >
             Export
@@ -299,7 +299,7 @@ For backup or sharing`}
             }}
             data-tooltip-id="app-tooltip"
             data-tooltip-content={`Copy Grok system prompt
-Paste → describe category theme
+Paste → describe pack theme
 Grok generates JSON (10-15 prompts)
 Includes: format, quality rules, ratings`}
           >
@@ -309,7 +309,7 @@ Includes: format, quality rules, ratings`}
             onClick={handleImportClick}
             icon={mdiUpload}
             className="flex-1"
-            tooltip={`Import category from JSON
+            tooltip={`Import pack from JSON
 Mode: ${importMode}
 ${importMode === 'add' ? 'Add: Creates new (fails if exists)' : 'Replace: Overwrites or creates new'}`}
           >
@@ -332,18 +332,18 @@ ${importMode === 'add' ? 'Add: Creates new (fails if exists)' : 'Replace: Overwr
         )}
       </div>
 
-      {/* Category Select Modal */}
-      <CategorySelectModal
+      {/* Pack Select Modal */}
+      <PackSelectModal
         isOpen={isExportModalOpen}
-        categories={Object.keys(categories)}
-        currentCategory={currentCategory}
+        packs={Object.keys(packs)}
+        currentPack={currentPack}
         onClose={() => setIsExportModalOpen(false)}
-        onSelectCategory={handleExportCategory}
+        onSelectPack={handleExportPack}
         getThemeColors={getThemeColors}
       />
 
-      {/* Import Category Modal */}
-      <ImportCategoryModal
+      {/* Import Pack Modal */}
+      <ImportPackModal
         isOpen={isImportModalOpen}
         importMode={importMode}
         onClose={() => setIsImportModalOpen(false)}

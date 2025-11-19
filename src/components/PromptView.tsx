@@ -5,7 +5,7 @@
 import React from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
-import { CategoryManager } from './CategoryManager';
+import { PackManager } from './PackManager';
 import { RatingSystem } from './RatingSystem';
 import { Button } from './Button';
 import { UI_COLORS } from '@/utils/constants';
@@ -76,7 +76,7 @@ export const PromptView: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full">
-      <CategoryManager />
+      <PackManager />
 
       {/* Prompt textarea */}
       <textarea

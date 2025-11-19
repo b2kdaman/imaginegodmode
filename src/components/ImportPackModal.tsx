@@ -1,5 +1,5 @@
 /**
- * Modal component for importing category with paste or file upload
+ * Modal component for importing pack with paste or file upload
  */
 
 import React, { useState, useRef } from 'react';
@@ -7,7 +7,7 @@ import { Button } from './Button';
 import { mdiClose, mdiUpload, mdiContentPaste, mdiCheckCircle, mdiAlertCircle } from '@mdi/js';
 import { Icon } from './Icon';
 
-interface ImportCategoryModalProps {
+interface ImportPackModalProps {
   isOpen: boolean;
   importMode: 'add' | 'replace';
   onClose: () => void;
@@ -18,12 +18,12 @@ interface ImportCategoryModalProps {
 interface ValidationResult {
   isValid: boolean;
   error?: string;
-  categoryName?: string;
+  packName?: string;
   promptCount?: number;
   jsonText?: string;
 }
 
-export const ImportCategoryModal: React.FC<ImportCategoryModalProps> = ({
+export const ImportPackModal: React.FC<ImportPackModalProps> = ({
   isOpen,
   importMode,
   onClose,
@@ -49,8 +49,8 @@ export const ImportCategoryModal: React.FC<ImportCategoryModalProps> = ({
       if (typeof data.version !== 'string') {
         return { isValid: false, error: 'Missing or invalid "version" field' };
       }
-      if (typeof data.categoryName !== 'string' || !data.categoryName.trim()) {
-        return { isValid: false, error: 'Missing or invalid "categoryName" field' };
+      if (typeof data.packName !== 'string' || !data.packName.trim()) {
+        return { isValid: false, error: 'Missing or invalid "packName" field' };
       }
       if (!Array.isArray(data.prompts)) {
         return { isValid: false, error: '"prompts" must be an array' };
@@ -69,7 +69,7 @@ export const ImportCategoryModal: React.FC<ImportCategoryModalProps> = ({
 
       return {
         isValid: true,
-        categoryName: data.categoryName,
+        packName: data.packName,
         promptCount: data.prompts.length,
         jsonText: text,
       };
@@ -181,7 +181,7 @@ export const ImportCategoryModal: React.FC<ImportCategoryModalProps> = ({
             className="text-sm font-semibold"
             style={{ color: colors.TEXT_PRIMARY }}
           >
-            Import Category ({importMode} mode)
+            Import Pack ({importMode} mode)
           </h2>
           <button
             onClick={handleClose}
@@ -284,7 +284,7 @@ export const ImportCategoryModal: React.FC<ImportCategoryModalProps> = ({
                     Valid JSON
                   </div>
                   <div style={{ color: colors.TEXT_SECONDARY }}>
-                    Category: <span style={{ color: colors.TEXT_PRIMARY }}>{validation.categoryName}</span>
+                    Pack: <span style={{ color: colors.TEXT_PRIMARY }}>{validation.packName}</span>
                   </div>
                   <div style={{ color: colors.TEXT_SECONDARY }}>
                     Prompts: <span style={{ color: colors.TEXT_PRIMARY }}>{validation.promptCount}</span>

@@ -3,13 +3,13 @@
  */
 
 import { create } from 'zustand';
-import { PromptItem, Categories } from '@/types';
-import { getStorage, setStorage, exportCategory, importCategory } from '@/utils/storage';
+import { PromptItem, Packs } from '@/types';
+import { getStorage, setStorage, exportPack, importPack } from '@/utils/storage';
 
 interface PromptStore {
   // State
-  categories: Categories;
-  currentCategory: string;
+  packs: Packs;
+  currentPack: string;
   currentIndex: number;
   isLoading: boolean;
 
@@ -17,10 +17,10 @@ interface PromptStore {
   loadFromStorage: () => Promise<void>;
   saveToStorage: () => Promise<void>;
 
-  // Category actions
-  setCurrentCategory: (category: string) => void;
-  addCategory: (name: string) => void;
-  deleteCategory: (name: string) => void;
+  // Pack actions
+  setCurrentPack: (pack: string) => void;
+  addPack: (name: string) => void;
+  deletePack: (name: string) => void;
 
   // Prompt actions
   setCurrentIndex: (index: number) => void;
@@ -36,14 +36,14 @@ interface PromptStore {
   getCurrentPromptCount: () => number;
 
   // Import/Export
-  exportCurrentCategory: () => void;
-  importCategory: (file: File, mode: 'add' | 'replace') => Promise<{ success: boolean; error?: string; categoryName?: string }>;
+  exportCurrentPack: () => void;
+  importPack: (file: File, mode: 'add' | 'replace') => Promise<{ success: boolean; error?: string; packName?: string }>;
 }
 
 export const usePromptStore = create<PromptStore>((set, get) => ({
   // Initial state
-  categories: { Default: [{ text: '', rating: 0 }] },
-  currentCategory: 'Default',
+  packs: { Default: [{ text: '', rating: 0 }] },
+  currentPack: 'Default',
   currentIndex: 0,
   isLoading: false,
 
@@ -54,8 +54,8 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
     if (data) {
       set({
-        categories: data.categories,
-        currentCategory: data.currentCategory,
+        packs: data.packs,
+        currentPack: data.currentPack,
         currentIndex: data.currentIndex,
         isLoading: false,
       });
@@ -66,48 +66,48 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
   // Save to chrome storage
   saveToStorage: async () => {
-    const { categories, currentCategory, currentIndex } = get();
-    await setStorage({ categories, currentCategory, currentIndex });
+    const { packs, currentPack, currentIndex } = get();
+    await setStorage({ packs, currentPack, currentIndex });
   },
 
-  // Category actions
-  setCurrentCategory: (category) => {
-    set({ currentCategory: category, currentIndex: 0 });
+  // Pack actions
+  setCurrentPack: (pack) => {
+    set({ currentPack: pack, currentIndex: 0 });
     get().saveToStorage();
   },
 
-  addCategory: (name) => {
-    const { categories } = get();
-    if (!categories[name]) {
+  addPack: (name) => {
+    const { packs } = get();
+    if (!packs[name]) {
       set({
-        categories: {
-          ...categories,
+        packs: {
+          ...packs,
           [name]: [{ text: '', rating: 0 }],
         },
-        currentCategory: name,
+        currentPack: name,
         currentIndex: 0,
       });
       get().saveToStorage();
     }
   },
 
-  deleteCategory: (name) => {
-    const { categories, currentCategory } = get();
-    const categoryNames = Object.keys(categories);
+  deletePack: (name) => {
+    const { packs, currentPack } = get();
+    const packNames = Object.keys(packs);
 
-    // Don't delete if it's the only category
-    if (categoryNames.length <= 1) return;
+    // Don't delete if it's the only pack
+    if (packNames.length <= 1) return;
 
-    const newCategories = { ...categories };
-    delete newCategories[name];
+    const newPacks = { ...packs };
+    delete newPacks[name];
 
-    // Switch to first category if deleting current
-    const newCurrentCategory =
-      currentCategory === name ? Object.keys(newCategories)[0] : currentCategory;
+    // Switch to first pack if deleting current
+    const newCurrentPack =
+      currentPack === name ? Object.keys(newPacks)[0] : currentPack;
 
     set({
-      categories: newCategories,
-      currentCategory: newCurrentCategory,
+      packs: newPacks,
+      currentPack: newCurrentPack,
       currentIndex: 0,
     });
     get().saveToStorage();
@@ -120,13 +120,13 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
   },
 
   addPrompt: () => {
-    const { categories, currentCategory } = get();
-    const currentPrompts = categories[currentCategory] || [];
+    const { packs, currentPack } = get();
+    const currentPrompts = packs[currentPack] || [];
 
     set({
-      categories: {
-        ...categories,
-        [currentCategory]: [...currentPrompts, { text: '', rating: 0 }],
+      packs: {
+        ...packs,
+        [currentPack]: [...currentPrompts, { text: '', rating: 0 }],
       },
       currentIndex: currentPrompts.length,
     });
@@ -134,8 +134,8 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
   },
 
   removePrompt: () => {
-    const { categories, currentCategory, currentIndex } = get();
-    const currentPrompts = categories[currentCategory] || [];
+    const { packs, currentPack, currentIndex } = get();
+    const currentPrompts = packs[currentPack] || [];
 
     // Don't remove if it's the only prompt
     if (currentPrompts.length <= 1) return;
@@ -144,9 +144,9 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     const newIndex = Math.min(currentIndex, newPrompts.length - 1);
 
     set({
-      categories: {
-        ...categories,
-        [currentCategory]: newPrompts,
+      packs: {
+        ...packs,
+        [currentPack]: newPrompts,
       },
       currentIndex: newIndex,
     });
@@ -154,8 +154,8 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
   },
 
   updatePromptText: (text) => {
-    const { categories, currentCategory, currentIndex } = get();
-    const currentPrompts = [...(categories[currentCategory] || [])];
+    const { packs, currentPack, currentIndex } = get();
+    const currentPrompts = [...(packs[currentPack] || [])];
 
     if (currentPrompts[currentIndex]) {
       currentPrompts[currentIndex] = {
@@ -164,9 +164,9 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
       };
 
       set({
-        categories: {
-          ...categories,
-          [currentCategory]: currentPrompts,
+        packs: {
+          ...packs,
+          [currentPack]: currentPrompts,
         },
       });
       get().saveToStorage();
@@ -174,8 +174,8 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
   },
 
   updatePromptRating: (rating) => {
-    const { categories, currentCategory, currentIndex } = get();
-    const currentPrompts = [...(categories[currentCategory] || [])];
+    const { packs, currentPack, currentIndex } = get();
+    const currentPrompts = [...(packs[currentPack] || [])];
 
     if (currentPrompts[currentIndex]) {
       currentPrompts[currentIndex] = {
@@ -184,9 +184,9 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
       };
 
       set({
-        categories: {
-          ...categories,
-          [currentCategory]: currentPrompts,
+        packs: {
+          ...packs,
+          [currentPack]: currentPrompts,
         },
       });
       get().saveToStorage();
@@ -211,39 +211,39 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
   // Computed
   getCurrentPrompt: () => {
-    const { categories, currentCategory, currentIndex } = get();
-    const prompts = categories[currentCategory] || [];
+    const { packs, currentPack, currentIndex } = get();
+    const prompts = packs[currentPack] || [];
     return prompts[currentIndex] || null;
   },
 
   getCurrentPromptCount: () => {
-    const { categories, currentCategory } = get();
-    return (categories[currentCategory] || []).length;
+    const { packs, currentPack } = get();
+    return (packs[currentPack] || []).length;
   },
 
   // Import/Export
-  exportCurrentCategory: () => {
-    const { categories, currentCategory } = get();
-    const prompts = categories[currentCategory] || [];
-    exportCategory(currentCategory, prompts);
+  exportCurrentPack: () => {
+    const { packs, currentPack } = get();
+    const prompts = packs[currentPack] || [];
+    exportPack(currentPack, prompts);
   },
 
-  importCategory: async (file: File, mode: 'add' | 'replace') => {
-    const { categories } = get();
-    const result = await importCategory(file, mode, categories);
+  importPack: async (file: File, mode: 'add' | 'replace') => {
+    const { packs } = get();
+    const result = await importPack(file, mode, packs);
 
-    if (result.success && result.categories && result.categoryName) {
-      // Update categories
+    if (result.success && result.packs && result.packName) {
+      // Update packs
       set({
-        categories: result.categories,
-        currentCategory: result.categoryName, // Switch to imported category
+        packs: result.packs,
+        currentPack: result.packName, // Switch to imported pack
         currentIndex: 0,
       });
 
       // Save to storage
       await get().saveToStorage();
 
-      return { success: true, categoryName: result.categoryName };
+      return { success: true, packName: result.packName };
     }
 
     return { success: false, error: result.error };

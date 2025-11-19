@@ -1,5 +1,5 @@
 /**
- * Confirmation modal for deleting a category
+ * Confirmation modal for deleting a pack
  */
 
 import React from 'react';
@@ -9,7 +9,7 @@ import { Icon } from './Icon';
 
 interface ConfirmDeleteModalProps {
   isOpen: boolean;
-  categoryName: string;
+  packName: string;
   onClose: () => void;
   onConfirm: () => void;
   getThemeColors: () => any;
@@ -17,7 +17,7 @@ interface ConfirmDeleteModalProps {
 
 export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
   isOpen,
-  categoryName,
+  packName,
   onClose,
   onConfirm,
   getThemeColors,
@@ -49,7 +49,7 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
             className="text-sm font-semibold"
             style={{ color: colors.TEXT_PRIMARY }}
           >
-            Delete Category
+            Delete Pack
           </h2>
           <button
             onClick={onClose}
@@ -93,13 +93,13 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
               className="text-sm font-semibold mb-2"
               style={{ color: colors.TEXT_PRIMARY }}
             >
-              "{categoryName}"?
+              "{packName}"?
             </p>
             <p
               className="text-xs"
               style={{ color: colors.TEXT_SECONDARY }}
             >
-              This will permanently delete all prompts in this category. This action cannot be undone.
+              This will permanently delete all prompts in this pack. This action cannot be undone.
             </p>
           </div>
         </div>

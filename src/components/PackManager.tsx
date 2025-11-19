@@ -1,5 +1,5 @@
 /**
- * Category management component
+ * Pack management component
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -9,23 +9,23 @@ import { Button } from './Button';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 import { mdiPlus, mdiClose, mdiCheck, mdiDelete } from '@mdi/js';
 
-export const CategoryManager: React.FC = () => {
+export const PackManager: React.FC = () => {
   const {
-    categories,
-    currentCategory,
-    setCurrentCategory,
-    addCategory,
-    deleteCategory,
+    packs,
+    currentPack,
+    setCurrentPack,
+    addPack,
+    deletePack,
   } = usePromptStore();
   const { getThemeColors } = useSettingsStore();
   const colors = getThemeColors();
 
   const [isAdding, setIsAdding] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState('');
+  const [newPackName, setNewPackName] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const categoryNames = Object.keys(categories);
+  const packNames = Object.keys(packs);
 
   useEffect(() => {
     if (isAdding && inputRef.current) {
@@ -33,17 +33,17 @@ export const CategoryManager: React.FC = () => {
     }
   }, [isAdding]);
 
-  const handleAddCategory = () => {
-    if (newCategoryName.trim()) {
-      addCategory(newCategoryName.trim());
-      setNewCategoryName('');
+  const handleAddPack = () => {
+    if (newPackName.trim()) {
+      addPack(newPackName.trim());
+      setNewPackName('');
       setIsAdding(false);
     }
   };
 
-  const handleDeleteCategory = () => {
-    if (categoryNames.length <= 1) return;
-    deleteCategory(currentCategory);
+  const handleDeletePack = () => {
+    if (packNames.length <= 1) return;
+    deletePack(currentPack);
   };
 
   return (
@@ -51,8 +51,8 @@ export const CategoryManager: React.FC = () => {
       {!isAdding ? (
         <>
           <select
-            value={currentCategory}
-            onChange={(e) => setCurrentCategory(e.target.value)}
+            value={currentPack}
+            onChange={(e) => setCurrentPack(e.target.value)}
             className="pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none"
             style={{
               backgroundColor: colors.BACKGROUND_MEDIUM,
@@ -73,7 +73,7 @@ export const CategoryManager: React.FC = () => {
               flex: 1,
             }}
           >
-            {categoryNames.map((name) => (
+            {packNames.map((name) => (
               <option key={name} value={name}>
                 {name}
               </option>
@@ -85,7 +85,7 @@ export const CategoryManager: React.FC = () => {
             icon={mdiPlus}
             iconSize={0.7}
             variant="icon"
-            tooltip="Add category"
+            tooltip="Add pack"
           />
 
           <Button
@@ -93,11 +93,11 @@ export const CategoryManager: React.FC = () => {
             icon={mdiDelete}
             iconSize={0.7}
             variant="icon"
-            disabled={categoryNames.length <= 1}
+            disabled={packNames.length <= 1}
             tooltip={
-              categoryNames.length <= 1
-                ? 'Cannot delete last category'
-                : 'Delete category'
+              packNames.length <= 1
+                ? 'Cannot delete last pack'
+                : 'Delete pack'
             }
           />
         </>
@@ -106,16 +106,16 @@ export const CategoryManager: React.FC = () => {
           <input
             ref={inputRef}
             type="text"
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
+            value={newPackName}
+            onChange={(e) => setNewPackName(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') handleAddCategory();
+              if (e.key === 'Enter') handleAddPack();
               if (e.key === 'Escape') {
                 setIsAdding(false);
-                setNewCategoryName('');
+                setNewPackName('');
               }
             }}
-            placeholder="Category name..."
+            placeholder="Pack name..."
             className="flex-1 px-3 py-2 rounded-full text-sm focus:outline-none"
             style={{
               backgroundColor: colors.BACKGROUND_MEDIUM,
@@ -125,17 +125,17 @@ export const CategoryManager: React.FC = () => {
           />
 
           <Button
-            onClick={handleAddCategory}
+            onClick={handleAddPack}
             icon={mdiCheck}
             iconSize={0.7}
             variant="icon"
-            tooltip="Confirm add category"
+            tooltip="Confirm add pack"
           />
 
           <Button
             onClick={() => {
               setIsAdding(false);
-              setNewCategoryName('');
+              setNewPackName('');
             }}
             icon={mdiClose}
             iconSize={0.7}
@@ -148,9 +148,9 @@ export const CategoryManager: React.FC = () => {
       {/* Delete Confirmation Modal */}
       <ConfirmDeleteModal
         isOpen={showDeleteModal}
-        categoryName={currentCategory}
+        packName={currentPack}
         onClose={() => setShowDeleteModal(false)}
-        onConfirm={handleDeleteCategory}
+        onConfirm={handleDeletePack}
         getThemeColors={getThemeColors}
       />
     </div>

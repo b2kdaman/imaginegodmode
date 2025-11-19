@@ -4,10 +4,10 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 
 ## Features
 
-- **Prompt Management**: Save, organize, and manage prompts with categories
+- **Prompt Management**: Save, organize, and manage prompts with packs
 - **Star Ratings**: Rate your prompts with 1-5 stars (Material Design Icons)
-- **Category System**: Create custom categories to organize prompts with confirmation dialog for deletion and text truncation
-- **Import/Export**: Backup and restore categories with JSON files (merge or replace modes)
+- **Pack System**: Create custom packs to organize prompts with confirmation dialog for deletion and text truncation
+- **Import/Export**: Backup and restore packs with JSON files (merge or replace modes)
 - **Media Downloading**: Download images and videos from Grok posts (disabled until all videos are HD)
 - **Auto Download**: Optional setting to automatically download all media after upscaling completes
 - **Video Upscaling**: Parallel upscale requests with staggered start times for optimal performance
@@ -87,10 +87,10 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Adjust UI size: Tiny to Large
    - Enable Auto Download to automatically download media after upscaling
    - **Data Management**:
-     - Export categories: Select any category to export to JSON (backup/sharing)
-     - Import categories: Paste JSON or upload file with real-time validation
+     - Export packs: Select any pack to export to JSON (backup/sharing)
+     - Import packs: Paste JSON or upload file with real-time validation
      - Import modes: Add (create new) or Replace (overwrite existing)
-     - Copy Grok prompt: System prompt for generating custom categories via AI
+     - Copy Grok prompt: System prompt for generating custom packs via AI
 8. **Video Controls**: Use the play/pause button or press Space to control video playback
 9. **Fullscreen**: Click the fullscreen button or press F to enter fullscreen mode
 
@@ -123,7 +123,7 @@ grkgoondl/
 
 ### Stores (Zustand)
 
-- **usePromptStore**: Manages prompts, categories, ratings, and import/export operations
+- **usePromptStore**: Manages prompts, packs, ratings, and import/export operations
 - **useMediaStore**: Handles media URLs, upscaling, and status
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
 - **useSettingsStore**: Manages theme, size, and auto-download preferences with localStorage persistence
@@ -141,10 +141,10 @@ grkgoondl/
 - **PromptView**: Prompt management interface
 - **OpsView**: Media controls with parallel upscaling, HD-gated downloads, and auto-download support
 - **SettingsView**: Theme, size, auto-download preferences, and data management with import/export
-- **CategoryManager**: Category dropdown with text truncation and CRUD operations
-- **CategorySelectModal**: Modal for selecting which category to export
-- **ImportCategoryModal**: Modal for importing categories via paste or file upload with validation
-- **ConfirmDeleteModal**: Confirmation dialog for category deletion with warning message
+- **PackManager**: Pack dropdown with text truncation and CRUD operations
+- **PackSelectModal**: Modal for selecting which pack to export
+- **ImportPackModal**: Modal for importing packs via paste or file upload with validation
+- **ConfirmDeleteModal**: Confirmation dialog for pack deletion with warning message
 - **RatingSystem**: 5-star rating component with white icons
 - **Button**: Reusable button component with theme-aware styling and hover states
 - **Tabs**: Tab navigation component with theme support and bottom placement
@@ -174,15 +174,15 @@ Uses `chrome.runtime.sendMessage()` for communication:
 
 ### Storage
 Uses multiple storage mechanisms with context validation:
-- **chrome.storage.local**: Categories with prompts and ratings, automatic migration from old format
+- **chrome.storage.local**: Packs with prompts and ratings, automatic migration from old format
 - **localStorage**: Theme and size preferences for instant loading
 - **Extension Context Validation**: All storage operations check for valid extension context to gracefully handle extension reloads
 - **Import/Export**:
-  - Per-category JSON export with timestamped filenames
+  - Per-pack JSON export with timestamped filenames
   - Import via paste or file upload with real-time validation
-  - Add/Replace modes with category name conflict handling
+  - Add/Replace modes with pack name conflict handling
   - Version tracking and comprehensive data validation
-  - Interactive Grok prompt for AI-generated category creation
+  - Interactive Grok prompt for AI-generated pack creation
 
 ## Development
 
@@ -249,13 +249,13 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - **Video State Sync**: Play/pause button automatically syncs with video element state via event listeners
 - **Extension Reload Handling**: Storage operations validate extension context and fail gracefully during reloads
 - **Smart URL Watching**: URL changes trigger automatic data refetch via callback pattern in OpsView component
-- **Category Import/Export**:
-  - Per-category exports with descriptive filenames (imaginegodmode-category-Name-Date.json)
-  - CategorySelectModal for choosing which category to export
-  - ImportCategoryModal with paste/upload options and live JSON validation
-  - Real-time validation showing category name, prompt count, and error details
+- **Pack Import/Export**:
+  - Per-pack exports with descriptive filenames (imaginegodmode-pack-Name-Date.json)
+  - PackSelectModal for choosing which pack to export
+  - ImportPackModal with paste/upload options and live JSON validation
+  - Real-time validation showing pack name, prompt count, and error details
   - Add mode prevents overwriting, Replace mode allows updates
-  - Grok AI integration: Copy system prompt to generate custom categories via conversation
+  - Grok AI integration: Copy system prompt to generate custom packs via conversation
 
 ## Commands
 
@@ -276,7 +276,7 @@ npm run generate-icons  # Regenerate extension icons
 - [x] Video progress tracking
 - [x] Theme customization (Dark, Light, Dracula)
 - [x] UI scaling (Tiny to Large)
-- [x] Export/import categories (JSON format with merge/replace modes)
+- [x] Export/import packs (JSON format with merge/replace modes)
 - [ ] Sync across devices with `chrome.storage.sync`
 - [ ] Custom theme builder
 - [ ] Prompt search and filtering

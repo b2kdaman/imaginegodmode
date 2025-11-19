@@ -1,5 +1,5 @@
 /**
- * Modal component for selecting category to export
+ * Modal component for selecting pack to export
  */
 
 import React from 'react';
@@ -7,21 +7,21 @@ import { Button } from './Button';
 import { mdiClose, mdiDownload } from '@mdi/js';
 import { Icon } from './Icon';
 
-interface CategorySelectModalProps {
+interface PackSelectModalProps {
   isOpen: boolean;
-  categories: string[];
-  currentCategory: string;
+  packs: string[];
+  currentPack: string;
   onClose: () => void;
-  onSelectCategory: (categoryName: string) => void;
+  onSelectPack: (packName: string) => void;
   getThemeColors: () => any;
 }
 
-export const CategorySelectModal: React.FC<CategorySelectModalProps> = ({
+export const PackSelectModal: React.FC<PackSelectModalProps> = ({
   isOpen,
-  categories,
-  currentCategory,
+  packs,
+  currentPack,
   onClose,
-  onSelectCategory,
+  onSelectPack,
   getThemeColors,
 }) => {
   const colors = getThemeColors();
@@ -51,7 +51,7 @@ export const CategorySelectModal: React.FC<CategorySelectModalProps> = ({
             className="text-sm font-semibold"
             style={{ color: colors.TEXT_PRIMARY }}
           >
-            Select Category
+            Select Pack
           </h2>
           <button
             onClick={onClose}
@@ -73,40 +73,40 @@ export const CategorySelectModal: React.FC<CategorySelectModalProps> = ({
           </button>
         </div>
 
-        {/* Category List */}
+        {/* Pack List */}
         <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto mb-3">
-          {categories.map((categoryName) => (
+          {packs.map((packName) => (
             <button
-              key={categoryName}
-              onClick={() => onSelectCategory(categoryName)}
+              key={packName}
+              onClick={() => onSelectPack(packName)}
               className="text-left px-3 py-2 rounded-lg transition-all flex items-center justify-between group text-sm"
               style={{
                 backgroundColor:
-                  categoryName === currentCategory
+                  packName === currentPack
                     ? colors.BACKGROUND_MEDIUM
                     : colors.BACKGROUND_DARK,
                 border: `1px solid ${
-                  categoryName === currentCategory
+                  packName === currentPack
                     ? colors.TEXT_SECONDARY
                     : colors.BORDER
                 }`,
                 color: colors.TEXT_PRIMARY,
               }}
               onMouseEnter={(e) => {
-                if (categoryName !== currentCategory) {
+                if (packName !== currentPack) {
                   e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
                   e.currentTarget.style.borderColor = colors.TEXT_SECONDARY;
                 }
               }}
               onMouseLeave={(e) => {
-                if (categoryName !== currentCategory) {
+                if (packName !== currentPack) {
                   e.currentTarget.style.backgroundColor = colors.BACKGROUND_DARK;
                   e.currentTarget.style.borderColor = colors.BORDER;
                 }
               }}
             >
-              <span className="font-medium truncate">{categoryName}</span>
-              {categoryName === currentCategory && (
+              <span className="font-medium truncate">{packName}</span>
+              {packName === currentPack && (
                 <span
                   className="text-xs px-1.5 py-0.5 rounded-full ml-2 flex-shrink-0"
                   style={{

@@ -33,7 +33,7 @@ export const HelpView: React.FC = () => {
           }}
         >
           <ul className="space-y-1 ml-3" style={{ listStyleType: 'disc' }}>
-            <li>Save and organize prompts with categories</li>
+            <li>Save and organize prompts with packs</li>
             <li>Rate prompts with 1-5 star ratings</li>
             <li>Navigate prompts with arrow keys</li>
             <li>Download images and videos (when all videos are HD)</li>

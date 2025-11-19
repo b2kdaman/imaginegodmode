@@ -2,13 +2,13 @@
  * Chrome storage wrapper utilities
  */
 
-import { Categories } from '@/types';
+import { Packs } from '@/types';
 
 const STORAGE_KEY = 'grok-text-items';
 
 export interface StorageData {
-  categories: Categories;
-  currentCategory: string;
+  packs: Packs;
+  currentPack: string;
   currentIndex: number;
 }
 
@@ -113,18 +113,18 @@ export const onStorageChange = (
 export interface ExportData {
   version: string;
   exportDate: string;
-  categoryName: string;
+  packName: string;
   prompts: PromptItem[];
 }
 
 /**
- * Export single category to JSON file
+ * Export single pack to JSON file
  */
-export const exportCategory = (categoryName: string, prompts: PromptItem[]): void => {
+export const exportPack = (packName: string, prompts: PromptItem[]): void => {
   const exportData: ExportData = {
     version: '1.0',
     exportDate: new Date().toISOString(),
-    categoryName,
+    packName,
     prompts,
   };
 
@@ -136,10 +136,10 @@ export const exportCategory = (categoryName: string, prompts: PromptItem[]): voi
   const a = document.createElement('a');
   a.href = url;
 
-  // Format: imaginegodmode-category-CategoryName-YYYY-MM-DD.json
+  // Format: imaginegodmode-pack-PackName-YYYY-MM-DD.json
   const dateStr = new Date().toISOString().split('T')[0];
-  const safeCategoryName = categoryName.replace(/[^a-z0-9]/gi, '_');
-  a.download = `imaginegodmode-category-${safeCategoryName}-${dateStr}.json`;
+  const safePackName = packName.replace(/[^a-z0-9]/gi, '_');
+  a.download = `imaginegodmode-pack-${safePackName}-${dateStr}.json`;
 
   document.body.appendChild(a);
   a.click();
@@ -148,7 +148,7 @@ export const exportCategory = (categoryName: string, prompts: PromptItem[]): voi
 };
 
 /**
- * Validate import data structure (per-category)
+ * Validate import data structure (per-pack)
  */
 const validateImportData = (data: unknown): data is ExportData => {
   if (!data || typeof data !== 'object') return false;
@@ -158,7 +158,7 @@ const validateImportData = (data: unknown): data is ExportData => {
   // Check required fields
   if (typeof obj.version !== 'string') return false;
   if (typeof obj.exportDate !== 'string') return false;
-  if (typeof obj.categoryName !== 'string' || obj.categoryName.trim() === '') return false;
+  if (typeof obj.packName !== 'string' || obj.packName.trim() === '') return false;
   if (!Array.isArray(obj.prompts)) return false;
 
   const prompts = obj.prompts as unknown[];
@@ -177,17 +177,17 @@ const validateImportData = (data: unknown): data is ExportData => {
 };
 
 /**
- * Import category from JSON file
+ * Import pack from JSON file
  */
-export const importCategory = (
+export const importPack = (
   file: File,
   mode: 'add' | 'replace',
-  currentCategories: Categories
+  currentPacks: Packs
 ): Promise<{
   success: boolean;
-  categoryName?: string;
+  packName?: string;
   prompts?: PromptItem[];
-  categories?: Categories;
+  packs?: Packs;
   error?: string
 }> => {
   return new Promise((resolve) => {
@@ -204,19 +204,19 @@ export const importCategory = (
           return;
         }
 
-        let resultCategories: Categories = { ...currentCategories };
+        let resultPacks: Packs = { ...currentPacks };
 
         if (mode === 'replace') {
-          // Replace: overwrite category if exists, otherwise add new
-          resultCategories[data.categoryName] = data.prompts;
+          // Replace: overwrite pack if exists, otherwise add new
+          resultPacks[data.packName] = data.prompts;
         } else {
-          // Add: only add if category doesn't exist
-          if (!resultCategories[data.categoryName]) {
-            resultCategories[data.categoryName] = data.prompts;
+          // Add: only add if pack doesn't exist
+          if (!resultPacks[data.packName]) {
+            resultPacks[data.packName] = data.prompts;
           } else {
             resolve({
               success: false,
-              error: `Category "${data.categoryName}" already exists. Use Replace mode to overwrite.`
+              error: `Pack "${data.packName}" already exists. Use Replace mode to overwrite.`
             });
             return;
           }
@@ -224,9 +224,9 @@ export const importCategory = (
 
         resolve({
           success: true,
-          categoryName: data.categoryName,
+          packName: data.packName,
           prompts: data.prompts,
-          categories: resultCategories
+          packs: resultPacks
         });
       } catch (error) {
         resolve({
