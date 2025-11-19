@@ -44,7 +44,7 @@ export const HelpView: React.FC = () => {
             <li>Real-time video generation progress</li>
             <li>Play/pause video control</li>
             <li>Fullscreen video playback</li>
-            <li>Theme customization (Dark, Light, Dracula, Winamp)</li>
+            <li>Theme customization (Dark, Light, Dracula, Winamp, LimeWire, Steam)</li>
             <li>UI size scaling (Tiny to Large)</li>
             <li>Auto-download media when generation completes</li>
           </ul>

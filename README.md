@@ -15,7 +15,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **HD Status Indicator**: Green check icon appears when all videos are HD quality
 - **Video Controls**: Play/pause button with synchronized state tracking
 - **Fullscreen Video Player**: Intelligent fullscreen button that detects visible video (HD or SD)
-- **Theme Customization**: Choose from Dark, Light, Dracula, or Winamp themes with full UI color adaptation
+- **Theme Customization**: Choose from 6 themes (Dark, Light, Dracula, Winamp, LimeWire, Steam) with full UI color adaptation
 - **Configurable Themes**: Themes loaded from JSON file for easy customization
 - **UI Scaling**: Adjust panel size from Tiny (70%) to Large (115%)
 - **Keyboard Shortcuts**:
@@ -84,7 +84,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Real-time status updates and progress tracking
    - Green check icon appears when all videos are HD quality
 7. **Settings View**: Customize your experience
-   - Choose theme: Dark, Light, Dracula, or Winamp
+   - Choose theme: Dark, Light, Dracula, Winamp, LimeWire, or Steam
    - Themes are configurable via `public/themes.json`
    - Adjust UI size: Tiny to Large
    - Enable Auto Download to automatically download media after upscaling
@@ -233,7 +233,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Custom icons included (gold "G" logo at 16px, 48px, 128px)
 - Extension requires permissions for `storage`, `downloads`, and `activeTab`
 - Works on `https://grok.com/*` and `https://www.grok.com/*`
-- **Theme System**: Four built-in themes (Dark, Light, Dracula, Winamp) with full color palette adaptation including theme-aware accent colors
+- **Theme System**: Six built-in themes (Dark, Light, Dracula, Winamp, LimeWire, Steam) with full color palette adaptation including theme-aware accent colors
 - **Configurable Themes**: Themes loaded from `public/themes.json` for easy customization without code changes
 - **Theme-Aware Accents**: Success indicators (HD checkmark, auto-download toggle) adapt to each theme's color scheme
 - **UI Scaling**: CSS transform-based scaling maintains crisp rendering at all sizes
@@ -270,6 +270,8 @@ Themes are fully customizable via the `public/themes.json` configuration file.
 - **Light**: Clean light theme with white backgrounds
 - **Dracula**: Popular Dracula color scheme with purple/pink accents
 - **Winamp**: Retro Winamp-inspired theme with teal backgrounds and green LED text
+- **LimeWire**: Nostalgic P2P aesthetic with signature lime green on black
+- **Steam**: Valve's iconic dark blue slate with light blue accents
 
 ### Creating Custom Themes
 
@@ -298,7 +300,7 @@ npm run generate-icons  # Regenerate extension icons
 - [ ] Spin automation (batch process list items)
 - [x] Fullscreen video player support
 - [x] Video progress tracking
-- [x] Theme customization (Dark, Light, Dracula, Winamp)
+- [x] Theme customization (Dark, Light, Dracula, Winamp, LimeWire, Steam)
 - [x] Configurable themes via JSON
 - [x] UI scaling (Tiny to Large)
 - [x] Export/import packs (JSON format with merge/replace modes)

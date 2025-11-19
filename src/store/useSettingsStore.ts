@@ -5,7 +5,7 @@
 import { create } from 'zustand';
 import { loadThemes, type ThemeColors } from '@/utils/themeLoader';
 
-export type Theme = 'dark' | 'light' | 'dracula' | 'winamp';
+export type Theme = 'dark' | 'light' | 'dracula' | 'winamp' | 'limewire' | 'steam';
 export type Size = 'tiny' | 'small' | 'medium' | 'large';
 
 interface SettingsState {
@@ -37,7 +37,7 @@ const loadSettings = (): { theme: Theme; size: Size; autoDownload: boolean } => 
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      const validThemes: Theme[] = ['dark', 'light', 'dracula', 'winamp'];
+      const validThemes: Theme[] = ['dark', 'light', 'dracula', 'winamp', 'limewire', 'steam'];
       const validSizes: Size[] = ['tiny', 'small', 'medium', 'large'];
       return {
         theme: validThemes.includes(parsed.theme) ? parsed.theme : 'dark',
