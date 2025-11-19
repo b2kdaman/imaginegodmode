@@ -52,11 +52,24 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     set({ isLoading: true });
     const data = await getStorage();
 
-    if (data) {
+    if (data && data.packs && typeof data.packs === 'object') {
+      // Validate that we have at least one pack
+      const packNames = Object.keys(data.packs);
+      if (packNames.length === 0) {
+        // No packs found, use default
+        set({ isLoading: false });
+        return;
+      }
+
+      // Ensure currentPack exists in packs
+      const validCurrentPack = data.packs[data.currentPack]
+        ? data.currentPack
+        : packNames[0];
+
       set({
         packs: data.packs,
-        currentPack: data.currentPack,
-        currentIndex: data.currentIndex,
+        currentPack: validCurrentPack,
+        currentIndex: data.currentIndex || 0,
         isLoading: false,
       });
     } else {
@@ -78,6 +91,18 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
   addPack: (name) => {
     const { packs } = get();
+
+    // Safety check: ensure packs exists
+    if (!packs) {
+      set({
+        packs: { [name]: [{ text: '', rating: 0 }] },
+        currentPack: name,
+        currentIndex: 0,
+      });
+      get().saveToStorage();
+      return;
+    }
+
     if (!packs[name]) {
       set({
         packs: {
@@ -93,6 +118,10 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
   deletePack: (name) => {
     const { packs, currentPack } = get();
+
+    // Safety check: ensure packs exists
+    if (!packs) return;
+
     const packNames = Object.keys(packs);
 
     // Don't delete if it's the only pack
@@ -157,45 +186,55 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     const { packs, currentPack, currentIndex } = get();
     const currentPrompts = [...(packs[currentPack] || [])];
 
-    if (currentPrompts[currentIndex]) {
-      currentPrompts[currentIndex] = {
-        ...currentPrompts[currentIndex],
-        text,
-      };
-
-      set({
-        packs: {
-          ...packs,
-          [currentPack]: currentPrompts,
-        },
-      });
-      get().saveToStorage();
+    // Ensure we have prompts and valid index
+    if (currentPrompts.length === 0 || !currentPrompts[currentIndex]) {
+      return;
     }
+
+    currentPrompts[currentIndex] = {
+      ...currentPrompts[currentIndex],
+      text,
+    };
+
+    set({
+      packs: {
+        ...packs,
+        [currentPack]: currentPrompts,
+      },
+    });
+    get().saveToStorage();
   },
 
   updatePromptRating: (rating) => {
     const { packs, currentPack, currentIndex } = get();
     const currentPrompts = [...(packs[currentPack] || [])];
 
-    if (currentPrompts[currentIndex]) {
-      currentPrompts[currentIndex] = {
-        ...currentPrompts[currentIndex],
-        rating,
-      };
-
-      set({
-        packs: {
-          ...packs,
-          [currentPack]: currentPrompts,
-        },
-      });
-      get().saveToStorage();
+    // Ensure we have prompts and valid index
+    if (currentPrompts.length === 0 || !currentPrompts[currentIndex]) {
+      return;
     }
+
+    currentPrompts[currentIndex] = {
+      ...currentPrompts[currentIndex],
+      rating,
+    };
+
+    set({
+      packs: {
+        ...packs,
+        [currentPack]: currentPrompts,
+      },
+    });
+    get().saveToStorage();
   },
 
   nextPrompt: () => {
     const { currentIndex } = get();
     const count = get().getCurrentPromptCount();
+
+    // Don't navigate if no prompts
+    if (count === 0) return;
+
     const newIndex = currentIndex < count - 1 ? currentIndex + 1 : 0;
     set({ currentIndex: newIndex });
     get().saveToStorage();
@@ -204,6 +243,10 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
   prevPrompt: () => {
     const { currentIndex } = get();
     const count = get().getCurrentPromptCount();
+
+    // Don't navigate if no prompts
+    if (count === 0) return;
+
     const newIndex = currentIndex > 0 ? currentIndex - 1 : count - 1;
     set({ currentIndex: newIndex });
     get().saveToStorage();
@@ -212,13 +255,25 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
   // Computed
   getCurrentPrompt: () => {
     const { packs, currentPack, currentIndex } = get();
-    const prompts = packs[currentPack] || [];
+
+    // Safety check: ensure packs exists and currentPack exists
+    if (!packs || !currentPack || !packs[currentPack]) {
+      return null;
+    }
+
+    const prompts = packs[currentPack];
     return prompts[currentIndex] || null;
   },
 
   getCurrentPromptCount: () => {
     const { packs, currentPack } = get();
-    return (packs[currentPack] || []).length;
+
+    // Safety check: ensure packs exists and currentPack exists
+    if (!packs || !currentPack || !packs[currentPack]) {
+      return 0;
+    }
+
+    return packs[currentPack].length;
   },
 
   // Import/Export
