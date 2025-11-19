@@ -34,8 +34,11 @@ export const HelpView: React.FC = () => {
         >
           <ul className="space-y-1 ml-3" style={{ listStyleType: 'disc' }}>
             <li>Save and organize prompts with packs</li>
+            <li>Create, delete, and switch between packs</li>
             <li>Rate prompts with 1-5 star ratings</li>
             <li>Navigate prompts with arrow keys</li>
+            <li>Import and export packs (add or replace mode)</li>
+            <li>Generate new packs with AI using Grok prompt templates</li>
             <li>Download images and videos (when all videos are HD)</li>
             <li>Parallel video upscaling to HD quality</li>
             <li>Real-time video generation progress</li>
@@ -43,6 +46,7 @@ export const HelpView: React.FC = () => {
             <li>Fullscreen video playback</li>
             <li>Theme customization (Dark, Light, Dracula)</li>
             <li>UI size scaling (Tiny to Large)</li>
+            <li>Auto-download media when generation completes</li>
           </ul>
         </div>
       </div>
