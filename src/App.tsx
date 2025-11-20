@@ -11,6 +11,7 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useArrowKeyNavigation } from './hooks/useArrowKeyNavigation';
 import { useVideoProgress } from './hooks/useVideoProgress';
 import { I18nProvider } from './contexts/I18nContext';
+import { initAnalytics } from './utils/analytics';
 
 export const App: React.FC = () => {
   const { loadFromStorage } = usePromptStore();
@@ -20,6 +21,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     loadFromStorage();
     loadThemes();
+    initAnalytics();
   }, [loadFromStorage, loadThemes]);
 
   // Set up keyboard shortcuts

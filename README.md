@@ -4,6 +4,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 
 ## Features
 
+- **Analytics**: Google Analytics 4 integration for anonymous usage tracking (always enabled, see [PRIVACY.md](PRIVACY.md))
 - **Prompt Management**: Save, organize, and manage prompts with packs
 - **Star Ratings**: Rate your prompts with 1-5 stars (Material Design Icons)
 - **Pack System**: Create custom packs to organize prompts with confirmation dialog for deletion and text truncation
@@ -51,6 +52,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Vite** - Fast build tool
 - **CRXJS** - Vite plugin for Chrome extensions
 - **Chrome Manifest V3** - Latest extension API
+- **Google Analytics 4** - Anonymous usage analytics via Measurement Protocol
 
 ## Installation
 
@@ -290,6 +292,13 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - Real-time validation showing pack name, prompt count, and error details
   - Add mode prevents overwriting, Replace mode allows updates
   - Grok AI integration: Copy system prompt to generate custom packs via conversation
+- **Analytics**: Google Analytics 4 (GA4) integration for anonymous usage tracking
+  - Mandatory analytics (no opt-out) - see [PRIVACY.md](PRIVACY.md)
+  - Anonymous client IDs using UUID v4
+  - Session tracking with 30-minute timeout
+  - Tracks feature usage, prompt/pack actions, media operations, settings changes
+  - No personal data, prompt content, or identifying information collected
+  - Uses GA4 Measurement Protocol (no script loading)
 
 ## Theme Customization
 

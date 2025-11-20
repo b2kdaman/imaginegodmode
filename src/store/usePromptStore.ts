@@ -5,6 +5,16 @@
 import { create } from 'zustand';
 import { PromptItem, Packs } from '@/types';
 import { getStorage, setStorage, exportPack, importPack } from '@/utils/storage';
+import {
+  trackPromptCreated,
+  trackPromptDeleted,
+  trackPromptRated,
+  trackPackCreated,
+  trackPackDeleted,
+  trackPackSwitched,
+  trackPackExported,
+  trackPackImported,
+} from '@/utils/analytics';
 
 interface PromptStore {
   // State
@@ -87,6 +97,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
   setCurrentPack: (pack) => {
     set({ currentPack: pack, currentIndex: 0 });
     get().saveToStorage();
+    trackPackSwitched(pack);
   },
 
   addPack: (name) => {
@@ -113,6 +124,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
         currentIndex: 0,
       });
       get().saveToStorage();
+      trackPackCreated();
     }
   },
 
@@ -140,6 +152,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
       currentIndex: 0,
     });
     get().saveToStorage();
+    trackPackDeleted();
   },
 
   // Prompt actions
@@ -160,6 +173,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
       currentIndex: currentPrompts.length,
     });
     get().saveToStorage();
+    trackPromptCreated();
   },
 
   removePrompt: () => {
@@ -180,6 +194,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
       currentIndex: newIndex,
     });
     get().saveToStorage();
+    trackPromptDeleted();
   },
 
   updatePromptText: (text) => {
@@ -226,6 +241,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
       },
     });
     get().saveToStorage();
+    trackPromptRated(rating);
   },
 
   nextPrompt: () => {
@@ -281,6 +297,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     const { packs, currentPack } = get();
     const prompts = packs[currentPack] || [];
     exportPack(currentPack, prompts);
+    trackPackExported(prompts.length);
   },
 
   importPack: async (file: File, mode: 'add' | 'replace') => {
@@ -297,6 +314,10 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
       // Save to storage
       await get().saveToStorage();
+
+      // Track import with prompt count
+      const importedPrompts = result.packs[result.packName] || [];
+      trackPackImported(mode, importedPrompts.length);
 
       return { success: true, packName: result.packName };
     }
