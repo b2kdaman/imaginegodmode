@@ -6,8 +6,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 // GA4 Configuration
-// TODO: Replace with your actual GA4 Measurement ID and API Secret
-const GA4_MEASUREMENT_ID = 'G-XXXXXXXXXX';
+const GA4_MEASUREMENT_ID = 'G-VQDV962F8P';
 const GA4_API_SECRET = 'YOUR_API_SECRET';
 const GA4_ENDPOINT = `https://www.google-analytics.com/mp/collect?measurement_id=${GA4_MEASUREMENT_ID}&api_secret=${GA4_API_SECRET}`;
 
