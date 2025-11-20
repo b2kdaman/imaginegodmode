@@ -102,7 +102,8 @@
     "addPackTooltip": "Add new pack",
     "deletePackTooltip": "Delete current pack (double-click)",
     "cannotDeleteLast": "Cannot delete the last pack",
-    "packNamePlaceholder": "Pack name..."
+    "packNamePlaceholder": "Pack name...",
+    "searchTooltip": "Search prompts"
   },
   "modals": {
     "confirmDelete": {
@@ -120,6 +121,13 @@
     },
     "selectPack": {
       "title": "Select Pack"
+    },
+    "searchPrompts": {
+      "title": "Search Prompts",
+      "placeholder": "Type to search...",
+      "noResults": "No prompts found",
+      "resultCount": "{{count}} result(s)",
+      "promptNumber": "Prompt #{{number}}"
     }
   }
 }

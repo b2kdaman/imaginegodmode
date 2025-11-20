@@ -10,9 +10,10 @@ import { UI_COLORS } from '@/utils/constants';
 interface RatingSystemProps {
   rating: number;
   onChange: (rating: number) => void;
+  readonly?: boolean;
 }
 
-export const RatingSystem: React.FC<RatingSystemProps> = ({ rating, onChange }) => {
+export const RatingSystem: React.FC<RatingSystemProps> = ({ rating, onChange, readonly = false }) => {
   const [hoveredRating, setHoveredRating] = useState<number | null>(null);
 
   const displayRating = hoveredRating !== null ? hoveredRating : rating;
@@ -23,10 +24,11 @@ export const RatingSystem: React.FC<RatingSystemProps> = ({ rating, onChange }) 
         <button
           key={star}
           type="button"
-          className="cursor-pointer transition-colors duration-100"
-          onClick={() => onChange(star)}
-          onMouseEnter={() => setHoveredRating(star)}
-          onMouseLeave={() => setHoveredRating(null)}
+          className={readonly ? 'cursor-default' : 'cursor-pointer transition-colors duration-100'}
+          onClick={() => !readonly && onChange(star)}
+          onMouseEnter={() => !readonly && setHoveredRating(star)}
+          onMouseLeave={() => !readonly && setHoveredRating(null)}
+          disabled={readonly}
         >
           <Icon
             path={displayRating >= star ? mdiStar : mdiStarOutline}

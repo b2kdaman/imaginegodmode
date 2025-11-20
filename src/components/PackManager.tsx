@@ -7,7 +7,8 @@ import { usePromptStore } from '@/store/usePromptStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { Button } from './Button';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
-import { mdiPlus, mdiClose, mdiCheck, mdiDelete } from '@mdi/js';
+import { SearchModal } from './SearchModal';
+import { mdiPlus, mdiClose, mdiCheck, mdiDelete, mdiMagnify } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 
 export const PackManager: React.FC = () => {
@@ -25,6 +26,7 @@ export const PackManager: React.FC = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [newPackName, setNewPackName] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSearchModal, setShowSearchModal] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const packNames = Object.keys(packs);
@@ -52,10 +54,18 @@ export const PackManager: React.FC = () => {
     <div className="flex items-center gap-2 mb-3">
       {!isAdding ? (
         <>
+          <Button
+            onClick={() => setShowSearchModal(true)}
+            icon={mdiMagnify}
+            iconSize={0.7}
+            variant="icon"
+            tooltip={t('packManager.searchTooltip')}
+          />
+
           <select
             value={currentPack}
             onChange={(e) => setCurrentPack(e.target.value)}
-            className="pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none"
+            className="pl-3 pr-8 py-2 rounded-full text-xs cursor-pointer focus:outline-none"
             style={{
               backgroundColor: colors.BACKGROUND_MEDIUM,
               color: colors.TEXT_PRIMARY,
@@ -153,6 +163,13 @@ export const PackManager: React.FC = () => {
         packName={currentPack}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDeletePack}
+        getThemeColors={getThemeColors}
+      />
+
+      {/* Search Modal */}
+      <SearchModal
+        isOpen={showSearchModal}
+        onClose={() => setShowSearchModal(false)}
         getThemeColors={getThemeColors}
       />
     </div>

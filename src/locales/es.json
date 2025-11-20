@@ -102,7 +102,8 @@
     "addPackTooltip": "Agregar nuevo paquete",
     "deletePackTooltip": "Eliminar paquete actual (doble clic)",
     "cannotDeleteLast": "No se puede eliminar el último paquete",
-    "packNamePlaceholder": "Nombre del paquete..."
+    "packNamePlaceholder": "Nombre del paquete...",
+    "searchTooltip": "Buscar prompts"
   },
   "modals": {
     "confirmDelete": {
@@ -120,6 +121,13 @@
     },
     "selectPack": {
       "title": "Seleccionar Paquete"
+    },
+    "searchPrompts": {
+      "title": "Buscar Prompts",
+      "placeholder": "Escribe para buscar...",
+      "noResults": "No se encontraron prompts",
+      "resultCount": "{{count}} resultado(s)",
+      "promptNumber": "Prompt #{{number}}"
     }
   }
 }

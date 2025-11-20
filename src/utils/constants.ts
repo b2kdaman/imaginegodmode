@@ -3,7 +3,7 @@
  */
 
 // Version
-export const VERSION = '2.2.1';
+export const VERSION = '2.3.0';
 
 // UI Layout & Positioning
 export const UI_POSITION = {

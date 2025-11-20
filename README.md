@@ -7,6 +7,11 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Prompt Management**: Save, organize, and manage prompts with packs
 - **Star Ratings**: Rate your prompts with 1-5 stars (Material Design Icons)
 - **Pack System**: Create custom packs to organize prompts with confirmation dialog for deletion and text truncation
+- **Global Search**: Type-ahead search across all packs with instant results
+  - Search button with magnifying glass icon
+  - Real-time search results with prompt preview
+  - Display pack name, prompt number, and star ratings
+  - Click to navigate directly to any prompt
 - **Import/Export**: Backup and restore packs with JSON files (merge or replace modes)
 - **Media Downloading**: Download images and videos from Grok posts (disabled until all videos are HD)
 - **Auto Download**: Optional setting to automatically download all media after upscaling completes
@@ -80,6 +85,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 3. Click the expand button to open the panel
 4. Switch between "Prompt", "Ops", and "Settings" tabs (bottom navigation)
 5. **Prompt View**: Manage and organize your prompts
+   - Search prompts: Click magnifying glass icon to search across all packs
    - Rate prompts with stars
    - Navigate with arrow buttons or keyboard
    - Copy and play prompts
@@ -160,11 +166,12 @@ grkgoondl/
 - **PromptView**: Prompt management interface
 - **OpsView**: Media controls with parallel upscaling, HD-gated downloads, and auto-download support
 - **SettingsView**: Theme, size, language, auto-download preferences, and data management with import/export (all labels with icons)
-- **PackManager**: Pack dropdown with text truncation and CRUD operations
+- **PackManager**: Pack dropdown with search button, text truncation, and CRUD operations
+- **SearchModal**: Type-ahead search modal for finding prompts across all packs
 - **PackSelectModal**: Modal for selecting which pack to export
 - **ImportPackModal**: Modal for importing packs via paste or file upload with validation
 - **ConfirmDeleteModal**: Confirmation dialog for pack deletion with warning message
-- **RatingSystem**: 5-star rating component with white icons
+- **RatingSystem**: 5-star rating component with white icons and optional readonly mode
 - **Button**: Reusable button component with theme-aware styling and hover states
 - **Tabs**: Tab navigation component with theme support and bottom placement
 - **PauseButton**: Play/pause control with synchronized video state tracking
@@ -330,9 +337,11 @@ npm run generate-icons  # Regenerate extension icons
 - [x] Export/import packs (JSON format with merge/replace modes)
 - [x] Internationalization (English and Spanish)
 - [x] Visual icon enhancements for settings
+- [x] Prompt search and filtering (type-ahead search across all packs)
+- [ ] Advanced search filters (by rating, date)
+- [ ] Search keyboard shortcuts (Ctrl/Cmd+F)
 - [ ] Additional language translations (French, German, Portuguese, etc.)
 - [ ] Sync across devices with `chrome.storage.sync`
-- [ ] Prompt search and filtering
 - [ ] Chrome Web Store publication
 
 ## License
