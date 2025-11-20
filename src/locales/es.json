@@ -1,0 +1,125 @@
+{
+  "tabs": {
+    "prompt": "Prompts",
+    "ops": "Ops",
+    "settings": "Ajustes",
+    "help": "Ayuda"
+  },
+  "common": {
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "import": "Importar",
+    "export": "Exportar",
+    "add": "Agregar",
+    "remove": "Quitar",
+    "copy": "Copiar",
+    "make": "Crear",
+    "download": "Descargar",
+    "upscale": "Mejorar",
+    "paste": "Pegar",
+    "current": "Actual",
+    "version": "Versión"
+  },
+  "panel": {
+    "collapseTooltip": "Contraer panel",
+    "expandTooltip": "Expandir panel",
+    "authorCredit": "por Valentine Muñoz"
+  },
+  "prompt": {
+    "placeholder": "Ingresa tu prompt...",
+    "toTooltip": "Reemplazar prompt actual con este",
+    "fromTooltip": "Guardar prompt actual en este espacio",
+    "copyTooltip": "Copiar este prompt al portapapeles",
+    "addTooltip": "Agregar nuevo espacio de prompt",
+    "removeTooltip": "Eliminar este espacio de prompt",
+    "makeTooltip": "Rellenar prompt y hacer clic en Crear",
+    "rating": "Califica este prompt"
+  },
+  "settings": {
+    "theme": "Tema",
+    "size": "Tamaño",
+    "language": "Idioma",
+    "autoDownload": "Descarga Automática",
+    "dataManagement": "Gestión de Datos",
+    "importMode": "Modo de Importación",
+    "importModeAdd": "Agregar",
+    "importModeReplace": "Reemplazar",
+    "themes": {
+      "dark": "Oscuro",
+      "light": "Claro",
+      "dracula": "Drácula",
+      "winamp": "Winamp",
+      "limewire": "LimeWire",
+      "steam": "Steam"
+    },
+    "sizes": {
+      "tiny": "Muy Pequeño (70%)",
+      "small": "Pequeño (85%)",
+      "medium": "Mediano (100%)",
+      "large": "Grande (115%)"
+    },
+    "languages": {
+      "en": "Inglés",
+      "es": "Español"
+    }
+  },
+  "ops": {
+    "noPostId": "No se encontró ID de publicación en la URL",
+    "fetchingPost": "Obteniendo datos de la publicación...",
+    "foundMedia": "Se encontraron {{count}} medios ({{hdCount}} videos HD)",
+    "upscaling": "Mejorando {{current}}/{{total}}...",
+    "upscaled": "Mejorados {{count}}/{{total}}",
+    "downloading": "Descargando...",
+    "downloaded": "{{count}} archivos descargados",
+    "upscaleTooltip": "Mejorar videos a calidad HD",
+    "downloadTooltip": "Descargar todos los archivos multimedia",
+    "ready": "Listo",
+    "waitingForPost": "Esperando publicación..."
+  },
+  "help": {
+    "availableFeatures": "Características Disponibles",
+    "keyboardShortcuts": "Atajos de Teclado",
+    "about": "Acerca de",
+    "features": {
+      "savePrompts": "Guardar y organizar prompts en paquetes",
+      "ratePrompts": "Calificar prompts con estrellas",
+      "importExport": "Importar/exportar paquetes de prompts como JSON",
+      "upscale": "Mejorar videos a calidad HD",
+      "autoDownload": "Descarga automática de medios generados",
+      "keyboardShortcuts": "Soporte completo de atajos de teclado",
+      "themes": "Múltiples temas de color y tamaños de interfaz"
+    },
+    "shortcuts": {
+      "makeVideo": "Crear un Video",
+      "copyMake": "Copiar y Crear",
+      "navigatePrompts": "Navegar Prompts",
+      "togglePanel": "Alternar Panel",
+      "switchTabs": "Cambiar Pestañas"
+    },
+    "aboutText": "ImagineGodMode te ayuda a gestionar prompts de generación de video con características como guardar paquetes de prompts, calificación, importar/exportar, mejorar videos a HD y descarga automática de medios."
+  },
+  "packManager": {
+    "addPackTooltip": "Agregar nuevo paquete",
+    "deletePackTooltip": "Eliminar paquete actual (doble clic)",
+    "cannotDeleteLast": "No se puede eliminar el último paquete",
+    "packNamePlaceholder": "Nombre del paquete..."
+  },
+  "modals": {
+    "confirmDelete": {
+      "title": "Eliminar Paquete",
+      "message": "¿Estás seguro de que deseas eliminar \"{{packName}}\"?"
+    },
+    "importPack": {
+      "title": "Importar Paquete",
+      "selectFile": "Seleccionar Archivo",
+      "validJson": "JSON Válido",
+      "invalidJson": "JSON Inválido",
+      "importing": "Importando...",
+      "success": "Importado exitosamente",
+      "error": "Error al importar"
+    },
+    "selectPack": {
+      "title": "Seleccionar Paquete"
+    }
+  }
+}

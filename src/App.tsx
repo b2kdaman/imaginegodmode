@@ -10,6 +10,7 @@ import { useSettingsStore } from './store/useSettingsStore';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useArrowKeyNavigation } from './hooks/useArrowKeyNavigation';
 import { useVideoProgress } from './hooks/useVideoProgress';
+import { I18nProvider } from './contexts/I18nContext';
 
 export const App: React.FC = () => {
   const { loadFromStorage } = usePromptStore();
@@ -31,9 +32,9 @@ export const App: React.FC = () => {
   useVideoProgress();
 
   return (
-    <>
+    <I18nProvider>
       <MainPanel />
       <Tooltip id="app-tooltip" className="z-[999999]" />
-    </>
+    </I18nProvider>
   );
 };

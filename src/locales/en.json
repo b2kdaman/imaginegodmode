@@ -1,0 +1,125 @@
+{
+  "tabs": {
+    "prompt": "Prompt",
+    "ops": "Ops",
+    "settings": "Settings",
+    "help": "Help"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "import": "Import",
+    "export": "Export",
+    "add": "Add",
+    "remove": "Remove",
+    "copy": "Copy",
+    "make": "Make",
+    "download": "Download",
+    "upscale": "Upscale",
+    "paste": "Paste",
+    "current": "Current",
+    "version": "Version"
+  },
+  "panel": {
+    "collapseTooltip": "Collapse panel",
+    "expandTooltip": "Expand panel",
+    "authorCredit": "by Valentine Muñoz"
+  },
+  "prompt": {
+    "placeholder": "Enter your prompt...",
+    "toTooltip": "Replace current prompt with this one",
+    "fromTooltip": "Save current prompt to this slot",
+    "copyTooltip": "Copy this prompt to clipboard",
+    "addTooltip": "Add new prompt slot",
+    "removeTooltip": "Delete this prompt slot",
+    "makeTooltip": "Fill prompt and click Make button",
+    "rating": "Rate this prompt"
+  },
+  "settings": {
+    "theme": "Theme",
+    "size": "Size",
+    "language": "Language",
+    "autoDownload": "Auto Download",
+    "dataManagement": "Data Management",
+    "importMode": "Import Mode",
+    "importModeAdd": "Add",
+    "importModeReplace": "Replace",
+    "themes": {
+      "dark": "Dark",
+      "light": "Light",
+      "dracula": "Dracula",
+      "winamp": "Winamp",
+      "limewire": "LimeWire",
+      "steam": "Steam"
+    },
+    "sizes": {
+      "tiny": "Tiny (70%)",
+      "small": "Small (85%)",
+      "medium": "Medium (100%)",
+      "large": "Large (115%)"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Spanish"
+    }
+  },
+  "ops": {
+    "noPostId": "No post ID found in URL",
+    "fetchingPost": "Fetching post data...",
+    "foundMedia": "Found {{count}} media ({{hdCount}} HD videos)",
+    "upscaling": "Upscaling {{current}}/{{total}}...",
+    "upscaled": "Upscaled {{count}}/{{total}}",
+    "downloading": "Downloading...",
+    "downloaded": "Downloaded {{count}} files",
+    "upscaleTooltip": "Upscale videos to HD quality",
+    "downloadTooltip": "Download all media files",
+    "ready": "Ready",
+    "waitingForPost": "Waiting for post..."
+  },
+  "help": {
+    "availableFeatures": "Available Features",
+    "keyboardShortcuts": "Keyboard Shortcuts",
+    "about": "About",
+    "features": {
+      "savePrompts": "Save and organize prompts in packs",
+      "ratePrompts": "Rate prompts with star ratings",
+      "importExport": "Import/export prompt packs as JSON",
+      "upscale": "Upscale videos to HD quality",
+      "autoDownload": "Auto-download generated media",
+      "keyboardShortcuts": "Full keyboard shortcut support",
+      "themes": "Multiple color themes and UI sizes"
+    },
+    "shortcuts": {
+      "makeVideo": "Make a Video",
+      "copyMake": "Copy & Make",
+      "navigatePrompts": "Navigate Prompts",
+      "togglePanel": "Toggle Panel",
+      "switchTabs": "Switch Tabs"
+    },
+    "aboutText": "ImagineGodMode helps you manage video generation prompts with features like saving prompt packs, rating, importing/exporting, upscaling videos to HD, and auto-downloading media."
+  },
+  "packManager": {
+    "addPackTooltip": "Add new pack",
+    "deletePackTooltip": "Delete current pack (double-click)",
+    "cannotDeleteLast": "Cannot delete the last pack",
+    "packNamePlaceholder": "Pack name..."
+  },
+  "modals": {
+    "confirmDelete": {
+      "title": "Delete Pack",
+      "message": "Are you sure you want to delete \"{{packName}}\"?"
+    },
+    "importPack": {
+      "title": "Import Pack",
+      "selectFile": "Select File",
+      "validJson": "Valid JSON",
+      "invalidJson": "Invalid JSON",
+      "importing": "Importing...",
+      "success": "Imported successfully",
+      "error": "Import failed"
+    },
+    "selectPack": {
+      "title": "Select Pack"
+    }
+  }
+}

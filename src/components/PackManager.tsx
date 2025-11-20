@@ -8,6 +8,7 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 import { Button } from './Button';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 import { mdiPlus, mdiClose, mdiCheck, mdiDelete } from '@mdi/js';
+import { useTranslation } from '@/contexts/I18nContext';
 
 export const PackManager: React.FC = () => {
   const {
@@ -18,6 +19,7 @@ export const PackManager: React.FC = () => {
     deletePack,
   } = usePromptStore();
   const { getThemeColors } = useSettingsStore();
+  const { t } = useTranslation();
   const colors = getThemeColors();
 
   const [isAdding, setIsAdding] = useState(false);
@@ -85,7 +87,7 @@ export const PackManager: React.FC = () => {
             icon={mdiPlus}
             iconSize={0.7}
             variant="icon"
-            tooltip="Add pack"
+            tooltip={t('packManager.addPackTooltip')}
           />
 
           <Button
@@ -96,8 +98,8 @@ export const PackManager: React.FC = () => {
             disabled={packNames.length <= 1}
             tooltip={
               packNames.length <= 1
-                ? 'Cannot delete last pack'
-                : 'Delete pack'
+                ? t('packManager.cannotDeleteLast')
+                : t('packManager.deletePackTooltip')
             }
           />
         </>
@@ -115,7 +117,7 @@ export const PackManager: React.FC = () => {
                 setNewPackName('');
               }
             }}
-            placeholder="Pack name..."
+            placeholder={t('packManager.packNamePlaceholder')}
             className="flex-1 px-3 py-2 rounded-full text-sm focus:outline-none"
             style={{
               backgroundColor: colors.BACKGROUND_MEDIUM,
@@ -129,7 +131,7 @@ export const PackManager: React.FC = () => {
             icon={mdiCheck}
             iconSize={0.7}
             variant="icon"
-            tooltip="Confirm add pack"
+            tooltip={t('common.add')}
           />
 
           <Button
@@ -140,7 +142,7 @@ export const PackManager: React.FC = () => {
             icon={mdiClose}
             iconSize={0.7}
             variant="icon"
-            tooltip="Cancel"
+            tooltip={t('common.cancel')}
           />
         </>
       )}

@@ -10,11 +10,23 @@ import { Button } from './Button';
 import { Icon } from './Icon';
 import { PackSelectModal } from './PackSelectModal';
 import { ImportPackModal } from './ImportPackModal';
-import { mdiDownload, mdiUpload, mdiContentCopy } from '@mdi/js';
+import {
+  mdiDownload,
+  mdiUpload,
+  mdiContentCopy,
+  mdiPalette,
+  mdiResize,
+  mdiTranslate,
+  mdiDownloadCircle,
+  mdiDatabase,
+  mdiSwapHorizontal
+} from '@mdi/js';
+import { useTranslation } from '@/contexts/I18nContext';
 
 export const SettingsView: React.FC = () => {
   const { theme, size, autoDownload, setTheme, setSize, setAutoDownload, getThemeColors } = useSettingsStore();
   const { exportCurrentPack, importPack, currentPack, packs } = usePromptStore();
+  const { t, locale, setLocale } = useTranslation();
   const colors = getThemeColors();
 
   const [importMode, setImportMode] = useState<'add' | 'replace'>('add');
@@ -113,10 +125,11 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
       {/* Theme Setting */}
       <div className="flex flex-col gap-2">
         <label
-          className="text-xs"
+          className="text-xs flex items-center gap-1.5"
           style={{ color: colors.TEXT_SECONDARY }}
         >
-          Theme
+          <Icon path={mdiPalette} size={0.6} color={colors.TEXT_SECONDARY} />
+          {t('settings.theme')}
         </label>
         <select
           value={theme}
@@ -135,22 +148,23 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
             MozAppearance: 'none',
           }}
         >
-          <option value="dark">Dark</option>
-          <option value="light">Light</option>
-          <option value="dracula">Dracula</option>
-          <option value="winamp">Winamp</option>
-          <option value="limewire">LimeWire</option>
-          <option value="steam">Steam</option>
+          <option value="dark">{t('settings.themes.dark')}</option>
+          <option value="light">{t('settings.themes.light')}</option>
+          <option value="dracula">{t('settings.themes.dracula')}</option>
+          <option value="winamp">{t('settings.themes.winamp')}</option>
+          <option value="limewire">{t('settings.themes.limewire')}</option>
+          <option value="steam">{t('settings.themes.steam')}</option>
         </select>
       </div>
 
       {/* Size Setting */}
       <div className="flex flex-col gap-2">
         <label
-          className="text-xs"
+          className="text-xs flex items-center gap-1.5"
           style={{ color: colors.TEXT_SECONDARY }}
         >
-          Size
+          <Icon path={mdiResize} size={0.6} color={colors.TEXT_SECONDARY} />
+          {t('settings.size')}
         </label>
         <select
           value={size}
@@ -169,21 +183,53 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
             MozAppearance: 'none',
           }}
         >
-          <option value="tiny">Tiny (70%)</option>
-          <option value="small">Small (85%)</option>
-          <option value="medium">Medium (100%)</option>
-          <option value="large">Large (115%)</option>
+          <option value="tiny">{t('settings.sizes.tiny')}</option>
+          <option value="small">{t('settings.sizes.small')}</option>
+          <option value="medium">{t('settings.sizes.medium')}</option>
+          <option value="large">{t('settings.sizes.large')}</option>
+        </select>
+      </div>
+
+      {/* Language Setting */}
+      <div className="flex flex-col gap-2">
+        <label
+          className="text-xs flex items-center gap-1.5"
+          style={{ color: colors.TEXT_SECONDARY }}
+        >
+          <Icon path={mdiTranslate} size={0.6} color={colors.TEXT_SECONDARY} />
+          {t('settings.language')}
+        </label>
+        <select
+          value={locale}
+          onChange={(e) => setLocale(e.target.value)}
+          className="pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none transition-colors"
+          style={{
+            backgroundColor: colors.BACKGROUND_MEDIUM,
+            color: colors.TEXT_PRIMARY,
+            border: `1px solid ${colors.BORDER}`,
+            backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(colors.TEXT_PRIMARY)}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'right 12px center',
+            backgroundSize: '16px',
+            appearance: 'none',
+            WebkitAppearance: 'none',
+            MozAppearance: 'none',
+          }}
+        >
+          <option value="en">{t('settings.languages.en')}</option>
+          <option value="es">{t('settings.languages.es')}</option>
         </select>
       </div>
 
       {/* Auto Download Setting */}
       <div className="flex items-center justify-between gap-2">
         <label
-          className="text-sm cursor-pointer"
+          className="text-sm cursor-pointer flex items-center gap-1.5"
           style={{ color: colors.TEXT_PRIMARY }}
           htmlFor="auto-download-toggle"
         >
-          Auto Download
+          <Icon path={mdiDownloadCircle} size={0.7} color={colors.TEXT_PRIMARY} />
+          {t('settings.autoDownload')}
         </label>
         <label className="relative inline-block w-12 h-6 cursor-pointer">
           <input
@@ -220,19 +266,21 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
       {/* Data Management Section */}
       <div className="flex flex-col gap-3">
         <label
-          className="text-xs"
+          className="text-xs flex items-center gap-1.5"
           style={{ color: colors.TEXT_SECONDARY }}
         >
-          Data Management
+          <Icon path={mdiDatabase} size={0.6} color={colors.TEXT_SECONDARY} />
+          {t('settings.dataManagement')}
         </label>
 
         {/* Import Mode Selection */}
         <div className="flex flex-col gap-2">
           <label
-            className="text-xs"
+            className="text-xs flex items-center gap-1.5"
             style={{ color: colors.TEXT_SECONDARY }}
           >
-            Import Mode
+            <Icon path={mdiSwapHorizontal} size={0.6} color={colors.TEXT_SECONDARY} />
+            {t('settings.importMode')}
           </label>
           <div className="flex gap-2">
             <label
@@ -248,7 +296,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
                 className="cursor-pointer"
                 style={{ accentColor: colors.SUCCESS }}
               />
-              Add
+              {t('settings.importModeAdd')}
             </label>
             <label
               className="flex items-center gap-2 cursor-pointer text-sm"
@@ -263,7 +311,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
                 className="cursor-pointer"
                 style={{ accentColor: colors.SUCCESS }}
               />
-              Replace
+              {t('settings.importModeReplace')}
             </label>
           </div>
         </div>
@@ -277,7 +325,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
             tooltip={`Export pack to JSON
 For backup or sharing`}
           >
-            Export
+            {t('common.export')}
           </Button>
           <button
             onClick={handleCopyGrokPrompt}
@@ -316,7 +364,7 @@ Includes: format, quality rules, ratings`}
 Mode: ${importMode}
 ${importMode === 'add' ? 'Add: Creates new (fails if exists)' : 'Replace: Overwrites or creates new'}`}
           >
-            Import
+            {t('common.import')}
           </Button>
         </div>
 

@@ -15,18 +15,20 @@ import { Tabs } from './Tabs';
 import { FullscreenButton } from './FullscreenButton';
 import { PauseButton } from './PauseButton';
 import { mdiChevronUp, mdiChevronDown } from '@mdi/js';
+import { useTranslation } from '@/contexts/I18nContext';
 
 export const MainPanel: React.FC = () => {
   const { isExpanded, currentView, toggleExpanded, setCurrentView } = useUIStore();
   const { getThemeColors, getScale } = useSettingsStore();
+  const { t } = useTranslation();
   const colors = getThemeColors();
   const scale = getScale();
 
   const tabs = [
-    { id: 'prompt', label: 'Prompt' },
-    { id: 'ops', label: 'Ops' },
-    { id: 'settings', label: 'Settings' },
-    { id: 'help', label: 'Help' },
+    { id: 'prompt', label: t('tabs.prompt') },
+    { id: 'ops', label: t('tabs.ops') },
+    { id: 'settings', label: t('tabs.settings') },
+    { id: 'help', label: t('tabs.help') },
   ];
 
   return (
@@ -48,13 +50,13 @@ export const MainPanel: React.FC = () => {
               className="text-[10px] font-medium"
               style={{ color: colors.TEXT_SECONDARY }}
             >
-              ImagineGodMode {VERSION}
+              ImagineGodMode {t('common.version')} {VERSION}
             </span>
             <span
               className="text-[9px]"
               style={{ color: `${colors.TEXT_SECONDARY}80` }}
             >
-              by b2kdaman
+              {t('panel.authorCredit')}
             </span>
           </div>
           <PauseButton />
@@ -65,7 +67,7 @@ export const MainPanel: React.FC = () => {
             icon={isExpanded ? mdiChevronDown : mdiChevronUp}
             iconSize={0.9}
             className="shadow-lg"
-            tooltip={isExpanded ? 'Collapse panel' : 'Expand panel'}
+            tooltip={isExpanded ? t('panel.collapseTooltip') : t('panel.expandTooltip')}
           />
         </div>
 

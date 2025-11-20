@@ -6,6 +6,7 @@ import React, { useState, useRef } from 'react';
 import { Button } from './Button';
 import { mdiClose, mdiUpload, mdiContentPaste, mdiCheckCircle, mdiAlertCircle } from '@mdi/js';
 import { Icon } from './Icon';
+import { useTranslation } from '@/contexts/I18nContext';
 
 interface ImportPackModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
   getThemeColors,
 }) => {
   const colors = getThemeColors();
+  const { t } = useTranslation();
   const [jsonInput, setJsonInput] = useState('');
   const [validation, setValidation] = useState<ValidationResult | null>(null);
   const [isImporting, setIsImporting] = useState(false);
@@ -181,7 +183,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
             className="text-sm font-semibold"
             style={{ color: colors.TEXT_PRIMARY }}
           >
-            Import Pack ({importMode} mode)
+            {t('modals.importPack.title')}
           </h2>
           <button
             onClick={handleClose}
@@ -211,7 +213,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
             className="flex-1"
             tooltip="Paste JSON from clipboard"
           >
-            Paste
+            {t('common.paste')}
           </Button>
           <Button
             onClick={() => fileInputRef.current?.click()}
@@ -219,7 +221,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
             className="flex-1"
             tooltip="Select JSON file"
           >
-            Select File
+            {t('modals.importPack.selectFile')}
           </Button>
         </div>
 
@@ -281,7 +283,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
                     className="font-semibold mb-1"
                     style={{ color: colors.SUCCESS }}
                   >
-                    Valid JSON
+                    {t('modals.importPack.validJson')}
                   </div>
                   <div style={{ color: colors.TEXT_SECONDARY }}>
                     Pack: <span style={{ color: colors.TEXT_PRIMARY }}>{validation.packName}</span>
@@ -296,7 +298,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
                     className="font-semibold mb-1"
                     style={{ color: colors.TEXT_SECONDARY }}
                   >
-                    Invalid JSON
+                    {t('modals.importPack.invalidJson')}
                   </div>
                   <div style={{ color: colors.TEXT_SECONDARY }}>
                     {validation.error}
@@ -309,7 +311,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
 
         {/* Footer */}
         <div className="flex gap-2 justify-end">
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose}>{t('common.cancel')}</Button>
           <Button
             onClick={handleImport}
             disabled={!validation?.isValid || isImporting}
@@ -319,7 +321,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
               opacity: !validation?.isValid || isImporting ? 0.5 : 1,
             }}
           >
-            {isImporting ? 'Importing...' : 'Import'}
+            {isImporting ? t('modals.importPack.importing') : t('common.import')}
           </Button>
         </div>
       </div>

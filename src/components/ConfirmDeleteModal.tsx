@@ -6,6 +6,7 @@ import React from 'react';
 import { Button } from './Button';
 import { mdiClose, mdiDelete, mdiAlertCircle } from '@mdi/js';
 import { Icon } from './Icon';
+import { useTranslation } from '@/contexts/I18nContext';
 
 interface ConfirmDeleteModalProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
   getThemeColors,
 }) => {
   const colors = getThemeColors();
+  const { t } = useTranslation();
 
   if (!isOpen) return null;
 
@@ -49,7 +51,7 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
             className="text-sm font-semibold"
             style={{ color: colors.TEXT_PRIMARY }}
           >
-            Delete Pack
+            {t('modals.confirmDelete.title')}
           </h2>
           <button
             onClick={onClose}
@@ -84,22 +86,10 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
 
           <div className="text-center">
             <p
-              className="text-sm mb-1"
+              className="text-sm mb-2"
               style={{ color: colors.TEXT_PRIMARY }}
             >
-              Are you sure you want to delete
-            </p>
-            <p
-              className="text-sm font-semibold mb-2"
-              style={{ color: colors.TEXT_PRIMARY }}
-            >
-              "{packName}"?
-            </p>
-            <p
-              className="text-xs"
-              style={{ color: colors.TEXT_SECONDARY }}
-            >
-              This will permanently delete all prompts in this pack. This action cannot be undone.
+              {t('modals.confirmDelete.message', { packName })}
             </p>
           </div>
         </div>
@@ -107,7 +97,7 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
         {/* Action Buttons */}
         <div className="flex gap-2">
           <Button onClick={onClose} className="flex-1 text-xs">
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             onClick={() => {
@@ -122,7 +112,7 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
               color: '#fff',
             }}
           >
-            Delete
+            {t('common.delete')}
           </Button>
         </div>
       </div>

@@ -19,6 +19,7 @@ import {
   mdiArrowUp,
   mdiContentCopy,
 } from '@mdi/js';
+import { useTranslation } from '@/contexts/I18nContext';
 
 export const PromptView: React.FC = () => {
   const {
@@ -33,6 +34,7 @@ export const PromptView: React.FC = () => {
     removePrompt,
   } = usePromptStore();
   const { getThemeColors } = useSettingsStore();
+  const { t } = useTranslation();
   const colors = getThemeColors();
 
   const currentPrompt = getCurrentPrompt();
@@ -95,7 +97,7 @@ export const PromptView: React.FC = () => {
       <textarea
         value={currentPrompt?.text || ''}
         onChange={(e) => updatePromptText(e.target.value)}
-        placeholder="Enter your prompt..."
+        placeholder={t('prompt.placeholder')}
         className="w-full h-32 px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar mt-3"
         style={{
           backgroundColor: colors.BACKGROUND_MEDIUM,
@@ -143,7 +145,7 @@ export const PromptView: React.FC = () => {
             onClick={handleCopyToPage}
             icon={mdiArrowDown}
             className="flex-1"
-            tooltip="Copy prompt to page textarea"
+            tooltip={t('prompt.toTooltip')}
           >
             To
           </Button>
@@ -152,7 +154,7 @@ export const PromptView: React.FC = () => {
             onClick={handleCopyFromPage}
             icon={mdiArrowUp}
             className="flex-1"
-            tooltip="Copy from page textarea"
+            tooltip={t('prompt.fromTooltip')}
           >
             From
           </Button>
@@ -165,9 +167,9 @@ export const PromptView: React.FC = () => {
             }}
             icon={mdiContentCopy}
             className="flex-1"
-            tooltip="Copy to clipboard"
+            tooltip={t('prompt.copyTooltip')}
           >
-            Copy
+            {t('common.copy')}
           </Button>
         </div>
 
@@ -177,9 +179,9 @@ export const PromptView: React.FC = () => {
             onClick={addPrompt}
             icon={mdiPlus}
             className="flex-1"
-            tooltip="Add new prompt"
+            tooltip={t('prompt.addTooltip')}
           >
-            Add
+            {t('common.add')}
           </Button>
 
           <Button
@@ -187,9 +189,9 @@ export const PromptView: React.FC = () => {
             icon={mdiMinus}
             disabled={promptCount <= 1}
             className="flex-1"
-            tooltip="Remove current prompt"
+            tooltip={t('prompt.removeTooltip')}
           >
-            Remove
+            {t('common.remove')}
           </Button>
 
           <Button
@@ -197,9 +199,9 @@ export const PromptView: React.FC = () => {
             icon={mdiPlay}
             iconColor={UI_COLORS.BLACK}
             className="flex-1 !bg-white !text-black hover:!bg-white/90"
-            tooltip="Copy prompt and click Make video (Ctrl/Cmd+Shift+Enter)"
+            tooltip={t('prompt.makeTooltip')}
           >
-            Make
+            {t('common.make')}
           </Button>
         </div>
       </div>

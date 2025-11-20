@@ -15,9 +15,14 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **HD Status Indicator**: Green check icon appears when all videos are HD quality
 - **Video Controls**: Play/pause button with synchronized state tracking
 - **Fullscreen Video Player**: Intelligent fullscreen button that detects visible video (HD or SD)
+- **Internationalization (i18n)**: Multi-language support with live language switching
+  - English and Spanish translations
+  - Persistent language preference
+  - All UI elements translated including tooltips, buttons, and modals
 - **Theme Customization**: Choose from 6 themes (Dark, Light, Dracula, Winamp, LimeWire, Steam) with full UI color adaptation
 - **Configurable Themes**: Themes loaded from JSON file for easy customization
 - **UI Scaling**: Adjust panel size from Tiny (70%) to Large (115%)
+- **Visual Settings**: Settings labels enhanced with Material Design Icons for better UX
 - **Keyboard Shortcuts**:
   - `Ctrl/Cmd + Enter`: Click "Make a Video" button
   - `Ctrl/Cmd + Shift + Enter`: Copy prompt and click "Make a Video"
@@ -87,7 +92,9 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Choose theme: Dark, Light, Dracula, Winamp, LimeWire, or Steam
    - Themes are configurable via `public/themes.json`
    - Adjust UI size: Tiny to Large
+   - Select language: English or Spanish (Español)
    - Enable Auto Download to automatically download media after upscaling
+   - All settings labels include visual icons for easy identification
    - **Data Management**:
      - Export packs: Select any pack to export to JSON (backup/sharing)
      - Import packs: Paste JSON or upload file with real-time validation
@@ -105,13 +112,15 @@ grkgoondl/
 │   ├── background/       # Background service worker
 │   ├── components/       # React components
 │   ├── content/          # Content script (injection point)
+│   ├── contexts/         # React contexts (i18n)
 │   ├── hooks/            # Custom React hooks
+│   ├── locales/          # Translation files (en.json, es.json)
 │   ├── store/            # Zustand stores
 │   ├── types/            # TypeScript type definitions
 │   ├── utils/            # Utility functions
 │   ├── App.tsx           # Main app component
 │   └── index.css         # Global styles (Tailwind)
-├── public/               # Static assets (icons)
+├── public/               # Static assets (icons, themes.json)
 ├── scripts/              # Build scripts
 ├── dist/                 # Build output (load this in Chrome)
 ├── archive/              # Archived Tampermonkey userscript
@@ -130,6 +139,14 @@ grkgoondl/
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
 - **useSettingsStore**: Manages theme, size, and auto-download preferences with localStorage persistence
 
+### Contexts
+
+- **I18nContext**: Internationalization context providing translation functions and locale management
+  - `useTranslation()` hook for accessing translations
+  - Parameter interpolation support (e.g., `{{packName}}`)
+  - Fallback to English for missing translations
+  - Persistent language preference in localStorage
+
 ### Hooks
 
 - **useKeyboardShortcuts**: Global keyboard shortcut handlers
@@ -142,7 +159,7 @@ grkgoondl/
 - **MainPanel**: Floating panel container with pause, fullscreen, collapse buttons, and version badge
 - **PromptView**: Prompt management interface
 - **OpsView**: Media controls with parallel upscaling, HD-gated downloads, and auto-download support
-- **SettingsView**: Theme, size, auto-download preferences, and data management with import/export
+- **SettingsView**: Theme, size, language, auto-download preferences, and data management with import/export (all labels with icons)
 - **PackManager**: Pack dropdown with text truncation and CRUD operations
 - **PackSelectModal**: Modal for selecting which pack to export
 - **ImportPackModal**: Modal for importing packs via paste or file upload with validation
@@ -177,7 +194,7 @@ Uses `chrome.runtime.sendMessage()` for communication:
 ### Storage
 Uses multiple storage mechanisms with context validation:
 - **chrome.storage.local**: Packs with prompts and ratings, automatic migration from old format
-- **localStorage**: Theme and size preferences for instant loading
+- **localStorage**: Theme, size, language, and auto-download preferences for instant loading
 - **Extension Context Validation**: All storage operations check for valid extension context to gracefully handle extension reloads
 - **Import/Export**:
   - Per-pack JSON export with timestamped filenames
@@ -244,7 +261,13 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Video progress polling every 500ms with auto-removal on completion
 - Console initialization tag with styled branding using theme colors
 - API architecture refactored: content script handles authenticated calls, background worker handles downloads
-- Settings persist in localStorage for instant theme/size/auto-download application on load
+- Settings persist in localStorage for instant theme/size/language/auto-download application on load
+- **Internationalization**: Complete i18n infrastructure with English and Spanish translations
+  - Live language switching without reload
+  - Translation context with parameter interpolation
+  - Fallback mechanism for missing keys
+  - All UI elements fully translated (buttons, labels, tooltips, modals)
+- **Visual Enhancement**: Settings labels enhanced with Material Design Icons (palette, resize, translate, download, database, swap)
 - **Upscaling Strategy**: Videos upscale in parallel with random delays between starts (avoids rate limiting while maximizing speed)
 - **Download Protection**: Download button disabled until all videos are HD quality
 - **Auto Download**: Optional toggle in Settings to automatically download all media after upscaling completes
@@ -305,6 +328,9 @@ npm run generate-icons  # Regenerate extension icons
 - [x] Configurable themes via JSON
 - [x] UI scaling (Tiny to Large)
 - [x] Export/import packs (JSON format with merge/replace modes)
+- [x] Internationalization (English and Spanish)
+- [x] Visual icon enhancements for settings
+- [ ] Additional language translations (French, German, Portuguese, etc.)
 - [ ] Sync across devices with `chrome.storage.sync`
 - [ ] Prompt search and filtering
 - [ ] Chrome Web Store publication

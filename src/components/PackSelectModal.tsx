@@ -6,6 +6,7 @@ import React from 'react';
 import { Button } from './Button';
 import { mdiClose, mdiDownload } from '@mdi/js';
 import { Icon } from './Icon';
+import { useTranslation } from '@/contexts/I18nContext';
 
 interface PackSelectModalProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ export const PackSelectModal: React.FC<PackSelectModalProps> = ({
   getThemeColors,
 }) => {
   const colors = getThemeColors();
+  const { t } = useTranslation();
 
   if (!isOpen) return null;
 
@@ -51,7 +53,7 @@ export const PackSelectModal: React.FC<PackSelectModalProps> = ({
             className="text-sm font-semibold"
             style={{ color: colors.TEXT_PRIMARY }}
           >
-            Select Pack
+            {t('modals.selectPack.title')}
           </h2>
           <button
             onClick={onClose}
@@ -114,7 +116,7 @@ export const PackSelectModal: React.FC<PackSelectModalProps> = ({
                     color: '#fff',
                   }}
                 >
-                  Current
+                  {t('common.current')}
                 </span>
               )}
             </button>
@@ -123,7 +125,7 @@ export const PackSelectModal: React.FC<PackSelectModalProps> = ({
 
         {/* Footer */}
         <div className="flex justify-end">
-          <Button onClick={onClose} className="text-xs">Cancel</Button>
+          <Button onClick={onClose} className="text-xs">{t('common.cancel')}</Button>
         </div>
       </div>
     </div>
