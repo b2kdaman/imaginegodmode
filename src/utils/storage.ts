@@ -5,11 +5,16 @@
 import { Packs } from '@/types';
 
 const STORAGE_KEY = 'grok-text-items';
+const PREFIX_STORAGE_KEY = 'grok-prompt-prefixes';
 
 export interface StorageData {
   packs: Packs;
   currentPack: string;
   currentIndex: number;
+}
+
+export interface PrefixStorageData {
+  [postId: string]: string;
 }
 
 /**
@@ -242,4 +247,43 @@ export const importPack = (
 
     reader.readAsText(file);
   });
+};
+
+/**
+ * Get prefix for a specific post ID
+ */
+export const getPrefix = async (postId: string): Promise<string> => {
+  if (!isExtensionContextValid()) {
+    console.warn('[ImagineGodMode] Extension context invalidated - prefix storage unavailable');
+    return '';
+  }
+
+  try {
+    const result = await chrome.storage.local.get(PREFIX_STORAGE_KEY);
+    const prefixes: PrefixStorageData = result[PREFIX_STORAGE_KEY] || {};
+    return prefixes[postId] || '';
+  } catch (error) {
+    console.error('Failed to get prefix:', error);
+    return '';
+  }
+};
+
+/**
+ * Set prefix for a specific post ID
+ */
+export const setPrefix = async (postId: string, prefix: string): Promise<boolean> => {
+  if (!isExtensionContextValid()) {
+    return false;
+  }
+
+  try {
+    const result = await chrome.storage.local.get(PREFIX_STORAGE_KEY);
+    const prefixes: PrefixStorageData = result[PREFIX_STORAGE_KEY] || {};
+    prefixes[postId] = prefix;
+    await chrome.storage.local.set({ [PREFIX_STORAGE_KEY]: prefixes });
+    return true;
+  } catch (error) {
+    console.error('Failed to set prefix:', error);
+    return false;
+  }
 };

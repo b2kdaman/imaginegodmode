@@ -2,7 +2,7 @@
  * Prompt management view component
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { PackManager } from './PackManager';
@@ -21,6 +21,8 @@ import {
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import { trackPromptEdited, trackVideoMakeClicked } from '@/utils/analytics';
+import { getPrefix, setPrefix } from '@/utils/storage';
+import { getPostIdFromUrl } from '@/utils/helpers';
 
 export const PromptView: React.FC = () => {
   const {
@@ -40,6 +42,33 @@ export const PromptView: React.FC = () => {
 
   const currentPrompt = getCurrentPrompt();
   const promptCount = getCurrentPromptCount();
+
+  const [prefix, setLocalPrefix] = useState<string>('');
+  const [postId, setPostId] = useState<string | null>(null);
+
+  // Load prefix from storage when component mounts or URL changes
+  useEffect(() => {
+    const loadPrefix = async () => {
+      const currentPostId = getPostIdFromUrl();
+      setPostId(currentPostId);
+
+      if (currentPostId) {
+        const storedPrefix = await getPrefix(currentPostId);
+        setLocalPrefix(storedPrefix);
+      }
+    };
+
+    loadPrefix();
+  }, []);
+
+  // Save prefix to storage whenever it changes
+  const handlePrefixChange = async (value: string) => {
+    setLocalPrefix(value);
+
+    if (postId) {
+      await setPrefix(postId, value);
+    }
+  };
 
   const handleCopyToPage = () => {
     const textarea = document.querySelector(SELECTORS.TEXTAREA) as HTMLTextAreaElement;
@@ -66,8 +95,24 @@ export const PromptView: React.FC = () => {
   };
 
   const handlePlayClick = () => {
-    // Copy prompt to page
-    handleCopyToPage();
+    // Apply prefix to prompt text if prefix exists
+    const textarea = document.querySelector(SELECTORS.TEXTAREA) as HTMLTextAreaElement;
+    if (textarea && currentPrompt) {
+      const finalText = prefix.trim()
+        ? `${prefix.trim()}, ${currentPrompt.text}`.trim()
+        : currentPrompt.text;
+
+      // Set the value using the native setter to bypass React's control
+      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+        window.HTMLTextAreaElement.prototype,
+        'value'
+      )?.set;
+      nativeInputValueSetter?.call(textarea, finalText);
+
+      // Dispatch both input and change events for compatibility
+      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      textarea.dispatchEvent(new Event('change', { bubbles: true }));
+    }
 
     // Track video make action
     trackVideoMakeClicked();
@@ -97,6 +142,28 @@ export const PromptView: React.FC = () => {
   return (
     <div className="flex flex-col w-full">
       <PackManager />
+
+      {/* Prefix input */}
+      <div className="mt-3">
+        <label
+          className="text-xs mb-1 block"
+          style={{ color: colors.TEXT_SECONDARY }}
+        >
+          Prefix (applied when pressing Make)
+        </label>
+        <input
+          type="text"
+          value={prefix}
+          onChange={(e) => handlePrefixChange(e.target.value)}
+          placeholder="Enter prefix text..."
+          className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none"
+          style={{
+            backgroundColor: colors.BACKGROUND_MEDIUM,
+            color: colors.TEXT_PRIMARY,
+            border: `1px solid ${colors.BORDER}`,
+          }}
+        />
+      </div>
 
       {/* Prompt textarea */}
       <textarea
