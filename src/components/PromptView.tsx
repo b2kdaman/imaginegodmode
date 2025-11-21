@@ -2,7 +2,7 @@
  * Prompt management view component
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { PackManager } from './PackManager';
@@ -23,6 +23,7 @@ import { useTranslation } from '@/contexts/I18nContext';
 import { trackPromptEdited, trackVideoMakeClicked } from '@/utils/analytics';
 import { getPrefix, setPrefix } from '@/utils/storage';
 import { getPostIdFromUrl } from '@/utils/helpers';
+import { useUrlWatcher } from '@/hooks/useUrlWatcher';
 
 export const PromptView: React.FC = () => {
   const {
@@ -47,19 +48,26 @@ export const PromptView: React.FC = () => {
   const [postId, setPostId] = useState<string | null>(null);
 
   // Load prefix from storage when component mounts or URL changes
-  useEffect(() => {
-    const loadPrefix = async () => {
-      const currentPostId = getPostIdFromUrl();
-      setPostId(currentPostId);
+  const loadPrefix = useCallback(async () => {
+    const currentPostId = getPostIdFromUrl();
+    setPostId(currentPostId);
 
-      if (currentPostId) {
-        const storedPrefix = await getPrefix(currentPostId);
-        setLocalPrefix(storedPrefix);
-      }
-    };
-
-    loadPrefix();
+    if (currentPostId) {
+      const storedPrefix = await getPrefix(currentPostId);
+      setLocalPrefix(storedPrefix);
+    } else {
+      // Clear prefix if no post ID
+      setLocalPrefix('');
+    }
   }, []);
+
+  // Load prefix on mount
+  useEffect(() => {
+    loadPrefix();
+  }, [loadPrefix]);
+
+  // Reload prefix when URL changes (navigating to different post)
+  useUrlWatcher(loadPrefix);
 
   // Save prefix to storage whenever it changes
   const handlePrefixChange = async (value: string) => {
