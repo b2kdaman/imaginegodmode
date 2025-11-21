@@ -22,6 +22,12 @@ import {
   mdiSwapHorizontal
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
+import {
+  trackThemeChanged,
+  trackSizeChanged,
+  trackLanguageChanged,
+  trackAutoDownloadToggled,
+} from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
   const { theme, size, autoDownload, setTheme, setSize, setAutoDownload, getThemeColors } = useSettingsStore();
@@ -133,7 +139,11 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
         </label>
         <select
           value={theme}
-          onChange={(e) => setTheme(e.target.value as 'dark' | 'light' | 'dracula' | 'winamp' | 'limewire' | 'steam')}
+          onChange={(e) => {
+            const newTheme = e.target.value as 'dark' | 'light' | 'dracula' | 'winamp' | 'limewire' | 'steam';
+            setTheme(newTheme);
+            trackThemeChanged(newTheme);
+          }}
           className="pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none transition-colors"
           style={{
             backgroundColor: colors.BACKGROUND_MEDIUM,
@@ -168,7 +178,11 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
         </label>
         <select
           value={size}
-          onChange={(e) => setSize(e.target.value as 'tiny' | 'small' | 'medium' | 'large')}
+          onChange={(e) => {
+            const newSize = e.target.value as 'tiny' | 'small' | 'medium' | 'large';
+            setSize(newSize);
+            trackSizeChanged(newSize);
+          }}
           className="pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none transition-colors"
           style={{
             backgroundColor: colors.BACKGROUND_MEDIUM,
@@ -201,7 +215,11 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
         </label>
         <select
           value={locale}
-          onChange={(e) => setLocale(e.target.value)}
+          onChange={(e) => {
+            const newLocale = e.target.value;
+            setLocale(newLocale);
+            trackLanguageChanged(newLocale);
+          }}
           className="pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none transition-colors"
           style={{
             backgroundColor: colors.BACKGROUND_MEDIUM,
@@ -236,7 +254,11 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
             id="auto-download-toggle"
             type="checkbox"
             checked={autoDownload}
-            onChange={(e) => setAutoDownload(e.target.checked)}
+            onChange={(e) => {
+              const newValue = e.target.checked;
+              setAutoDownload(newValue);
+              trackAutoDownloadToggled(newValue);
+            }}
             className="sr-only peer"
           />
           <div

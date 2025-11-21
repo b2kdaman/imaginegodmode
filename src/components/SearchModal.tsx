@@ -9,6 +9,7 @@ import { useTranslation } from '@/contexts/I18nContext';
 import { Icon } from './Icon';
 import { RatingSystem } from './RatingSystem';
 import { mdiClose, mdiMagnify } from '@mdi/js';
+import { trackPromptSearched } from '@/utils/analytics';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -68,6 +69,11 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     });
 
     setResults(searchResults);
+
+    // Track search with query length and result count
+    if (searchQuery.trim()) {
+      trackPromptSearched(searchQuery.length, searchResults.length);
+    }
   }, [searchQuery, packs]);
 
   const handleSelectResult = (result: SearchResult) => {

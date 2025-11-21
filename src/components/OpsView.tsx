@@ -13,6 +13,7 @@ import { Button } from './Button';
 import { Icon } from './Icon';
 import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle } from '@mdi/js';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
+import { trackVideoUpscaled, trackMediaDownloaded } from '@/utils/analytics';
 
 export const OpsView: React.FC = () => {
   const {
@@ -83,6 +84,7 @@ export const OpsView: React.FC = () => {
 
     if (response.success) {
       setStatusText(`Downloaded ${response.data.count} files`);
+      trackMediaDownloaded(response.data.count, 'mixed');
     } else {
       setStatusText('Download failed');
     }
@@ -126,6 +128,9 @@ export const OpsView: React.FC = () => {
     // Wait for all to complete
     await Promise.all(upscalePromises);
 
+    // Track upscale completion
+    trackVideoUpscaled(total, true);
+
     // Start refetch loop
     startRefetchLoop();
   };
@@ -168,6 +173,7 @@ export const OpsView: React.FC = () => {
 
               if (response.success) {
                 setStatusText(`Auto-downloaded ${response.data.count} files`);
+                trackMediaDownloaded(response.data.count, 'auto');
               } else {
                 setStatusText('Auto-download failed');
               }

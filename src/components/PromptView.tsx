@@ -20,6 +20,7 @@ import {
   mdiContentCopy,
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
+import { trackPromptEdited, trackVideoMakeClicked } from '@/utils/analytics';
 
 export const PromptView: React.FC = () => {
   const {
@@ -60,12 +61,16 @@ export const PromptView: React.FC = () => {
     const textarea = document.querySelector(SELECTORS.TEXTAREA) as HTMLTextAreaElement;
     if (textarea) {
       updatePromptText(textarea.value);
+      trackPromptEdited();
     }
   };
 
   const handlePlayClick = () => {
     // Copy prompt to page
     handleCopyToPage();
+
+    // Track video make action
+    trackVideoMakeClicked();
 
     // Find and click the "Make video" button by aria-label
     setTimeout(() => {
