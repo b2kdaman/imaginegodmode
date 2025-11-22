@@ -56,6 +56,7 @@ export const processPostData = (data: PostData): ProcessedMedia => {
           url,
           type: isVideo ? 'video' : 'image',
           isHD: isVideo ? isHD : undefined,
+          id: cp.id,
         });
 
         console.log('[ImagineGodMode] Added media:', { url, type: isVideo ? 'video' : 'image', isHD });

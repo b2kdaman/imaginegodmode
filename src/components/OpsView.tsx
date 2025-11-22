@@ -100,6 +100,9 @@ export const OpsView: React.FC = () => {
     setIsUpscaling(true);
     setStatusText('Upscaling videos...');
 
+    // Store the IDs of videos being upscaled for auto-download later
+    const upscaledVideoIds = [...videoIdsToUpscale];
+
     const total = videoIdsToUpscale.length;
     let completed = 0;
 
@@ -131,11 +134,11 @@ export const OpsView: React.FC = () => {
     // Track upscale completion
     trackVideoUpscaled(total, true);
 
-    // Start refetch loop
-    startRefetchLoop();
+    // Start refetch loop with the IDs of videos that were upscaled
+    startRefetchLoop(upscaledVideoIds);
   };
 
-  const startRefetchLoop = () => {
+  const startRefetchLoop = (upscaledVideoIds: string[]) => {
     const interval = window.setInterval(async () => {
       const postId = getPostIdFromUrl();
       if (!postId) return;
@@ -163,19 +166,25 @@ export const OpsView: React.FC = () => {
           setRefetchInterval(null);
           console.log('[ImagineGodMode] Upscale complete, stopped refetch loop');
 
-          // Auto-download if enabled (only upscaled videos)
+          // Auto-download if enabled (only the videos that were upscaled)
           if (autoDownload) {
-            console.log('[ImagineGodMode] Auto-download enabled, downloading upscaled videos...');
+            console.log('[ImagineGodMode] Auto-download enabled, downloading upscaled videos:', upscaledVideoIds);
             setTimeout(async () => {
               setStatusText('Auto-downloading upscaled videos...');
-              // Only download videos (which are now HD after upscaling)
-              const videoUrls = processed.mediaUrls
-                .filter((m) => m.type === 'video')
+              // Only download videos that were just upscaled (match by ID)
+              const upscaledUrls = processed.mediaUrls
+                .filter((m) => m.type === 'video' && m.id && upscaledVideoIds.includes(m.id))
                 .map((m) => m.url);
-              const response = await downloadMedia(videoUrls);
+
+              if (upscaledUrls.length === 0) {
+                setStatusText('No upscaled videos to download');
+                return;
+              }
+
+              const response = await downloadMedia(upscaledUrls);
 
               if (response.success) {
-                setStatusText(`Auto-downloaded ${response.data.count} files`);
+                setStatusText(`Auto-downloaded ${response.data.count} upscaled videos`);
                 trackMediaDownloaded(response.data.count, 'auto');
               } else {
                 setStatusText('Auto-download failed');

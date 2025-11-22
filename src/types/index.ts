@@ -19,6 +19,7 @@ export interface MediaUrl {
   url: string;
   type: 'image' | 'video';
   isHD?: boolean;
+  id?: string;
 }
 
 export interface MediaState {
