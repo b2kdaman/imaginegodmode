@@ -4,7 +4,7 @@
 
 import { create } from 'zustand';
 import { PromptItem, Packs } from '@/types';
-import { getStorage, setStorage, exportPack, importPack } from '@/utils/storage';
+import { getStorage, setStorage, exportPack, importPack, getPostState, setPostState } from '@/utils/storage';
 import {
   trackPromptCreated,
   trackPromptDeleted,
@@ -48,6 +48,10 @@ interface PromptStore {
   // Import/Export
   exportCurrentPack: () => void;
   importPack: (file: File, mode: 'add' | 'replace') => Promise<{ success: boolean; error?: string; packName?: string }>;
+
+  // Per-post state management
+  loadPostState: (postId: string) => Promise<void>;
+  savePostState: (postId: string) => Promise<void>;
 }
 
 export const usePromptStore = create<PromptStore>((set, get) => ({
@@ -323,5 +327,29 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     }
 
     return { success: false, error: result.error };
+  },
+
+  // Per-post state management
+  loadPostState: async (postId: string) => {
+    const state = await getPostState(postId);
+
+    if (state) {
+      const { packs } = get();
+
+      // Validate that the pack exists in current packs
+      const validPack = packs[state.currentPack] ? state.currentPack : Object.keys(packs)[0];
+      const packPrompts = packs[validPack] || [];
+      const validIndex = Math.min(state.currentIndex, Math.max(0, packPrompts.length - 1));
+
+      set({
+        currentPack: validPack,
+        currentIndex: validIndex,
+      });
+    }
+  },
+
+  savePostState: async (postId: string) => {
+    const { currentPack, currentIndex } = get();
+    await setPostState(postId, { currentPack, currentIndex });
   },
 }));

@@ -6,6 +6,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 
 - **Analytics**: Google Analytics 4 integration for anonymous usage tracking (always enabled, see [PRIVACY.md](PRIVACY.md))
 - **Prompt Management**: Save, organize, and manage prompts with packs
+- **Per-Post State**: Each post remembers its own selected pack, prompt, and prefix independently
 - **Prompt Prefix**: Per-post prefix text that automatically prepends to prompts when making videos (stored separately for each post)
 - **Star Ratings**: Rate your prompts with 1-5 stars (Material Design Icons)
 - **Pack System**: Create custom packs to organize prompts with confirmation dialog for deletion and text truncation
@@ -88,8 +89,9 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 3. Click the expand button to open the panel
 4. Switch between "Prompt", "Ops", and "Settings" tabs (bottom navigation)
 5. **Prompt View**: Manage and organize your prompts
+   - Each post remembers its own pack selection and prompt position
    - Prefix input: Add prefix text that automatically prepends to prompts (with comma) when pressing Make
-   - Prefix is stored per-post and persists across sessions
+   - Prefix, pack, and prompt index are stored per-post and persist across sessions
    - Search prompts: Click magnifying glass icon to search across all packs
    - Rate prompts with stars
    - Navigate with arrow buttons or keyboard
@@ -205,7 +207,7 @@ Uses `chrome.runtime.sendMessage()` for communication:
 
 ### Storage
 Uses multiple storage mechanisms with context validation:
-- **chrome.storage.local**: Packs with prompts and ratings, prompt prefixes per-post, automatic migration from old format
+- **chrome.storage.local**: Packs with prompts and ratings, prompt prefixes per-post, per-post state (selected pack and prompt index), automatic migration from old format
 - **localStorage**: Theme, size, language, and auto-download preferences for instant loading
 - **Extension Context Validation**: All storage operations check for valid extension context to gracefully handle extension reloads
 - **Import/Export**:

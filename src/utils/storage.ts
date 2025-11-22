@@ -2,10 +2,11 @@
  * Chrome storage wrapper utilities
  */
 
-import { Packs } from '@/types';
+import { Packs, PromptItem } from '@/types';
 
 const STORAGE_KEY = 'grok-text-items';
 const PREFIX_STORAGE_KEY = 'grok-prompt-prefixes';
+const POST_STATE_STORAGE_KEY = 'grok-post-states';
 
 export interface StorageData {
   packs: Packs;
@@ -15,6 +16,15 @@ export interface StorageData {
 
 export interface PrefixStorageData {
   [postId: string]: string;
+}
+
+export interface PostState {
+  currentPack: string;
+  currentIndex: number;
+}
+
+export interface PostStateStorageData {
+  [postId: string]: PostState;
 }
 
 /**
@@ -284,6 +294,45 @@ export const setPrefix = async (postId: string, prefix: string): Promise<boolean
     return true;
   } catch (error) {
     console.error('Failed to set prefix:', error);
+    return false;
+  }
+};
+
+/**
+ * Get post state (current pack and index) for a specific post ID
+ */
+export const getPostState = async (postId: string): Promise<PostState | null> => {
+  if (!isExtensionContextValid()) {
+    console.warn('[ImagineGodMode] Extension context invalidated - post state storage unavailable');
+    return null;
+  }
+
+  try {
+    const result = await chrome.storage.local.get(POST_STATE_STORAGE_KEY);
+    const states: PostStateStorageData = result[POST_STATE_STORAGE_KEY] || {};
+    return states[postId] || null;
+  } catch (error) {
+    console.error('Failed to get post state:', error);
+    return null;
+  }
+};
+
+/**
+ * Set post state (current pack and index) for a specific post ID
+ */
+export const setPostState = async (postId: string, state: PostState): Promise<boolean> => {
+  if (!isExtensionContextValid()) {
+    return false;
+  }
+
+  try {
+    const result = await chrome.storage.local.get(POST_STATE_STORAGE_KEY);
+    const states: PostStateStorageData = result[POST_STATE_STORAGE_KEY] || {};
+    states[postId] = state;
+    await chrome.storage.local.set({ [POST_STATE_STORAGE_KEY]: states });
+    return true;
+  } catch (error) {
+    console.error('Failed to set post state:', error);
     return false;
   }
 };

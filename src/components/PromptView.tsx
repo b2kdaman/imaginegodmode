@@ -27,6 +27,7 @@ import { useUrlWatcher } from '@/hooks/useUrlWatcher';
 
 export const PromptView: React.FC = () => {
   const {
+    currentPack,
     currentIndex,
     getCurrentPrompt,
     getCurrentPromptCount,
@@ -36,6 +37,8 @@ export const PromptView: React.FC = () => {
     prevPrompt,
     addPrompt,
     removePrompt,
+    loadPostState,
+    savePostState,
   } = usePromptStore();
   const { getThemeColors } = useSettingsStore();
   const { t } = useTranslation();
@@ -47,27 +50,38 @@ export const PromptView: React.FC = () => {
   const [prefix, setLocalPrefix] = useState<string>('');
   const [postId, setPostId] = useState<string | null>(null);
 
-  // Load prefix from storage when component mounts or URL changes
-  const loadPrefix = useCallback(async () => {
+  // Load prefix and post state from storage when component mounts or URL changes
+  const loadPostData = useCallback(async () => {
     const currentPostId = getPostIdFromUrl();
     setPostId(currentPostId);
 
     if (currentPostId) {
+      // Load prefix
       const storedPrefix = await getPrefix(currentPostId);
       setLocalPrefix(storedPrefix);
+
+      // Load post state (current pack and index)
+      await loadPostState(currentPostId);
     } else {
       // Clear prefix if no post ID
       setLocalPrefix('');
     }
-  }, []);
+  }, [loadPostState]);
 
-  // Load prefix on mount
+  // Load post data on mount
   useEffect(() => {
-    loadPrefix();
-  }, [loadPrefix]);
+    loadPostData();
+  }, [loadPostData]);
 
-  // Reload prefix when URL changes (navigating to different post)
-  useUrlWatcher(loadPrefix);
+  // Reload post data when URL changes (navigating to different post)
+  useUrlWatcher(loadPostData);
+
+  // Save post state (pack and index) whenever they change
+  useEffect(() => {
+    if (postId) {
+      savePostState(postId);
+    }
+  }, [currentPack, currentIndex, postId, savePostState]);
 
   // Save prefix to storage whenever it changes
   const handlePrefixChange = async (value: string) => {
