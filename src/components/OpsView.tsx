@@ -163,13 +163,16 @@ export const OpsView: React.FC = () => {
           setRefetchInterval(null);
           console.log('[ImagineGodMode] Upscale complete, stopped refetch loop');
 
-          // Auto-download if enabled
+          // Auto-download if enabled (only upscaled videos)
           if (autoDownload) {
-            console.log('[ImagineGodMode] Auto-download enabled, starting download...');
+            console.log('[ImagineGodMode] Auto-download enabled, downloading upscaled videos...');
             setTimeout(async () => {
-              setStatusText('Auto-downloading...');
-              const urlStrings = processed.mediaUrls.map((m) => m.url);
-              const response = await downloadMedia(urlStrings);
+              setStatusText('Auto-downloading upscaled videos...');
+              // Only download videos (which are now HD after upscaling)
+              const videoUrls = processed.mediaUrls
+                .filter((m) => m.type === 'video')
+                .map((m) => m.url);
+              const response = await downloadMedia(videoUrls);
 
               if (response.success) {
                 setStatusText(`Auto-downloaded ${response.data.count} files`);
