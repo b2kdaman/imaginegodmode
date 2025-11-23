@@ -196,6 +196,10 @@ export const trackAutoDownloadToggled = (enabled: boolean): void => {
   trackEvent('auto_download_toggled', { enabled });
 };
 
+export const trackRememberPostStateToggled = (enabled: boolean): void => {
+  trackEvent('remember_post_state_toggled', { enabled });
+};
+
 /**
  * Track settings changes
  */

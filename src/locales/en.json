@@ -40,6 +40,7 @@
     "size": "Size",
     "language": "Language",
     "autoDownload": "Auto Download",
+    "rememberPostState": "Remember Pack Per Post",
     "dataManagement": "Data Management",
     "importMode": "Import Mode",
     "importModeAdd": "Add",

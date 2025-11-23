@@ -40,6 +40,7 @@
     "size": "Tamaño",
     "language": "Idioma",
     "autoDownload": "Descarga Automática",
+    "rememberPostState": "Recordar Pack Por Post",
     "dataManagement": "Gestión de Datos",
     "importMode": "Modo de Importación",
     "importModeAdd": "Agregar",

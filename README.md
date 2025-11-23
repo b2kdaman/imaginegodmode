@@ -6,7 +6,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 
 - **Analytics**: Google Analytics 4 integration for anonymous usage tracking (always enabled, see [PRIVACY.md](PRIVACY.md))
 - **Prompt Management**: Save, organize, and manage prompts with packs
-- **Per-Post State**: Each post remembers its own selected pack, prompt, and prefix independently
+- **Per-Post State**: Each post remembers its own selected pack, prompt, and prefix independently (optional, controlled via Settings)
 - **Prompt Prefix**: Per-post prefix text that automatically prepends to prompts when making videos (stored separately for each post)
 - **Star Ratings**: Rate your prompts with 1-5 stars (Material Design Icons)
 - **Pack System**: Create custom packs to organize prompts with confirmation dialog for deletion and text truncation
@@ -107,6 +107,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Adjust UI size: Tiny to Large
    - Select language: English or Spanish (Español)
    - Enable Auto Download to automatically download media after upscaling
+   - Toggle Remember Pack Per Post to control per-post state persistence (enabled by default)
    - All settings labels include visual icons for easy identification
    - **Data Management**:
      - Export packs: Select any pack to export to JSON (backup/sharing)
@@ -150,7 +151,7 @@ grkgoondl/
 - **usePromptStore**: Manages prompts, packs, ratings, and import/export operations
 - **useMediaStore**: Handles media URLs, upscaling, and status
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
-- **useSettingsStore**: Manages theme, size, and auto-download preferences with localStorage persistence
+- **useSettingsStore**: Manages theme, size, auto-download, and remember-post-state preferences with localStorage persistence
 
 ### Contexts
 
@@ -172,7 +173,7 @@ grkgoondl/
 - **MainPanel**: Floating panel container with pause, fullscreen, collapse buttons, and version badge
 - **PromptView**: Prompt management interface
 - **OpsView**: Media controls with parallel upscaling, HD-gated downloads, and auto-download support
-- **SettingsView**: Theme, size, language, auto-download preferences, and data management with import/export (all labels with icons)
+- **SettingsView**: Theme, size, language, auto-download, remember-post-state preferences, and data management with import/export (all labels with icons)
 - **PackManager**: Pack dropdown with search button, text truncation, and CRUD operations
 - **SearchModal**: Type-ahead search modal for finding prompts across all packs
 - **PackSelectModal**: Modal for selecting which pack to export
@@ -275,7 +276,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Video progress polling every 500ms with auto-removal on completion
 - Console initialization tag with styled branding using theme colors
 - API architecture refactored: content script handles authenticated calls, background worker handles downloads
-- Settings persist in localStorage for instant theme/size/language/auto-download application on load
+- Settings persist in localStorage for instant theme/size/language/auto-download/remember-post-state application on load
 - **Internationalization**: Complete i18n infrastructure with English and Spanish translations
   - Live language switching without reload
   - Translation context with parameter interpolation
@@ -285,6 +286,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - **Upscaling Strategy**: Videos upscale in parallel with random delays between starts (avoids rate limiting while maximizing speed)
 - **Download Protection**: Download button disabled until all videos are HD quality
 - **Auto Download**: Optional toggle in Settings to automatically download all media after upscaling completes
+- **Remember Pack Per Post**: Optional toggle (enabled by default) to save/restore selected pack and prompt index per post
 - **HD Status Visual**: Green check icon displays in Ops view when all videos are HD quality
 - **Video State Sync**: Play/pause button automatically syncs with video element state via event listeners
 - **Global Keyboard Shortcuts**: F (fullscreen) and Space (play/pause) work globally across the page, with fallbacks to direct video element control

@@ -27,10 +27,11 @@ import {
   trackSizeChanged,
   trackLanguageChanged,
   trackAutoDownloadToggled,
+  trackRememberPostStateToggled,
 } from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, autoDownload, setTheme, setSize, setAutoDownload, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, rememberPostState, setTheme, setSize, setAutoDownload, setRememberPostState, getThemeColors } = useSettingsStore();
   const { exportCurrentPack, importPack, currentPack, packs } = usePromptStore();
   const { t, locale, setLocale } = useTranslation();
   const colors = getThemeColors();
@@ -273,6 +274,46 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
               style={{
                 backgroundColor: colors.TEXT_PRIMARY,
                 transform: autoDownload ? 'translateX(24px)' : 'translateX(0)',
+              }}
+            />
+          </div>
+        </label>
+      </div>
+
+      {/* Remember Post State Setting */}
+      <div className="flex items-center justify-between gap-2">
+        <label
+          className="text-sm cursor-pointer flex items-center gap-1.5"
+          style={{ color: colors.TEXT_PRIMARY }}
+          htmlFor="remember-post-state-toggle"
+        >
+          <Icon path={mdiDatabase} size={0.7} color={colors.TEXT_PRIMARY} />
+          {t('settings.rememberPostState')}
+        </label>
+        <label className="relative inline-block w-12 h-6 cursor-pointer">
+          <input
+            id="remember-post-state-toggle"
+            type="checkbox"
+            checked={rememberPostState}
+            onChange={(e) => {
+              const newValue = e.target.checked;
+              setRememberPostState(newValue);
+              trackRememberPostStateToggled(newValue);
+            }}
+            className="sr-only peer"
+          />
+          <div
+            className="w-full h-full rounded-full transition-colors peer-checked:bg-green-500"
+            style={{
+              backgroundColor: rememberPostState ? colors.SUCCESS : colors.BACKGROUND_MEDIUM,
+              border: `2px solid ${rememberPostState ? colors.SUCCESS : colors.BORDER}`,
+            }}
+          >
+            <div
+              className="absolute top-[2px] left-[2px] w-5 h-5 rounded-full transition-transform"
+              style={{
+                backgroundColor: colors.TEXT_PRIMARY,
+                transform: rememberPostState ? 'translateX(24px)' : 'translateX(0)',
               }}
             />
           </div>

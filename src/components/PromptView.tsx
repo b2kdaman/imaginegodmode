@@ -40,7 +40,7 @@ export const PromptView: React.FC = () => {
     loadPostState,
     savePostState,
   } = usePromptStore();
-  const { getThemeColors } = useSettingsStore();
+  const { getThemeColors, rememberPostState } = useSettingsStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
 
@@ -60,13 +60,15 @@ export const PromptView: React.FC = () => {
       const storedPrefix = await getPrefix(currentPostId);
       setLocalPrefix(storedPrefix);
 
-      // Load post state (current pack and index)
-      await loadPostState(currentPostId);
+      // Load post state (current pack and index) only if setting is enabled
+      if (rememberPostState) {
+        await loadPostState(currentPostId);
+      }
     } else {
       // Clear prefix if no post ID
       setLocalPrefix('');
     }
-  }, [loadPostState]);
+  }, [loadPostState, rememberPostState]);
 
   // Load post data on mount
   useEffect(() => {
@@ -76,12 +78,12 @@ export const PromptView: React.FC = () => {
   // Reload post data when URL changes (navigating to different post)
   useUrlWatcher(loadPostData);
 
-  // Save post state (pack and index) whenever they change
+  // Save post state (pack and index) whenever they change, only if setting is enabled
   useEffect(() => {
-    if (postId) {
+    if (postId && rememberPostState) {
       savePostState(postId);
     }
-  }, [currentPack, currentIndex, postId, savePostState]);
+  }, [currentPack, currentIndex, postId, savePostState, rememberPostState]);
 
   // Save prefix to storage whenever it changes
   const handlePrefixChange = async (value: string) => {
