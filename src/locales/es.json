@@ -41,6 +41,7 @@
     "language": "Idioma",
     "autoDownload": "Descarga Automática",
     "rememberPostState": "Recordar Pack Por Post",
+    "simpleShortcut": "Atajo Simple",
     "dataManagement": "Gestión de Datos",
     "importMode": "Modo de Importación",
     "importModeAdd": "Agregar",

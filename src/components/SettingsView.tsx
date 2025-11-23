@@ -19,7 +19,8 @@ import {
   mdiTranslate,
   mdiDownloadCircle,
   mdiDatabase,
-  mdiSwapHorizontal
+  mdiSwapHorizontal,
+  mdiKeyboard
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -28,10 +29,11 @@ import {
   trackLanguageChanged,
   trackAutoDownloadToggled,
   trackRememberPostStateToggled,
+  trackSimpleShortcutToggled,
 } from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, autoDownload, rememberPostState, setTheme, setSize, setAutoDownload, setRememberPostState, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, rememberPostState, simpleShortcut, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, getThemeColors } = useSettingsStore();
   const { exportCurrentPack, importPack, currentPack, packs } = usePromptStore();
   const { t, locale, setLocale } = useTranslation();
   const colors = getThemeColors();
@@ -314,6 +316,48 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
               style={{
                 backgroundColor: colors.TEXT_PRIMARY,
                 transform: rememberPostState ? 'translateX(24px)' : 'translateX(0)',
+              }}
+            />
+          </div>
+        </label>
+      </div>
+
+      {/* Simple Shortcut Setting */}
+      <div className="flex items-center justify-between gap-2">
+        <label
+          className="text-sm cursor-pointer flex items-center gap-1.5"
+          style={{ color: colors.TEXT_PRIMARY }}
+          htmlFor="simple-shortcut-toggle"
+          data-tooltip-id="app-tooltip"
+          data-tooltip-content="Use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter to apply prompt"
+        >
+          <Icon path={mdiKeyboard} size={0.7} color={colors.TEXT_PRIMARY} />
+          {t('settings.simpleShortcut')}
+        </label>
+        <label className="relative inline-block w-12 h-6 cursor-pointer">
+          <input
+            id="simple-shortcut-toggle"
+            type="checkbox"
+            checked={simpleShortcut}
+            onChange={(e) => {
+              const newValue = e.target.checked;
+              setSimpleShortcut(newValue);
+              trackSimpleShortcutToggled(newValue);
+            }}
+            className="sr-only peer"
+          />
+          <div
+            className="w-full h-full rounded-full transition-colors peer-checked:bg-green-500"
+            style={{
+              backgroundColor: simpleShortcut ? colors.SUCCESS : colors.BACKGROUND_MEDIUM,
+              border: `2px solid ${simpleShortcut ? colors.SUCCESS : colors.BORDER}`,
+            }}
+          >
+            <div
+              className="absolute top-[2px] left-[2px] w-5 h-5 rounded-full transition-transform"
+              style={{
+                backgroundColor: colors.TEXT_PRIMARY,
+                transform: simpleShortcut ? 'translateX(24px)' : 'translateX(0)',
               }}
             />
           </div>

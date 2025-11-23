@@ -14,6 +14,7 @@ import { Icon } from './Icon';
 import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle } from '@mdi/js';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
 import { trackVideoUpscaled, trackMediaDownloaded } from '@/utils/analytics';
+import { NoPostMessage } from './NoPostMessage';
 
 export const OpsView: React.FC = () => {
   const {
@@ -34,21 +35,22 @@ export const OpsView: React.FC = () => {
   const colors = getThemeColors();
 
   const [refetchInterval, setRefetchInterval] = useState<number | null>(null);
+  const [postId, setPostId] = useState<string | null>(null);
 
   // Fetch post data
   const handleFetchPost = useCallback(async () => {
-    const postId = getPostIdFromUrl();
-    console.log('[ImagineGodMode] Post ID:', postId);
+    const currentPostId = getPostIdFromUrl();
+    setPostId(currentPostId);
+    console.log('[ImagineGodMode] Post ID:', currentPostId);
 
-    if (!postId) {
-      setStatusText('No post ID found');
+    if (!currentPostId) {
       return;
     }
 
     setStatusText('Fetching post data...');
-    console.log('[ImagineGodMode] Fetching post:', postId);
+    console.log('[ImagineGodMode] Fetching post:', currentPostId);
 
-    const response = await fetchPost(postId);
+    const response = await fetchPost(currentPostId);
     console.log('[ImagineGodMode] Fetch response:', response);
 
     if (response.success && response.data) {
@@ -209,6 +211,11 @@ export const OpsView: React.FC = () => {
 
   // Check if all videos are HD
   const allVideosHD = urls.length > 0 && videoIdsToUpscale.length === 0 && hdVideoCount > 0;
+
+  // If no post ID, show a message
+  if (!postId) {
+    return <NoPostMessage subMessage="Navigate to a post to manage media" />;
+  }
 
   return (
     <div className="flex flex-col gap-3">

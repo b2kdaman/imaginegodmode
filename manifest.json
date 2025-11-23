@@ -19,6 +19,8 @@
   "content_scripts": [
     {
       "matches": [
+        "https://grok.com/imagine",
+        "https://www.grok.com/imagine",
         "https://grok.com/imagine/post/*",
         "https://www.grok.com/imagine/post/*",
         "https://grok.com/imagine/favorites",

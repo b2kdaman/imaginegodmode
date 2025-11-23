@@ -24,6 +24,8 @@ import { trackPromptEdited, trackVideoMakeClicked } from '@/utils/analytics';
 import { getPrefix, setPrefix } from '@/utils/storage';
 import { getPostIdFromUrl } from '@/utils/helpers';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
+import { NoPostMessage } from './NoPostMessage';
+import { applyPromptAndMake } from '@/utils/promptActions';
 
 export const PromptView: React.FC = () => {
   const {
@@ -119,49 +121,19 @@ export const PromptView: React.FC = () => {
   };
 
   const handlePlayClick = () => {
-    // Apply prefix to prompt text if prefix exists
-    const textarea = document.querySelector(SELECTORS.TEXTAREA) as HTMLTextAreaElement;
-    if (textarea && currentPrompt) {
-      const finalText = prefix.trim()
-        ? `${prefix.trim()}, ${currentPrompt.text}`.trim()
-        : currentPrompt.text;
-
-      // Set the value using the native setter to bypass React's control
-      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-        window.HTMLTextAreaElement.prototype,
-        'value'
-      )?.set;
-      nativeInputValueSetter?.call(textarea, finalText);
-
-      // Dispatch both input and change events for compatibility
-      textarea.dispatchEvent(new Event('input', { bubbles: true }));
-      textarea.dispatchEvent(new Event('change', { bubbles: true }));
-    }
+    if (!currentPrompt) return;
 
     // Track video make action
     trackVideoMakeClicked();
 
-    // Find and click the "Make video" button by aria-label
-    setTimeout(() => {
-      const makeVideoBtn = document.querySelector(SELECTORS.MAKE_VIDEO_BUTTON) as HTMLElement;
-      if (makeVideoBtn) {
-        console.log('[ImagineGodMode] Found Make video button:', makeVideoBtn);
-
-        // Dispatch a proper pointer/mouse event sequence to trigger React handlers
-        const events = [
-          new PointerEvent('pointerdown', { bubbles: true, cancelable: true, composed: true }),
-          new MouseEvent('mousedown', { bubbles: true, cancelable: true, composed: true }),
-          new PointerEvent('pointerup', { bubbles: true, cancelable: true, composed: true }),
-          new MouseEvent('mouseup', { bubbles: true, cancelable: true, composed: true }),
-          new MouseEvent('click', { bubbles: true, cancelable: true, composed: true })
-        ];
-
-        events.forEach(event => makeVideoBtn.dispatchEvent(event));
-      } else {
-        console.warn('[ImagineGodMode] Make video button not found');
-      }
-    }, 100);
+    // Apply prompt with prefix and click Make button
+    applyPromptAndMake(currentPrompt.text, prefix);
   };
+
+  // If no post ID, show a message instead of the prompt content
+  if (!postId) {
+    return <NoPostMessage subMessage="Navigate to a post to manage prompts" />;
+  }
 
   return (
     <div className="flex flex-col w-full">

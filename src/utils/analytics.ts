@@ -200,6 +200,10 @@ export const trackRememberPostStateToggled = (enabled: boolean): void => {
   trackEvent('remember_post_state_toggled', { enabled });
 };
 
+export const trackSimpleShortcutToggled = (enabled: boolean): void => {
+  trackEvent('simple_shortcut_toggled', { enabled });
+};
+
 /**
  * Track settings changes
  */

@@ -34,11 +34,7 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, direction
             key={tab.id}
             onClick={() => onChange(tab.id)}
             className={`px-4 py-2 text-xs transition-colors relative ${
-              isActive
-                ? isUp
-                  ? 'rounded-b-lg'
-                  : 'rounded-t-lg'
-                : ''
+              isUp ? 'rounded-b-lg' : 'rounded-t-lg'
             }`}
             style={{
               backgroundColor: isActive ? colors.BACKGROUND_MEDIUM : 'transparent',

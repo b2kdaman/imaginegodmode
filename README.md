@@ -31,9 +31,10 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Configurable Themes**: Themes loaded from JSON file for easy customization
 - **UI Scaling**: Adjust panel size from Tiny (70%) to Large (115%)
 - **Visual Settings**: Settings labels enhanced with Material Design Icons for better UX
+- **Simple Shortcut Setting**: Optional setting to use `Ctrl/Cmd + Enter` instead of `Ctrl/Cmd + Shift + Enter` for applying prompts
 - **Keyboard Shortcuts**:
-  - `Ctrl/Cmd + Enter`: Click "Make a Video" button
-  - `Ctrl/Cmd + Shift + Enter`: Copy prompt and click "Make a Video"
+  - `Ctrl/Cmd + Shift + Enter`: Apply current prompt with prefix and click "Make a Video" (default)
+  - `Ctrl/Cmd + Enter`: Apply current prompt with prefix and click "Make a Video" (when Simple Shortcut enabled)
   - `Left Arrow`: Navigate to previous video
   - `Right Arrow`: Navigate to next video
   - `F`: Toggle fullscreen (works globally, even without extension panel open)
@@ -84,7 +85,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 
 ### Usage
 
-1. Navigate to any Grok post: `https://grok.com/imagine/post/*`
+1. Navigate to Grok Imagine: `https://grok.com/imagine` or any post: `https://grok.com/imagine/post/*`
 2. The extension UI will appear in the bottom-right corner
 3. Click the expand button to open the panel
 4. Switch between "Prompt", "Ops", and "Settings" tabs (bottom navigation)
@@ -108,6 +109,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Select language: English or Spanish (Español)
    - Enable Auto Download to automatically download media after upscaling
    - Toggle Remember Pack Per Post to control per-post state persistence (enabled by default)
+   - Toggle Simple Shortcut to use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter for applying prompts
    - All settings labels include visual icons for easy identification
    - **Data Management**:
      - Export packs: Select any pack to export to JSON (backup/sharing)
@@ -151,7 +153,7 @@ grkgoondl/
 - **usePromptStore**: Manages prompts, packs, ratings, and import/export operations
 - **useMediaStore**: Handles media URLs, upscaling, and status
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
-- **useSettingsStore**: Manages theme, size, auto-download, and remember-post-state preferences with localStorage persistence
+- **useSettingsStore**: Manages theme, size, auto-download, remember-post-state, and simple-shortcut preferences with localStorage persistence
 
 ### Contexts
 
@@ -172,8 +174,9 @@ grkgoondl/
 
 - **MainPanel**: Floating panel container with pause, fullscreen, collapse buttons, and version badge
 - **PromptView**: Prompt management interface
-- **OpsView**: Media controls with parallel upscaling, HD-gated downloads, and auto-download support
-- **SettingsView**: Theme, size, language, auto-download, remember-post-state preferences, and data management with import/export (all labels with icons)
+- **OpsView**: Media controls with parallel upscaling, HD-gated downloads, auto-download support, and "no post" message
+- **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut preferences, and data management with import/export (all labels with icons)
+- **NoPostMessage**: Reusable component displayed when no post ID is found in URL
 - **PackManager**: Pack dropdown with search button, text truncation, and CRUD operations
 - **SearchModal**: Type-ahead search modal for finding prompts across all packs
 - **PackSelectModal**: Modal for selecting which pack to export
@@ -276,7 +279,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Video progress polling every 500ms with auto-removal on completion
 - Console initialization tag with styled branding using theme colors
 - API architecture refactored: content script handles authenticated calls, background worker handles downloads
-- Settings persist in localStorage for instant theme/size/language/auto-download/remember-post-state application on load
+- Settings persist in localStorage for instant theme/size/language/auto-download/remember-post-state/simple-shortcut application on load
 - **Internationalization**: Complete i18n infrastructure with English and Spanish translations
   - Live language switching without reload
   - Translation context with parameter interpolation

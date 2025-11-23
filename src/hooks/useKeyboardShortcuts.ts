@@ -4,10 +4,15 @@
 
 import { useEffect } from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
+import { useSettingsStore } from '@/store/useSettingsStore';
 import { SELECTORS } from '@/utils/constants';
+import { getPostIdFromUrl } from '@/utils/helpers';
+import { getPrefix } from '@/utils/storage';
+import { applyPromptAndMake } from '@/utils/promptActions';
 
 export const useKeyboardShortcuts = () => {
   const { getCurrentPrompt } = usePromptStore();
+  const { simpleShortcut } = useSettingsStore();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -73,70 +78,29 @@ export const useKeyboardShortcuts = () => {
         }
       }
 
-      // Ctrl/Cmd + Enter: Click "Make video" button
-      if (modifierKey && e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
+      // Determine if we should apply prompt based on simpleShortcut setting
+      // If simpleShortcut is enabled: Ctrl/Cmd+Enter applies prompt
+      // If simpleShortcut is disabled: Ctrl/Cmd+Shift+Enter applies prompt
+      const shouldApplyPrompt = simpleShortcut
+        ? (modifierKey && e.key === 'Enter' && !e.shiftKey)
+        : (modifierKey && e.key === 'Enter' && e.shiftKey);
 
-        setTimeout(() => {
-          // Use exact aria-label selector
-          const makeVideoBtn = document.querySelector(SELECTORS.MAKE_VIDEO_BUTTON) as HTMLElement;
-
-          if (makeVideoBtn) {
-            console.log('[ImagineGodMode] Found Make video button:', makeVideoBtn);
-
-            // Dispatch a proper pointer/mouse event sequence to trigger React handlers
-            const events = [
-              new PointerEvent('pointerdown', { bubbles: true, cancelable: true, composed: true }),
-              new MouseEvent('mousedown', { bubbles: true, cancelable: true, composed: true }),
-              new PointerEvent('pointerup', { bubbles: true, cancelable: true, composed: true }),
-              new MouseEvent('mouseup', { bubbles: true, cancelable: true, composed: true }),
-              new MouseEvent('click', { bubbles: true, cancelable: true, composed: true })
-            ];
-
-            events.forEach(event => makeVideoBtn.dispatchEvent(event));
-          } else {
-            console.warn('[ImagineGodMode] Make video button not found');
-          }
-        }, 100);
-      }
-
-      // Ctrl/Cmd + Shift + Enter: Copy prompt and click "Make video"
-      if (modifierKey && e.key === 'Enter' && e.shiftKey) {
+      if (shouldApplyPrompt) {
         e.preventDefault();
 
         const currentPrompt = getCurrentPrompt();
-        const textarea = document.querySelector(SELECTORS.TEXTAREA) as HTMLTextAreaElement;
 
-        if (textarea && currentPrompt) {
-          textarea.value = currentPrompt.text;
-          textarea.dispatchEvent(new Event('input', { bubbles: true }));
-
-          // Trigger React's synthetic event
-          const inputEvent = new Event('input', { bubbles: true });
-          Object.defineProperty(inputEvent, 'target', { value: textarea, enumerable: true });
-          textarea.dispatchEvent(inputEvent);
-
-          setTimeout(() => {
-            // Use exact aria-label selector
-            const makeVideoBtn = document.querySelector(SELECTORS.MAKE_VIDEO_BUTTON) as HTMLElement;
-
-            if (makeVideoBtn) {
-              console.log('[ImagineGodMode] Found Make video button, clicking:', makeVideoBtn);
-
-              // Dispatch a proper pointer/mouse event sequence to trigger React handlers
-              const events = [
-                new PointerEvent('pointerdown', { bubbles: true, cancelable: true, composed: true }),
-                new MouseEvent('mousedown', { bubbles: true, cancelable: true, composed: true }),
-                new PointerEvent('pointerup', { bubbles: true, cancelable: true, composed: true }),
-                new MouseEvent('mouseup', { bubbles: true, cancelable: true, composed: true }),
-                new MouseEvent('click', { bubbles: true, cancelable: true, composed: true })
-              ];
-
-              events.forEach(event => makeVideoBtn.dispatchEvent(event));
-            } else {
-              console.warn('[ImagineGodMode] Make video button not found');
-            }
-          }, 200);
+        if (currentPrompt) {
+          // Get the prefix for the current post and apply prompt
+          const postId = getPostIdFromUrl();
+          if (postId) {
+            getPrefix(postId).then((prefix) => {
+              applyPromptAndMake(currentPrompt.text, prefix, 100);
+            });
+          } else {
+            // No post ID, apply without prefix
+            applyPromptAndMake(currentPrompt.text, '', 100);
+          }
         }
       }
     };
@@ -146,5 +110,5 @@ export const useKeyboardShortcuts = () => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [getCurrentPrompt]);
+  }, [getCurrentPrompt, simpleShortcut]);
 };
