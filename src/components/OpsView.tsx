@@ -5,36 +5,32 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useMediaStore } from '@/store/useMediaStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
-import { getPostIdFromUrl, randomDelay } from '@/utils/helpers';
-import { fetchPost, downloadMedia, upscaleVideoById } from '@/utils/messaging';
+import { useUpscaleQueueStore } from '@/store/useUpscaleQueueStore';
+import { getPostIdFromUrl } from '@/utils/helpers';
+import { fetchPost, downloadMedia } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
-import { TIMING } from '@/utils/constants';
 import { Button } from './Button';
 import { Icon } from './Icon';
 import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle } from '@mdi/js';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
-import { trackVideoUpscaled, trackMediaDownloaded } from '@/utils/analytics';
+import { trackMediaDownloaded } from '@/utils/analytics';
 import { NoPostMessage } from './NoPostMessage';
 
 export const OpsView: React.FC = () => {
   const {
     urls,
     videoIdsToUpscale,
-    upscaleProgress,
-    isUpscaling,
     hdVideoCount,
     statusText,
     setMediaUrls,
     setVideoIdsToUpscale,
-    setUpscaleProgress,
-    setIsUpscaling,
     setHdVideoCount,
     setStatusText,
   } = useMediaStore();
-  const { autoDownload, getThemeColors } = useSettingsStore();
+  const { getThemeColors } = useSettingsStore();
+  const { addToQueue, isProcessing: isQueueProcessing } = useUpscaleQueueStore();
   const colors = getThemeColors();
 
-  const [refetchInterval, setRefetchInterval] = useState<number | null>(null);
   const [postId, setPostId] = useState<string | null>(null);
 
   // Fetch post data
@@ -92,122 +88,25 @@ export const OpsView: React.FC = () => {
     }
   };
 
-  // Upscale videos
-  const handleUpscale = async () => {
+  // Add videos to upscale queue
+  const handleUpscale = () => {
     if (videoIdsToUpscale.length === 0) {
       setStatusText('No videos to upscale');
       return;
     }
 
-    setIsUpscaling(true);
-    setStatusText('Upscaling videos...');
-
-    // Store the IDs of videos being upscaled for auto-download later
-    const upscaledVideoIds = [...videoIdsToUpscale];
-
-    const total = videoIdsToUpscale.length;
-    let completed = 0;
-
-    // Fire off upscale requests with staggered start times
-    const upscalePromises = [];
-
-    for (let i = 0; i < videoIdsToUpscale.length; i++) {
-      const videoId = videoIdsToUpscale[i];
-
-      // Start the upscale (don't await it)
-      const promise = upscaleVideoById(videoId).then(() => {
-        completed++;
-        setUpscaleProgress((completed / total) * 100);
-        console.log(`[ImagineGodMode] Upscaled ${completed}/${total}: ${videoId}`);
-      });
-
-      upscalePromises.push(promise);
-
-      // Add random delay before starting next one (except for the last one)
-      if (i < videoIdsToUpscale.length - 1) {
-        const delay = randomDelay(TIMING.UPSCALE_DELAY_MIN, TIMING.UPSCALE_DELAY_MAX);
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      }
+    if (!postId) {
+      setStatusText('No post ID found');
+      return;
     }
 
-    // Wait for all to complete
-    await Promise.all(upscalePromises);
+    // Add to global queue - it will auto-start processing
+    addToQueue(postId, videoIdsToUpscale);
+    setStatusText(`Added ${videoIdsToUpscale.length} videos to queue`);
 
-    // Track upscale completion
-    trackVideoUpscaled(total, true);
-
-    // Start refetch loop with the IDs of videos that were upscaled
-    startRefetchLoop(upscaledVideoIds);
+    // Clear local upscale list since they're now in queue
+    setVideoIdsToUpscale([]);
   };
-
-  const startRefetchLoop = (upscaledVideoIds: string[]) => {
-    const interval = window.setInterval(async () => {
-      const postId = getPostIdFromUrl();
-      if (!postId) return;
-
-      const response = await fetchPost(postId);
-      console.log('[ImagineGodMode] Refetch response:', response);
-
-      if (response.success && response.data) {
-        const processed = processPostData(response.data);
-        console.log('[ImagineGodMode] Refetch processed:', processed);
-
-        setMediaUrls(processed.mediaUrls);
-        setVideoIdsToUpscale(processed.videosToUpscale);
-        setHdVideoCount(processed.hdVideoCount);
-        setStatusText(
-          `Found ${processed.urls.length} media (${processed.hdVideoCount} HD videos)`
-        );
-
-        // Check if all videos are HD now (use fresh data, not state)
-        if (processed.videosToUpscale.length === 0) {
-          setIsUpscaling(false);
-          setUpscaleProgress(100);
-          setStatusText('Upscale complete!');
-          clearInterval(interval);
-          setRefetchInterval(null);
-          console.log('[ImagineGodMode] Upscale complete, stopped refetch loop');
-
-          // Auto-download if enabled (only the videos that were upscaled)
-          if (autoDownload) {
-            console.log('[ImagineGodMode] Auto-download enabled, downloading upscaled videos:', upscaledVideoIds);
-            setTimeout(async () => {
-              setStatusText('Auto-downloading upscaled videos...');
-              // Only download videos that were just upscaled (match by ID)
-              const upscaledUrls = processed.mediaUrls
-                .filter((m) => m.type === 'video' && m.id && upscaledVideoIds.includes(m.id))
-                .map((m) => m.url);
-
-              if (upscaledUrls.length === 0) {
-                setStatusText('No upscaled videos to download');
-                return;
-              }
-
-              const response = await downloadMedia(upscaledUrls);
-
-              if (response.success) {
-                setStatusText(`Auto-downloaded ${response.data.count} upscaled videos`);
-                trackMediaDownloaded(response.data.count, 'auto');
-              } else {
-                setStatusText('Auto-download failed');
-              }
-            }, 500); // Small delay to ensure UI updates properly
-          }
-        }
-      }
-    }, randomDelay(TIMING.UPSCALE_REFETCH_MIN, TIMING.UPSCALE_REFETCH_MAX));
-
-    setRefetchInterval(interval);
-  };
-
-  // Cleanup interval on unmount
-  useEffect(() => {
-    return () => {
-      if (refetchInterval !== null) {
-        clearInterval(refetchInterval);
-      }
-    };
-  }, [refetchInterval]);
 
   // Check if all videos are HD
   const allVideosHD = urls.length > 0 && videoIdsToUpscale.length === 0 && hdVideoCount > 0;
@@ -227,21 +126,6 @@ export const OpsView: React.FC = () => {
         <span>{statusText}</span>
       </div>
 
-      {/* Progress bar */}
-      {isUpscaling && (
-        <div
-          className="w-full rounded-full h-2 overflow-hidden"
-          style={{ backgroundColor: colors.BACKGROUND_MEDIUM }}
-        >
-          <div
-            className="h-full transition-all duration-300"
-            style={{
-              width: `${upscaleProgress}%`,
-              backgroundColor: colors.GLOW_PRIMARY,
-            }}
-          />
-        </div>
-      )}
 
       {/* Media info */}
       {urls.length > 0 && (
@@ -258,11 +142,11 @@ export const OpsView: React.FC = () => {
         <Button
           onClick={handleUpscale}
           icon={mdiImageSizeSelectLarge}
-          disabled={videoIdsToUpscale.length === 0 || isUpscaling}
+          disabled={videoIdsToUpscale.length === 0}
           className="flex-1"
-          tooltip="Upscale videos to HD quality"
+          tooltip={isQueueProcessing ? 'Add to upscale queue' : 'Upscale videos to HD quality'}
         >
-          Upscale
+          {isQueueProcessing ? 'Add to Queue' : 'Upscale'}
         </Button>
 
         <Button

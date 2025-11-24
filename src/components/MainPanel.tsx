@@ -14,6 +14,7 @@ import { Button } from './Button';
 import { Tabs } from './Tabs';
 import { FullscreenButton } from './FullscreenButton';
 import { PauseButton } from './PauseButton';
+import { UpscaleQueueIndicator } from './UpscaleQueueIndicator';
 import { mdiChevronUp, mdiChevronDown } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 
@@ -59,6 +60,7 @@ export const MainPanel: React.FC = () => {
               {t('panel.authorCredit')}
             </span>
           </div>
+          <UpscaleQueueIndicator />
           <PauseButton />
           <FullscreenButton />
           <Button

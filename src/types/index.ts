@@ -70,6 +70,16 @@ export interface PostData {
 
 export type ViewMode = 'prompt' | 'ops' | 'settings' | 'help';
 
+export type QueueItemStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
+export interface QueueItem {
+  postId: string;
+  videoId: string;
+  status: QueueItemStatus;
+  hdUrl?: string;
+  addedAt: number;
+}
+
 export interface MessagePayload {
   type: 'FETCH_POST' | 'UPSCALE_VIDEO' | 'DOWNLOAD_MEDIA' | 'GET_STORAGE' | 'SET_STORAGE';
   data?: any;

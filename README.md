@@ -19,6 +19,11 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Media Downloading**: Download images and videos from Grok posts (disabled until all videos are HD)
 - **Auto Download**: Optional setting to automatically download all media after upscaling completes
 - **Video Upscaling**: Parallel upscale requests with staggered start times for optimal performance
+- **Upscale Queue**: Global queue system for batch processing videos across posts
+  - Processes 15 videos at a time per batch
+  - Auto-downloads completed batch before starting next
+  - Persists across post navigation
+  - Visual indicator with progress and status
 - **Video Progress Tracking**: Real-time progress bar and button glow during video generation
 - **HD Status Indicator**: Green check icon appears when all videos are HD quality
 - **Video Controls**: Play/pause button with synchronized state tracking
@@ -154,6 +159,7 @@ grkgoondl/
 - **useMediaStore**: Handles media URLs, upscaling, and status
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
 - **useSettingsStore**: Manages theme, size, auto-download, remember-post-state, and simple-shortcut preferences with localStorage persistence
+- **useUpscaleQueueStore**: Global upscale queue with batch processing (15 at a time), auto-download, and localStorage persistence
 
 ### Contexts
 
@@ -172,9 +178,10 @@ grkgoondl/
 
 ### Components
 
-- **MainPanel**: Floating panel container with pause, fullscreen, collapse buttons, and version badge
+- **MainPanel**: Floating panel container with pause, fullscreen, collapse buttons, queue indicator, and version badge
 - **PromptView**: Prompt management interface
-- **OpsView**: Media controls with parallel upscaling, HD-gated downloads, auto-download support, and "no post" message
+- **OpsView**: Media controls with queue-based upscaling, HD-gated downloads, and "no post" message
+- **UpscaleQueueIndicator**: Minimal queue status button with expandable panel showing progress, stats, and queue items
 - **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut preferences, and data management with import/export (all labels with icons)
 - **NoPostMessage**: Reusable component displayed when no post ID is found in URL
 - **PackManager**: Pack dropdown with search button, text truncation, and CRUD operations
@@ -286,9 +293,14 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - Fallback mechanism for missing keys
   - All UI elements fully translated (buttons, labels, tooltips, modals)
 - **Visual Enhancement**: Settings labels enhanced with Material Design Icons (palette, resize, translate, download, database, swap)
-- **Upscaling Strategy**: Videos upscale in parallel with random delays between starts (avoids rate limiting while maximizing speed)
+- **Upscale Queue System**: Global queue processes videos in batches of 15
+  - Batch processing with staggered delays to avoid rate limiting
+  - Auto-downloads completed batch (max 15 files) before starting next
+  - Queue persists to localStorage across navigation
+  - Visual indicator with pulsing badge when processing
+  - Expandable panel with progress bar, stats, and queue management
 - **Download Protection**: Download button disabled until all videos are HD quality
-- **Auto Download**: Optional toggle in Settings to automatically download all media after upscaling completes
+- **Auto Download**: Queue automatically downloads each completed batch of upscaled videos
 - **Remember Pack Per Post**: Optional toggle (enabled by default) to save/restore selected pack and prompt index per post
 - **HD Status Visual**: Green check icon displays in Ops view when all videos are HD quality
 - **Video State Sync**: Play/pause button automatically syncs with video element state via event listeners
