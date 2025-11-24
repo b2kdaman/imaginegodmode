@@ -4,6 +4,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import { VERSION } from './constants';
 
 // GA4 Configuration
 const GA4_MEASUREMENT_ID = 'G-VQDV962F8P';
@@ -101,7 +102,7 @@ export const initAnalytics = (): void => {
 
   // Track extension loaded
   trackEvent('extension_loaded', {
-    version: '2.3.0',
+    version: VERSION,
   });
 };
 

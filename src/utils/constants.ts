@@ -2,8 +2,8 @@
  * Application constants
  */
 
-// Version
-export const VERSION = '2.3.0';
+// Version - injected from package.json via Vite define
+export const VERSION = __APP_VERSION__;
 
 // UI Layout & Positioning
 export const UI_POSITION = {
