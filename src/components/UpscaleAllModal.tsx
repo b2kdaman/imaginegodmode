@@ -35,6 +35,7 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
 }) => {
   const colors = getThemeColors();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [lastClickedIndex, setLastClickedIndex] = useState<number | null>(null);
 
   // Select all posts by default when modal opens
   useEffect(() => {
@@ -45,13 +46,43 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
 
   const toggleSelection = (postId: string, e?: React.MouseEvent) => {
     e?.stopPropagation();
-    const newSelected = new Set(selectedIds);
-    if (newSelected.has(postId)) {
-      newSelected.delete(postId);
+
+    const currentIndex = posts.findIndex((p) => p.id === postId);
+
+    // Handle shift-click for batch selection/deselection
+    if (e?.shiftKey && lastClickedIndex !== null && currentIndex !== -1) {
+      const newSelected = new Set(selectedIds);
+      const start = Math.min(lastClickedIndex, currentIndex);
+      const end = Math.max(lastClickedIndex, currentIndex);
+
+      // Determine whether to select or deselect based on the current item's state
+      const shouldSelect = !selectedIds.has(postId);
+
+      // Apply the same action to all items in the range
+      for (let i = start; i <= end; i++) {
+        if (shouldSelect) {
+          newSelected.add(posts[i].id);
+        } else {
+          newSelected.delete(posts[i].id);
+        }
+      }
+
+      setSelectedIds(newSelected);
     } else {
-      newSelected.add(postId);
+      // Normal click - toggle single item
+      const newSelected = new Set(selectedIds);
+      if (newSelected.has(postId)) {
+        newSelected.delete(postId);
+      } else {
+        newSelected.add(postId);
+      }
+      setSelectedIds(newSelected);
     }
-    setSelectedIds(newSelected);
+
+    // Update last clicked index
+    if (currentIndex !== -1) {
+      setLastClickedIndex(currentIndex);
+    }
   };
 
   const handleImageClick = (postId: string) => {

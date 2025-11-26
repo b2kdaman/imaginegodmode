@@ -29,6 +29,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - **Show Unliked**: Browse and like multiple posts with progress tracking
   - Square image grid with checkboxes for selection
   - Click images to navigate to posts
+  - Shift-click for batch selection/deselection (standard multi-select behavior)
   - Real-time progress bar with 1-2 second delays between API calls
   - All posts selected by default for quick batch operations
 - **Video Progress Tracking**: Real-time progress bar and button glow during video generation
