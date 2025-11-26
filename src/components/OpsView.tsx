@@ -285,12 +285,12 @@ export const OpsView: React.FC = () => {
       </div>
 
       {/* Upscale All / Show Unliked Buttons */}
-      <div className="flex gap-2 mt-2">
+      <div className="flex flex-col gap-2 mt-2">
         <Button
           onClick={handleUpscaleAllClick}
           icon={mdiFormatListBulletedSquare}
           disabled={isLoadingLikedPosts}
-          className="flex-1"
+          className="w-full"
           tooltip="Upscale videos from multiple liked posts"
         >
           {isLoadingLikedPosts ? 'Loading...' : 'Upscale All Liked'}
@@ -299,7 +299,7 @@ export const OpsView: React.FC = () => {
           onClick={handleShowUnlikedClick}
           icon={mdiHeartOutline}
           disabled={isLoadingUnlikedPosts}
-          className="flex-1"
+          className="w-full"
           tooltip="Like multiple unliked posts"
         >
           {isLoadingUnlikedPosts ? 'Loading...' : 'Show Unliked'}
