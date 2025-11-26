@@ -6,6 +6,17 @@ import { API_ENDPOINTS } from '@/utils/constants';
 import { PostData, LikedPostsResponse } from '@/types';
 
 /**
+ * Media post source types enum
+ */
+export enum MediaPostSource {
+  Invalid = 'MEDIA_POST_SOURCE_INVALID',
+  Public = 'MEDIA_POST_SOURCE_PUBLIC',
+  Liked = 'MEDIA_POST_SOURCE_LIKED',
+  Owned = 'MEDIA_POST_SOURCE_OWNED',
+  CharacterMentioned = 'MEDIA_POST_SOURCE_CHARACTER_MENTIONED',
+}
+
+/**
  * Fetch post data from Grok API
  * @param postId - Post ID to fetch
  * @returns Post data
@@ -53,7 +64,7 @@ export const fetchLikedPosts = async (limit: number = 40): Promise<LikedPostsRes
     body: JSON.stringify({
       limit,
       filter: {
-        source: 'MEDIA_POST_SOURCE_LIKED',
+        source: MediaPostSource.Liked,
       },
     }),
     credentials: 'include',
@@ -82,12 +93,8 @@ export const fetchUnlikedPosts = async (limit: number = 40, userId?: string): Pr
   console.log('[ImagineGodMode API] Fetching unliked posts, limit:', limit, 'userId:', userId);
 
   const filter: any = {
-    source: 'MEDIA_POST_SOURCE_IMAGE',
+    source: MediaPostSource.Invalid,
   };
-
-  if (userId) {
-    filter.user = userId;
-  }
 
   const res = await fetch(API_ENDPOINTS.POST_LIST, {
     method: 'POST',
