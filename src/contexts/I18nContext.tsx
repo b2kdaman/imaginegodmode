@@ -1,12 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import enTranslations from '../locales/en.json';
 import esTranslations from '../locales/es.json';
+import ruTranslations from '../locales/ru.json';
 
 type Translations = typeof enTranslations;
 
 const translations: Record<string, Translations> = {
   en: enTranslations,
   es: esTranslations,
+  ru: ruTranslations,
 };
 
 interface I18nContextType {

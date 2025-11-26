@@ -1,0 +1,136 @@
+{
+  "tabs": {
+    "prompt": "Промпты",
+    "ops": "Операции",
+    "settings": "Настройки",
+    "help": "Помощь"
+  },
+  "common": {
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "import": "Импорт",
+    "export": "Экспорт",
+    "add": "Добавить",
+    "remove": "Удалить",
+    "copy": "Копировать",
+    "make": "Создать",
+    "download": "Скачать",
+    "upscale": "Улучшить",
+    "paste": "Вставить",
+    "current": "Текущий",
+    "version": "Версия"
+  },
+  "panel": {
+    "collapseTooltip": "Свернуть панель",
+    "expandTooltip": "Развернуть панель",
+    "authorCredit": "от Valentine Muñoz"
+  },
+  "prompt": {
+    "placeholder": "Введите ваш промпт...",
+    "toTooltip": "Заменить текущий промпт этим",
+    "fromTooltip": "Сохранить текущий промпт в этот слот",
+    "copyTooltip": "Копировать этот промпт в буфер обмена",
+    "addTooltip": "Добавить новый слот промпта",
+    "removeTooltip": "Удалить этот слот промпта",
+    "makeTooltip": "Заполнить промпт и нажать кнопку Создать",
+    "rating": "Оценить этот промпт"
+  },
+  "settings": {
+    "theme": "Тема",
+    "size": "Размер",
+    "language": "Язык",
+    "autoDownload": "Автоматическая загрузка",
+    "rememberPostState": "Запомнить пак для поста",
+    "simpleShortcut": "Простое сочетание клавиш",
+    "dataManagement": "Управление данными",
+    "importMode": "Режим импорта",
+    "importModeAdd": "Добавить",
+    "importModeReplace": "Заменить",
+    "themes": {
+      "dark": "Темная",
+      "light": "Светлая",
+      "dracula": "Дракула",
+      "winamp": "Winamp",
+      "limewire": "LimeWire",
+      "steam": "Steam"
+    },
+    "sizes": {
+      "tiny": "Крошечный (70%)",
+      "small": "Маленький (85%)",
+      "medium": "Средний (100%)",
+      "large": "Большой (115%)"
+    },
+    "languages": {
+      "en": "Английский",
+      "es": "Испанский",
+      "ru": "Русский"
+    }
+  },
+  "ops": {
+    "noPostId": "ID поста не найден в URL",
+    "fetchingPost": "Загрузка данных поста...",
+    "foundMedia": "Найдено {{count}} медиа ({{hdCount}} HD видео)",
+    "upscaling": "Улучшение {{current}}/{{total}}...",
+    "upscaled": "Улучшено {{count}}/{{total}}",
+    "downloading": "Загрузка...",
+    "downloaded": "Загружено {{count}} файлов",
+    "upscaleTooltip": "Улучшить видео до HD качества",
+    "downloadTooltip": "Скачать все медиа файлы",
+    "ready": "Готово",
+    "waitingForPost": "Ожидание поста..."
+  },
+  "help": {
+    "availableFeatures": "Доступные функции",
+    "keyboardShortcuts": "Горячие клавиши",
+    "about": "О программе",
+    "features": {
+      "savePrompts": "Сохранять и организовывать промпты в паках",
+      "ratePrompts": "Оценивать промпты звездами",
+      "importExport": "Импорт/экспорт паков промптов в JSON",
+      "upscale": "Улучшение видео до HD качества",
+      "autoDownload": "Автоматическая загрузка сгенерированных медиа",
+      "keyboardShortcuts": "Полная поддержка горячих клавиш",
+      "themes": "Множество цветовых тем и размеров интерфейса"
+    },
+    "shortcuts": {
+      "makeVideo": "Создать видео",
+      "copyMake": "Копировать и создать",
+      "navigatePrompts": "Навигация по промптам",
+      "togglePanel": "Переключить панель",
+      "switchTabs": "Переключить вкладки"
+    },
+    "aboutText": "ImagineGodMode помогает управлять промптами для генерации видео с функциями сохранения паков промптов, оценки, импорта/экспорта, улучшения видео до HD и автоматической загрузки медиа."
+  },
+  "packManager": {
+    "addPackTooltip": "Добавить новый пак",
+    "deletePackTooltip": "Удалить текущий пак (двойной клик)",
+    "cannotDeleteLast": "Невозможно удалить последний пак",
+    "packNamePlaceholder": "Название пака...",
+    "searchTooltip": "Поиск промптов"
+  },
+  "modals": {
+    "confirmDelete": {
+      "title": "Удалить пак",
+      "message": "Вы уверены, что хотите удалить \"{{packName}}\"?"
+    },
+    "importPack": {
+      "title": "Импорт пака",
+      "selectFile": "Выбрать файл",
+      "validJson": "Валидный JSON",
+      "invalidJson": "Невалидный JSON",
+      "importing": "Импорт...",
+      "success": "Успешно импортировано",
+      "error": "Ошибка импорта"
+    },
+    "selectPack": {
+      "title": "Выбрать пак"
+    },
+    "searchPrompts": {
+      "title": "Поиск промптов",
+      "placeholder": "Начните вводить для поиска...",
+      "noResults": "Промпты не найдены",
+      "resultCount": "{{count}} результат(ов)",
+      "promptNumber": "Промпт #{{number}}"
+    }
+  }
+}

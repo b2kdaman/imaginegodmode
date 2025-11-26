@@ -29,7 +29,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Video Controls**: Play/pause button with synchronized state tracking
 - **Fullscreen Video Player**: Intelligent fullscreen button that detects visible video (HD or SD)
 - **Internationalization (i18n)**: Multi-language support with live language switching
-  - English and Spanish translations
+  - English, Spanish, and Russian translations
   - Persistent language preference
   - All UI elements translated including tooltips, buttons, and modals
 - **Theme Customization**: Choose from 6 themes (Dark, Light, Dracula, Winamp, LimeWire, Steam) with full UI color adaptation
@@ -111,7 +111,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Choose theme: Dark, Light, Dracula, Winamp, LimeWire, or Steam
    - Themes are configurable via `public/themes.json`
    - Adjust UI size: Tiny to Large
-   - Select language: English or Spanish (Español)
+   - Select language: English, Spanish (Español), or Russian (Русский)
    - Enable Auto Download to automatically download media after upscaling
    - Toggle Remember Pack Per Post to control per-post state persistence (enabled by default)
    - Toggle Simple Shortcut to use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter for applying prompts
@@ -135,7 +135,7 @@ grkgoondl/
 │   ├── content/          # Content script (injection point)
 │   ├── contexts/         # React contexts (i18n)
 │   ├── hooks/            # Custom React hooks
-│   ├── locales/          # Translation files (en.json, es.json)
+│   ├── locales/          # Translation files (en.json, es.json, ru.json)
 │   ├── store/            # Zustand stores
 │   ├── types/            # TypeScript type definitions
 │   ├── utils/            # Utility functions
@@ -287,7 +287,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Console initialization tag with styled branding using theme colors
 - API architecture refactored: content script handles authenticated calls, background worker handles downloads
 - Settings persist in localStorage for instant theme/size/language/auto-download/remember-post-state/simple-shortcut application on load
-- **Internationalization**: Complete i18n infrastructure with English and Spanish translations
+- **Internationalization**: Complete i18n infrastructure with English, Spanish, and Russian translations
   - Live language switching without reload
   - Translation context with parameter interpolation
   - Fallback mechanism for missing keys

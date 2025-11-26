@@ -239,6 +239,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
         >
           <option value="en">{t('settings.languages.en')}</option>
           <option value="es">{t('settings.languages.es')}</option>
+          <option value="ru">{t('settings.languages.ru')}</option>
         </select>
       </div>
 
