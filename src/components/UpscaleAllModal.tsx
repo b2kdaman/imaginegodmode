@@ -84,14 +84,14 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center z-50"
+      className="fixed inset-0 flex items-end justify-center z-50"
       style={{
         backgroundColor: 'rgba(0, 0, 0, 0.7)',
       }}
       onClick={isProcessing ? undefined : onClose}
     >
       <div
-        className="rounded-xl p-4 max-w-2xl w-full mx-4 max-h-[80vh] flex flex-col"
+        className="rounded-t-xl p-4 max-w-2xl w-full mx-4 max-h-[400px] flex flex-col"
         style={{
           backgroundColor: colors.BACKGROUND_DARK,
           border: `1px solid ${colors.BORDER}`,
