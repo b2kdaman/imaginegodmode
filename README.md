@@ -24,6 +24,13 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - Auto-downloads completed batch before starting next
   - Persists across post navigation
   - Visual indicator with progress and status
+- **Bulk Operations**: Batch process multiple posts with visual selection interface
+  - **Upscale All Liked**: Select from liked posts to upscale videos in bulk
+  - **Show Unliked**: Browse and like multiple posts with progress tracking
+  - Square image grid with checkboxes for selection
+  - Click images to navigate to posts
+  - Real-time progress bar with 1-2 second delays between API calls
+  - All posts selected by default for quick batch operations
 - **Video Progress Tracking**: Real-time progress bar and button glow during video generation
 - **HD Status Indicator**: Green check icon appears when all videos are HD quality
 - **Video Controls**: Play/pause button with synchronized state tracking
@@ -107,6 +114,16 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Secondary action: Download media (enabled only when all videos are HD)
    - Real-time status updates and progress tracking
    - Green check icon appears when all videos are HD quality
+   - **Upscale All Liked**: Bulk upscale videos from multiple liked posts
+     - Opens modal with square image grid of liked posts
+     - All posts selected by default, click checkboxes to toggle
+     - Click image preview to navigate to that post
+     - Processes selected posts and adds videos to upscale queue
+   - **Show Unliked**: Browse and like multiple posts at once
+     - Fetches user's image posts with like interface
+     - Select posts to like with visual checkboxes
+     - Real-time progress bar during bulk like operation
+     - 1-2 second delays between API calls to avoid rate limiting
 7. **Settings View**: Customize your experience
    - Choose theme: Dark, Light, Dracula, Winamp, LimeWire, or Steam
    - Themes are configurable via `public/themes.json`
@@ -180,8 +197,9 @@ grkgoondl/
 
 - **MainPanel**: Floating panel container with pause, fullscreen, collapse buttons, queue indicator, and version badge
 - **PromptView**: Prompt management interface
-- **OpsView**: Media controls with queue-based upscaling, HD-gated downloads, and "no post" message
+- **OpsView**: Media controls with queue-based upscaling, HD-gated downloads, bulk operations (Upscale All Liked, Show Unliked), and "no post" message
 - **UpscaleQueueIndicator**: Minimal queue status button with expandable panel showing progress, stats, and queue items
+- **UpscaleAllModal**: Reusable modal for bulk operations with dual modes (upscale/like), image grid with checkboxes, click-to-navigate, and real-time progress tracking
 - **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut preferences, and data management with import/export (all labels with icons)
 - **NoPostMessage**: Reusable component displayed when no post ID is found in URL
 - **PackManager**: Pack dropdown with search button, text truncation, and CRUD operations

@@ -89,6 +89,8 @@ export const URL_CONFIG = {
 // API Endpoints
 export const API_ENDPOINTS = {
   POST_GET: '/rest/media/post/get',
+  POST_LIST: '/rest/media/post/list',
+  POST_LIKE: '/rest/media/post/like',
   VIDEO_UPSCALE: '/rest/media/video/upscale',
 } as const;
 

@@ -90,3 +90,27 @@ export interface MessageResponse<T = any> {
   data?: T;
   error?: string;
 }
+
+export interface LikedPost {
+  id: string;
+  userId: string;
+  createTime: string;
+  prompt: string;
+  mediaType: string;
+  mediaUrl: string;
+  mimeType: string;
+  audioUrls: string[];
+  childPosts: ChildPost[];
+  originalPrompt?: string;
+  mode?: string;
+  resolution?: {
+    width: number;
+    height: number;
+  };
+  modelName?: string;
+  thumbnailImageUrl?: string;
+}
+
+export interface LikedPostsResponse {
+  posts: LikedPost[];
+}
