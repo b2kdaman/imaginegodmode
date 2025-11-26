@@ -9,7 +9,7 @@ import { useUpscaleQueueStore } from '@/store/useUpscaleQueueStore';
 import { getPostIdFromUrl } from '@/utils/helpers';
 import { fetchPost, downloadMedia } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
-import { fetchLikedPosts, fetchUnlikedPosts, fetchPostData, likePost } from '@/api/grokApi';
+import { fetchLikedPosts, fetchUnlikedPosts, fetchPostData, likePost, DEFAULT_POST_FETCH_LIMIT } from '@/api/grokApi';
 import { Button } from './Button';
 import { Icon } from './Icon';
 import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle, mdiFormatListBulletedSquare, mdiHeartOutline } from '@mdi/js';
@@ -131,7 +131,7 @@ export const OpsView: React.FC = () => {
   const handleUpscaleAllClick = async () => {
     setIsLoadingLikedPosts(true);
     try {
-      const response = await fetchLikedPosts(40);
+      const response = await fetchLikedPosts(DEFAULT_POST_FETCH_LIMIT);
       setLikedPosts(response.posts || []);
       setIsUpscaleAllModalOpen(true);
     } catch (error) {
@@ -179,7 +179,7 @@ export const OpsView: React.FC = () => {
   const handleShowUnlikedClick = async () => {
     setIsLoadingUnlikedPosts(true);
     try {
-      const response = await fetchUnlikedPosts(40, userId || undefined);
+      const response = await fetchUnlikedPosts(DEFAULT_POST_FETCH_LIMIT, userId || undefined);
       setUnlikedPosts(response.posts || []);
       setIsLikeModalOpen(true);
     } catch (error) {

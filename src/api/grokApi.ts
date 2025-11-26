@@ -6,6 +6,11 @@ import { API_ENDPOINTS } from '@/utils/constants';
 import { PostData, LikedPostsResponse } from '@/types';
 
 /**
+ * Default limit for fetching posts from the API
+ */
+export const DEFAULT_POST_FETCH_LIMIT = 100;
+
+/**
  * Media post source types enum
  */
 export enum MediaPostSource {
@@ -52,7 +57,7 @@ export const fetchPostData = async (postId: string): Promise<PostData> => {
  * @param limit - Maximum number of posts to fetch
  * @returns Liked posts response
  */
-export const fetchLikedPosts = async (limit: number = 40): Promise<LikedPostsResponse> => {
+export const fetchLikedPosts = async (limit: number = DEFAULT_POST_FETCH_LIMIT): Promise<LikedPostsResponse> => {
   console.log('[ImagineGodMode API] Fetching liked posts, limit:', limit);
 
   const res = await fetch(API_ENDPOINTS.POST_LIST, {
@@ -89,7 +94,7 @@ export const fetchLikedPosts = async (limit: number = 40): Promise<LikedPostsRes
  * @param userId - Optional user ID to filter by
  * @returns Unliked posts response
  */
-export const fetchUnlikedPosts = async (limit: number = 40, userId?: string): Promise<LikedPostsResponse> => {
+export const fetchUnlikedPosts = async (limit: number = DEFAULT_POST_FETCH_LIMIT, userId?: string): Promise<LikedPostsResponse> => {
   console.log('[ImagineGodMode API] Fetching unliked posts, limit:', limit, 'userId:', userId);
 
   const filter: any = {
