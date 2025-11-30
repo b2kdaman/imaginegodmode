@@ -13,6 +13,7 @@ interface PostsStore {
   // Actions
   setPosts: (posts: LikedPost[]) => void;
   setCurrentPostId: (id: string | null) => void;
+  ensureCurrentPostInList: (post: LikedPost) => void;
   getNextPostId: () => string | null;
   getPrevPostId: () => string | null;
   getCurrentPostIndex: () => number;
@@ -28,6 +29,17 @@ export const usePostsStore = create<PostsStore>((set, get) => ({
 
   // Set current post ID
   setCurrentPostId: (id) => set({ currentPostId: id }),
+
+  // Ensure current post is in the posts list (add if not found)
+  ensureCurrentPostInList: (post) => {
+    const { posts } = get();
+    const postExists = posts.some((p) => p.id === post.id);
+
+    if (!postExists) {
+      console.log('[PostsStore] Adding current post to list:', post.id);
+      set({ posts: [...posts, post] });
+    }
+  },
 
   // Get next post ID in the list
   getNextPostId: () => {

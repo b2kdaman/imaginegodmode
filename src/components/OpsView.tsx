@@ -33,7 +33,7 @@ export const OpsView: React.FC = () => {
   } = useMediaStore();
   const { getThemeColors } = useSettingsStore();
   const { addToQueue, isProcessing: isQueueProcessing } = useUpscaleQueueStore();
-  const { setPosts, setCurrentPostId } = usePostsStore();
+  const { setPosts, setCurrentPostId, ensureCurrentPostInList } = usePostsStore();
   const colors = getThemeColors();
 
   const [postId, setPostId] = useState<string | null>(null);
@@ -75,6 +75,11 @@ export const OpsView: React.FC = () => {
         console.log('[ImagineGodMode] User ID:', response.data.post.userId);
       }
 
+      // Ensure current post is in the posts list for navigation
+      if (response.data?.post) {
+        ensureCurrentPostInList(response.data.post as any);
+      }
+
       setMediaUrls(processed.mediaUrls);
       setVideoIdsToUpscale(processed.videosToUpscale);
       setHdVideoCount(processed.hdVideoCount);
@@ -85,7 +90,7 @@ export const OpsView: React.FC = () => {
       console.error('[ImagineGodMode] Fetch failed:', response);
       setStatusText('Failed to fetch post data');
     }
-  }, [setMediaUrls, setVideoIdsToUpscale, setHdVideoCount, setStatusText, setCurrentPostId]);
+  }, [setMediaUrls, setVideoIdsToUpscale, setHdVideoCount, setStatusText, setCurrentPostId, ensureCurrentPostInList]);
 
   // Watch for URL changes and refetch data
   useUrlWatcher(handleFetchPost);
