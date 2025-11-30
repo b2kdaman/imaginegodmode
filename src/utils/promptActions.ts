@@ -68,3 +68,23 @@ export const applyPromptAndMake = (
     }, delay);
   }
 };
+
+/**
+ * Apply prompt text, click Make, and navigate to next post
+ */
+export const applyPromptMakeAndNext = (
+  promptText: string,
+  prefix: string = '',
+  nextPostId: string | null,
+  delay: number = 100
+): void => {
+  // First, apply prompt and make
+  applyPromptAndMake(promptText, prefix, delay);
+
+  // Then navigate to next post after Make button is clicked
+  if (nextPostId) {
+    setTimeout(() => {
+      window.location.href = `https://grok.com/imagine/post/${nextPostId}`;
+    }, delay + 1000); // Wait for Make to execute first (1 second buffer)
+  }
+};

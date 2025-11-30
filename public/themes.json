@@ -94,5 +94,21 @@
     "GLOW_SECONDARY": "rgba(103, 193, 245, 0.4)",
     "GLOW_HOVER_PRIMARY": "rgba(102, 192, 244, 0.8)",
     "GLOW_HOVER_SECONDARY": "rgba(103, 193, 245, 0.6)"
+  },
+  "discord": {
+    "BACKGROUND_DARK": "#202225",
+    "BACKGROUND_MEDIUM": "#2f3136",
+    "BACKGROUND_LIGHT": "#36393f",
+    "TEXT_PRIMARY": "#dcddde",
+    "TEXT_SECONDARY": "#96989d",
+    "TEXT_HOVER": "#ffffff",
+    "SHADOW": "rgba(0,0,0,0.5)",
+    "BORDER": "rgba(88, 101, 242, 0.3)",
+    "SUCCESS": "#3ba55d",
+    "PROGRESS_BAR": "rgba(88, 101, 242, 1)",
+    "GLOW_PRIMARY": "rgba(88, 101, 242, 0.6)",
+    "GLOW_SECONDARY": "rgba(114, 137, 218, 0.4)",
+    "GLOW_HOVER_PRIMARY": "rgba(88, 101, 242, 0.8)",
+    "GLOW_HOVER_SECONDARY": "rgba(114, 137, 218, 0.6)"
   }
 }

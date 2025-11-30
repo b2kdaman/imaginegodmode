@@ -5,6 +5,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import { usePostsStore } from '@/store/usePostsStore';
 import { PackManager } from './PackManager';
 import { RatingSystem } from './RatingSystem';
 import { Button } from './Button';
@@ -18,6 +19,7 @@ import {
   mdiArrowDown,
   mdiArrowUp,
   mdiContentCopy,
+  mdiSkipNext,
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import { trackPromptEdited, trackVideoMakeClicked } from '@/utils/analytics';
@@ -25,7 +27,7 @@ import { getPrefix, setPrefix } from '@/utils/storage';
 import { getPostIdFromUrl } from '@/utils/helpers';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
 import { NoPostMessage } from './NoPostMessage';
-import { applyPromptAndMake } from '@/utils/promptActions';
+import { applyPromptAndMake, applyPromptMakeAndNext } from '@/utils/promptActions';
 
 export const PromptView: React.FC = () => {
   const {
@@ -43,6 +45,7 @@ export const PromptView: React.FC = () => {
     savePostState,
   } = usePromptStore();
   const { getThemeColors, rememberPostState } = useSettingsStore();
+  const { getNextPostId, setCurrentPostId } = usePostsStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
 
@@ -56,6 +59,7 @@ export const PromptView: React.FC = () => {
   const loadPostData = useCallback(async () => {
     const currentPostId = getPostIdFromUrl();
     setPostId(currentPostId);
+    setCurrentPostId(currentPostId); // Update posts store with current post ID
 
     if (currentPostId) {
       // Load prefix
@@ -70,7 +74,7 @@ export const PromptView: React.FC = () => {
       // Clear prefix if no post ID
       setLocalPrefix('');
     }
-  }, [loadPostState, rememberPostState]);
+  }, [loadPostState, rememberPostState, setCurrentPostId]);
 
   // Load post data on mount
   useEffect(() => {
@@ -128,6 +132,23 @@ export const PromptView: React.FC = () => {
 
     // Apply prompt with prefix and click Make button
     applyPromptAndMake(currentPrompt.text, prefix);
+  };
+
+  const handleMakeAndNextClick = () => {
+    if (!currentPrompt) return;
+
+    const nextPostId = getNextPostId();
+
+    if (!nextPostId) {
+      // No next post available
+      return;
+    }
+
+    // Track video make action
+    trackVideoMakeClicked();
+
+    // Apply prompt, make video, and navigate to next post
+    applyPromptMakeAndNext(currentPrompt.text, prefix, nextPostId);
   };
 
   // If no post ID, show a message instead of the prompt content
@@ -270,6 +291,20 @@ export const PromptView: React.FC = () => {
             tooltip={t('prompt.makeTooltip')}
           >
             {t('common.make')}
+          </Button>
+        </div>
+
+        {/* Action buttons row 3 - Make + Next */}
+        <div className="flex gap-2">
+          <Button
+            onClick={handleMakeAndNextClick}
+            icon={mdiSkipNext}
+            iconColor={UI_COLORS.BLACK}
+            className="w-full !bg-white !text-black hover:!bg-white/90"
+            disabled={!getNextPostId()}
+            tooltip="Make video and navigate to next post"
+          >
+            Make + Next
           </Button>
         </div>
       </div>

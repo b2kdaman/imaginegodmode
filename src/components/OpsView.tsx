@@ -6,6 +6,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useMediaStore } from '@/store/useMediaStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useUpscaleQueueStore } from '@/store/useUpscaleQueueStore';
+import { usePostsStore } from '@/store/usePostsStore';
 import { getPostIdFromUrl } from '@/utils/helpers';
 import { fetchPost, downloadMedia } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
@@ -32,6 +33,7 @@ export const OpsView: React.FC = () => {
   } = useMediaStore();
   const { getThemeColors } = useSettingsStore();
   const { addToQueue, isProcessing: isQueueProcessing } = useUpscaleQueueStore();
+  const { setPosts, setCurrentPostId } = usePostsStore();
   const colors = getThemeColors();
 
   const [postId, setPostId] = useState<string | null>(null);
@@ -50,6 +52,7 @@ export const OpsView: React.FC = () => {
   const handleFetchPost = useCallback(async () => {
     const currentPostId = getPostIdFromUrl();
     setPostId(currentPostId);
+    setCurrentPostId(currentPostId); // Update posts store with current post ID
     console.log('[ImagineGodMode] Post ID:', currentPostId);
 
     if (!currentPostId) {
@@ -82,7 +85,7 @@ export const OpsView: React.FC = () => {
       console.error('[ImagineGodMode] Fetch failed:', response);
       setStatusText('Failed to fetch post data');
     }
-  }, [setMediaUrls, setVideoIdsToUpscale, setHdVideoCount, setStatusText]);
+  }, [setMediaUrls, setVideoIdsToUpscale, setHdVideoCount, setStatusText, setCurrentPostId]);
 
   // Watch for URL changes and refetch data
   useUrlWatcher(handleFetchPost);
@@ -133,6 +136,7 @@ export const OpsView: React.FC = () => {
     try {
       const response = await fetchLikedPosts(DEFAULT_POST_FETCH_LIMIT);
       setLikedPosts(response.posts || []);
+      setPosts(response.posts || []); // Update posts store
       setIsUpscaleAllModalOpen(true);
     } catch (error) {
       console.error('[ImagineGodMode] Failed to fetch liked posts:', error);
@@ -181,6 +185,7 @@ export const OpsView: React.FC = () => {
     try {
       const response = await fetchUnlikedPosts(DEFAULT_POST_FETCH_LIMIT, userId || undefined);
       setUnlikedPosts(response.posts || []);
+      setPosts(response.posts || []); // Update posts store
       setIsLikeModalOpen(true);
     } catch (error) {
       console.error('[ImagineGodMode] Failed to fetch unliked posts:', error);

@@ -32,6 +32,12 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - Shift-click for batch selection/deselection (standard multi-select behavior)
   - Real-time progress bar with 1-2 second delays between API calls
   - All posts selected by default for quick batch operations
+- **Make + Next**: Workflow automation for batch processing posts
+  - Applies current prompt, clicks Make button, and automatically navigates to next post
+  - Full-width button in Prompt view for easy access
+  - Disabled when no next post available
+  - Uses fetched posts from "Upscale All Liked" or "Show Unliked"
+  - 1-second delay between Make and navigation for proper execution
 - **Video Progress Tracking**: Real-time progress bar and button glow during video generation
 - **HD Status Indicator**: Green check icon appears when all videos are HD quality
 - **Video Controls**: Play/pause button with synchronized state tracking
@@ -40,7 +46,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - English, Spanish, and Russian translations
   - Persistent language preference
   - All UI elements translated including tooltips, buttons, and modals
-- **Theme Customization**: Choose from 6 themes (Dark, Light, Dracula, Winamp, LimeWire, Steam) with full UI color adaptation
+- **Theme Customization**: Choose from 7 themes (Dark, Light, Dracula, Winamp, LimeWire, Steam, Discord) with full UI color adaptation
 - **Configurable Themes**: Themes loaded from JSON file for easy customization
 - **UI Scaling**: Adjust panel size from Tiny (70%) to Large (115%)
 - **Visual Settings**: Settings labels enhanced with Material Design Icons for better UX
@@ -110,6 +116,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Rate prompts with stars
    - Navigate with arrow buttons or keyboard
    - Copy and play prompts
+   - **Make + Next**: Automatically apply prompt, make video, and navigate to next post (requires fetched posts)
 6. **Ops View**: Automatically fetches post data when opened
    - Primary action: Upscale videos (parallel processing with staggered starts)
    - Secondary action: Download media (enabled only when all videos are HD)
@@ -126,7 +133,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
      - Real-time progress bar during bulk like operation
      - 1-2 second delays between API calls to avoid rate limiting
 7. **Settings View**: Customize your experience
-   - Choose theme: Dark, Light, Dracula, Winamp, LimeWire, or Steam
+   - Choose theme: Dark, Light, Dracula, Winamp, LimeWire, Steam, or Discord
    - Themes are configurable via `public/themes.json`
    - Adjust UI size: Tiny to Large
    - Select language: English, Spanish (Español), or Russian (Русский)
@@ -178,6 +185,7 @@ grkgoondl/
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
 - **useSettingsStore**: Manages theme, size, auto-download, remember-post-state, and simple-shortcut preferences with localStorage persistence
 - **useUpscaleQueueStore**: Global upscale queue with batch processing (15 at a time), auto-download, and localStorage persistence
+- **usePostsStore**: Manages fetched posts list and navigation helpers for "Make + Next" workflow
 
 ### Contexts
 
@@ -197,8 +205,8 @@ grkgoondl/
 ### Components
 
 - **MainPanel**: Floating panel container with pause, fullscreen, collapse buttons, queue indicator, and version badge
-- **PromptView**: Prompt management interface
-- **OpsView**: Media controls with queue-based upscaling, HD-gated downloads, bulk operations (Upscale All Liked, Show Unliked), and "no post" message
+- **PromptView**: Prompt management interface with "Make + Next" workflow button
+- **OpsView**: Media controls with queue-based upscaling, HD-gated downloads, bulk operations (Upscale All Liked, Show Unliked), posts store integration, and "no post" message
 - **UpscaleQueueIndicator**: Minimal queue status button with expandable panel showing progress, stats, and queue items
 - **UpscaleAllModal**: Reusable modal for bulk operations with dual modes (upscale/like), image grid with checkboxes, click-to-navigate, and real-time progress tracking
 - **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut preferences, and data management with import/export (all labels with icons)
@@ -294,7 +302,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Custom icons included (gold "G" logo at 16px, 48px, 128px)
 - Extension requires permissions for `storage`, `downloads`, and `activeTab`
 - Works on `https://grok.com/*` and `https://www.grok.com/*`
-- **Theme System**: Six built-in themes (Dark, Light, Dracula, Winamp, LimeWire, Steam) with full color palette adaptation including theme-aware accent colors
+- **Theme System**: Seven built-in themes (Dark, Light, Dracula, Winamp, LimeWire, Steam, Discord) with full color palette adaptation including theme-aware accent colors
 - **Configurable Themes**: Themes loaded from `public/themes.json` for easy customization without code changes
 - **Theme-Aware Accents**: Success indicators (HD checkmark, auto-download toggle) adapt to each theme's color scheme
 - **UI Scaling**: CSS transform-based scaling maintains crisp rendering at all sizes
@@ -353,6 +361,7 @@ Themes are fully customizable via the `public/themes.json` configuration file.
 - **Winamp**: Retro Winamp-inspired theme with teal backgrounds and green LED text
 - **LimeWire**: Nostalgic P2P aesthetic with signature lime green on black
 - **Steam**: Valve's iconic dark blue slate with light blue accents
+- **Discord**: Authentic Discord dark theme with signature blurple accents
 
 ### Creating Custom Themes
 
@@ -381,13 +390,14 @@ npm run generate-icons  # Regenerate extension icons
 - [ ] Spin automation (batch process list items)
 - [x] Fullscreen video player support
 - [x] Video progress tracking
-- [x] Theme customization (Dark, Light, Dracula, Winamp, LimeWire, Steam)
+- [x] Theme customization (Dark, Light, Dracula, Winamp, LimeWire, Steam, Discord)
 - [x] Configurable themes via JSON
 - [x] UI scaling (Tiny to Large)
 - [x] Export/import packs (JSON format with merge/replace modes)
 - [x] Internationalization (English and Spanish)
 - [x] Visual icon enhancements for settings
 - [x] Prompt search and filtering (type-ahead search across all packs)
+- [x] "Make + Next" workflow automation for batch processing posts
 - [ ] Advanced search filters (by rating, date)
 - [ ] Search keyboard shortcuts (Ctrl/Cmd+F)
 - [ ] Additional language translations (French, German, Portuguese, etc.)

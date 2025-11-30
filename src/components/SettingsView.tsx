@@ -143,7 +143,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
         <select
           value={theme}
           onChange={(e) => {
-            const newTheme = e.target.value as 'dark' | 'light' | 'dracula' | 'winamp' | 'limewire' | 'steam';
+            const newTheme = e.target.value as 'dark' | 'light' | 'dracula' | 'winamp' | 'limewire' | 'steam' | 'discord';
             setTheme(newTheme);
             trackThemeChanged(newTheme);
           }}
@@ -167,6 +167,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
           <option value="winamp">{t('settings.themes.winamp')}</option>
           <option value="limewire">{t('settings.themes.limewire')}</option>
           <option value="steam">{t('settings.themes.steam')}</option>
+          <option value="discord">{t('settings.themes.discord')}</option>
         </select>
       </div>
 

@@ -52,7 +52,8 @@
       "dracula": "Drácula",
       "winamp": "Winamp",
       "limewire": "LimeWire",
-      "steam": "Steam"
+      "steam": "Steam",
+      "discord": "Discord"
     },
     "sizes": {
       "tiny": "Muy Pequeño (70%)",

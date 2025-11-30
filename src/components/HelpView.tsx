@@ -43,10 +43,11 @@ export const HelpView: React.FC = () => {
             <li>Parallel video upscaling to HD quality</li>
             <li>Bulk operations: Upscale liked posts or like unliked posts</li>
             <li>Shift-click batch selection in bulk operations modal</li>
+            <li>Make + Next: Automate prompt application and post navigation</li>
             <li>Real-time video generation progress</li>
             <li>Play/pause video control</li>
             <li>Fullscreen video playback</li>
-            <li>Theme customization (Dark, Light, Dracula, Winamp, LimeWire, Steam)</li>
+            <li>Theme customization (Dark, Light, Dracula, Winamp, LimeWire, Steam, Discord)</li>
             <li>UI size scaling (Tiny to Large)</li>
             <li>Auto-download media when generation completes</li>
             <li>Multi-language support (English, Spanish, Russian)</li>
