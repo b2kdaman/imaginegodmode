@@ -1,14 +1,15 @@
 /**
- * Fullscreen button component for video playback
+ * Pause/Play button component for video playback control
  */
 
 import React, { useState, useEffect } from 'react';
-import { Button } from './Button';
-import { mdiFullscreen } from '@mdi/js';
+import { Button } from '../inputs/Button';
+import { mdiPlay, mdiPause } from '@mdi/js';
 import { getPostIdFromUrl } from '@/utils/helpers';
 
-export const FullscreenButton: React.FC = () => {
+export const PauseButton: React.FC = () => {
   const [errorShown, setErrorShown] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [shouldShow, setShouldShow] = useState(false);
 
   const getActiveVideo = (): HTMLVideoElement | null => {
@@ -62,31 +63,66 @@ export const FullscreenButton: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleFullscreen = () => {
+  // Update pause state when video state changes
+  useEffect(() => {
+    const updatePauseState = () => {
+      const video = getActiveVideo();
+      if (video) {
+        setIsPaused(video.paused);
+      }
+    };
+
+    // Check initial state
+    updatePauseState();
+
+    // Listen for play/pause events
+    const handlePlay = () => setIsPaused(false);
+    const handlePause = () => setIsPaused(true);
+
+    const hdVideo = document.getElementById('hd-video') as HTMLVideoElement;
+    const sdVideo = document.getElementById('sd-video') as HTMLVideoElement;
+
+    if (hdVideo) {
+      hdVideo.addEventListener('play', handlePlay);
+      hdVideo.addEventListener('pause', handlePause);
+    }
+    if (sdVideo) {
+      sdVideo.addEventListener('play', handlePlay);
+      sdVideo.addEventListener('pause', handlePause);
+    }
+
+    return () => {
+      if (hdVideo) {
+        hdVideo.removeEventListener('play', handlePlay);
+        hdVideo.removeEventListener('pause', handlePause);
+      }
+      if (sdVideo) {
+        sdVideo.removeEventListener('play', handlePlay);
+        sdVideo.removeEventListener('pause', handlePause);
+      }
+    };
+  }, []);
+
+  const handleTogglePlayPause = () => {
     try {
       const video = getActiveVideo();
 
       if (!video) {
-        console.error('[ImagineGodMode] No video element found for fullscreen');
+        console.error('[ImagineGodMode] No video element found for play/pause');
         setErrorShown(true);
         setTimeout(() => setErrorShown(false), 1000);
         return;
       }
 
-      console.log('[ImagineGodMode] Entering fullscreen for video:', video.id);
-
-      // Request fullscreen on the video element
-      if (video.requestFullscreen) {
-        video.requestFullscreen();
-      } else if ((video as any).webkitRequestFullscreen) {
-        (video as any).webkitRequestFullscreen();
-      } else if ((video as any).mozRequestFullScreen) {
-        (video as any).mozRequestFullScreen();
-      } else if ((video as any).msRequestFullscreen) {
-        (video as any).msRequestFullscreen();
+      if (video.paused) {
+        console.log('[ImagineGodMode] Playing video:', video.id);
+        video.play();
+      } else {
+        console.log('[ImagineGodMode] Pausing video:', video.id);
+        video.pause();
       }
     } catch (error) {
-      console.error('[ImagineGodMode] Fullscreen error:', error);
+      console.error('[ImagineGodMode] Play/Pause error:', error);
       setErrorShown(true);
       setTimeout(() => setErrorShown(false), 1000);
     }
@@ -100,9 +136,9 @@ export const FullscreenButton: React.FC = () => {
   return (
     <Button
       variant="icon"
-      icon={mdiFullscreen}
-      onClick={handleFullscreen}
-      tooltip="Enter fullscreen (F)"
+      icon={isPaused ? mdiPlay : mdiPause}
+      onClick={handleTogglePlayPause}
+      tooltip={isPaused ? 'Play video (Space)' : 'Pause video (Space)'}
       className={errorShown ? 'opacity-50' : ''}
     />
   );

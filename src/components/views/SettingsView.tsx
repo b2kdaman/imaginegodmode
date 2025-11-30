@@ -6,10 +6,10 @@ import React, { useState } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { usePromptStore } from '@/store/usePromptStore';
 import { exportPack } from '@/utils/storage';
-import { Button } from './Button';
-import { Icon } from './Icon';
-import { PackSelectModal } from './PackSelectModal';
-import { ImportPackModal } from './ImportPackModal';
+import { Button } from '../inputs/Button';
+import { Icon } from '../common/Icon';
+import { PackSelectModal } from '../modals/PackSelectModal';
+import { ImportPackModal } from '../modals/ImportPackModal';
 import {
   mdiDownload,
   mdiUpload,

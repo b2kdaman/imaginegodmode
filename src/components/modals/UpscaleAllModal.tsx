@@ -3,9 +3,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Button } from './Button';
+import { createPortal } from 'react-dom';
+import { Button } from '../inputs/Button';
 import { mdiClose, mdiCheckboxMarked, mdiCheckboxBlankOutline } from '@mdi/js';
-import { Icon } from './Icon';
+import { Icon } from '../common/Icon';
 import { LikedPost } from '@/types';
 
 interface UpscaleAllModalProps {
@@ -113,20 +114,24 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
     ? `Upscale ${selectedIds.size} Post${selectedIds.size !== 1 ? 's' : ''}`
     : `Like ${selectedIds.size} Post${selectedIds.size !== 1 ? 's' : ''}`;
 
-  return (
+  const modalContent = (
     <div
-      className="fixed inset-0 flex items-end justify-center z-50"
+      className="fixed inset-0 flex items-center justify-center z-50 p-4"
       style={{
         backgroundColor: 'rgba(0, 0, 0, 0.7)',
       }}
       onClick={isProcessing ? undefined : onClose}
     >
       <div
-        className="rounded-t-xl p-4 max-w-2xl w-full mx-4 max-h-[400px] flex flex-col"
+        className="rounded-xl p-6 flex flex-col"
         style={{
           backgroundColor: colors.BACKGROUND_DARK,
           border: `1px solid ${colors.BORDER}`,
           boxShadow: `0 8px 32px ${colors.SHADOW}`,
+          width: '90vw',
+          maxWidth: '1344px',
+          height: '85vh',
+          maxHeight: '800px',
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -201,10 +206,13 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
 
         {/* Posts Grid */}
         <div className="flex-1 overflow-y-scroll mb-3">
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <div className="grid grid-cols-5 gap-2">
             {posts.map((post) => {
               const isSelected = selectedIds.has(post.id);
               const imageUrl = post.thumbnailImageUrl || post.mediaUrl;
+
+              // Count total videos in this post
+              const totalVideos = post.childPosts?.filter(cp => cp.mediaType === 'video').length || 0;
 
               return (
                 <div
@@ -260,8 +268,8 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
                     />
                   </button>
 
-                  {/* Video Count Badge (if has child videos) */}
-                  {post.childPosts && post.childPosts.length > 0 && (
+                  {/* Video Count Badge */}
+                  {totalVideos > 0 && (
                     <div
                       className="absolute top-1 left-1 px-1.5 py-0.5 rounded text-xs font-semibold"
                       style={{
@@ -270,7 +278,7 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
                         opacity: 0.9,
                       }}
                     >
-                      {post.childPosts.length}v
+                      {totalVideos}v
                     </div>
                   )}
                 </div>
@@ -301,4 +309,6 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };

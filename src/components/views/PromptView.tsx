@@ -6,9 +6,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { usePostsStore } from '@/store/usePostsStore';
-import { PackManager } from './PackManager';
-import { RatingSystem } from './RatingSystem';
-import { Button } from './Button';
+import { PackManager } from '../PackManager';
+import { RatingSystem } from '../inputs/RatingSystem';
+import { Button } from '../inputs/Button';
 import { UI_COLORS, SELECTORS } from '@/utils/constants';
 import {
   mdiChevronLeft,
@@ -26,7 +26,7 @@ import { trackPromptEdited, trackVideoMakeClicked } from '@/utils/analytics';
 import { getPrefix, setPrefix } from '@/utils/storage';
 import { getPostIdFromUrl } from '@/utils/helpers';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
-import { NoPostMessage } from './NoPostMessage';
+import { NoPostMessage } from '../common/NoPostMessage';
 import { applyPromptAndMake, applyPromptMakeAndNext } from '@/utils/promptActions';
 
 export const PromptView: React.FC = () => {

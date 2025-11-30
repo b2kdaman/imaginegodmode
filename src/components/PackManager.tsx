@@ -5,9 +5,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
-import { Button } from './Button';
-import { ConfirmDeleteModal } from './ConfirmDeleteModal';
-import { SearchModal } from './SearchModal';
+import { Button } from './inputs/Button';
+import { ConfirmDeleteModal } from './modals/ConfirmDeleteModal';
+import { SearchModal } from './modals/SearchModal';
 import { mdiPlus, mdiClose, mdiCheck, mdiDelete, mdiMagnify } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 

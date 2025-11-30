@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import { Icon } from './Icon';
+import { Icon } from '../common/Icon';
 import { mdiStar, mdiStarOutline } from '@mdi/js';
 import { UI_COLORS } from '@/utils/constants';
 

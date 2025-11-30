@@ -3,9 +3,9 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { Button } from './Button';
+import { Button } from '../inputs/Button';
 import { mdiClose, mdiUpload, mdiContentPaste, mdiCheckCircle, mdiAlertCircle } from '@mdi/js';
-import { Icon } from './Icon';
+import { Icon } from '../common/Icon';
 import { useTranslation } from '@/contexts/I18nContext';
 
 interface ImportPackModalProps {

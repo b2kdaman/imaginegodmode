@@ -10,14 +10,14 @@ import { usePostsStore } from '@/store/usePostsStore';
 import { getPostIdFromUrl } from '@/utils/helpers';
 import { fetchPost, downloadMedia } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
-import { fetchLikedPosts, fetchUnlikedPosts, fetchPostData, likePost, DEFAULT_POST_FETCH_LIMIT } from '@/api/grokApi';
-import { Button } from './Button';
-import { Icon } from './Icon';
-import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle, mdiFormatListBulletedSquare, mdiHeartOutline } from '@mdi/js';
+import { fetchLikedPosts, fetchPostData, unlikePost, DEFAULT_POST_FETCH_LIMIT } from '@/api/grokApi';
+import { Button } from '../inputs/Button';
+import { Icon } from '../common/Icon';
+import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle, mdiFormatListBulletedSquare, mdiHeartBroken } from '@mdi/js';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
 import { trackMediaDownloaded } from '@/utils/analytics';
-import { NoPostMessage } from './NoPostMessage';
-import { UpscaleAllModal } from './UpscaleAllModal';
+import { UpscaleAllModal } from '../modals/UpscaleAllModal';
+import { UnlikeModal } from '../modals/UnlikeModal';
 import { LikedPost } from '@/types';
 
 export const OpsView: React.FC = () => {
@@ -37,16 +37,13 @@ export const OpsView: React.FC = () => {
   const colors = getThemeColors();
 
   const [postId, setPostId] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
   const [isUpscaleAllModalOpen, setIsUpscaleAllModalOpen] = useState(false);
-  const [isLikeModalOpen, setIsLikeModalOpen] = useState(false);
+  const [isUnlikeModalOpen, setIsUnlikeModalOpen] = useState(false);
   const [likedPosts, setLikedPosts] = useState<LikedPost[]>([]);
-  const [unlikedPosts, setUnlikedPosts] = useState<LikedPost[]>([]);
   const [isLoadingLikedPosts, setIsLoadingLikedPosts] = useState(false);
-  const [isLoadingUnlikedPosts, setIsLoadingUnlikedPosts] = useState(false);
-  const [isProcessingLikes, setIsProcessingLikes] = useState(false);
-  const [processedLikesCount, setProcessedLikesCount] = useState(0);
-  const [totalLikesCount, setTotalLikesCount] = useState(0);
+  const [isProcessingUnlikes, setIsProcessingUnlikes] = useState(false);
+  const [processedUnlikesCount, setProcessedUnlikesCount] = useState(0);
+  const [totalUnlikesCount, setTotalUnlikesCount] = useState(0);
 
   // Fetch post data
   const handleFetchPost = useCallback(async () => {
@@ -68,12 +65,6 @@ export const OpsView: React.FC = () => {
     if (response.success && response.data) {
       const processed = processPostData(response.data);
       console.log('[ImagineGodMode] Processed data:', processed);
-
-      // Extract userId from post data
-      if (response.data?.post?.userId) {
-        setUserId(response.data.post.userId);
-        console.log('[ImagineGodMode] User ID:', response.data.post.userId);
-      }
 
       // Ensure current post is in the posts list for navigation
       if (response.data?.post) {
@@ -196,27 +187,27 @@ export const OpsView: React.FC = () => {
     );
   };
 
-  // Fetch unliked posts for Show Unliked
-  const handleShowUnlikedClick = async () => {
-    setIsLoadingUnlikedPosts(true);
+  // Handle unlike button click
+  const handleUnlikeClick = async () => {
+    setIsLoadingLikedPosts(true);
     try {
-      const response = await fetchUnlikedPosts(DEFAULT_POST_FETCH_LIMIT, userId || undefined);
-      setUnlikedPosts(response.posts || []);
+      const response = await fetchLikedPosts(DEFAULT_POST_FETCH_LIMIT);
+      setLikedPosts(response.posts || []);
       setPosts(response.posts || []); // Update posts store
-      setIsLikeModalOpen(true);
+      setIsUnlikeModalOpen(true);
     } catch (error) {
-      console.error('[ImagineGodMode] Failed to fetch unliked posts:', error);
-      setStatusText('Failed to fetch unliked posts');
+      console.error('[ImagineGodMode] Failed to fetch liked posts:', error);
+      setStatusText('Failed to fetch liked posts');
     } finally {
-      setIsLoadingUnlikedPosts(false);
+      setIsLoadingLikedPosts(false);
     }
   };
 
-  // Handle bulk like from modal with progress
-  const handleBulkLike = async (selectedPostIds: string[]) => {
-    setIsProcessingLikes(true);
-    setProcessedLikesCount(0);
-    setTotalLikesCount(selectedPostIds.length);
+  // Handle bulk unlike from modal with progress
+  const handleBulkUnlike = async (selectedPostIds: string[]) => {
+    setIsProcessingUnlikes(true);
+    setProcessedUnlikesCount(0);
+    setTotalUnlikesCount(selectedPostIds.length);
 
     let successCount = 0;
 
@@ -225,13 +216,13 @@ export const OpsView: React.FC = () => {
       const postId = selectedPostIds[i];
 
       try {
-        await likePost(postId);
+        await unlikePost(postId);
         successCount++;
       } catch (error) {
-        console.error(`[ImagineGodMode] Failed to like post ${postId}:`, error);
+        console.error(`[ImagineGodMode] Failed to unlike post ${postId}:`, error);
       }
 
-      setProcessedLikesCount(i + 1);
+      setProcessedUnlikesCount(i + 1);
 
       // Add 1-2 second delay between calls (except for last one)
       if (i < selectedPostIds.length - 1) {
@@ -240,9 +231,12 @@ export const OpsView: React.FC = () => {
       }
     }
 
-    setIsProcessingLikes(false);
-    setIsLikeModalOpen(false);
-    setStatusText(`Liked ${successCount} of ${selectedPostIds.length} posts`);
+    setIsProcessingUnlikes(false);
+    setIsUnlikeModalOpen(false);
+    setStatusText(`Unliked ${successCount} of ${selectedPostIds.length} posts`);
+
+    // Navigate to favorites page and refresh
+    window.location.href = 'https://grok.com/imagine/favorites';
   };
 
   // Handle image click to navigate to post
@@ -252,11 +246,6 @@ export const OpsView: React.FC = () => {
 
   // Check if all videos are HD
   const allVideosHD = urls.length > 0 && videoIdsToUpscale.length === 0 && hdVideoCount > 0;
-
-  // If no post ID, show a message
-  if (!postId) {
-    return <NoPostMessage subMessage="Navigate to a post to manage media" />;
-  }
 
   return (
     <div className="flex flex-col gap-3">
@@ -279,34 +268,36 @@ export const OpsView: React.FC = () => {
         </div>
       )}
 
-      {/* Action buttons */}
-      <div className="flex gap-2">
-        <Button
-          onClick={handleUpscale}
-          icon={mdiImageSizeSelectLarge}
-          disabled={videoIdsToUpscale.length === 0}
-          className="flex-1"
-          tooltip={isQueueProcessing ? 'Add to upscale queue' : 'Upscale videos to HD quality'}
-        >
-          {isQueueProcessing ? 'Add to Queue' : 'Upscale'}
-        </Button>
+      {/* Action buttons - only show if post exists */}
+      {postId && (
+        <div className="flex gap-2">
+          <Button
+            onClick={handleUpscale}
+            icon={mdiImageSizeSelectLarge}
+            disabled={videoIdsToUpscale.length === 0}
+            className="flex-1"
+            tooltip={isQueueProcessing ? 'Add to upscale queue' : 'Upscale videos to HD quality'}
+          >
+            {isQueueProcessing ? 'Add to Queue' : 'Upscale'}
+          </Button>
 
-        <Button
-          onClick={handleDownload}
-          icon={mdiDownload}
-          disabled={urls.length === 0 || videoIdsToUpscale.length > 0}
-          className="flex-1"
-          tooltip={
-            videoIdsToUpscale.length > 0
-              ? 'Upscale all videos to HD first'
-              : 'Download all media files'
-          }
-        >
-          Download
-        </Button>
-      </div>
+          <Button
+            onClick={handleDownload}
+            icon={mdiDownload}
+            disabled={urls.length === 0 || videoIdsToUpscale.length > 0}
+            className="flex-1"
+            tooltip={
+              videoIdsToUpscale.length > 0
+                ? 'Upscale all videos to HD first'
+                : 'Download all media files'
+            }
+          >
+            Download
+          </Button>
+        </div>
+      )}
 
-      {/* Upscale All / Show Unliked Buttons */}
+      {/* Upscale All Liked & Unlike Buttons - always visible */}
       <div className="flex flex-col gap-2 mt-2">
         <Button
           onClick={handleUpscaleAllClick}
@@ -318,13 +309,13 @@ export const OpsView: React.FC = () => {
           {isLoadingLikedPosts ? 'Loading...' : 'Upscale All Liked'}
         </Button>
         <Button
-          onClick={handleShowUnlikedClick}
-          icon={mdiHeartOutline}
-          disabled={isLoadingUnlikedPosts}
+          onClick={handleUnlikeClick}
+          icon={mdiHeartBroken}
+          disabled={isLoadingLikedPosts}
           className="w-full"
-          tooltip="Like multiple unliked posts"
+          tooltip="Unlike multiple posts at once"
         >
-          {isLoadingUnlikedPosts ? 'Loading...' : 'Show Unliked'}
+          {isLoadingLikedPosts ? 'Loading...' : 'Unlike Multiple Posts'}
         </Button>
       </div>
 
@@ -339,22 +330,21 @@ export const OpsView: React.FC = () => {
         getThemeColors={getThemeColors}
       />
 
-      {/* Like Modal */}
-      <UpscaleAllModal
-        isOpen={isLikeModalOpen}
-        posts={unlikedPosts}
-        mode="like"
+      {/* Unlike Modal */}
+      <UnlikeModal
+        isOpen={isUnlikeModalOpen}
+        posts={likedPosts}
         onClose={() => {
-          if (!isProcessingLikes) {
-            setIsLikeModalOpen(false);
+          if (!isProcessingUnlikes) {
+            setIsUnlikeModalOpen(false);
           }
         }}
-        onConfirm={handleBulkLike}
+        onConfirm={handleBulkUnlike}
         onImageClick={handleImageClick}
         getThemeColors={getThemeColors}
-        isProcessing={isProcessingLikes}
-        processedCount={processedLikesCount}
-        totalCount={totalLikesCount}
+        isProcessing={isProcessingUnlikes}
+        processedCount={processedUnlikesCount}
+        totalCount={totalUnlikesCount}
       />
     </div>
   );

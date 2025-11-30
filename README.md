@@ -26,12 +26,14 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - Visual indicator with progress and status
 - **Bulk Operations**: Batch process multiple posts with visual selection interface
   - **Upscale All Liked**: Select from liked posts to upscale videos in bulk
-  - **Show Unliked**: Browse and like multiple posts with progress tracking
-  - Square image grid with checkboxes for selection
-  - Click images to navigate to posts
+  - **Unlike Multiple Posts**: Manage liked posts with bulk unlike functionality
+  - Large modal interface (90vw × 85vh) with 5-column grid layout
+  - Heart/broken heart indicators for intuitive like/unlike selection
+  - Click anywhere on item to toggle selection (no navigation)
   - Shift-click for batch selection/deselection (standard multi-select behavior)
   - Real-time progress bar with 1-2 second delays between API calls
   - All posts selected by default for quick batch operations
+  - Automatic redirect to /favorites after unliking for instant feedback
 - **Make + Next**: Workflow automation for batch processing posts
   - Applies current prompt, clicks Make button, and automatically navigates to next post
   - Full-width button in Prompt view for easy access
@@ -123,14 +125,16 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Real-time status updates and progress tracking
    - Green check icon appears when all videos are HD quality
    - **Upscale All Liked**: Bulk upscale videos from multiple liked posts
-     - Opens modal with square image grid of liked posts
-     - All posts selected by default, click checkboxes to toggle
+     - Opens large modal (90vw × 85vh) with 5-column image grid
+     - All posts selected by default, click to toggle selection
      - Click image preview to navigate to that post
      - Processes selected posts and adds videos to upscale queue
-   - **Show Unliked**: Browse and like multiple posts at once
-     - Fetches user's image posts with like interface
-     - Select posts to like with visual checkboxes
-     - Real-time progress bar during bulk like operation
+   - **Unlike Multiple Posts**: Manage liked posts with bulk unlike
+     - Opens large modal with 5-column grid of liked posts
+     - Heart/broken heart visual indicators for selection state
+     - Click anywhere on item to toggle (no navigation on click)
+     - Real-time progress bar during bulk unlike operation
+     - Automatic redirect to /favorites after completion
      - 1-2 second delays between API calls to avoid rate limiting
 7. **Settings View**: Customize your experience
    - Choose theme: Dark, Light, Dracula, Winamp, LimeWire, Steam, or Discord
@@ -156,7 +160,14 @@ grkgoondl/
 ├── src/
 │   ├── api/              # API layer for Grok endpoints
 │   ├── background/       # Background service worker
-│   ├── components/       # React components
+│   ├── components/       # React components (organized by type)
+│   │   ├── buttons/      # Button components (FullscreenButton, PauseButton)
+│   │   ├── common/       # Shared components (Icon, NoPostMessage, UpscaleQueueIndicator)
+│   │   ├── inputs/       # Input components (Button, RatingSystem, Tabs)
+│   │   ├── modals/       # Modal components (Upscale, Unlike, Import, etc.)
+│   │   ├── views/        # Main view components (Prompt, Ops, Settings, Help)
+│   │   ├── MainPanel.tsx # Main panel container
+│   │   └── PackManager.tsx # Pack management component
 │   ├── content/          # Content script (injection point)
 │   ├── contexts/         # React contexts (i18n)
 │   ├── hooks/            # Custom React hooks
@@ -204,24 +215,37 @@ grkgoondl/
 
 ### Components
 
-- **MainPanel**: Floating panel container with pause, fullscreen, collapse buttons, queue indicator, and version badge
+**Views** (src/components/views/)
 - **PromptView**: Prompt management interface with "Make + Next" workflow button
-- **OpsView**: Media controls with queue-based upscaling, HD-gated downloads, bulk operations (Upscale All Liked, Show Unliked), posts store integration, and "no post" message
-- **UpscaleQueueIndicator**: Minimal queue status button with expandable panel showing progress, stats, and queue items
-- **UpscaleAllModal**: Reusable modal for bulk operations with dual modes (upscale/like), image grid with checkboxes, click-to-navigate, and real-time progress tracking
-- **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut preferences, and data management with import/export (all labels with icons)
-- **NoPostMessage**: Reusable component displayed when no post ID is found in URL
-- **PackManager**: Pack dropdown with search button, text truncation, and CRUD operations
+- **OpsView**: Media controls with queue-based upscaling, HD-gated downloads, bulk operations (Upscale All Liked, Unlike Multiple Posts)
+- **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut preferences, and data management with import/export
+- **HelpView**: Help and documentation interface
+
+**Modals** (src/components/modals/)
+- **UpscaleAllModal**: Large modal (90vw × 85vh) with 5-column grid for bulk upscaling videos from liked posts
+- **UnlikeModal**: Large modal with 5-column grid, heart/broken heart indicators, and bulk unlike functionality with auto-redirect
 - **SearchModal**: Type-ahead search modal for finding prompts across all packs
 - **PackSelectModal**: Modal for selecting which pack to export
 - **ImportPackModal**: Modal for importing packs via paste or file upload with validation
 - **ConfirmDeleteModal**: Confirmation dialog for pack deletion with warning message
-- **RatingSystem**: 5-star rating component with white icons and optional readonly mode
-- **Button**: Reusable button component with theme-aware styling and hover states
-- **Tabs**: Tab navigation component with theme support and bottom placement
+
+**Buttons** (src/components/buttons/)
 - **PauseButton**: Play/pause control with synchronized video state tracking
 - **FullscreenButton**: Intelligent fullscreen toggle with video detection
+
+**Inputs** (src/components/inputs/)
+- **Button**: Reusable button component with theme-aware styling and hover states
+- **RatingSystem**: 5-star rating component with white icons and optional readonly mode
+- **Tabs**: Tab navigation component with theme support and bottom placement
+
+**Common** (src/components/common/)
 - **Icon**: Material Design Icons wrapper
+- **NoPostMessage**: Reusable component displayed when no post ID is found in URL
+- **UpscaleQueueIndicator**: Minimal queue status button with expandable panel showing progress, stats, and queue items
+
+**Root** (src/components/)
+- **MainPanel**: Floating panel container with pause, fullscreen, collapse buttons, queue indicator, and version badge
+- **PackManager**: Pack dropdown with search button, text truncation, and CRUD operations
 
 ## Architecture
 

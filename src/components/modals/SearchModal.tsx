@@ -5,8 +5,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
 import { useTranslation } from '@/contexts/I18nContext';
-import { Icon } from './Icon';
-import { RatingSystem } from './RatingSystem';
+import { Icon } from '../common/Icon';
+import { RatingSystem } from '../inputs/RatingSystem';
 import { mdiClose, mdiMagnify } from '@mdi/js';
 import { trackPromptSearched } from '@/utils/analytics';
 

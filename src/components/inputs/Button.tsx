@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { Icon } from './Icon';
+import { Icon } from '../common/Icon';
 import { useSettingsStore } from '@/store/useSettingsStore';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

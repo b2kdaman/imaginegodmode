@@ -91,6 +91,7 @@ export const API_ENDPOINTS = {
   POST_GET: '/rest/media/post/get',
   POST_LIST: '/rest/media/post/list',
   POST_LIKE: '/rest/media/post/like',
+  POST_UNLIKE: '/rest/media/post/unlike',
   VIDEO_UPSCALE: '/rest/media/video/upscale',
 } as const;
 

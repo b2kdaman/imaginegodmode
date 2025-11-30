@@ -5,16 +5,16 @@
 import React, { useState, useEffect } from 'react';
 import { useUIStore } from '@/store/useUIStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
-import { PromptView } from './PromptView';
-import { OpsView } from './OpsView';
-import { SettingsView } from './SettingsView';
-import { HelpView } from './HelpView';
+import { PromptView } from './views/PromptView';
+import { OpsView } from './views/OpsView';
+import { SettingsView } from './views/SettingsView';
+import { HelpView } from './views/HelpView';
 import { UI_POSITION, VERSION } from '@/utils/constants';
-import { Button } from './Button';
-import { Tabs } from './Tabs';
-import { FullscreenButton } from './FullscreenButton';
-import { PauseButton } from './PauseButton';
-import { UpscaleQueueIndicator } from './UpscaleQueueIndicator';
+import { Button } from './inputs/Button';
+import { Tabs } from './inputs/Tabs';
+import { FullscreenButton } from './buttons/FullscreenButton';
+import { PauseButton } from './buttons/PauseButton';
+import { UpscaleQueueIndicator } from './common/UpscaleQueueIndicator';
 import { mdiChevronUp, mdiChevronDown } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 
