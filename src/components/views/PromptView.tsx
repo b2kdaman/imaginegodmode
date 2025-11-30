@@ -22,7 +22,15 @@ import {
   mdiSkipNext,
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
-import { trackPromptEdited, trackVideoMakeClicked } from '@/utils/analytics';
+import {
+  trackPromptEdited,
+  trackVideoMakeClicked,
+  trackPromptCopiedToClipboard,
+  trackPromptNavigated,
+  trackPromptCopiedToPage,
+  trackPromptCopiedFromPage,
+  trackMakeAndNextClicked
+} from '@/utils/analytics';
 import { getPrefix, setPrefix } from '@/utils/storage';
 import { getPostIdFromUrl } from '@/utils/helpers';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
@@ -113,6 +121,8 @@ export const PromptView: React.FC = () => {
       // Dispatch both input and change events for compatibility
       textarea.dispatchEvent(new Event('input', { bubbles: true }));
       textarea.dispatchEvent(new Event('change', { bubbles: true }));
+
+      trackPromptCopiedToPage();
     }
   };
 
@@ -121,6 +131,7 @@ export const PromptView: React.FC = () => {
     if (textarea) {
       updatePromptText(textarea.value);
       trackPromptEdited();
+      trackPromptCopiedFromPage();
     }
   };
 
@@ -144,8 +155,9 @@ export const PromptView: React.FC = () => {
       return;
     }
 
-    // Track video make action
+    // Track video make action and Make+Next specific action
     trackVideoMakeClicked();
+    trackMakeAndNextClicked();
 
     // Apply prompt, make video, and navigate to next post
     applyPromptMakeAndNext(currentPrompt.text, prefix, nextPostId);
@@ -209,7 +221,10 @@ export const PromptView: React.FC = () => {
             <Button
               variant="icon"
               icon={mdiChevronLeft}
-              onClick={prevPrompt}
+              onClick={() => {
+                prevPrompt();
+                trackPromptNavigated('prev');
+              }}
               disabled={currentIndex === 0}
               tooltip="Previous prompt (Left arrow)"
             />
@@ -221,7 +236,10 @@ export const PromptView: React.FC = () => {
             <Button
               variant="icon"
               icon={mdiChevronRight}
-              onClick={nextPrompt}
+              onClick={() => {
+                nextPrompt();
+                trackPromptNavigated('next');
+              }}
               disabled={currentIndex >= promptCount - 1}
               tooltip="Next prompt (Right arrow)"
             />
@@ -252,6 +270,7 @@ export const PromptView: React.FC = () => {
             onClick={() => {
               if (currentPrompt) {
                 navigator.clipboard.writeText(currentPrompt.text);
+                trackPromptCopiedToClipboard();
               }
             }}
             icon={mdiContentCopy}

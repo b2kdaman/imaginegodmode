@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '../inputs/Button';
 import { mdiFullscreen } from '@mdi/js';
 import { getPostIdFromUrl } from '@/utils/helpers';
+import { trackVideoFullscreen } from '@/utils/analytics';
 
 export const FullscreenButton: React.FC = () => {
   const [errorShown, setErrorShown] = useState(false);
@@ -74,6 +75,9 @@ export const FullscreenButton: React.FC = () => {
       }
 
       console.log('[ImagineGodMode] Entering fullscreen for video:', video.id);
+
+      // Track fullscreen button click
+      trackVideoFullscreen('button');
 
       // Request fullscreen on the video element
       if (video.requestFullscreen) {

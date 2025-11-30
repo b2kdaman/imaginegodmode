@@ -240,3 +240,81 @@ export const trackVideoMakeClicked = (): void => {
 export const trackVideoGenerationComplete = (success: boolean): void => {
   trackEvent('video_generation_complete', { success });
 };
+
+/**
+ * Track modal operations
+ */
+export const trackModalOpened = (modalType: string): void => {
+  trackEvent('modal_opened', { modal_type: modalType });
+};
+
+export const trackModalClosed = (modalType: string): void => {
+  trackEvent('modal_closed', { modal_type: modalType });
+};
+
+/**
+ * Track prompt interactions
+ */
+export const trackPromptCopiedToClipboard = (): void => {
+  trackEvent('prompt_copied_to_clipboard');
+};
+
+export const trackPromptNavigated = (direction: 'next' | 'prev'): void => {
+  trackEvent('prompt_navigated', { direction });
+};
+
+export const trackPromptCopiedToPage = (): void => {
+  trackEvent('prompt_copied_to_page');
+};
+
+export const trackPromptCopiedFromPage = (): void => {
+  trackEvent('prompt_copied_from_page');
+};
+
+export const trackMakeAndNextClicked = (): void => {
+  trackEvent('make_and_next_clicked');
+};
+
+/**
+ * Track bulk operations
+ */
+export const trackBulkSelectAll = (operationType: string): void => {
+  trackEvent('bulk_select_all', { operation_type: operationType });
+};
+
+export const trackBulkDeselectAll = (operationType: string): void => {
+  trackEvent('bulk_deselect_all', { operation_type: operationType });
+};
+
+export const trackBulkOperationConfirmed = (operationType: string, count: number): void => {
+  trackEvent('bulk_operation_confirmed', {
+    operation_type: operationType,
+    item_count: count,
+  });
+};
+
+export const trackBulkOperationCompleted = (operationType: string, successCount: number, totalCount: number): void => {
+  trackEvent('bulk_operation_completed', {
+    operation_type: operationType,
+    success_count: successCount,
+    total_count: totalCount,
+  });
+};
+
+/**
+ * Track video player controls
+ */
+export const trackVideoPlayPause = (action: 'play' | 'pause', method: 'button' | 'keyboard'): void => {
+  trackEvent('video_play_pause', { action, method });
+};
+
+export const trackVideoFullscreen = (method: 'button' | 'keyboard'): void => {
+  trackEvent('video_fullscreen', { method });
+};
+
+/**
+ * Track keyboard shortcuts
+ */
+export const trackKeyboardShortcut = (shortcut: string, action: string): void => {
+  trackEvent('keyboard_shortcut_used', { shortcut, action });
+};

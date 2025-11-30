@@ -8,6 +8,7 @@ import { Button } from '../inputs/Button';
 import { mdiClose, mdiHeartBroken, mdiHeart } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { LikedPost } from '@/types';
+import { trackBulkSelectAll, trackBulkDeselectAll, trackBulkOperationConfirmed } from '@/utils/analytics';
 
 interface UnlikeModalProps {
   isOpen: boolean;
@@ -90,14 +91,18 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
 
   const selectAll = () => {
     setSelectedIds(new Set(posts.map((p) => p.id)));
+    trackBulkSelectAll('unlike');
   };
 
   const deselectAll = () => {
     setSelectedIds(new Set());
+    trackBulkDeselectAll('unlike');
   };
 
   const handleConfirm = () => {
-    onConfirm(Array.from(selectedIds));
+    const selectedPostIds = Array.from(selectedIds);
+    trackBulkOperationConfirmed('unlike', selectedPostIds.length);
+    onConfirm(selectedPostIds);
   };
 
   if (!isOpen) return null;

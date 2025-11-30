@@ -4,7 +4,12 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 
 ## Features
 
-- **Analytics**: Google Analytics 4 integration for anonymous usage tracking (always enabled, see [PRIVACY.md](PRIVACY.md))
+- **Analytics**: Comprehensive Google Analytics 4 integration for anonymous usage tracking (always enabled, see [PRIVACY.md](PRIVACY.md))
+  - Modal lifecycle tracking (open/close for all modals)
+  - Prompt interaction tracking (navigation, clipboard copy, to/from page actions)
+  - Bulk operation analytics (select all, deselect all, confirmations with counts)
+  - Video player control tracking (play/pause, fullscreen via button or keyboard)
+  - Keyboard shortcut usage tracking (F, Space, Ctrl+Enter combinations)
 - **Prompt Management**: Save, organize, and manage prompts with packs
 - **Per-Post State**: Each post remembers its own selected pack, prompt, and prefix independently (optional, controlled via Settings)
 - **Prompt Prefix**: Per-post prefix text that automatically prepends to prompts when making videos (stored separately for each post)
@@ -383,7 +388,13 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - Mandatory analytics (no opt-out) - see [PRIVACY.md](PRIVACY.md)
   - Anonymous client IDs using UUID v4
   - Session tracking with 30-minute timeout
-  - Tracks feature usage, prompt/pack actions, media operations, settings changes
+  - Comprehensive event tracking:
+    - Feature usage, prompt/pack actions, media operations, settings changes
+    - Modal lifecycle events (open/close for all modals: upscale, unlike, archive, search, delete, import/export)
+    - Prompt interactions (navigation, clipboard copy, to/from page, Make+Next)
+    - Bulk operations (select/deselect all, confirmations with item counts, completion metrics)
+    - Video controls (play/pause, fullscreen) with method tracking (button vs keyboard)
+    - Keyboard shortcut usage (F, Space, Ctrl+Enter, Ctrl+Shift+Enter)
   - No personal data, prompt content, or identifying information collected
   - Uses GA4 Measurement Protocol (no script loading)
 

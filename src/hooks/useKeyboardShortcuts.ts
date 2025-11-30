@@ -9,6 +9,7 @@ import { SELECTORS } from '@/utils/constants';
 import { getPostIdFromUrl } from '@/utils/helpers';
 import { getPrefix } from '@/utils/storage';
 import { applyPromptAndMake } from '@/utils/promptActions';
+import { trackKeyboardShortcut, trackVideoFullscreen, trackVideoPlayPause } from '@/utils/analytics';
 
 export const useKeyboardShortcuts = () => {
   const { getCurrentPrompt } = usePromptStore();
@@ -28,6 +29,10 @@ export const useKeyboardShortcuts = () => {
       // F key: Toggle fullscreen (only when not typing) - works globally
       if (e.key === 'f' && !modifierKey && !isTyping) {
         e.preventDefault();
+
+        // Track keyboard shortcut usage
+        trackVideoFullscreen('keyboard');
+        trackKeyboardShortcut('f', 'fullscreen');
 
         // Try to find fullscreen button in extension UI first
         let fullscreenBtn = document.querySelector(SELECTORS.FULLSCREEN_BUTTON) as HTMLButtonElement;
@@ -67,12 +72,17 @@ export const useKeyboardShortcuts = () => {
           // Fallback: directly control any visible video element
           const video = document.querySelector(SELECTORS.VIDEO_ELEMENT) as HTMLVideoElement;
           if (video) {
-            if (video.paused) {
+            const wasPaused = video.paused;
+            if (wasPaused) {
               video.play().catch(err => {
                 console.warn('[ImagineGodMode] Video play failed:', err);
               });
+              trackVideoPlayPause('play', 'keyboard');
+              trackKeyboardShortcut('space', 'play');
             } else {
               video.pause();
+              trackVideoPlayPause('pause', 'keyboard');
+              trackKeyboardShortcut('space', 'pause');
             }
           }
         }
@@ -87,6 +97,10 @@ export const useKeyboardShortcuts = () => {
 
       if (shouldApplyPrompt) {
         e.preventDefault();
+
+        // Track keyboard shortcut usage
+        const shortcutKey = simpleShortcut ? 'ctrl+enter' : 'ctrl+shift+enter';
+        trackKeyboardShortcut(shortcutKey, 'apply_prompt');
 
         const currentPrompt = getCurrentPrompt();
 

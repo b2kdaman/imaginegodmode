@@ -18,7 +18,7 @@ import { useUrlWatcher } from '@/hooks/useUrlWatcher';
 import { useBulkUnlike } from '@/hooks/useBulkUnlike';
 import { useBulkRelike } from '@/hooks/useBulkRelike';
 import { useLikedPostsLoader } from '@/hooks/useLikedPostsLoader';
-import { trackMediaDownloaded } from '@/utils/analytics';
+import { trackMediaDownloaded, trackModalOpened, trackModalClosed } from '@/utils/analytics';
 import { UpscaleAllModal } from '../modals/UpscaleAllModal';
 import { UnlikeModal } from '../modals/UnlikeModal';
 import { UnlikedArchiveModal } from '../modals/UnlikedArchiveModal';
@@ -156,6 +156,7 @@ export const OpsView: React.FC = () => {
     setPosts(posts);
     if (posts.length > 0) {
       setIsUpscaleAllModalOpen(true);
+      trackModalOpened('upscale_all');
     }
   };
 
@@ -196,6 +197,7 @@ export const OpsView: React.FC = () => {
     setPosts(posts);
     if (posts.length > 0) {
       setIsUnlikeModalOpen(true);
+      trackModalOpened('unlike_posts');
     }
   };
 
@@ -215,6 +217,7 @@ export const OpsView: React.FC = () => {
     const posts = await getUnlikedPosts();
     setUnlikedPosts(posts);
     setIsArchiveModalOpen(true);
+    trackModalOpened('unliked_archive');
   };
 
   // Handle re-like from archive
@@ -311,7 +314,10 @@ export const OpsView: React.FC = () => {
         isOpen={isUpscaleAllModalOpen}
         posts={likedPosts}
         mode="upscale"
-        onClose={() => setIsUpscaleAllModalOpen(false)}
+        onClose={() => {
+          setIsUpscaleAllModalOpen(false);
+          trackModalClosed('upscale_all');
+        }}
         onConfirm={handleBulkUpscale}
         onImageClick={handleImageClick}
         getThemeColors={getThemeColors}
@@ -324,6 +330,7 @@ export const OpsView: React.FC = () => {
         onClose={() => {
           if (!isProcessingUnlikes) {
             setIsUnlikeModalOpen(false);
+            trackModalClosed('unlike_posts');
           }
         }}
         onConfirm={handleBulkUnlike}
@@ -341,6 +348,7 @@ export const OpsView: React.FC = () => {
         onClose={() => {
           if (!isProcessingRelikes) {
             setIsArchiveModalOpen(false);
+            trackModalClosed('unliked_archive');
           }
         }}
         onRelike={handleRelikeFromArchive}

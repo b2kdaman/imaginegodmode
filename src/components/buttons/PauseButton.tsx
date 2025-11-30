@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '../inputs/Button';
 import { mdiPlay, mdiPause } from '@mdi/js';
 import { getPostIdFromUrl } from '@/utils/helpers';
+import { trackVideoPlayPause } from '@/utils/analytics';
 
 export const PauseButton: React.FC = () => {
   const [errorShown, setErrorShown] = useState(false);
@@ -117,9 +118,11 @@ export const PauseButton: React.FC = () => {
       if (video.paused) {
         console.log('[ImagineGodMode] Playing video:', video.id);
         video.play();
+        trackVideoPlayPause('play', 'button');
       } else {
         console.log('[ImagineGodMode] Pausing video:', video.id);
         video.pause();
+        trackVideoPlayPause('pause', 'button');
       }
     } catch (error) {
       console.error('[ImagineGodMode] Play/Pause error:', error);

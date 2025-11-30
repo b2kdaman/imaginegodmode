@@ -8,6 +8,7 @@ import { Button } from '../inputs/Button';
 import { mdiClose, mdiCheckboxMarked, mdiCheckboxBlankOutline } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { LikedPost } from '@/types';
+import { trackBulkSelectAll, trackBulkDeselectAll, trackBulkOperationConfirmed } from '@/utils/analytics';
 
 interface UpscaleAllModalProps {
   isOpen: boolean;
@@ -94,14 +95,18 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
 
   const selectAll = () => {
     setSelectedIds(new Set(posts.map((p) => p.id)));
+    trackBulkSelectAll(mode);
   };
 
   const deselectAll = () => {
     setSelectedIds(new Set());
+    trackBulkDeselectAll(mode);
   };
 
   const handleConfirm = () => {
-    onConfirm(Array.from(selectedIds));
+    const selectedPostIds = Array.from(selectedIds);
+    trackBulkOperationConfirmed(mode, selectedPostIds.length);
+    onConfirm(selectedPostIds);
   };
 
   if (!isOpen) return null;

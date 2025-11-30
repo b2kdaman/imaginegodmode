@@ -8,6 +8,7 @@ import { Button } from '../inputs/Button';
 import { mdiClose, mdiHeart } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { UnlikedPost } from '@/utils/storage';
+import { trackBulkSelectAll, trackBulkDeselectAll, trackBulkOperationConfirmed } from '@/utils/analytics';
 
 interface UnlikedArchiveModalProps {
   isOpen: boolean;
@@ -89,14 +90,18 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
 
   const selectAll = () => {
     setSelectedIds(new Set(posts.map((p) => p.id)));
+    trackBulkSelectAll('relike');
   };
 
   const deselectAll = () => {
     setSelectedIds(new Set());
+    trackBulkDeselectAll('relike');
   };
 
   const handleRelike = () => {
-    onRelike(Array.from(selectedIds));
+    const selectedPostIds = Array.from(selectedIds);
+    trackBulkOperationConfirmed('relike', selectedPostIds.length);
+    onRelike(selectedPostIds);
   };
 
   if (!isOpen) return null;
