@@ -166,7 +166,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         )}
 
         {/* Results List */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
+        <div className="flex-1 overflow-y-scroll custom-scrollbar">
           {searchQuery && results.length === 0 ? (
             <div
               className="text-center py-8 text-sm"

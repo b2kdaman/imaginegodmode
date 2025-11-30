@@ -38,6 +38,8 @@
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.3);
     border-radius: 4px;
+    /* Always show scrollbar thumb */
+    min-height: 40px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -46,6 +48,11 @@
 
   .custom-scrollbar::-webkit-scrollbar-button {
     display: none;
+  }
+
+  /* Force scrollbar to always be visible on webkit browsers */
+  .custom-scrollbar::-webkit-scrollbar-track-piece {
+    background: rgba(255, 255, 255, 0.1);
   }
 
   /* Fullscreen video styles */

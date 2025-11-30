@@ -76,7 +76,7 @@ export const PackSelectModal: React.FC<PackSelectModalProps> = ({
         </div>
 
         {/* Pack List */}
-        <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto mb-3">
+        <div className="flex flex-col gap-1.5 max-h-64 overflow-y-scroll mb-3">
           {packs.map((packName) => (
             <button
               key={packName}

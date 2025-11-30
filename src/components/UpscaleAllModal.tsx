@@ -200,7 +200,7 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
         )}
 
         {/* Posts Grid */}
-        <div className="flex-1 overflow-y-auto mb-3">
+        <div className="flex-1 overflow-y-scroll mb-3">
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
             {posts.map((post) => {
               const isSelected = selectedIds.has(post.id);

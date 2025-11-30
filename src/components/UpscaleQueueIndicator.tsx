@@ -160,7 +160,7 @@ export const UpscaleQueueIndicator: React.FC = () => {
           </div>
 
           {/* Queue list */}
-          <div className="max-h-48 overflow-y-auto">
+          <div className="max-h-48 overflow-y-scroll">
             {queue.slice(0, 20).map((item) => (
               <div
                 key={item.videoId}
