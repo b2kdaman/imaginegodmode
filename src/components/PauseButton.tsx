@@ -5,10 +5,12 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from './Button';
 import { mdiPlay, mdiPause } from '@mdi/js';
+import { getPostIdFromUrl } from '@/utils/helpers';
 
 export const PauseButton: React.FC = () => {
   const [errorShown, setErrorShown] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [shouldShow, setShouldShow] = useState(false);
 
   const getActiveVideo = (): HTMLVideoElement | null => {
     const hdVideo = document.getElementById('hd-video') as HTMLVideoElement;
@@ -43,6 +45,23 @@ export const PauseButton: React.FC = () => {
 
     return video;
   };
+
+  // Check if button should be visible
+  useEffect(() => {
+    const checkVisibility = () => {
+      const postId = getPostIdFromUrl();
+      const video = getActiveVideo();
+      setShouldShow(!!(postId && video));
+    };
+
+    // Check initial state
+    checkVisibility();
+
+    // Check periodically in case video loads later
+    const interval = setInterval(checkVisibility, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Update pause state when video state changes
   useEffect(() => {
@@ -108,6 +127,11 @@ export const PauseButton: React.FC = () => {
       setTimeout(() => setErrorShown(false), 1000);
     }
   };
+
+  // Don't render if no post ID or video element
+  if (!shouldShow) {
+    return null;
+  }
 
   return (
     <Button
