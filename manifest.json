@@ -19,8 +19,8 @@
   "content_scripts": [
     {
       "matches": [
-        "https://grok.com/imagine*",
-        "https://www.grok.com/imagine*"
+        "https://grok.com/*",
+        "https://www.grok.com/*"
       ],
       "js": ["src/content/content-script.tsx"],
       "run_at": "document_idle"

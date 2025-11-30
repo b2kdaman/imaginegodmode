@@ -2,7 +2,7 @@
  * Main floating panel component
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUIStore } from '@/store/useUIStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { PromptView } from './PromptView';
@@ -24,6 +24,38 @@ export const MainPanel: React.FC = () => {
   const { t } = useTranslation();
   const colors = getThemeColors();
   const scale = getScale();
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Check if current URL contains /imagine
+  useEffect(() => {
+    const checkUrl = () => {
+      const shouldShow = window.location.pathname.includes('/imagine');
+      setIsVisible(shouldShow);
+    };
+
+    // Check on mount
+    checkUrl();
+
+    // Listen for URL changes (for SPA navigation)
+    const observer = new MutationObserver(checkUrl);
+    observer.observe(document.querySelector('title') || document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    // Also listen for popstate (back/forward navigation)
+    window.addEventListener('popstate', checkUrl);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('popstate', checkUrl);
+    };
+  }, []);
+
+  // Don't render if URL doesn't contain /imagine
+  if (!isVisible) {
+    return null;
+  }
 
   const tabs = [
     { id: 'prompt', label: t('tabs.prompt') },
