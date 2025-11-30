@@ -78,7 +78,13 @@ export const MainPanel: React.FC = () => {
       <div className="flex flex-col items-end gap-2">
         {/* Toggle and fullscreen buttons with version */}
         <div className="flex items-center gap-2">
-          <div className="flex flex-col items-end px-2 leading-tight">
+          <div
+            className="flex flex-col items-end px-2 py-1 leading-tight rounded-lg"
+            style={{
+              backgroundColor: `${colors.BACKGROUND_DARK}cc`,
+              backdropFilter: 'blur(8px)',
+            }}
+          >
             <span
               className="text-[10px] font-medium"
               style={{ color: colors.TEXT_SECONDARY }}
