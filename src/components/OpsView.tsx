@@ -93,8 +93,20 @@ export const OpsView: React.FC = () => {
   // Auto-fetch on mount
   useEffect(() => {
     handleFetchPost();
+    // Load liked posts on mount to populate posts store for navigation
+    loadLikedPosts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Load liked posts to populate posts store
+  const loadLikedPosts = async () => {
+    try {
+      const response = await fetchLikedPosts(DEFAULT_POST_FETCH_LIMIT);
+      setPosts(response.posts || []); // Update posts store for navigation
+    } catch (error) {
+      console.error('[ImagineGodMode] Failed to load liked posts:', error);
+    }
+  };
 
   // Download media
   const handleDownload = async () => {
