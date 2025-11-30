@@ -33,18 +33,26 @@ export const usePostsStore = create<PostsStore>((set, get) => ({
   getNextPostId: () => {
     const { posts, currentPostId } = get();
 
+    console.log('[PostsStore] getNextPostId - currentPostId:', currentPostId);
+    console.log('[PostsStore] getNextPostId - posts count:', posts.length);
+
     if (!currentPostId || posts.length === 0) {
+      console.log('[PostsStore] getNextPostId - returning null (no currentPostId or empty posts)');
       return null;
     }
 
     const currentIndex = posts.findIndex((post) => post.id === currentPostId);
+    console.log('[PostsStore] getNextPostId - currentIndex:', currentIndex);
 
     // If current post not found or is last in list, return null
     if (currentIndex === -1 || currentIndex >= posts.length - 1) {
+      console.log('[PostsStore] getNextPostId - returning null (not found or last post)');
       return null;
     }
 
-    return posts[currentIndex + 1].id;
+    const nextId = posts[currentIndex + 1].id;
+    console.log('[PostsStore] getNextPostId - returning:', nextId);
+    return nextId;
   },
 
   // Get previous post ID in the list
