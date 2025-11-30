@@ -25,34 +25,55 @@
     scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
   }
 
+  /* Override Grok's scrollbar fade-out behavior - force always visible */
   .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
-    -webkit-appearance: none;
+    width: 8px !important;
+    -webkit-appearance: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 4px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-    /* Always show scrollbar thumb */
-    min-height: 40px;
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-radius: 4px !important;
+    min-height: 40px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.5) !important;
   }
 
   .custom-scrollbar::-webkit-scrollbar-button {
-    display: none;
+    display: none !important;
   }
 
   /* Force scrollbar to always be visible on webkit browsers */
   .custom-scrollbar::-webkit-scrollbar-track-piece {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  /* Prevent Grok's page CSS from fading out our scrollbars */
+  .custom-scrollbar::-webkit-scrollbar-thumb:vertical,
+  .custom-scrollbar::-webkit-scrollbar-thumb:horizontal {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track:vertical,
+  .custom-scrollbar::-webkit-scrollbar-track:horizontal {
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
   /* Fullscreen video styles */
