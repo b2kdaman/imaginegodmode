@@ -10,15 +10,21 @@ import { usePostsStore } from '@/store/usePostsStore';
 import { getPostIdFromUrl } from '@/utils/helpers';
 import { fetchPost, downloadMedia } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
-import { fetchLikedPosts, fetchPostData, unlikePost, DEFAULT_POST_FETCH_LIMIT } from '@/api/grokApi';
+import { fetchPostData } from '@/api/grokApi';
 import { Button } from '../inputs/Button';
 import { Icon } from '../common/Icon';
-import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle, mdiFormatListBulletedSquare, mdiHeartBroken } from '@mdi/js';
+import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle, mdiFormatListBulletedSquare, mdiHeartBroken, mdiArchive } from '@mdi/js';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
+import { useBulkUnlike } from '@/hooks/useBulkUnlike';
+import { useBulkRelike } from '@/hooks/useBulkRelike';
+import { useLikedPostsLoader } from '@/hooks/useLikedPostsLoader';
 import { trackMediaDownloaded } from '@/utils/analytics';
 import { UpscaleAllModal } from '../modals/UpscaleAllModal';
 import { UnlikeModal } from '../modals/UnlikeModal';
-import { LikedPost } from '@/types';
+import { UnlikedArchiveModal } from '../modals/UnlikedArchiveModal';
+import { UnlikedPost, getUnlikedPosts } from '@/utils/storage';
+import { navigateTo } from '@/utils/opsHelpers';
+import { STATUS_MESSAGES, NAVIGATION_URLS, LOG_PREFIX } from '@/constants/opsView';
 
 export const OpsView: React.FC = () => {
   const {
@@ -39,32 +45,50 @@ export const OpsView: React.FC = () => {
   const [postId, setPostId] = useState<string | null>(null);
   const [isUpscaleAllModalOpen, setIsUpscaleAllModalOpen] = useState(false);
   const [isUnlikeModalOpen, setIsUnlikeModalOpen] = useState(false);
-  const [likedPosts, setLikedPosts] = useState<LikedPost[]>([]);
-  const [isLoadingLikedPosts, setIsLoadingLikedPosts] = useState(false);
-  const [isProcessingUnlikes, setIsProcessingUnlikes] = useState(false);
-  const [processedUnlikesCount, setProcessedUnlikesCount] = useState(0);
-  const [totalUnlikesCount, setTotalUnlikesCount] = useState(0);
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+  const [unlikedPosts, setUnlikedPosts] = useState<UnlikedPost[]>([]);
+
+  // Custom hooks
+  const {
+    likedPosts,
+    isLoading: isLoadingLikedPosts,
+    loadLikedPosts,
+  } = useLikedPostsLoader(setStatusText);
+
+  const {
+    isProcessing: isProcessingUnlikes,
+    processedCount: processedUnlikesCount,
+    totalCount: totalUnlikesCount,
+    processBulkUnlike,
+  } = useBulkUnlike(setStatusText);
+
+  const {
+    isProcessing: isProcessingRelikes,
+    processedCount: processedRelikesCount,
+    totalCount: totalRelikesCount,
+    processBulkRelike,
+  } = useBulkRelike(setStatusText);
 
   // Fetch post data
   const handleFetchPost = useCallback(async () => {
     const currentPostId = getPostIdFromUrl();
     setPostId(currentPostId);
     setCurrentPostId(currentPostId); // Update posts store with current post ID
-    console.log('[ImagineGodMode] Post ID:', currentPostId);
+    console.log(`${LOG_PREFIX} Post ID:`, currentPostId);
 
     if (!currentPostId) {
       return;
     }
 
-    setStatusText('Fetching post data...');
-    console.log('[ImagineGodMode] Fetching post:', currentPostId);
+    setStatusText(STATUS_MESSAGES.FETCHING);
+    console.log(`${LOG_PREFIX} Fetching post:`, currentPostId);
 
     const response = await fetchPost(currentPostId);
-    console.log('[ImagineGodMode] Fetch response:', response);
+    console.log(`${LOG_PREFIX} Fetch response:`, response);
 
     if (response.success && response.data) {
       const processed = processPostData(response.data);
-      console.log('[ImagineGodMode] Processed data:', processed);
+      console.log(`${LOG_PREFIX} Processed data:`, processed);
 
       // Ensure current post is in the posts list for navigation
       if (response.data?.post) {
@@ -74,12 +98,10 @@ export const OpsView: React.FC = () => {
       setMediaUrls(processed.mediaUrls);
       setVideoIdsToUpscale(processed.videosToUpscale);
       setHdVideoCount(processed.hdVideoCount);
-      setStatusText(
-        `Found ${processed.urls.length} media (${processed.hdVideoCount} HD videos)`
-      );
+      setStatusText(STATUS_MESSAGES.FOUND_MEDIA(processed.urls.length, processed.hdVideoCount));
     } else {
-      console.error('[ImagineGodMode] Fetch failed:', response);
-      setStatusText('Failed to fetch post data');
+      console.error(`${LOG_PREFIX} Fetch failed:`, response);
+      setStatusText(STATUS_MESSAGES.FETCH_FAILED);
     }
   }, [setMediaUrls, setVideoIdsToUpscale, setHdVideoCount, setStatusText, setCurrentPostId, ensureCurrentPostInList]);
 
@@ -90,49 +112,39 @@ export const OpsView: React.FC = () => {
   useEffect(() => {
     handleFetchPost();
     // Load liked posts on mount to populate posts store for navigation
-    loadLikedPosts();
+    loadLikedPosts().then((posts) => setPosts(posts));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Load liked posts to populate posts store
-  const loadLikedPosts = async () => {
-    try {
-      const response = await fetchLikedPosts(DEFAULT_POST_FETCH_LIMIT);
-      setPosts(response.posts || []); // Update posts store for navigation
-    } catch (error) {
-      console.error('[ImagineGodMode] Failed to load liked posts:', error);
-    }
-  };
-
   // Download media
   const handleDownload = async () => {
-    setStatusText('Downloading...');
+    setStatusText(STATUS_MESSAGES.DOWNLOADING);
     const urlStrings = urls.map((m) => m.url);
     const response = await downloadMedia(urlStrings);
 
     if (response.success) {
-      setStatusText(`Downloaded ${response.data.count} files`);
+      setStatusText(STATUS_MESSAGES.DOWNLOADED(response.data.count));
       trackMediaDownloaded(response.data.count, 'mixed');
     } else {
-      setStatusText('Download failed');
+      setStatusText(STATUS_MESSAGES.DOWNLOAD_FAILED);
     }
   };
 
   // Add videos to upscale queue
   const handleUpscale = () => {
     if (videoIdsToUpscale.length === 0) {
-      setStatusText('No videos to upscale');
+      setStatusText(STATUS_MESSAGES.NO_VIDEOS);
       return;
     }
 
     if (!postId) {
-      setStatusText('No post ID found');
+      setStatusText(STATUS_MESSAGES.NO_POST_ID);
       return;
     }
 
     // Add to global queue - it will auto-start processing
     addToQueue(postId, videoIdsToUpscale);
-    setStatusText(`Added ${videoIdsToUpscale.length} videos to queue`);
+    setStatusText(STATUS_MESSAGES.ADDED_TO_QUEUE(videoIdsToUpscale.length));
 
     // Clear local upscale list since they're now in queue
     setVideoIdsToUpscale([]);
@@ -140,24 +152,17 @@ export const OpsView: React.FC = () => {
 
   // Fetch liked posts for Upscale All
   const handleUpscaleAllClick = async () => {
-    setIsLoadingLikedPosts(true);
-    try {
-      const response = await fetchLikedPosts(DEFAULT_POST_FETCH_LIMIT);
-      setLikedPosts(response.posts || []);
-      setPosts(response.posts || []); // Update posts store
+    const posts = await loadLikedPosts();
+    setPosts(posts);
+    if (posts.length > 0) {
       setIsUpscaleAllModalOpen(true);
-    } catch (error) {
-      console.error('[ImagineGodMode] Failed to fetch liked posts:', error);
-      setStatusText('Failed to fetch liked posts');
-    } finally {
-      setIsLoadingLikedPosts(false);
     }
   };
 
   // Handle bulk upscale from modal
   const handleBulkUpscale = async (selectedPostIds: string[]) => {
     setIsUpscaleAllModalOpen(false);
-    setStatusText(`Processing ${selectedPostIds.length} posts...`);
+    setStatusText(STATUS_MESSAGES.PROCESSING_POSTS(selectedPostIds.length));
 
     let totalVideosAdded = 0;
 
@@ -178,70 +183,44 @@ export const OpsView: React.FC = () => {
           }
         }
       } catch (error) {
-        console.error(`[ImagineGodMode] Failed to process post ${postId}:`, error);
+        console.error(`${LOG_PREFIX} Failed to process post ${postId}:`, error);
       }
     }
 
-    setStatusText(
-      `Added ${totalVideosAdded} videos from ${selectedPostIds.length} posts to queue`
-    );
+    setStatusText(STATUS_MESSAGES.ADDED_VIDEOS_TO_QUEUE(totalVideosAdded, selectedPostIds.length));
   };
 
   // Handle unlike button click
   const handleUnlikeClick = async () => {
-    setIsLoadingLikedPosts(true);
-    try {
-      const response = await fetchLikedPosts(DEFAULT_POST_FETCH_LIMIT);
-      setLikedPosts(response.posts || []);
-      setPosts(response.posts || []); // Update posts store
+    const posts = await loadLikedPosts();
+    setPosts(posts);
+    if (posts.length > 0) {
       setIsUnlikeModalOpen(true);
-    } catch (error) {
-      console.error('[ImagineGodMode] Failed to fetch liked posts:', error);
-      setStatusText('Failed to fetch liked posts');
-    } finally {
-      setIsLoadingLikedPosts(false);
     }
   };
 
-  // Handle bulk unlike from modal with progress
+  // Handle bulk unlike from modal
   const handleBulkUnlike = async (selectedPostIds: string[]) => {
-    setIsProcessingUnlikes(true);
-    setProcessedUnlikesCount(0);
-    setTotalUnlikesCount(selectedPostIds.length);
-
-    let successCount = 0;
-
-    // Process each selected post with delay
-    for (let i = 0; i < selectedPostIds.length; i++) {
-      const postId = selectedPostIds[i];
-
-      try {
-        await unlikePost(postId);
-        successCount++;
-      } catch (error) {
-        console.error(`[ImagineGodMode] Failed to unlike post ${postId}:`, error);
-      }
-
-      setProcessedUnlikesCount(i + 1);
-
-      // Add 1-2 second delay between calls (except for last one)
-      if (i < selectedPostIds.length - 1) {
-        const delay = 1000 + Math.random() * 1000; // Random 1-2 seconds
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      }
-    }
-
-    setIsProcessingUnlikes(false);
     setIsUnlikeModalOpen(false);
-    setStatusText(`Unliked ${successCount} of ${selectedPostIds.length} posts`);
-
-    // Navigate to favorites page and refresh
-    window.location.href = 'https://grok.com/imagine/favorites';
+    await processBulkUnlike(selectedPostIds, likedPosts);
   };
 
   // Handle image click to navigate to post
   const handleImageClick = (postId: string) => {
-    window.location.href = `https://grok.com/imagine/post/${postId}`;
+    navigateTo(NAVIGATION_URLS.POST(postId));
+  };
+
+  // Handle archive button click
+  const handleArchiveClick = async () => {
+    const posts = await getUnlikedPosts();
+    setUnlikedPosts(posts);
+    setIsArchiveModalOpen(true);
+  };
+
+  // Handle re-like from archive
+  const handleRelikeFromArchive = async (postIds: string[]) => {
+    setIsArchiveModalOpen(false);
+    await processBulkRelike(postIds);
   };
 
   // Check if all videos are HD
@@ -317,6 +296,14 @@ export const OpsView: React.FC = () => {
         >
           {isLoadingLikedPosts ? 'Loading...' : 'Unlike Multiple Posts'}
         </Button>
+        <Button
+          onClick={handleArchiveClick}
+          icon={mdiArchive}
+          className="w-full"
+          tooltip="View and manage unliked posts archive"
+        >
+          Unliked Archive
+        </Button>
       </div>
 
       {/* Upscale All Modal */}
@@ -345,6 +332,22 @@ export const OpsView: React.FC = () => {
         isProcessing={isProcessingUnlikes}
         processedCount={processedUnlikesCount}
         totalCount={totalUnlikesCount}
+      />
+
+      {/* Unliked Archive Modal */}
+      <UnlikedArchiveModal
+        isOpen={isArchiveModalOpen}
+        posts={unlikedPosts}
+        onClose={() => {
+          if (!isProcessingRelikes) {
+            setIsArchiveModalOpen(false);
+          }
+        }}
+        onRelike={handleRelikeFromArchive}
+        getThemeColors={getThemeColors}
+        isProcessing={isProcessingRelikes}
+        processedCount={processedRelikesCount}
+        totalCount={totalRelikesCount}
       />
     </div>
   );

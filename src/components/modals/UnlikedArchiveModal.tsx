@@ -1,31 +1,30 @@
 /**
- * Modal component for selecting posts to unlike
+ * Modal component for viewing and re-liking unliked posts from archive
  */
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '../inputs/Button';
-import { mdiClose, mdiHeartBroken, mdiHeart } from '@mdi/js';
+import { mdiClose, mdiHeart } from '@mdi/js';
 import { Icon } from '../common/Icon';
-import { LikedPost } from '@/types';
+import { UnlikedPost } from '@/utils/storage';
 
-interface UnlikeModalProps {
+interface UnlikedArchiveModalProps {
   isOpen: boolean;
-  posts: LikedPost[];
+  posts: UnlikedPost[];
   onClose: () => void;
-  onConfirm: (selectedPostIds: string[]) => void;
-  onImageClick?: (postId: string) => void;
+  onRelike: (selectedPostIds: string[]) => void;
   getThemeColors: () => any;
   isProcessing?: boolean;
   processedCount?: number;
   totalCount?: number;
 }
 
-export const UnlikeModal: React.FC<UnlikeModalProps> = ({
+export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
   isOpen,
   posts,
   onClose,
-  onConfirm,
+  onRelike,
   getThemeColors,
   isProcessing = false,
   processedCount = 0,
@@ -35,9 +34,9 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [lastClickedIndex, setLastClickedIndex] = useState<number | null>(null);
 
-  // Deselect all posts by default when modal opens (but not during processing)
+  // Clear selection when modal closes after processing completes
   useEffect(() => {
-    if (isOpen && !isProcessing) {
+    if (!isOpen && !isProcessing) {
       setSelectedIds(new Set());
     }
   }, [isOpen, isProcessing]);
@@ -84,7 +83,7 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
   };
 
   const handleImageClick = (postId: string, e: React.MouseEvent) => {
-    // Just toggle selection, don't navigate
+    // Toggle selection instead of navigating
     toggleSelection(postId, e);
   };
 
@@ -96,14 +95,26 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
     setSelectedIds(new Set());
   };
 
-  const handleConfirm = () => {
-    onConfirm(Array.from(selectedIds));
+  const handleRelike = () => {
+    onRelike(Array.from(selectedIds));
   };
 
   if (!isOpen) return null;
 
-  const title = `Select Posts to Unlike (${selectedIds.size}/${posts.length})`;
-  const confirmButtonText = `Unlike ${selectedIds.size} Post${selectedIds.size !== 1 ? 's' : ''}`;
+  const title = `Unliked Posts Archive (${posts.length} total)`;
+  const relikeButtonText = selectedIds.size > 0
+    ? `Re-like ${selectedIds.size} Post${selectedIds.size !== 1 ? 's' : ''}`
+    : 'Select posts to re-like';
+
+  // Format date
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
 
   const modalContent = (
     <div
@@ -165,7 +176,7 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
         {isProcessing && (
           <div className="mb-3">
             <div className="flex justify-between text-xs mb-1" style={{ color: colors.TEXT_SECONDARY }}>
-              <span>Processing...</span>
+              <span>Re-liking posts...</span>
               <span>{processedCount} / {totalCount}</span>
             </div>
             <div
@@ -177,7 +188,7 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
                 className="h-full"
                 style={{
                   width: `${totalCount > 0 ? (processedCount / totalCount) * 100 : 0}%`,
-                  backgroundColor: colors.DANGER,
+                  backgroundColor: colors.SUCCESS,
                   transition: 'width 0.3s ease-in-out',
                 }}
               />
@@ -199,85 +210,96 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
 
         {/* Posts Grid */}
         <div className="flex-1 overflow-y-scroll mb-3">
-          <div className="grid grid-cols-5 gap-2">
-            {posts.map((post) => {
-              const isSelected = selectedIds.has(post.id);
-              const imageUrl = post.thumbnailImageUrl || post.mediaUrl;
+          {posts.length === 0 ? (
+            <div
+              className="flex items-center justify-center h-full text-sm"
+              style={{ color: colors.TEXT_SECONDARY }}
+            >
+              No unliked posts in archive
+            </div>
+          ) : (
+            <div className="grid grid-cols-5 gap-2">
+              {posts.map((post) => {
+                const isSelected = selectedIds.has(post.id);
+                const imageUrl = post.thumbnailImageUrl || post.mediaUrl;
 
-              // Count total videos in this post
-              const totalVideos = post.childPosts?.filter(cp => cp.mediaType === 'video').length || 0;
-
-              return (
-                <div
-                  key={post.id}
-                  className="relative aspect-square rounded-lg overflow-hidden transition-all cursor-pointer"
-                  style={{
-                    border: `2px solid ${
-                      isSelected ? colors.DANGER : colors.BORDER
-                    }`,
-                    opacity: isProcessing ? 0.7 : (isSelected ? 1 : 0.6),
-                    pointerEvents: isProcessing ? 'none' : 'auto',
-                  }}
-                  onClick={(e) => handleImageClick(post.id, e)}
-                  onMouseEnter={(e) => {
-                    if (!isSelected && !isProcessing) {
-                      e.currentTarget.style.opacity = '0.8';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isSelected && !isProcessing) {
-                      e.currentTarget.style.opacity = '0.6';
-                    }
-                  }}
-                >
-                  {/* Image */}
-                  <img
-                    src={imageUrl}
-                    alt={post.prompt || 'Post'}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-
-                  {/* Like/Unlike Indicator */}
-                  <button
-                    onClick={(e) => toggleSelection(post.id, e)}
-                    disabled={isProcessing}
-                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full p-2"
+                return (
+                  <div
+                    key={post.id}
+                    className="relative aspect-square rounded-lg overflow-hidden transition-all cursor-pointer"
                     style={{
-                      backgroundColor: isSelected
-                        ? colors.DANGER
-                        : colors.SUCCESS,
-                      cursor: isProcessing ? 'not-allowed' : 'pointer',
+                      border: `2px solid ${
+                        isSelected ? colors.SUCCESS : colors.BORDER
+                      }`,
+                      opacity: isProcessing ? 0.7 : (isSelected ? 1 : 0.6),
+                      pointerEvents: isProcessing ? 'none' : 'auto',
+                    }}
+                    onClick={(e) => handleImageClick(post.id, e)}
+                    onMouseEnter={(e) => {
+                      if (!isSelected && !isProcessing) {
+                        e.currentTarget.style.opacity = '0.8';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelected && !isProcessing) {
+                        e.currentTarget.style.opacity = '0.6';
+                      }
                     }}
                   >
-                    <Icon
-                      path={
-                        isSelected
-                          ? mdiHeartBroken
-                          : mdiHeart
-                      }
-                      size={1.5}
-                      color='#fff'
+                    {/* Image */}
+                    <img
+                      src={imageUrl}
+                      alt={post.prompt || 'Post'}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
                     />
-                  </button>
 
-                  {/* Video Count Badge */}
-                  {totalVideos > 0 && (
+                    {/* Selection Indicator */}
+                    {isSelected && (
+                      <div
+                        className="absolute inset-0 flex items-center justify-center"
+                        style={{
+                          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        }}
+                      >
+                        <Icon
+                          path={mdiHeart}
+                          size={2}
+                          color={colors.SUCCESS}
+                        />
+                      </div>
+                    )}
+
+                    {/* Unliked Date Badge */}
                     <div
                       className="absolute top-1 left-1 px-1.5 py-0.5 rounded text-xs font-semibold"
                       style={{
                         backgroundColor: colors.BACKGROUND_DARK,
-                        color: colors.TEXT_PRIMARY,
+                        color: colors.TEXT_SECONDARY,
                         opacity: 0.9,
                       }}
                     >
-                      {totalVideos}v
+                      {formatDate(post.unlikedAt)}
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+
+                    {/* Child Post Count Badge */}
+                    {post.childPostCount !== undefined && post.childPostCount > 0 && (
+                      <div
+                        className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-xs font-semibold"
+                        style={{
+                          backgroundColor: colors.BACKGROUND_DARK,
+                          color: colors.TEXT_PRIMARY,
+                          opacity: 0.9,
+                        }}
+                      >
+                        {post.childPostCount}v
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -287,15 +309,16 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
             className="text-xs"
             disabled={isProcessing}
           >
-            {isProcessing ? 'Processing...' : 'Cancel'}
+            {isProcessing ? 'Processing...' : 'Close'}
           </Button>
           {!isProcessing && (
             <Button
-              onClick={handleConfirm}
+              onClick={handleRelike}
               className="text-xs"
               disabled={selectedIds.size === 0}
+              icon={mdiHeart}
             >
-              {confirmButtonText}
+              {relikeButtonText}
             </Button>
           )}
         </div>

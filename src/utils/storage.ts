@@ -7,6 +7,7 @@ import { Packs, PromptItem } from '@/types';
 const STORAGE_KEY = 'grok-text-items';
 const PREFIX_STORAGE_KEY = 'grok-prompt-prefixes';
 const POST_STATE_STORAGE_KEY = 'grok-post-states';
+const UNLIKED_POSTS_STORAGE_KEY = 'grok-unliked-posts';
 
 export interface StorageData {
   packs: Packs;
@@ -25,6 +26,19 @@ export interface PostState {
 
 export interface PostStateStorageData {
   [postId: string]: PostState;
+}
+
+export interface UnlikedPost {
+  id: string;
+  prompt: string;
+  thumbnailImageUrl?: string;
+  mediaUrl: string;
+  unlikedAt: number; // timestamp
+  childPostCount?: number; // number of child posts (videos)
+}
+
+export interface UnlikedPostsStorageData {
+  posts: UnlikedPost[];
 }
 
 /**
@@ -333,6 +347,97 @@ export const setPostState = async (postId: string, state: PostState): Promise<bo
     return true;
   } catch (error) {
     console.error('Failed to set post state:', error);
+    return false;
+  }
+};
+
+/**
+ * Get all unliked posts from storage
+ */
+export const getUnlikedPosts = async (): Promise<UnlikedPost[]> => {
+  if (!isExtensionContextValid()) {
+    console.warn('[ImagineGodMode] Extension context invalidated - unliked posts storage unavailable');
+    return [];
+  }
+
+  try {
+    const result = await chrome.storage.local.get(UNLIKED_POSTS_STORAGE_KEY);
+    const data: UnlikedPostsStorageData = result[UNLIKED_POSTS_STORAGE_KEY] || { posts: [] };
+    return data.posts || [];
+  } catch (error) {
+    console.error('Failed to get unliked posts:', error);
+    return [];
+  }
+};
+
+/**
+ * Add unliked posts to storage
+ */
+export const addUnlikedPosts = async (posts: UnlikedPost[]): Promise<boolean> => {
+  if (!isExtensionContextValid()) {
+    return false;
+  }
+
+  try {
+    const existingPosts = await getUnlikedPosts();
+    const existingIds = new Set(existingPosts.map(p => p.id));
+
+    // Only add posts that don't already exist
+    const newPosts = posts.filter(p => !existingIds.has(p.id));
+
+    if (newPosts.length === 0) {
+      return true; // Nothing to add
+    }
+
+    const updatedPosts = [...existingPosts, ...newPosts];
+    await chrome.storage.local.set({
+      [UNLIKED_POSTS_STORAGE_KEY]: { posts: updatedPosts }
+    });
+    return true;
+  } catch (error) {
+    console.error('Failed to add unliked posts:', error);
+    return false;
+  }
+};
+
+/**
+ * Remove unliked posts from storage by IDs
+ */
+export const removeUnlikedPosts = async (postIds: string[]): Promise<boolean> => {
+  if (!isExtensionContextValid()) {
+    return false;
+  }
+
+  try {
+    const existingPosts = await getUnlikedPosts();
+    const idsToRemove = new Set(postIds);
+    const updatedPosts = existingPosts.filter(p => !idsToRemove.has(p.id));
+
+    await chrome.storage.local.set({
+      [UNLIKED_POSTS_STORAGE_KEY]: { posts: updatedPosts }
+    });
+    return true;
+  } catch (error) {
+    console.error('Failed to remove unliked posts:', error);
+    return false;
+  }
+};
+
+/**
+ * Clear all unliked posts from storage
+ */
+export const clearUnlikedPosts = async (): Promise<boolean> => {
+  if (!isExtensionContextValid()) {
+    return false;
+  }
+
+  try {
+    await chrome.storage.local.set({
+      [UNLIKED_POSTS_STORAGE_KEY]: { posts: [] }
+    });
+    return true;
+  } catch (error) {
+    console.error('Failed to clear unliked posts:', error);
     return false;
   }
 };

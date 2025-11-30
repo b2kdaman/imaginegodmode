@@ -27,13 +27,15 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Bulk Operations**: Batch process multiple posts with visual selection interface
   - **Upscale All Liked**: Select from liked posts to upscale videos in bulk
   - **Unlike Multiple Posts**: Manage liked posts with bulk unlike functionality
+  - **Unliked Archive**: View and re-like previously unliked posts from local storage archive
   - Large modal interface (90vw × 85vh) with 5-column grid layout
   - Heart/broken heart indicators for intuitive like/unlike selection
   - Click anywhere on item to toggle selection (no navigation)
   - Shift-click for batch selection/deselection (standard multi-select behavior)
-  - Real-time progress bar with 1-2 second delays between API calls
-  - All posts selected by default for quick batch operations
-  - Automatic redirect to /favorites after unliking for instant feedback
+  - Real-time progress bar with 0.5-1 second delays between API calls
+  - Visual progress updates with smooth animations
+  - Automatic redirect to /favorites after bulk operations
+  - Local storage of unliked posts with minimal metadata (ID, prompt, thumbnail, timestamp)
 - **Make + Next**: Workflow automation for batch processing posts
   - Applies current prompt, clicks Make button, and automatically navigates to next post
   - Full-width button in Prompt view for easy access
@@ -135,7 +137,13 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
      - Click anywhere on item to toggle (no navigation on click)
      - Real-time progress bar during bulk unlike operation
      - Automatic redirect to /favorites after completion
-     - 1-2 second delays between API calls to avoid rate limiting
+     - Automatically saves unliked posts to archive
+     - 0.5-1 second delays between API calls for faster processing
+   - **Unliked Archive**: Browse and restore previously unliked posts
+     - Opens archive modal showing all unliked posts with timestamps
+     - Re-like multiple posts at once to restore them to favorites
+     - Automatically removes from archive after successful re-like
+     - Local storage with minimal data (no network required to browse)
 7. **Settings View**: Customize your experience
    - Choose theme: Dark, Light, Dracula, Winamp, LimeWire, Steam, or Discord
    - Themes are configurable via `public/themes.json`
@@ -164,17 +172,18 @@ grkgoondl/
 │   │   ├── buttons/      # Button components (FullscreenButton, PauseButton)
 │   │   ├── common/       # Shared components (Icon, NoPostMessage, UpscaleQueueIndicator)
 │   │   ├── inputs/       # Input components (Button, RatingSystem, Tabs)
-│   │   ├── modals/       # Modal components (Upscale, Unlike, Import, etc.)
+│   │   ├── modals/       # Modal components (Upscale, Unlike, UnlikedArchive, Import, etc.)
 │   │   ├── views/        # Main view components (Prompt, Ops, Settings, Help)
 │   │   ├── MainPanel.tsx # Main panel container
 │   │   └── PackManager.tsx # Pack management component
+│   ├── constants/        # Constants and configuration
 │   ├── content/          # Content script (injection point)
 │   ├── contexts/         # React contexts (i18n)
-│   ├── hooks/            # Custom React hooks
+│   ├── hooks/            # Custom React hooks (bulk operations, loaders)
 │   ├── locales/          # Translation files (en.json, es.json, ru.json)
 │   ├── store/            # Zustand stores
 │   ├── types/            # TypeScript type definitions
-│   ├── utils/            # Utility functions
+│   ├── utils/            # Utility functions and helpers
 │   ├── App.tsx           # Main app component
 │   └── index.css         # Global styles (Tailwind)
 ├── public/               # Static assets (icons, themes.json)
@@ -212,6 +221,9 @@ grkgoondl/
 - **useUrlWatcher**: Monitors URL changes, resets state, and triggers data refetch callback
 - **useArrowKeyNavigation**: Arrow key navigation for video controls
 - **useVideoProgress**: Real-time video generation progress tracking with polling
+- **useBulkUnlike**: Custom hook for bulk unliking posts with progress tracking and archive saving
+- **useBulkRelike**: Custom hook for bulk re-liking posts from archive with progress tracking
+- **useLikedPostsLoader**: Hook for loading and managing liked posts with loading state
 
 ### Components
 
@@ -223,7 +235,8 @@ grkgoondl/
 
 **Modals** (src/components/modals/)
 - **UpscaleAllModal**: Large modal (90vw × 85vh) with 5-column grid for bulk upscaling videos from liked posts
-- **UnlikeModal**: Large modal with 5-column grid, heart/broken heart indicators, and bulk unlike functionality with auto-redirect
+- **UnlikeModal**: Large modal with 5-column grid, heart/broken heart indicators, and bulk unlike functionality with auto-redirect and archive saving
+- **UnlikedArchiveModal**: Archive browser for viewing and re-liking previously unliked posts with timestamps and progress tracking
 - **SearchModal**: Type-ahead search modal for finding prompts across all packs
 - **PackSelectModal**: Modal for selecting which pack to export
 - **ImportPackModal**: Modal for importing packs via paste or file upload with validation
@@ -269,9 +282,10 @@ Uses `chrome.runtime.sendMessage()` for communication:
 
 ### Storage
 Uses multiple storage mechanisms with context validation:
-- **chrome.storage.local**: Packs with prompts and ratings, prompt prefixes per-post, per-post state (selected pack and prompt index), automatic migration from old format
+- **chrome.storage.local**: Packs with prompts and ratings, prompt prefixes per-post, per-post state (selected pack and prompt index), unliked posts archive with minimal metadata, automatic migration from old format
 - **localStorage**: Theme, size, language, and auto-download preferences for instant loading
 - **Extension Context Validation**: All storage operations check for valid extension context to gracefully handle extension reloads
+- **Unliked Posts Archive**: Stores minimal data (ID, prompt, thumbnail URL, media URL, timestamp, child post count) for efficient browsing and re-liking
 - **Import/Export**:
   - Per-pack JSON export with timestamped filenames
   - Import via paste or file upload with real-time validation
