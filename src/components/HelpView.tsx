@@ -41,12 +41,15 @@ export const HelpView: React.FC = () => {
             <li>Generate new packs with AI using Grok prompt templates</li>
             <li>Download images and videos (when all videos are HD)</li>
             <li>Parallel video upscaling to HD quality</li>
+            <li>Bulk operations: Upscale liked posts or like unliked posts</li>
+            <li>Shift-click batch selection in bulk operations modal</li>
             <li>Real-time video generation progress</li>
             <li>Play/pause video control</li>
             <li>Fullscreen video playback</li>
             <li>Theme customization (Dark, Light, Dracula, Winamp, LimeWire, Steam)</li>
             <li>UI size scaling (Tiny to Large)</li>
             <li>Auto-download media when generation completes</li>
+            <li>Multi-language support (English, Spanish, Russian)</li>
           </ul>
         </div>
       </div>
