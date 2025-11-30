@@ -130,7 +130,12 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div
+      className="flex flex-col gap-4 w-full max-h-[400px] overflow-y-scroll custom-scrollbar pr-2 p-2"
+      style={{
+        scrollbarGutter: 'stable',
+      }}
+    >
       {/* Theme Setting */}
       <div className="flex flex-col gap-2">
         <label
