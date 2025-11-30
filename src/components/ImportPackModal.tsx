@@ -26,7 +26,7 @@ interface ValidationResult {
 
 export const ImportPackModal: React.FC<ImportPackModalProps> = ({
   isOpen,
-  importMode,
+  importMode: _importMode,
   onClose,
   onImport,
   getThemeColors,

@@ -36,8 +36,9 @@ export const loadThemes = async (): Promise<ThemesConfig> => {
     if (!response.ok) {
       throw new Error(`Failed to load themes: ${response.statusText}`);
     }
-    cachedThemes = await response.json();
-    return cachedThemes;
+    const themes = await response.json() as ThemesConfig;
+    cachedThemes = themes;
+    return themes;
   } catch (error) {
     console.error('[ThemeLoader] Error loading themes:', error);
     // Return fallback themes

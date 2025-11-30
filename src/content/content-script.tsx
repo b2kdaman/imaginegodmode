@@ -5,7 +5,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { App } from '../App';
-import { VERSION, UI_COLORS } from '../utils/constants';
+import { VERSION } from '../utils/constants';
 import '../index.css';
 
 // Wait for document to be ready
@@ -19,8 +19,8 @@ function init() {
   // Cool initialization tag
   console.log(
     `%c ImagineGodMode v${VERSION} %c by b2kdaman `,
-    `background: ${UI_COLORS.BACKGROUND_DARK}; color: ${UI_COLORS.TEXT_PRIMARY}; padding: 4px 8px; border-radius: 3px 0 0 3px; font-weight: bold;`,
-    `background: ${UI_COLORS.BACKGROUND_LIGHT}; color: ${UI_COLORS.TEXT_SECONDARY}; padding: 4px 8px; border-radius: 0 3px 3px 0;`
+    `background: #1a1a1a; color: #ffffff; padding: 4px 8px; border-radius: 3px 0 0 3px; font-weight: bold;`,
+    `background: #3a3a3a; color: #b0b0b0; padding: 4px 8px; border-radius: 0 3px 3px 0;`
   );
 
   // Create root container

@@ -4,7 +4,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
-import { useSettingsStore } from '@/store/useSettingsStore';
 import { useTranslation } from '@/contexts/I18nContext';
 import { Icon } from './Icon';
 import { RatingSystem } from './RatingSystem';

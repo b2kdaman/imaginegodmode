@@ -160,7 +160,7 @@ export const trackPackDeleted = (): void => {
   trackEvent('pack_deleted');
 };
 
-export const trackPackSwitched = (packName: string): void => {
+export const trackPackSwitched = (_packName: string): void => {
   // Don't send actual pack name (privacy), just track the action
   trackEvent('pack_switched');
 };

@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { Button } from './Button';
-import { mdiClose, mdiDownload } from '@mdi/js';
+import { mdiClose } from '@mdi/js';
 import { Icon } from './Icon';
 import { useTranslation } from '@/contexts/I18nContext';
 

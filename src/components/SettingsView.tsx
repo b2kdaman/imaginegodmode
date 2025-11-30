@@ -2,7 +2,7 @@
  * Settings view component
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { usePromptStore } from '@/store/usePromptStore';
 import { exportPack } from '@/utils/storage';
@@ -34,7 +34,7 @@ import {
 
 export const SettingsView: React.FC = () => {
   const { theme, size, autoDownload, rememberPostState, simpleShortcut, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, getThemeColors } = useSettingsStore();
-  const { exportCurrentPack, importPack, currentPack, packs } = usePromptStore();
+  const { importPack, currentPack, packs } = usePromptStore();
   const { t, locale, setLocale } = useTranslation();
   const colors = getThemeColors();
 

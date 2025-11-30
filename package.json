@@ -11,6 +11,7 @@
     "zip": "node scripts/zip-dist.js",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
+    "lint": "tsc --noEmit --strict",
     "generate-icons": "node scripts/generate-icons.js"
   },
   "dependencies": {
