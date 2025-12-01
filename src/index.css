@@ -156,4 +156,14 @@
   .modal-content {
     animation: modalSlideIn 0.3s ease-out;
   }
+
+  /* Force theme colors on toggle switches - override all other styles */
+  .toggle-track {
+    background-color: var(--toggle-bg) !important;
+    border-color: var(--toggle-border) !important;
+  }
+
+  .toggle-knob {
+    background-color: var(--toggle-knob) !important;
+  }
 }

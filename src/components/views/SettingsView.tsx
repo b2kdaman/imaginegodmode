@@ -7,6 +7,7 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 import { usePromptStore } from '@/store/usePromptStore';
 import { exportPack } from '@/utils/storage';
 import { Button } from '../inputs/Button';
+import { Toggle } from '../inputs/Toggle';
 import { Icon } from '../common/Icon';
 import { PackSelectModal } from '../modals/PackSelectModal';
 import { ImportPackModal } from '../modals/ImportPackModal';
@@ -259,34 +260,14 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
           <Icon path={mdiDownloadCircle} size={0.7} color={colors.TEXT_PRIMARY} />
           {t('settings.autoDownload')}
         </label>
-        <label className="relative inline-block w-12 h-6 cursor-pointer">
-          <input
-            id="auto-download-toggle"
-            type="checkbox"
-            checked={autoDownload}
-            onChange={(e) => {
-              const newValue = e.target.checked;
-              setAutoDownload(newValue);
-              trackAutoDownloadToggled(newValue);
-            }}
-            className="sr-only peer"
-          />
-          <div
-            className="w-full h-full rounded-full transition-colors peer-checked:bg-green-500"
-            style={{
-              backgroundColor: autoDownload ? colors.SUCCESS : colors.BACKGROUND_MEDIUM,
-              border: `2px solid ${autoDownload ? colors.SUCCESS : colors.BORDER}`,
-            }}
-          >
-            <div
-              className="absolute top-[2px] left-[2px] w-5 h-5 rounded-full transition-transform"
-              style={{
-                backgroundColor: colors.TEXT_PRIMARY,
-                transform: autoDownload ? 'translateX(24px)' : 'translateX(0)',
-              }}
-            />
-          </div>
-        </label>
+        <Toggle
+          id="auto-download-toggle"
+          checked={autoDownload}
+          onChange={(checked) => {
+            setAutoDownload(checked);
+            trackAutoDownloadToggled(checked);
+          }}
+        />
       </div>
 
       {/* Remember Post State Setting */}
@@ -299,34 +280,14 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
           <Icon path={mdiDatabase} size={0.7} color={colors.TEXT_PRIMARY} />
           {t('settings.rememberPostState')}
         </label>
-        <label className="relative inline-block w-12 h-6 cursor-pointer">
-          <input
-            id="remember-post-state-toggle"
-            type="checkbox"
-            checked={rememberPostState}
-            onChange={(e) => {
-              const newValue = e.target.checked;
-              setRememberPostState(newValue);
-              trackRememberPostStateToggled(newValue);
-            }}
-            className="sr-only peer"
-          />
-          <div
-            className="w-full h-full rounded-full transition-colors peer-checked:bg-green-500"
-            style={{
-              backgroundColor: rememberPostState ? colors.SUCCESS : colors.BACKGROUND_MEDIUM,
-              border: `2px solid ${rememberPostState ? colors.SUCCESS : colors.BORDER}`,
-            }}
-          >
-            <div
-              className="absolute top-[2px] left-[2px] w-5 h-5 rounded-full transition-transform"
-              style={{
-                backgroundColor: colors.TEXT_PRIMARY,
-                transform: rememberPostState ? 'translateX(24px)' : 'translateX(0)',
-              }}
-            />
-          </div>
-        </label>
+        <Toggle
+          id="remember-post-state-toggle"
+          checked={rememberPostState}
+          onChange={(checked) => {
+            setRememberPostState(checked);
+            trackRememberPostStateToggled(checked);
+          }}
+        />
       </div>
 
       {/* Simple Shortcut Setting */}
@@ -341,34 +302,14 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
           <Icon path={mdiKeyboard} size={0.7} color={colors.TEXT_PRIMARY} />
           {t('settings.simpleShortcut')}
         </label>
-        <label className="relative inline-block w-12 h-6 cursor-pointer">
-          <input
-            id="simple-shortcut-toggle"
-            type="checkbox"
-            checked={simpleShortcut}
-            onChange={(e) => {
-              const newValue = e.target.checked;
-              setSimpleShortcut(newValue);
-              trackSimpleShortcutToggled(newValue);
-            }}
-            className="sr-only peer"
-          />
-          <div
-            className="w-full h-full rounded-full transition-colors peer-checked:bg-green-500"
-            style={{
-              backgroundColor: simpleShortcut ? colors.SUCCESS : colors.BACKGROUND_MEDIUM,
-              border: `2px solid ${simpleShortcut ? colors.SUCCESS : colors.BORDER}`,
-            }}
-          >
-            <div
-              className="absolute top-[2px] left-[2px] w-5 h-5 rounded-full transition-transform"
-              style={{
-                backgroundColor: colors.TEXT_PRIMARY,
-                transform: simpleShortcut ? 'translateX(24px)' : 'translateX(0)',
-              }}
-            />
-          </div>
-        </label>
+        <Toggle
+          id="simple-shortcut-toggle"
+          checked={simpleShortcut}
+          onChange={(checked) => {
+            setSimpleShortcut(checked);
+            trackSimpleShortcutToggled(checked);
+          }}
+        />
       </div>
 
       {/* Divider */}

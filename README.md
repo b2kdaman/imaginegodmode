@@ -258,6 +258,7 @@ All modals extend BaseModal for consistent animations, behavior, and appearance.
 - **Button**: Reusable button component with theme-aware styling and hover states
 - **RatingSystem**: 5-star rating component with white icons and optional readonly mode
 - **Tabs**: Tab navigation component with theme support and bottom placement
+- **Toggle**: Reusable toggle switch component with theme-aware styling and animations
 
 **Common** (src/components/common/)
 - **Icon**: Material Design Icons wrapper
@@ -350,7 +351,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Works on `https://grok.com/*` and `https://www.grok.com/*`
 - **Theme System**: Seven built-in themes (Dark, Light, Dracula, Winamp, LimeWire, Steam, Discord) with full color palette adaptation including theme-aware accent colors
 - **Configurable Themes**: Themes loaded from `public/themes.json` for easy customization without code changes
-- **Theme-Aware Accents**: Success indicators (HD checkmark, auto-download toggle) adapt to each theme's color scheme
+- **Theme-Aware Accents**: Success indicators and toggle switches adapt to each theme's color scheme for consistent visual design
 - **UI Scaling**: CSS transform-based scaling maintains crisp rendering at all sizes
 - All buttons use pill shape with theme-aware styling and hover states
 - Material Design Icons for professional appearance
