@@ -2,7 +2,7 @@
  * Settings view component
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { usePromptStore } from '@/store/usePromptStore';
 import { exportPack } from '@/utils/storage';
@@ -22,7 +22,8 @@ import {
   mdiDownloadCircle,
   mdiDatabase,
   mdiSwapHorizontal,
-  mdiKeyboard
+  mdiKeyboard,
+  mdiEyeOff
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -32,10 +33,11 @@ import {
   trackAutoDownloadToggled,
   trackRememberPostStateToggled,
   trackSimpleShortcutToggled,
+  trackHideUnsaveToggled,
 } from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, autoDownload, rememberPostState, simpleShortcut, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, getThemeColors } = useSettingsStore();
   const { importPack, currentPack, packs } = usePromptStore();
   const { t, locale, setLocale } = useTranslation();
   const colors = getThemeColors();
@@ -44,6 +46,32 @@ export const SettingsView: React.FC = () => {
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+
+  // Apply CSS rule to hide Unsave button when setting is enabled
+  useEffect(() => {
+    const styleId = 'hide-unsave-style';
+    let styleElement = document.getElementById(styleId) as HTMLStyleElement;
+
+    if (hideUnsave) {
+      if (!styleElement) {
+        styleElement = document.createElement('style');
+        styleElement.id = styleId;
+        document.head.appendChild(styleElement);
+      }
+      styleElement.textContent = 'button[aria-label="Unsave"] { display: none !important; }';
+    } else {
+      if (styleElement) {
+        styleElement.remove();
+      }
+    }
+
+    return () => {
+      const el = document.getElementById(styleId);
+      if (el) {
+        el.remove();
+      }
+    };
+  }, [hideUnsave]);
 
   const handleExportClick = () => {
     setIsExportModalOpen(true);
@@ -275,6 +303,28 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
           onChange={(checked) => {
             setSimpleShortcut(checked);
             trackSimpleShortcutToggled(checked);
+          }}
+        />
+      </div>
+
+      {/* Hide Unsave Setting */}
+      <div className="flex items-center justify-between gap-2">
+        <label
+          className="text-sm cursor-pointer flex items-center gap-1.5"
+          style={{ color: colors.TEXT_PRIMARY }}
+          htmlFor="hide-unsave-toggle"
+          data-tooltip-id="app-tooltip"
+          data-tooltip-content="Hide the Unsave button from the page"
+        >
+          <Icon path={mdiEyeOff} size={0.7} color={colors.TEXT_PRIMARY} />
+          {t('settings.hideUnsave')}
+        </label>
+        <Toggle
+          id="hide-unsave-toggle"
+          checked={hideUnsave}
+          onChange={(checked) => {
+            setHideUnsave(checked);
+            trackHideUnsaveToggled(checked);
           }}
         />
       </div>

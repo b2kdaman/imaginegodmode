@@ -42,8 +42,9 @@
     "autoDownload": "Auto Download",
     "rememberPostState": "Remember Pack Per Post",
     "simpleShortcut": "Simple Shortcut",
+    "hideUnsave": "Hide Unsave",
     "dataManagement": "Data Management",
-    "importMode": "Import Mode",
+    "importMode": "Pack Import Mode",
     "importModeAdd": "Add",
     "importModeReplace": "Replace",
     "themes": {

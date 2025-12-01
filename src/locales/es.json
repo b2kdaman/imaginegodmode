@@ -42,8 +42,9 @@
     "autoDownload": "Descarga Automática",
     "rememberPostState": "Recordar Pack Por Post",
     "simpleShortcut": "Atajo Simple",
+    "hideUnsave": "Ocultar Desguardar",
     "dataManagement": "Gestión de Datos",
-    "importMode": "Modo de Importación",
+    "importMode": "Modo de Importación de Pack",
     "importModeAdd": "Agregar",
     "importModeReplace": "Reemplazar",
     "themes": {

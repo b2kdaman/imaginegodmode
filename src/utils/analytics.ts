@@ -205,6 +205,10 @@ export const trackSimpleShortcutToggled = (enabled: boolean): void => {
   trackEvent('simple_shortcut_toggled', { enabled });
 };
 
+export const trackHideUnsaveToggled = (enabled: boolean): void => {
+  trackEvent('hide_unsave_toggled', { enabled });
+};
+
 /**
  * Track settings changes
  */
