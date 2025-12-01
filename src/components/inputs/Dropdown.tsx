@@ -65,7 +65,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   };
 
   return (
-    <div ref={dropdownRef} className={`relative ${className}`} style={{ width: '200px' }}>
+    <div ref={dropdownRef} className={`relative ${className}`}>
       {/* Trigger Button */}
       <button
         type="button"
@@ -94,7 +94,17 @@ export const Dropdown: React.FC<DropdownProps> = ({
           }
         }}
       >
-        {selectedLabel}
+        <span
+          style={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            display: 'block',
+            paddingRight: '8px',
+          }}
+        >
+          {selectedLabel}
+        </span>
         <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
           <Icon
             path={mdiChevronDown}

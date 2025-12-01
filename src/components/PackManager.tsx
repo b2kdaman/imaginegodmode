@@ -61,6 +61,7 @@ export const PackManager: React.FC = () => {
             iconSize={0.7}
             variant="icon"
             tooltip={t('packManager.searchTooltip')}
+            className="flex-shrink-0"
           />
 
           <Dropdown
@@ -70,7 +71,7 @@ export const PackManager: React.FC = () => {
               value: name,
               label: name,
             }))}
-            className="flex-1"
+            className="flex-1 min-w-0"
           />
 
           <Button
@@ -79,6 +80,7 @@ export const PackManager: React.FC = () => {
             iconSize={0.7}
             variant="icon"
             tooltip={t('packManager.addPackTooltip')}
+            className="flex-shrink-0"
           />
 
           <Button
@@ -92,6 +94,7 @@ export const PackManager: React.FC = () => {
                 ? t('packManager.cannotDeleteLast')
                 : t('packManager.deletePackTooltip')
             }
+            className="flex-shrink-0"
           />
         </>
       ) : (
@@ -123,6 +126,7 @@ export const PackManager: React.FC = () => {
             iconSize={0.7}
             variant="icon"
             tooltip={t('common.add')}
+            className="flex-shrink-0"
           />
 
           <Button
@@ -134,6 +138,7 @@ export const PackManager: React.FC = () => {
             iconSize={0.7}
             variant="icon"
             tooltip={t('common.cancel')}
+            className="flex-shrink-0"
           />
         </>
       )}

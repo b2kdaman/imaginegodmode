@@ -35,6 +35,9 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [lastClickedIndex, setLastClickedIndex] = useState<number | null>(null);
 
+  // Sort posts by date (newest first)
+  const sortedPosts = [...posts].sort((a, b) => b.unlikedAt - a.unlikedAt);
+
   // Clear selection when modal closes after processing completes
   useEffect(() => {
     if (!isOpen && !isProcessing) {
@@ -45,7 +48,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
   const toggleSelection = (postId: string, e?: React.MouseEvent) => {
     e?.stopPropagation();
 
-    const currentIndex = posts.findIndex((p) => p.id === postId);
+    const currentIndex = sortedPosts.findIndex((p) => p.id === postId);
 
     // Handle shift-click for batch selection/deselection
     if (e?.shiftKey && lastClickedIndex !== null && currentIndex !== -1) {
@@ -59,9 +62,9 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
       // Apply the same action to all items in the range
       for (let i = start; i <= end; i++) {
         if (shouldSelect) {
-          newSelected.add(posts[i].id);
+          newSelected.add(sortedPosts[i].id);
         } else {
-          newSelected.delete(posts[i].id);
+          newSelected.delete(sortedPosts[i].id);
         }
       }
 
@@ -89,7 +92,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
   };
 
   const selectAll = () => {
-    setSelectedIds(new Set(posts.map((p) => p.id)));
+    setSelectedIds(new Set(sortedPosts.map((p) => p.id)));
     trackBulkSelectAll('relike');
   };
 
@@ -199,7 +202,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
 
         {/* Posts Grid */}
         <div className="flex-1 overflow-y-scroll mb-3">
-          {posts.length === 0 ? (
+          {sortedPosts.length === 0 ? (
             <div
               className="flex items-center justify-center h-full text-sm"
               style={{ color: colors.TEXT_SECONDARY }}
@@ -208,7 +211,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
             </div>
           ) : (
             <div className="grid grid-cols-5 gap-2">
-              {posts.map((post) => {
+              {sortedPosts.map((post) => {
                 const isSelected = selectedIds.has(post.id);
                 const imageUrl = post.thumbnailImageUrl || post.mediaUrl;
 

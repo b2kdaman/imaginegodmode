@@ -163,6 +163,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
             { value: 'steam', label: t('settings.themes.steam') },
             { value: 'discord', label: t('settings.themes.discord') },
           ]}
+          className="w-full"
         />
       </div>
 
@@ -188,6 +189,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
             { value: 'medium', label: t('settings.sizes.medium') },
             { value: 'large', label: t('settings.sizes.large') },
           ]}
+          className="w-full"
         />
       </div>
 
@@ -211,6 +213,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
             { value: 'es', label: t('settings.languages.es') },
             { value: 'ru', label: t('settings.languages.ru') },
           ]}
+          className="w-full"
         />
       </div>
 
