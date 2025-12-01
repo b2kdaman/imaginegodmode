@@ -1,6 +1,6 @@
 {
   "name": "imaginegodmode-chrome-extension",
-  "version": "2.7.1",
+  "version": "2.8.0",
   "description": "ImagineGodMode - Chrome extension for Grok media management with React",
   "type": "module",
   "scripts": {
