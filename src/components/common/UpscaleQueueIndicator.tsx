@@ -131,8 +131,9 @@ export const UpscaleQueueIndicator: React.FC = () => {
                 />
               </div>
               {isDownloading && (
-                <div className="text-[10px] mt-1" style={{ color: colors.SUCCESS }}>
-                  Downloading completed videos...
+                <div className="text-[10px] mt-1 flex items-center gap-1" style={{ color: colors.SUCCESS }}>
+                  <Icon path={mdiLoading} size={0.5} className="animate-spin" />
+                  Downloading completed videos
                 </div>
               )}
             </div>

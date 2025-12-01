@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '../inputs/Button';
-import { mdiHeartBroken, mdiHeart } from '@mdi/js';
+import { mdiHeartBroken, mdiHeart, mdiLoading } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { LikedPost } from '@/types';
 import { trackBulkSelectAll, trackBulkDeselectAll, trackBulkOperationConfirmed } from '@/utils/analytics';
@@ -128,8 +128,10 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
             onClick={onClose}
             className="text-xs"
             disabled={isProcessing}
+            icon={isProcessing ? mdiLoading : undefined}
+            iconClassName={isProcessing ? "animate-spin" : ""}
           >
-            {isProcessing ? 'Processing...' : 'Cancel'}
+            {isProcessing ? 'Processing' : 'Cancel'}
           </Button>
           {!isProcessing && (
             <Button
@@ -147,8 +149,11 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
         {/* Progress Bar (shown when processing) */}
         {isProcessing && (
           <div className="mb-3">
-            <div className="flex justify-between text-xs mb-1" style={{ color: colors.TEXT_SECONDARY }}>
-              <span>Processing...</span>
+            <div className="flex justify-between text-xs mb-1 items-center" style={{ color: colors.TEXT_SECONDARY }}>
+              <span className="flex items-center gap-1">
+                <Icon path={mdiLoading} size={0.6} className="animate-spin" />
+                Processing
+              </span>
               <span>{processedCount} / {totalCount}</span>
             </div>
             <div

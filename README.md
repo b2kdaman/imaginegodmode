@@ -409,6 +409,12 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - Flexible sizing: configurable width, height, padding, overlay opacity
   - Optional footer for action buttons with theme-aware styling
   - DRY principle reduces code duplication across 7+ modals (~250 lines saved)
+- **Loading Indicators**: Animated spinner icons for all loading states
+  - Material Design Icons rotating spinner (mdiLoading) replaces static "..." text
+  - Tailwind's animate-spin for smooth rotation animation
+  - Consistent across all components: buttons, modals, progress bars, queue indicator
+  - Button component supports iconClassName prop for animation classes
+  - Dynamic icon switching in loading states for better visual feedback
 
 ## Theme Customization
 

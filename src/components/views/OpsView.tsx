@@ -13,7 +13,7 @@ import { processPostData } from '@/utils/mediaProcessor';
 import { fetchPostData } from '@/api/grokApi';
 import { Button } from '../inputs/Button';
 import { Icon } from '../common/Icon';
-import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle, mdiFormatListBulletedSquare, mdiHeartBroken, mdiArchive } from '@mdi/js';
+import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle, mdiFormatListBulletedSquare, mdiHeartBroken, mdiArchive, mdiLoading } from '@mdi/js';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
 import { useBulkUnlike } from '@/hooks/useBulkUnlike';
 import { useBulkRelike } from '@/hooks/useBulkRelike';
@@ -283,21 +283,23 @@ export const OpsView: React.FC = () => {
       <div className="flex flex-col gap-2 mt-2">
         <Button
           onClick={handleUpscaleAllClick}
-          icon={mdiFormatListBulletedSquare}
+          icon={isLoadingLikedPosts ? mdiLoading : mdiFormatListBulletedSquare}
+          iconClassName={isLoadingLikedPosts ? "animate-spin" : ""}
           disabled={isLoadingLikedPosts}
           className="w-full"
           tooltip="Upscale videos from multiple liked posts"
         >
-          {isLoadingLikedPosts ? 'Loading...' : 'Upscale All Liked'}
+          {isLoadingLikedPosts ? 'Loading' : 'Upscale All Liked'}
         </Button>
         <Button
           onClick={handleUnlikeClick}
-          icon={mdiHeartBroken}
+          icon={isLoadingLikedPosts ? mdiLoading : mdiHeartBroken}
+          iconClassName={isLoadingLikedPosts ? "animate-spin" : ""}
           disabled={isLoadingLikedPosts}
           className="w-full"
           tooltip="Unlike multiple posts at once"
         >
-          {isLoadingLikedPosts ? 'Loading...' : 'Unlike Multiple Posts'}
+          {isLoadingLikedPosts ? 'Loading' : 'Unlike Multiple Posts'}
         </Button>
         <Button
           onClick={handleArchiveClick}

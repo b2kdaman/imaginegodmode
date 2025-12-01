@@ -11,6 +11,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: string;
   iconSize?: number;
   iconColor?: string;
+  iconClassName?: string;
   tooltip?: string;
 }
 
@@ -19,6 +20,7 @@ export const Button: React.FC<ButtonProps> = ({
   icon,
   iconSize = 0.6,
   iconColor,
+  iconClassName = '',
   tooltip,
   className = '',
   children,
@@ -66,7 +68,7 @@ export const Button: React.FC<ButtonProps> = ({
       }}
       {...props}
     >
-      {icon && <Icon path={icon} size={variant === 'icon' ? 0.8 : iconSize} color={finalIconColor} />}
+      {icon && <Icon path={icon} size={variant === 'icon' ? 0.8 : iconSize} color={finalIconColor} className={iconClassName} />}
       {children && (
         <span className={icon ? 'ml-1' : ''}>
           {children}

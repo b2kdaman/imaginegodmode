@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '../inputs/Button';
-import { mdiHeart } from '@mdi/js';
+import { mdiHeart, mdiLoading } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { UnlikedPost } from '@/utils/storage';
 import { trackBulkSelectAll, trackBulkDeselectAll, trackBulkOperationConfirmed } from '@/utils/analytics';
@@ -139,8 +139,10 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
             onClick={onClose}
             className="text-xs"
             disabled={isProcessing}
+            icon={isProcessing ? mdiLoading : undefined}
+            iconClassName={isProcessing ? "animate-spin" : ""}
           >
-            {isProcessing ? 'Processing...' : 'Close'}
+            {isProcessing ? 'Processing' : 'Close'}
           </Button>
           {!isProcessing && (
             <Button
@@ -159,8 +161,11 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
         {/* Progress Bar (shown when processing) */}
         {isProcessing && (
           <div className="mb-3">
-            <div className="flex justify-between text-xs mb-1" style={{ color: colors.TEXT_SECONDARY }}>
-              <span>Re-liking posts...</span>
+            <div className="flex justify-between text-xs mb-1 items-center" style={{ color: colors.TEXT_SECONDARY }}>
+              <span className="flex items-center gap-1">
+                <Icon path={mdiLoading} size={0.6} className="animate-spin" />
+                Re-liking posts
+              </span>
               <span>{processedCount} / {totalCount}</span>
             </div>
             <div
