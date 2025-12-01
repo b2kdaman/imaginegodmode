@@ -6,36 +6,21 @@
 import { SELECTORS } from './constants';
 
 /**
- * Try to navigate to a post using soft navigation (clicking link) first,
- * fall back to hard navigation (window.location) if link not found
+ * Navigate to a post by updating the URL using history.pushState
+ * This allows the host React app to handle the navigation without page reload
  */
 export const navigateToPost = (postId: string): boolean => {
-  // Try to find a link to the target post in the DOM
-  const links = document.querySelectorAll<HTMLAnchorElement>(SELECTORS.NEXT_POST_LINK);
   const targetUrl = `/imagine/post/${postId}`;
 
-  for (const link of links) {
-    if (link.href.includes(targetUrl)) {
-      console.log('[ImagineGodMode] Soft navigating to post via link click:', postId);
+  console.log('[ImagineGodMode] Navigating to post via history.pushState:', postId);
 
-      // Simulate a proper click event sequence
-      const events = [
-        new PointerEvent('pointerdown', { bubbles: true, cancelable: true, composed: true }),
-        new MouseEvent('mousedown', { bubbles: true, cancelable: true, composed: true }),
-        new PointerEvent('pointerup', { bubbles: true, cancelable: true, composed: true }),
-        new MouseEvent('mouseup', { bubbles: true, cancelable: true, composed: true }),
-        new MouseEvent('click', { bubbles: true, cancelable: true, composed: true }),
-      ];
+  // Update the URL using history.pushState
+  window.history.pushState({}, '', targetUrl);
 
-      events.forEach((event) => link.dispatchEvent(event));
-      return true; // Soft navigation succeeded
-    }
-  }
+  // Dispatch a popstate event to notify the React app of the URL change
+  window.dispatchEvent(new PopStateEvent('popstate'));
 
-  // Fall back to hard navigation
-  console.log('[ImagineGodMode] Link not found, falling back to hard navigation:', postId);
-  window.location.href = `https://grok.com/imagine/post/${postId}`;
-  return false; // Hard navigation used
+  return true; // Navigation succeeded
 };
 
 /**
