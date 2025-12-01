@@ -115,4 +115,6 @@ export const SELECTORS = {
   FULLSCREEN_BUTTON: '[title*="fullscreen" i]',
   FULLSCREEN_BUTTON_ALT: 'button[aria-label*="fullscreen" i]',
   PLAY_PAUSE_BUTTON: '[title*="play" i], [title*="pause" i]',
+  // Navigation links - for soft navigation
+  NEXT_POST_LINK: 'a[href*="/imagine/post/"]',
 } as const;

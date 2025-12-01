@@ -6,6 +6,39 @@
 import { SELECTORS } from './constants';
 
 /**
+ * Try to navigate to a post using soft navigation (clicking link) first,
+ * fall back to hard navigation (window.location) if link not found
+ */
+export const navigateToPost = (postId: string): boolean => {
+  // Try to find a link to the target post in the DOM
+  const links = document.querySelectorAll<HTMLAnchorElement>(SELECTORS.NEXT_POST_LINK);
+  const targetUrl = `/imagine/post/${postId}`;
+
+  for (const link of links) {
+    if (link.href.includes(targetUrl)) {
+      console.log('[ImagineGodMode] Soft navigating to post via link click:', postId);
+
+      // Simulate a proper click event sequence
+      const events = [
+        new PointerEvent('pointerdown', { bubbles: true, cancelable: true, composed: true }),
+        new MouseEvent('mousedown', { bubbles: true, cancelable: true, composed: true }),
+        new PointerEvent('pointerup', { bubbles: true, cancelable: true, composed: true }),
+        new MouseEvent('mouseup', { bubbles: true, cancelable: true, composed: true }),
+        new MouseEvent('click', { bubbles: true, cancelable: true, composed: true }),
+      ];
+
+      events.forEach((event) => link.dispatchEvent(event));
+      return true; // Soft navigation succeeded
+    }
+  }
+
+  // Fall back to hard navigation
+  console.log('[ImagineGodMode] Link not found, falling back to hard navigation:', postId);
+  window.location.href = `https://grok.com/imagine/post/${postId}`;
+  return false; // Hard navigation used
+};
+
+/**
  * Set textarea value using native setter to bypass React's control
  */
 export const setTextareaValue = (textarea: HTMLTextAreaElement, value: string): void => {
@@ -71,6 +104,7 @@ export const applyPromptAndMake = (
 
 /**
  * Apply prompt text, click Make, and navigate to next post
+ * Uses soft navigation (clicking link) when possible, falls back to hard navigation
  */
 export const applyPromptMakeAndNext = (
   promptText: string,
@@ -84,7 +118,7 @@ export const applyPromptMakeAndNext = (
   // Then navigate to next post after Make button is clicked
   if (nextPostId) {
     setTimeout(() => {
-      window.location.href = `https://grok.com/imagine/post/${nextPostId}`;
+      navigateToPost(nextPostId);
     }, delay + 1000); // Wait for Make to execute first (1 second buffer)
   }
 };
