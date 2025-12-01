@@ -256,6 +256,7 @@ All modals extend BaseModal for consistent animations, behavior, and appearance.
 
 **Inputs** (src/components/inputs/)
 - **Button**: Reusable button component with theme-aware styling and hover states
+- **Dropdown**: Custom dropdown component with theme-aware styling, hover effects, and consistent overlay appearance
 - **RatingSystem**: 5-star rating component with white icons and optional readonly mode
 - **Tabs**: Tab navigation component with theme support and bottom placement
 - **Toggle**: Reusable toggle switch component with theme-aware styling and animations

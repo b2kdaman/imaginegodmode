@@ -8,6 +8,7 @@ import { usePromptStore } from '@/store/usePromptStore';
 import { exportPack } from '@/utils/storage';
 import { Button } from '../inputs/Button';
 import { Toggle } from '../inputs/Toggle';
+import { Dropdown } from '../inputs/Dropdown';
 import { Icon } from '../common/Icon';
 import { PackSelectModal } from '../modals/PackSelectModal';
 import { ImportPackModal } from '../modals/ImportPackModal';
@@ -146,35 +147,23 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
           <Icon path={mdiPalette} size={0.6} color={colors.TEXT_SECONDARY} />
           {t('settings.theme')}
         </label>
-        <select
+        <Dropdown
           value={theme}
-          onChange={(e) => {
-            const newTheme = e.target.value as 'dark' | 'light' | 'dracula' | 'winamp' | 'limewire' | 'steam' | 'discord';
+          onChange={(value) => {
+            const newTheme = value as 'dark' | 'light' | 'dracula' | 'winamp' | 'limewire' | 'steam' | 'discord';
             setTheme(newTheme);
             trackThemeChanged(newTheme);
           }}
-          className="pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none transition-colors"
-          style={{
-            backgroundColor: colors.BACKGROUND_MEDIUM,
-            color: colors.TEXT_PRIMARY,
-            border: `1px solid ${colors.BORDER}`,
-            backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(colors.TEXT_PRIMARY)}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'right 12px center',
-            backgroundSize: '16px',
-            appearance: 'none',
-            WebkitAppearance: 'none',
-            MozAppearance: 'none',
-          }}
-        >
-          <option value="dark">{t('settings.themes.dark')}</option>
-          <option value="light">{t('settings.themes.light')}</option>
-          <option value="dracula">{t('settings.themes.dracula')}</option>
-          <option value="winamp">{t('settings.themes.winamp')}</option>
-          <option value="limewire">{t('settings.themes.limewire')}</option>
-          <option value="steam">{t('settings.themes.steam')}</option>
-          <option value="discord">{t('settings.themes.discord')}</option>
-        </select>
+          options={[
+            { value: 'dark', label: t('settings.themes.dark') },
+            { value: 'light', label: t('settings.themes.light') },
+            { value: 'dracula', label: t('settings.themes.dracula') },
+            { value: 'winamp', label: t('settings.themes.winamp') },
+            { value: 'limewire', label: t('settings.themes.limewire') },
+            { value: 'steam', label: t('settings.themes.steam') },
+            { value: 'discord', label: t('settings.themes.discord') },
+          ]}
+        />
       </div>
 
       {/* Size Setting */}
@@ -186,32 +175,20 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
           <Icon path={mdiResize} size={0.6} color={colors.TEXT_SECONDARY} />
           {t('settings.size')}
         </label>
-        <select
+        <Dropdown
           value={size}
-          onChange={(e) => {
-            const newSize = e.target.value as 'tiny' | 'small' | 'medium' | 'large';
+          onChange={(value) => {
+            const newSize = value as 'tiny' | 'small' | 'medium' | 'large';
             setSize(newSize);
             trackSizeChanged(newSize);
           }}
-          className="pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none transition-colors"
-          style={{
-            backgroundColor: colors.BACKGROUND_MEDIUM,
-            color: colors.TEXT_PRIMARY,
-            border: `1px solid ${colors.BORDER}`,
-            backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(colors.TEXT_PRIMARY)}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'right 12px center',
-            backgroundSize: '16px',
-            appearance: 'none',
-            WebkitAppearance: 'none',
-            MozAppearance: 'none',
-          }}
-        >
-          <option value="tiny">{t('settings.sizes.tiny')}</option>
-          <option value="small">{t('settings.sizes.small')}</option>
-          <option value="medium">{t('settings.sizes.medium')}</option>
-          <option value="large">{t('settings.sizes.large')}</option>
-        </select>
+          options={[
+            { value: 'tiny', label: t('settings.sizes.tiny') },
+            { value: 'small', label: t('settings.sizes.small') },
+            { value: 'medium', label: t('settings.sizes.medium') },
+            { value: 'large', label: t('settings.sizes.large') },
+          ]}
+        />
       </div>
 
       {/* Language Setting */}
@@ -223,31 +200,18 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
           <Icon path={mdiTranslate} size={0.6} color={colors.TEXT_SECONDARY} />
           {t('settings.language')}
         </label>
-        <select
+        <Dropdown
           value={locale}
-          onChange={(e) => {
-            const newLocale = e.target.value;
-            setLocale(newLocale);
-            trackLanguageChanged(newLocale);
+          onChange={(value) => {
+            setLocale(value);
+            trackLanguageChanged(value);
           }}
-          className="pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none transition-colors"
-          style={{
-            backgroundColor: colors.BACKGROUND_MEDIUM,
-            color: colors.TEXT_PRIMARY,
-            border: `1px solid ${colors.BORDER}`,
-            backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(colors.TEXT_PRIMARY)}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'right 12px center',
-            backgroundSize: '16px',
-            appearance: 'none',
-            WebkitAppearance: 'none',
-            MozAppearance: 'none',
-          }}
-        >
-          <option value="en">{t('settings.languages.en')}</option>
-          <option value="es">{t('settings.languages.es')}</option>
-          <option value="ru">{t('settings.languages.ru')}</option>
-        </select>
+          options={[
+            { value: 'en', label: t('settings.languages.en') },
+            { value: 'es', label: t('settings.languages.es') },
+            { value: 'ru', label: t('settings.languages.ru') },
+          ]}
+        />
       </div>
 
       {/* Auto Download Setting */}

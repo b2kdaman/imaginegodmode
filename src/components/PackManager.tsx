@@ -6,6 +6,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { Button } from './inputs/Button';
+import { Dropdown } from './inputs/Dropdown';
 import { ConfirmDeleteModal } from './modals/ConfirmDeleteModal';
 import { SearchModal } from './modals/SearchModal';
 import { mdiPlus, mdiClose, mdiCheck, mdiDelete, mdiMagnify } from '@mdi/js';
@@ -62,35 +63,15 @@ export const PackManager: React.FC = () => {
             tooltip={t('packManager.searchTooltip')}
           />
 
-          <select
+          <Dropdown
             value={currentPack}
-            onChange={(e) => setCurrentPack(e.target.value)}
-            className="pl-3 pr-8 py-2 rounded-full text-xs cursor-pointer focus:outline-none"
-            style={{
-              backgroundColor: colors.BACKGROUND_MEDIUM,
-              color: colors.TEXT_PRIMARY,
-              border: `1px solid ${colors.BORDER}`,
-              backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(colors.TEXT_PRIMARY)}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 12px center',
-              backgroundSize: '16px',
-              appearance: 'none',
-              WebkitAppearance: 'none',
-              MozAppearance: 'none',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              minWidth: 0,
-              maxWidth: '100%',
-              flex: 1,
-            }}
-          >
-            {packNames.map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => setCurrentPack(value)}
+            options={packNames.map((name) => ({
+              value: name,
+              label: name,
+            }))}
+            className="flex-1"
+          />
 
           <Button
             onClick={() => setIsAdding(true)}

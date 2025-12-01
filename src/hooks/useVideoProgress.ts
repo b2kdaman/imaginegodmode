@@ -80,7 +80,14 @@ export const useVideoProgress = () => {
     function findButton() {
       if (!buttonRef || !document.body.contains(buttonRef)) {
         const buttons = document.querySelectorAll('button');
+        const extensionRoot = document.getElementById('imaginegodmode-root');
+
         for (const btn of buttons) {
+          // Skip buttons that are part of our extension
+          if (extensionRoot && extensionRoot.contains(btn)) {
+            continue;
+          }
+
           const text = btn.textContent || btn.innerText || '';
           if (text.match(/\d+%/)) {
             buttonRef = btn as HTMLButtonElement;

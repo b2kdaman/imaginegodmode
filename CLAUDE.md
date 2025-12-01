@@ -1,1 +1,2 @@
 - always build project
+- always build the project usinb "npm run build" after changes
