@@ -3,12 +3,12 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import { Button } from '../inputs/Button';
-import { mdiClose, mdiCheckboxMarked, mdiCheckboxBlankOutline } from '@mdi/js';
+import { mdiCheckboxMarked, mdiCheckboxBlankOutline } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { LikedPost } from '@/types';
 import { trackBulkSelectAll, trackBulkDeselectAll, trackBulkOperationConfirmed } from '@/utils/analytics';
+import { BaseModal } from './BaseModal';
 
 interface UpscaleAllModalProps {
   isOpen: boolean;
@@ -109,8 +109,6 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
     onConfirm(selectedPostIds);
   };
 
-  if (!isOpen) return null;
-
   const title = mode === 'upscale'
     ? `Select Posts to Upscale (${selectedIds.size}/${posts.length})`
     : `Select Posts to Like (${selectedIds.size}/${posts.length})`;
@@ -119,62 +117,42 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
     ? `Upscale ${selectedIds.size} Post${selectedIds.size !== 1 ? 's' : ''}`
     : `Like ${selectedIds.size} Post${selectedIds.size !== 1 ? 's' : ''}`;
 
-  const modalContent = (
-    <div
-      className="fixed inset-0 flex items-center justify-center z-50 p-4"
-      style={{
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-      }}
-      onClick={isProcessing ? undefined : onClose}
-    >
-      <div
-        className="rounded-xl p-6 flex flex-col"
-        style={{
-          backgroundColor: colors.BACKGROUND_DARK,
-          border: `1px solid ${colors.BORDER}`,
-          boxShadow: `0 8px 32px ${colors.SHADOW}`,
-          width: '90vw',
-          maxWidth: '1344px',
-          height: '85vh',
-          maxHeight: '800px',
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between mb-3">
-          <h2
-            className="text-sm font-semibold"
-            style={{ color: colors.TEXT_PRIMARY }}
-          >
-            {title}
-          </h2>
-          <button
+  return (
+    <BaseModal
+      isOpen={isOpen}
+      title={title}
+      onClose={onClose}
+      getThemeColors={getThemeColors}
+      width="90vw"
+      maxWidth="full"
+      height="85vh"
+      maxHeight="800px"
+      padding="p-6"
+      overlayOpacity={0.7}
+      closeOnOverlayClick={!isProcessing}
+      disableClose={isProcessing}
+      footer={
+        <div className="flex gap-2 justify-end">
+          <Button
             onClick={onClose}
+            className="text-xs"
             disabled={isProcessing}
-            className="rounded-full p-1 transition-colors"
-            style={{
-              backgroundColor: 'transparent',
-              color: colors.TEXT_SECONDARY,
-              opacity: isProcessing ? 0.5 : 1,
-              cursor: isProcessing ? 'not-allowed' : 'pointer',
-            }}
-            onMouseEnter={(e) => {
-              if (!isProcessing) {
-                e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
-                e.currentTarget.style.color = colors.TEXT_PRIMARY;
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isProcessing) {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = colors.TEXT_SECONDARY;
-              }
-            }}
           >
-            <Icon path={mdiClose} size={0.8} />
-          </button>
+            {isProcessing ? 'Processing...' : 'Cancel'}
+          </Button>
+          {!isProcessing && (
+            <Button
+              onClick={handleConfirm}
+              className="text-xs"
+              disabled={selectedIds.size === 0}
+            >
+              {confirmButtonText}
+            </Button>
+          )}
         </div>
-
+      }
+    >
+      <>
         {/* Progress Bar (shown when processing) */}
         {isProcessing && (
           <div className="mb-3">
@@ -292,28 +270,7 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex gap-2 justify-end">
-          <Button
-            onClick={onClose}
-            className="text-xs"
-            disabled={isProcessing}
-          >
-            {isProcessing ? 'Processing...' : 'Cancel'}
-          </Button>
-          {!isProcessing && (
-            <Button
-              onClick={handleConfirm}
-              className="text-xs"
-              disabled={selectedIds.size === 0}
-            >
-              {confirmButtonText}
-            </Button>
-          )}
-        </div>
-      </div>
-    </div>
+      </>
+    </BaseModal>
   );
-
-  return createPortal(modalContent, document.body);
 };

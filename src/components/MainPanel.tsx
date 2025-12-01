@@ -112,29 +112,28 @@ export const MainPanel: React.FC = () => {
         </div>
 
         {/* Content wrapper */}
-        {isExpanded && (
-          <div
-            className="rounded-2xl p-4 shadow-2xl w-[320px]"
-            style={{
-              backgroundColor: colors.BACKGROUND_DARK,
-              border: `1px solid ${colors.BORDER}`,
-            }}
-          >
-            {/* View content */}
-            {currentView === 'prompt' && <PromptView />}
-            {currentView === 'ops' && <OpsView />}
-            {currentView === 'settings' && <SettingsView />}
-            {currentView === 'help' && <HelpView />}
+        <div
+          className="rounded-2xl p-4 shadow-2xl w-[320px]"
+          style={{
+            backgroundColor: colors.BACKGROUND_DARK,
+            border: `1px solid ${colors.BORDER}`,
+            display: isExpanded ? 'block' : 'none',
+          }}
+        >
+          {/* View content */}
+          {currentView === 'prompt' && <PromptView />}
+          {currentView === 'ops' && <OpsView />}
+          {currentView === 'settings' && <SettingsView />}
+          {currentView === 'help' && <HelpView />}
 
-            {/* Tabs */}
-            <Tabs
-              tabs={tabs}
-              activeTab={currentView}
-              onChange={(tabId) => setCurrentView(tabId as any)}
-              direction="up"
-            />
-          </div>
-        )}
+          {/* Tabs */}
+          <Tabs
+            tabs={tabs}
+            activeTab={currentView}
+            onChange={(tabId) => setCurrentView(tabId as any)}
+            direction="up"
+          />
+        </div>
       </div>
     </div>
   );

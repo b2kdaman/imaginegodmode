@@ -3,12 +3,12 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import { Button } from '../inputs/Button';
-import { mdiClose, mdiHeart } from '@mdi/js';
+import { mdiHeart } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { UnlikedPost } from '@/utils/storage';
 import { trackBulkSelectAll, trackBulkDeselectAll, trackBulkOperationConfirmed } from '@/utils/analytics';
+import { BaseModal } from './BaseModal';
 
 interface UnlikedArchiveModalProps {
   isOpen: boolean;
@@ -104,8 +104,6 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
     onRelike(selectedPostIds);
   };
 
-  if (!isOpen) return null;
-
   const title = `Unliked Posts Archive (${posts.length} total)`;
   const relikeButtonText = selectedIds.size > 0
     ? `Re-like ${selectedIds.size} Post${selectedIds.size !== 1 ? 's' : ''}`
@@ -121,62 +119,43 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
     });
   };
 
-  const modalContent = (
-    <div
-      className="fixed inset-0 flex items-center justify-center z-50 p-4"
-      style={{
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-      }}
-      onClick={isProcessing ? undefined : onClose}
-    >
-      <div
-        className="rounded-xl p-6 flex flex-col"
-        style={{
-          backgroundColor: colors.BACKGROUND_DARK,
-          border: `1px solid ${colors.BORDER}`,
-          boxShadow: `0 8px 32px ${colors.SHADOW}`,
-          width: '90vw',
-          maxWidth: '1344px',
-          height: '85vh',
-          maxHeight: '800px',
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between mb-3">
-          <h2
-            className="text-sm font-semibold"
-            style={{ color: colors.TEXT_PRIMARY }}
-          >
-            {title}
-          </h2>
-          <button
+  return (
+    <BaseModal
+      isOpen={isOpen}
+      title={title}
+      onClose={onClose}
+      getThemeColors={getThemeColors}
+      width="90vw"
+      maxWidth="full"
+      height="85vh"
+      maxHeight="800px"
+      padding="p-6"
+      overlayOpacity={0.7}
+      closeOnOverlayClick={!isProcessing}
+      disableClose={isProcessing}
+      footer={
+        <div className="flex gap-2 justify-end">
+          <Button
             onClick={onClose}
+            className="text-xs"
             disabled={isProcessing}
-            className="rounded-full p-1 transition-colors"
-            style={{
-              backgroundColor: 'transparent',
-              color: colors.TEXT_SECONDARY,
-              opacity: isProcessing ? 0.5 : 1,
-              cursor: isProcessing ? 'not-allowed' : 'pointer',
-            }}
-            onMouseEnter={(e) => {
-              if (!isProcessing) {
-                e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
-                e.currentTarget.style.color = colors.TEXT_PRIMARY;
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isProcessing) {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = colors.TEXT_SECONDARY;
-              }
-            }}
           >
-            <Icon path={mdiClose} size={0.8} />
-          </button>
+            {isProcessing ? 'Processing...' : 'Close'}
+          </Button>
+          {!isProcessing && (
+            <Button
+              onClick={handleRelike}
+              className="text-xs"
+              disabled={selectedIds.size === 0}
+              icon={mdiHeart}
+            >
+              {relikeButtonText}
+            </Button>
+          )}
         </div>
-
+      }
+    >
+      <>
         {/* Progress Bar (shown when processing) */}
         {isProcessing && (
           <div className="mb-3">
@@ -307,29 +286,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
           )}
         </div>
 
-        {/* Footer */}
-        <div className="flex gap-2 justify-end">
-          <Button
-            onClick={onClose}
-            className="text-xs"
-            disabled={isProcessing}
-          >
-            {isProcessing ? 'Processing...' : 'Close'}
-          </Button>
-          {!isProcessing && (
-            <Button
-              onClick={handleRelike}
-              className="text-xs"
-              disabled={selectedIds.size === 0}
-              icon={mdiHeart}
-            >
-              {relikeButtonText}
-            </Button>
-          )}
-        </div>
-      </div>
-    </div>
+      </>
+    </BaseModal>
   );
-
-  return createPortal(modalContent, document.body);
 };

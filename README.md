@@ -239,6 +239,7 @@ grkgoondl/
 - **HelpView**: Help and documentation interface
 
 **Modals** (src/components/modals/)
+- **BaseModal**: Reusable modal foundation with animations, high z-index, portal rendering, and flexible configuration
 - **UpscaleAllModal**: Large modal (90vw × 85vh) with 5-column grid for bulk upscaling videos from liked posts
 - **UnlikeModal**: Large modal with 5-column grid, heart/broken heart indicators, and bulk unlike functionality with auto-redirect and archive saving
 - **UnlikedArchiveModal**: Archive browser for viewing and re-liking previously unliked posts with timestamps and progress tracking
@@ -246,6 +247,8 @@ grkgoondl/
 - **PackSelectModal**: Modal for selecting which pack to export
 - **ImportPackModal**: Modal for importing packs via paste or file upload with validation
 - **ConfirmDeleteModal**: Confirmation dialog for pack deletion with warning message
+
+All modals extend BaseModal for consistent animations, behavior, and appearance.
 
 **Buttons** (src/components/buttons/)
 - **PauseButton**: Play/pause control with synchronized video state tracking
@@ -397,6 +400,15 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
     - Keyboard shortcut usage (F, Space, Ctrl+Enter, Ctrl+Shift+Enter)
   - No personal data, prompt content, or identifying information collected
   - Uses GA4 Measurement Protocol (no script loading)
+- **Modal System**: Unified modal architecture with BaseModal component
+  - Smooth fade-in and slide-in animations (0.2s/0.3s)
+  - Highest z-index (999999) ensures modals appear above all content
+  - Portal rendering to document.body for proper stacking
+  - Modals persist when extension panel is collapsed (no state loss)
+  - Consistent behavior: overlay click, close button, keyboard shortcuts
+  - Flexible sizing: configurable width, height, padding, overlay opacity
+  - Optional footer for action buttons with theme-aware styling
+  - DRY principle reduces code duplication across 7+ modals (~250 lines saved)
 
 ## Theme Customization
 

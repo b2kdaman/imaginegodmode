@@ -4,9 +4,10 @@
 
 import React, { useState, useRef } from 'react';
 import { Button } from '../inputs/Button';
-import { mdiClose, mdiUpload, mdiContentPaste, mdiCheckCircle, mdiAlertCircle } from '@mdi/js';
+import { mdiUpload, mdiContentPaste, mdiCheckCircle, mdiAlertCircle } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { useTranslation } from '@/contexts/I18nContext';
+import { BaseModal } from './BaseModal';
 
 interface ImportPackModalProps {
   isOpen: boolean;
@@ -158,53 +159,31 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
 
   const lineCount = jsonInput.split('\n').length;
 
-  if (!isOpen) return null;
-
   return (
-    <div
-      className="fixed inset-0 flex items-center justify-center z-50"
-      style={{
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      }}
-      onClick={handleClose}
-    >
-      <div
-        className="rounded-xl p-4 max-w-md w-full mx-4"
-        style={{
-          backgroundColor: colors.BACKGROUND_DARK,
-          border: `1px solid ${colors.BORDER}`,
-          boxShadow: `0 8px 32px ${colors.SHADOW}`,
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between mb-3">
-          <h2
-            className="text-sm font-semibold"
-            style={{ color: colors.TEXT_PRIMARY }}
-          >
-            {t('modals.importPack.title')}
-          </h2>
-          <button
-            onClick={handleClose}
-            className="rounded-full p-1 transition-colors"
+    <BaseModal
+      isOpen={isOpen}
+      title={t('modals.importPack.title')}
+      onClose={handleClose}
+      getThemeColors={getThemeColors}
+      maxWidth="md"
+      footer={
+        <div className="flex gap-2 justify-end">
+          <Button onClick={handleClose}>{t('common.cancel')}</Button>
+          <Button
+            onClick={handleImport}
+            disabled={!validation?.isValid || isImporting}
             style={{
-              backgroundColor: 'transparent',
-              color: colors.TEXT_SECONDARY,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
-              e.currentTarget.style.color = colors.TEXT_PRIMARY;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = colors.TEXT_SECONDARY;
+              backgroundColor: validation?.isValid ? colors.SUCCESS : undefined,
+              color: validation?.isValid ? '#fff' : undefined,
+              opacity: !validation?.isValid || isImporting ? 0.5 : 1,
             }}
           >
-            <Icon path={mdiClose} size={0.8} />
-          </button>
+            {isImporting ? t('modals.importPack.importing') : t('common.import')}
+          </Button>
         </div>
-
+      }
+    >
+      <>
         {/* Action Buttons */}
         <div className="flex gap-2 mb-3">
           <Button
@@ -309,22 +288,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
           </div>
         )}
 
-        {/* Footer */}
-        <div className="flex gap-2 justify-end">
-          <Button onClick={handleClose}>{t('common.cancel')}</Button>
-          <Button
-            onClick={handleImport}
-            disabled={!validation?.isValid || isImporting}
-            style={{
-              backgroundColor: validation?.isValid ? colors.SUCCESS : undefined,
-              color: validation?.isValid ? '#fff' : undefined,
-              opacity: !validation?.isValid || isImporting ? 0.5 : 1,
-            }}
-          >
-            {isImporting ? t('modals.importPack.importing') : t('common.import')}
-          </Button>
-        </div>
-      </div>
-    </div>
+      </>
+    </BaseModal>
   );
 };
