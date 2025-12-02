@@ -60,7 +60,6 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **UI Scaling**: Adjust panel size from Tiny (70%) to Large (115%)
 - **Visual Settings**: Settings labels enhanced with Material Design Icons for better UX
 - **Simple Shortcut Setting**: Optional setting to use `Ctrl/Cmd + Enter` instead of `Ctrl/Cmd + Shift + Enter` for applying prompts
-- **Hide Unsave Button**: Optional setting to hide the "Unsave" button from the Grok page interface (off by default)
 - **Keyboard Shortcuts**:
   - `Ctrl/Cmd + Shift + Enter`: Apply current prompt with prefix and click "Make a Video" (default)
   - `Ctrl/Cmd + Enter`: Apply current prompt with prefix and click "Make a Video" (when Simple Shortcut enabled)
@@ -158,7 +157,6 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Enable Auto Download to automatically download media after upscaling
    - Toggle Remember Pack Per Post to control per-post state persistence (enabled by default)
    - Toggle Simple Shortcut to use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter for applying prompts
-   - Toggle Hide Unsave to hide the "Unsave" button from the page (off by default)
    - All settings labels include visual icons for easy identification
    - **Data Management**:
      - Export packs: Select any pack to export to JSON (backup/sharing)
@@ -210,7 +208,7 @@ grkgoondl/
 - **usePromptStore**: Manages prompts, packs, ratings, and import/export operations
 - **useMediaStore**: Handles media URLs, upscaling, and status
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
-- **useSettingsStore**: Manages theme, size, auto-download, remember-post-state, simple-shortcut, and hide-unsave preferences with localStorage persistence
+- **useSettingsStore**: Manages theme, size, auto-download, remember-post-state, and simple-shortcut preferences with localStorage persistence
 - **useUpscaleQueueStore**: Global upscale queue with batch processing (15 at a time), auto-download, and localStorage persistence
 - **usePostsStore**: Manages fetched posts list and navigation helpers for "Make + Next" workflow
 
@@ -237,7 +235,7 @@ grkgoondl/
 **Views** (src/components/views/)
 - **PromptView**: Prompt management interface with "Make + Next" workflow button
 - **OpsView**: Media controls with queue-based upscaling, HD-gated downloads, bulk operations (Upscale All Liked, Unlike Multiple Posts)
-- **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut, hide-unsave preferences, and data management with import/export
+- **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut preferences, and data management with import/export
 - **HelpView**: Help and documentation interface
 
 **Modals** (src/components/modals/)
@@ -363,11 +361,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Video progress polling every 500ms with auto-removal on completion
 - Console initialization tag with styled branding using theme colors
 - API architecture refactored: content script handles authenticated calls, background worker handles downloads
-- Settings persist in localStorage for instant theme/size/language/auto-download/remember-post-state/simple-shortcut/hide-unsave application on load
-- **Hide Unsave Feature**: Dynamic CSS injection to hide Unsave button when enabled
-  - Uses `useEffect` hook to inject/remove style element
-  - CSS selector targets `button[aria-label="Unsave"]`
-  - Cleanup on unmount and setting toggle
+- Settings persist in localStorage for instant theme/size/language/auto-download/remember-post-state/simple-shortcut application on load
 - **Internationalization**: Complete i18n infrastructure with English, Spanish, and Russian translations
   - Live language switching without reload
   - Translation context with parameter interpolation

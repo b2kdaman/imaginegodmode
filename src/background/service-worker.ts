@@ -1,14 +1,15 @@
 /**
- * Background service worker for Chrome extension
+ * Background service worker for Chrome and Firefox extension
  * Handles downloads only - API calls made directly from content script
  */
 
 import { MessagePayload, MessageResponse } from '../types';
 import { extractFilename } from '../utils/helpers';
 import { TIMING } from '../utils/constants';
+import { browserAPI } from '../utils/browserAPI';
 
 // Message listener
-chrome.runtime.onMessage.addListener((message: MessagePayload, _sender, sendResponse) => {
+browserAPI.runtime.onMessage.addListener((message: MessagePayload, _sender, sendResponse) => {
   handleMessage(message)
     .then(sendResponse)
     .catch((error) => {
@@ -39,7 +40,7 @@ async function handleMessage(message: MessagePayload): Promise<MessageResponse> 
 }
 
 /**
- * Download media files using Chrome downloads API
+ * Download media files using browser downloads API
  */
 async function handleDownloadMedia(urls: string[]): Promise<MessageResponse> {
   try {
@@ -49,8 +50,8 @@ async function handleDownloadMedia(urls: string[]): Promise<MessageResponse> {
       const url = urls[i];
       const filename = extractFilename(url, i);
 
-      // Download using Chrome API
-      const downloadId = await chrome.downloads.download({
+      // Download using browser API
+      const downloadId = await browserAPI.downloads.download({
         url,
         filename,
         saveAs: false,

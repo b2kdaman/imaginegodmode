@@ -10,6 +10,7 @@ import { upscaleVideoById, fetchPost, downloadMedia } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
 import { randomDelay } from '@/utils/helpers';
 import { TIMING } from '@/utils/constants';
+import { useSettingsStore } from './useSettingsStore';
 
 const BATCH_SIZE = 15;
 const MAX_CONCURRENT_DOWNLOADS = 15;
@@ -117,6 +118,13 @@ export const useUpscaleQueueStore = create<UpscaleQueueStore>()(
 
       _downloadCompletedBatch: async (hdUrls) => {
         if (hdUrls.length === 0) return;
+
+        // Check if auto-download is enabled
+        const { autoDownload } = useSettingsStore.getState();
+        if (!autoDownload) {
+          console.log('[ImagineGodMode] Auto-download disabled, skipping batch download');
+          return;
+        }
 
         set({ isDownloading: true });
 

@@ -42,9 +42,8 @@
     "autoDownload": "Автоматическая загрузка",
     "rememberPostState": "Запомнить пак для поста",
     "simpleShortcut": "Простое сочетание клавиш",
-    "hideUnsave": "Скрыть кнопку Unsave",
     "dataManagement": "Управление данными",
-    "importMode": "Режим импорта пака",
+    "importMode": "Режим импорта",
     "importModeAdd": "Добавить",
     "importModeReplace": "Заменить",
     "themes": {
