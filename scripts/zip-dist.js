@@ -1,5 +1,5 @@
 /**
- * Script to create a zip file of the dist folder for Chrome Web Store upload
+ * Script to create a zip file of the dist folder for Chrome Web Store or Firefox Add-ons
  */
 
 import { createWriteStream, existsSync, readFileSync } from 'fs';
@@ -12,7 +12,10 @@ const DIST_DIR = 'dist';
 const OUTPUT_DIR = '.';
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 const version = pkg.version;
-const OUTPUT_FILE = join(OUTPUT_DIR, `imaginegodmode-v${version}.zip`);
+
+// Get browser from command line arg (defaults to chrome)
+const browser = process.argv[2] || 'chrome';
+const OUTPUT_FILE = join(OUTPUT_DIR, `imaginegodmode-${browser}-v${version}.zip`);
 
 async function zipDist() {
   // Check if dist folder exists

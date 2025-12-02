@@ -1,8 +1,9 @@
 /**
- * Chrome storage wrapper utilities
+ * Chrome and Firefox storage wrapper utilities
  */
 
 import { Packs, PromptItem } from '@/types';
+import { browserAPI } from './browserAPI';
 
 const STORAGE_KEY = 'grok-text-items';
 const PREFIX_STORAGE_KEY = 'grok-prompt-prefixes';
@@ -46,7 +47,7 @@ export interface UnlikedPostsStorageData {
  */
 const isExtensionContextValid = (): boolean => {
   try {
-    // Try to access chrome.runtime.id - if it throws, context is invalidated
+    // Try to access browserAPI.runtime.id - if it throws, context is invalidated
     return !!chrome?.runtime?.id;
   } catch {
     return false;
@@ -54,7 +55,7 @@ const isExtensionContextValid = (): boolean => {
 };
 
 /**
- * Get data from chrome.storage.local
+ * Get data from browserAPI.storage.local
  */
 export const getStorage = async (): Promise<StorageData | null> => {
   if (!isExtensionContextValid()) {
@@ -63,7 +64,7 @@ export const getStorage = async (): Promise<StorageData | null> => {
   }
 
   try {
-    const result = await chrome.storage.local.get(STORAGE_KEY);
+    const result = await browserAPI.storage.local.get(STORAGE_KEY);
     return result[STORAGE_KEY] || null;
   } catch (error) {
     if (error instanceof Error && error.message.includes('Extension context invalidated')) {
@@ -76,7 +77,7 @@ export const getStorage = async (): Promise<StorageData | null> => {
 };
 
 /**
- * Set data to chrome.storage.local
+ * Set data to browserAPI.storage.local
  */
 export const setStorage = async (data: StorageData): Promise<boolean> => {
   if (!isExtensionContextValid()) {
@@ -85,7 +86,7 @@ export const setStorage = async (data: StorageData): Promise<boolean> => {
   }
 
   try {
-    await chrome.storage.local.set({ [STORAGE_KEY]: data });
+    await browserAPI.storage.local.set({ [STORAGE_KEY]: data });
     return true;
   } catch (error) {
     if (error instanceof Error && error.message.includes('Extension context invalidated')) {
@@ -118,7 +119,7 @@ export const onStorageChange = (
   };
 
   try {
-    chrome.storage.onChanged.addListener(listener);
+    browserAPI.storage.onChanged.addListener(listener);
   } catch (error) {
     console.warn('[ImagineGodMode] Failed to add storage listener:', error);
     return () => {}; // Return no-op cleanup function
@@ -128,7 +129,7 @@ export const onStorageChange = (
   return () => {
     try {
       if (isExtensionContextValid()) {
-        chrome.storage.onChanged.removeListener(listener);
+        browserAPI.storage.onChanged.removeListener(listener);
       }
     } catch {
       // Silently fail if context is invalidated during cleanup
@@ -283,7 +284,7 @@ export const getPrefix = async (postId: string): Promise<string> => {
   }
 
   try {
-    const result = await chrome.storage.local.get(PREFIX_STORAGE_KEY);
+    const result = await browserAPI.storage.local.get(PREFIX_STORAGE_KEY);
     const prefixes: PrefixStorageData = result[PREFIX_STORAGE_KEY] || {};
     return prefixes[postId] || '';
   } catch (error) {
@@ -301,10 +302,10 @@ export const setPrefix = async (postId: string, prefix: string): Promise<boolean
   }
 
   try {
-    const result = await chrome.storage.local.get(PREFIX_STORAGE_KEY);
+    const result = await browserAPI.storage.local.get(PREFIX_STORAGE_KEY);
     const prefixes: PrefixStorageData = result[PREFIX_STORAGE_KEY] || {};
     prefixes[postId] = prefix;
-    await chrome.storage.local.set({ [PREFIX_STORAGE_KEY]: prefixes });
+    await browserAPI.storage.local.set({ [PREFIX_STORAGE_KEY]: prefixes });
     return true;
   } catch (error) {
     console.error('Failed to set prefix:', error);
@@ -322,7 +323,7 @@ export const getPostState = async (postId: string): Promise<PostState | null> =>
   }
 
   try {
-    const result = await chrome.storage.local.get(POST_STATE_STORAGE_KEY);
+    const result = await browserAPI.storage.local.get(POST_STATE_STORAGE_KEY);
     const states: PostStateStorageData = result[POST_STATE_STORAGE_KEY] || {};
     return states[postId] || null;
   } catch (error) {
@@ -340,10 +341,10 @@ export const setPostState = async (postId: string, state: PostState): Promise<bo
   }
 
   try {
-    const result = await chrome.storage.local.get(POST_STATE_STORAGE_KEY);
+    const result = await browserAPI.storage.local.get(POST_STATE_STORAGE_KEY);
     const states: PostStateStorageData = result[POST_STATE_STORAGE_KEY] || {};
     states[postId] = state;
-    await chrome.storage.local.set({ [POST_STATE_STORAGE_KEY]: states });
+    await browserAPI.storage.local.set({ [POST_STATE_STORAGE_KEY]: states });
     return true;
   } catch (error) {
     console.error('Failed to set post state:', error);
@@ -361,7 +362,7 @@ export const getUnlikedPosts = async (): Promise<UnlikedPost[]> => {
   }
 
   try {
-    const result = await chrome.storage.local.get(UNLIKED_POSTS_STORAGE_KEY);
+    const result = await browserAPI.storage.local.get(UNLIKED_POSTS_STORAGE_KEY);
     const data: UnlikedPostsStorageData = result[UNLIKED_POSTS_STORAGE_KEY] || { posts: [] };
     return data.posts || [];
   } catch (error) {
@@ -390,7 +391,7 @@ export const addUnlikedPosts = async (posts: UnlikedPost[]): Promise<boolean> =>
     }
 
     const updatedPosts = [...existingPosts, ...newPosts];
-    await chrome.storage.local.set({
+    await browserAPI.storage.local.set({
       [UNLIKED_POSTS_STORAGE_KEY]: { posts: updatedPosts }
     });
     return true;
@@ -413,7 +414,7 @@ export const removeUnlikedPosts = async (postIds: string[]): Promise<boolean> =>
     const idsToRemove = new Set(postIds);
     const updatedPosts = existingPosts.filter(p => !idsToRemove.has(p.id));
 
-    await chrome.storage.local.set({
+    await browserAPI.storage.local.set({
       [UNLIKED_POSTS_STORAGE_KEY]: { posts: updatedPosts }
     });
     return true;
@@ -432,7 +433,7 @@ export const clearUnlikedPosts = async (): Promise<boolean> => {
   }
 
   try {
-    await chrome.storage.local.set({
+    await browserAPI.storage.local.set({
       [UNLIKED_POSTS_STORAGE_KEY]: { posts: [] }
     });
     return true;
