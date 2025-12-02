@@ -1,9 +1,10 @@
 /**
- * Message passing utilities for Chrome extension
+ * Message passing utilities for Chrome and Firefox extension
  */
 
 import { MessagePayload, MessageResponse, PostData } from '@/types';
 import { fetchPostData, upscaleVideo } from '@/api/grokApi';
+import { browserAPI } from './browserAPI';
 
 /**
  * Send message to background service worker
@@ -12,7 +13,7 @@ export const sendMessageToBackground = async <T = any>(
   payload: MessagePayload
 ): Promise<MessageResponse<T>> => {
   try {
-    const response = await chrome.runtime.sendMessage(payload);
+    const response = await browserAPI.runtime.sendMessage(payload);
     return response;
   } catch (error) {
     console.error('Failed to send message to background:', error);
