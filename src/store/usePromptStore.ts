@@ -31,6 +31,7 @@ interface PromptStore {
   setCurrentPack: (pack: string) => void;
   addPack: (name: string) => void;
   deletePack: (name: string) => void;
+  clearAllPacks: () => void;
 
   // Prompt actions
   setCurrentIndex: (index: number) => void;
@@ -157,6 +158,16 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     });
     get().saveToStorage();
     trackPackDeleted();
+  },
+
+  clearAllPacks: () => {
+    // Reset to default state with one empty pack
+    set({
+      packs: { Default: [{ text: '', rating: 0 }] },
+      currentPack: 'Default',
+      currentIndex: 0,
+    });
+    get().saveToStorage();
   },
 
   // Prompt actions

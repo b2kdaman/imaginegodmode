@@ -47,6 +47,9 @@
     "importMode": "Modo de Importación de Pack",
     "importModeAdd": "Agregar",
     "importModeReplace": "Reemplazar",
+    "purge": "Purgar",
+    "purgeAllData": "Purgar Todos los Datos",
+    "purgeClickHint": "Haz clic 5 veces para activar la secuencia de purga",
     "themes": {
       "dark": "Oscuro",
       "light": "Claro",
@@ -133,6 +136,22 @@
       "noResults": "No se encontraron prompts",
       "resultCount": "{{count}} resultado(s)",
       "promptNumber": "Prompt #{{number}}"
+    },
+    "purge": {
+      "title": "⚠️ PURGAR TODOS LOS DATOS",
+      "dangerZone": "ZONA DE PELIGRO",
+      "warningMessage": "Esta acción eliminará permanentemente:",
+      "allLikedPosts": "Todas las publicaciones con me gusta",
+      "allLikedPostsDesc": "Intentará quitar el me gusta de todas las publicaciones",
+      "unlikedArchive": "Archivo de sin me gusta",
+      "unlikedArchiveDesc": "Se borrará el historial completo",
+      "allPromptPacks": "Todos los paquetes de prompts",
+      "allPromptPacksDesc": "Se eliminarán todos los paquetes y prompts",
+      "cannotBeUndone": "¡ESTO NO SE PUEDE DESHACER!",
+      "pressArrowKeys": "Presiona las siguientes teclas de flecha en orden:",
+      "startPressing": "Comienza a presionar las teclas de flecha...",
+      "sequenceComplete": "✓ ¡Secuencia completa! Botón de purga habilitado.",
+      "purgeAllDataButton": "Purgar Todos los Datos"
     }
   }
 }

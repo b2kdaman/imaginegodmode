@@ -47,6 +47,9 @@
     "importMode": "Режим импорта пака",
     "importModeAdd": "Добавить",
     "importModeReplace": "Заменить",
+    "purge": "Очистка",
+    "purgeAllData": "Очистить все данные",
+    "purgeClickHint": "Нажмите 5 раз для активации последовательности очистки",
     "themes": {
       "dark": "Темная",
       "light": "Светлая",
@@ -133,6 +136,22 @@
       "noResults": "Промпты не найдены",
       "resultCount": "{{count}} результат(ов)",
       "promptNumber": "Промпт #{{number}}"
+    },
+    "purge": {
+      "title": "⚠️ ОЧИСТИТЬ ВСЕ ДАННЫЕ",
+      "dangerZone": "ОПАСНАЯ ЗОНА",
+      "warningMessage": "Это действие навсегда удалит:",
+      "allLikedPosts": "Все понравившиеся посты",
+      "allLikedPostsDesc": "Попытается убрать лайки со всех постов",
+      "unlikedArchive": "Архив дизлайков",
+      "unlikedArchiveDesc": "История будет полностью очищена",
+      "allPromptPacks": "Все паки промптов",
+      "allPromptPacksDesc": "Все паки и промпты будут удалены",
+      "cannotBeUndone": "ЭТО НЕЛЬЗЯ ОТМЕНИТЬ!",
+      "pressArrowKeys": "Нажмите следующие клавиши стрелок по порядку:",
+      "startPressing": "Начните нажимать клавиши стрелок...",
+      "sequenceComplete": "✓ Последовательность завершена! Кнопка очистки активна.",
+      "purgeAllDataButton": "Очистить все данные"
     }
   }
 }

@@ -47,6 +47,9 @@
     "importMode": "Pack Import Mode",
     "importModeAdd": "Add",
     "importModeReplace": "Replace",
+    "purge": "Purge",
+    "purgeAllData": "Purge All Data",
+    "purgeClickHint": "Click 5 times to activate purge sequence",
     "themes": {
       "dark": "Dark",
       "light": "Light",
@@ -133,6 +136,22 @@
       "noResults": "No prompts found",
       "resultCount": "{{count}} result(s)",
       "promptNumber": "Prompt #{{number}}"
+    },
+    "purge": {
+      "title": "⚠️ PURGE ALL DATA",
+      "dangerZone": "DANGER ZONE",
+      "warningMessage": "This action will permanently delete:",
+      "allLikedPosts": "All liked posts",
+      "allLikedPostsDesc": "Will attempt to unlike all posts",
+      "unlikedArchive": "Unliked archive",
+      "unlikedArchiveDesc": "Complete history will be cleared",
+      "allPromptPacks": "All prompt packs",
+      "allPromptPacksDesc": "Every pack and prompt will be deleted",
+      "cannotBeUndone": "THIS CANNOT BE UNDONE!",
+      "pressArrowKeys": "Press the following arrow keys in order:",
+      "startPressing": "Start pressing the arrow keys...",
+      "sequenceComplete": "✓ Sequence complete! Purge button enabled.",
+      "purgeAllDataButton": "Purge All Data"
     }
   }
 }

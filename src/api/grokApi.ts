@@ -186,6 +186,35 @@ export const unlikePost = async (postId: string): Promise<any> => {
 };
 
 /**
+ * Delete a post
+ * @param postId - Post ID to delete
+ * @returns Delete response
+ */
+export const deletePost = async (postId: string): Promise<any> => {
+  console.log('[ImagineGodMode API] Deleting post:', postId);
+
+  const res = await fetch(API_ENDPOINTS.POST_DELETE, {
+    method: 'POST',
+    headers: {
+      accept: '*/*',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({ id: postId }),
+    credentials: 'include',
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error('[ImagineGodMode API] Delete error:', text);
+    throw new Error(`HTTP ${res.status}: ${text}`);
+  }
+
+  const data = await res.json().catch(() => ({}));
+  console.log('[ImagineGodMode API] Delete success:', data);
+  return data;
+};
+
+/**
  * Upscale a video
  * @param videoId - Video ID to upscale
  * @returns Upscale response

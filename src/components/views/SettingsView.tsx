@@ -12,6 +12,7 @@ import { Dropdown } from '../inputs/Dropdown';
 import { Icon } from '../common/Icon';
 import { PackSelectModal } from '../modals/PackSelectModal';
 import { ImportPackModal } from '../modals/ImportPackModal';
+import { PurgeModal } from '../modals/PurgeModal';
 import {
   mdiDownload,
   mdiUpload,
@@ -23,7 +24,8 @@ import {
   mdiDatabase,
   mdiSwapHorizontal,
   mdiKeyboard,
-  mdiEyeOff
+  mdiEyeOff,
+  mdiDeleteForever
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -38,7 +40,7 @@ import {
 
 export const SettingsView: React.FC = () => {
   const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, getThemeColors } = useSettingsStore();
-  const { importPack, currentPack, packs } = usePromptStore();
+  const { importPack, currentPack, packs, clearAllPacks } = usePromptStore();
   const { t, locale, setLocale } = useTranslation();
   const colors = getThemeColors();
 
@@ -46,6 +48,9 @@ export const SettingsView: React.FC = () => {
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isPurgeModalOpen, setIsPurgeModalOpen] = useState(false);
+  const [purgeClickCount, setPurgeClickCount] = useState(0);
+  const [isPurgeButtonHovered, setIsPurgeButtonHovered] = useState(false);
 
   // Apply CSS rule to hide Unsave button when setting is enabled
   useEffect(() => {
@@ -156,6 +161,49 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
       setTimeout(() => setStatusMessage(''), 3000);
     } else {
       throw new Error(result.error || 'Unknown error');
+    }
+  };
+
+  const handlePurgeClick = () => {
+    const newCount = purgeClickCount + 1;
+    setPurgeClickCount(newCount);
+
+    if (newCount >= 5) {
+      setIsPurgeModalOpen(true);
+      setPurgeClickCount(0); // Reset counter
+    }
+  };
+
+  const handlePurgeConfirm = async () => {
+    try {
+      // Import the storage utilities
+      const { clearUnlikedPosts } = await import('@/utils/storage');
+      const { fetchLikedPosts, unlikePost } = await import('@/api/grokApi');
+
+      // Clear all packs
+      clearAllPacks();
+
+      // Clear unliked archive
+      await clearUnlikedPosts();
+
+      // Unlike all liked posts
+      const likedPostsResponse = await fetchLikedPosts(1000);
+      if (likedPostsResponse.posts && likedPostsResponse.posts.length > 0) {
+        for (const post of likedPostsResponse.posts) {
+          try {
+            await unlikePost(post.id);
+          } catch (error) {
+            console.error(`Failed to unlike post ${post.id}:`, error);
+          }
+        }
+      }
+
+      setStatusMessage('All data purged successfully!');
+      setTimeout(() => setStatusMessage(''), 3000);
+    } catch (error) {
+      console.error('Purge failed:', error);
+      setStatusMessage('Purge failed. Check console for details.');
+      setTimeout(() => setStatusMessage(''), 3000);
     }
   };
 
@@ -473,6 +521,57 @@ ${importMode === 'add' ? 'Add: Creates new (fails if exists)' : 'Replace: Overwr
         onImport={handleImport}
         getThemeColors={getThemeColors}
       />
+
+      {/* Purge Modal */}
+      <PurgeModal
+        isOpen={isPurgeModalOpen}
+        onClose={() => setIsPurgeModalOpen(false)}
+        onConfirm={handlePurgeConfirm}
+        getThemeColors={getThemeColors}
+      />
+
+      {/* Divider */}
+      <div
+        className="w-full h-px mt-4"
+        style={{ backgroundColor: colors.BORDER }}
+      />
+
+      {/* Purge Section */}
+      <div className="flex flex-col gap-3 mt-4">
+        <label
+          className="text-xs flex items-center gap-1.5"
+          style={{ color: colors.TEXT_SECONDARY }}
+        >
+          <Icon path={mdiDeleteForever} size={0.6} color={colors.TEXT_SECONDARY} />
+          {t('settings.purge')}
+        </label>
+
+        {/* Purge All Button */}
+        <div className="flex flex-col gap-2">
+        <button
+          onClick={handlePurgeClick}
+          className="w-full px-3 py-2 text-xs rounded-full transition-all flex items-center justify-center gap-1"
+          style={{
+            backgroundColor: isPurgeButtonHovered ? '#fff' : '#ef4444',
+            color: isPurgeButtonHovered ? '#ef4444' : '#fff',
+            border: '1px solid #ef4444',
+          }}
+          onMouseEnter={() => setIsPurgeButtonHovered(true)}
+          onMouseLeave={() => setIsPurgeButtonHovered(false)}
+        >
+          <Icon path={mdiDeleteForever} size={0.6} color={isPurgeButtonHovered ? '#ef4444' : '#fff'} />
+          {purgeClickCount > 0 && purgeClickCount < 5
+            ? `${t('settings.purgeAllData')} (${purgeClickCount}/5)`
+            : t('settings.purgeAllData')}
+        </button>
+        <div
+          className="text-xs text-center"
+          style={{ color: colors.TEXT_SECONDARY }}
+        >
+          {t('settings.purgeClickHint')}
+        </div>
+        </div>
+      </div>
 
     </div>
   );

@@ -12,6 +12,7 @@ export interface ThemeColors {
   SHADOW: string;
   BORDER: string;
   SUCCESS: string;
+  DANGER: string;
   PROGRESS_BAR: string;
   GLOW_PRIMARY: string;
   GLOW_SECONDARY: string;
@@ -60,6 +61,7 @@ const getFallbackThemes = (): ThemesConfig => ({
     SHADOW: 'rgba(0,0,0,0.4)',
     BORDER: 'rgba(255, 255, 255, 0.2)',
     SUCCESS: '#10b981',
+    DANGER: '#ef4444',
     PROGRESS_BAR: 'rgba(255, 255, 255, 0.5)',
     GLOW_PRIMARY: 'rgba(255, 255, 255, 0.6)',
     GLOW_SECONDARY: 'rgba(255, 255, 255, 0.4)',
@@ -76,6 +78,7 @@ const getFallbackThemes = (): ThemesConfig => ({
     SHADOW: 'rgba(0,0,0,0.15)',
     BORDER: 'rgba(0, 0, 0, 0.2)',
     SUCCESS: '#059669',
+    DANGER: '#ef4444',
     PROGRESS_BAR: 'rgba(0, 0, 0, 0.3)',
     GLOW_PRIMARY: 'rgba(0, 0, 0, 0.4)',
     GLOW_SECONDARY: 'rgba(0, 0, 0, 0.2)',
@@ -92,6 +95,7 @@ const getFallbackThemes = (): ThemesConfig => ({
     SHADOW: 'rgba(0,0,0,0.5)',
     BORDER: 'rgba(189, 147, 249, 0.3)',
     SUCCESS: '#50fa7b',
+    DANGER: '#ef4444',
     PROGRESS_BAR: 'rgba(255, 255, 255, 1)',
     GLOW_PRIMARY: 'rgba(80, 250, 123, 0.6)',
     GLOW_SECONDARY: 'rgba(139, 233, 253, 0.4)',
@@ -108,6 +112,7 @@ const getFallbackThemes = (): ThemesConfig => ({
     SHADOW: 'rgba(0,0,0,0.6)',
     BORDER: 'rgba(95, 227, 178, 0.4)',
     SUCCESS: '#00FF00',
+    DANGER: '#ef4444',
     PROGRESS_BAR: 'rgba(255, 165, 0, 1)',
     GLOW_PRIMARY: 'rgba(0, 255, 0, 0.6)',
     GLOW_SECONDARY: 'rgba(255, 165, 0, 0.4)',
@@ -124,6 +129,7 @@ const getFallbackThemes = (): ThemesConfig => ({
     SHADOW: 'rgba(0,0,0,0.7)',
     BORDER: 'rgba(143, 209, 79, 0.3)',
     SUCCESS: '#8FD14F',
+    DANGER: '#ef4444',
     PROGRESS_BAR: 'rgba(143, 209, 79, 1)',
     GLOW_PRIMARY: 'rgba(143, 209, 79, 0.6)',
     GLOW_SECONDARY: 'rgba(111, 176, 43, 0.4)',
@@ -140,6 +146,7 @@ const getFallbackThemes = (): ThemesConfig => ({
     SHADOW: 'rgba(0,0,0,0.6)',
     BORDER: 'rgba(102, 192, 244, 0.3)',
     SUCCESS: '#5cb85c',
+    DANGER: '#ef4444',
     PROGRESS_BAR: 'rgba(102, 192, 244, 1)',
     GLOW_PRIMARY: 'rgba(102, 192, 244, 0.6)',
     GLOW_SECONDARY: 'rgba(103, 193, 245, 0.4)',

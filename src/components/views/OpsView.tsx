@@ -13,15 +13,17 @@ import { processPostData } from '@/utils/mediaProcessor';
 import { fetchPostData } from '@/api/grokApi';
 import { Button } from '../inputs/Button';
 import { Icon } from '../common/Icon';
-import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle, mdiFormatListBulletedSquare, mdiHeartBroken, mdiArchive, mdiLoading } from '@mdi/js';
+import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle, mdiFormatListBulletedSquare, mdiHeartBroken, mdiArchive, mdiLoading, mdiDelete } from '@mdi/js';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
 import { useBulkUnlike } from '@/hooks/useBulkUnlike';
 import { useBulkRelike } from '@/hooks/useBulkRelike';
+import { useBulkDelete } from '@/hooks/useBulkDelete';
 import { useLikedPostsLoader } from '@/hooks/useLikedPostsLoader';
 import { trackMediaDownloaded, trackModalOpened, trackModalClosed } from '@/utils/analytics';
 import { UpscaleAllModal } from '../modals/UpscaleAllModal';
 import { UnlikeModal } from '../modals/UnlikeModal';
 import { UnlikedArchiveModal } from '../modals/UnlikedArchiveModal';
+import { DeleteModal } from '../modals/DeleteModal';
 import { UnlikedPost, getUnlikedPosts } from '@/utils/storage';
 import { navigateTo } from '@/utils/opsHelpers';
 import { STATUS_MESSAGES, NAVIGATION_URLS, LOG_PREFIX } from '@/constants/opsView';
@@ -45,6 +47,7 @@ export const OpsView: React.FC = () => {
   const [postId, setPostId] = useState<string | null>(null);
   const [isUpscaleAllModalOpen, setIsUpscaleAllModalOpen] = useState(false);
   const [isUnlikeModalOpen, setIsUnlikeModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
   const [unlikedPosts, setUnlikedPosts] = useState<UnlikedPost[]>([]);
 
@@ -68,6 +71,13 @@ export const OpsView: React.FC = () => {
     totalCount: totalRelikesCount,
     processBulkRelike,
   } = useBulkRelike(setStatusText);
+
+  const {
+    isProcessing: isProcessingDeletes,
+    processedCount: processedDeletesCount,
+    totalCount: totalDeletesCount,
+    processBulkDelete,
+  } = useBulkDelete(setStatusText);
 
   // Fetch post data
   const handleFetchPost = useCallback(async () => {
@@ -226,6 +236,22 @@ export const OpsView: React.FC = () => {
     await processBulkRelike(postIds);
   };
 
+  // Handle delete button click
+  const handleDeleteClick = async () => {
+    const posts = await loadLikedPosts();
+    setPosts(posts);
+    if (posts.length > 0) {
+      setIsDeleteModalOpen(true);
+      trackModalOpened('delete_posts');
+    }
+  };
+
+  // Handle bulk delete from modal
+  const handleBulkDelete = async (selectedPostIds: string[]) => {
+    setIsDeleteModalOpen(false);
+    await processBulkDelete(selectedPostIds);
+  };
+
   // Check if all videos are HD
   const allVideosHD = urls.length > 0 && videoIdsToUpscale.length === 0 && hdVideoCount > 0;
 
@@ -309,6 +335,20 @@ export const OpsView: React.FC = () => {
         >
           Unliked Archive
         </Button>
+        <Button
+          onClick={handleDeleteClick}
+          icon={isLoadingLikedPosts ? mdiLoading : mdiDelete}
+          iconClassName={isLoadingLikedPosts ? "animate-spin" : ""}
+          disabled={isLoadingLikedPosts}
+          className="w-full"
+          tooltip="Delete multiple posts permanently"
+          style={{
+            backgroundColor: colors.DANGER,
+            color: '#fff',
+          }}
+        >
+          {isLoadingLikedPosts ? 'Loading' : 'Delete Multiple Posts'}
+        </Button>
       </div>
 
       {/* Upscale All Modal */}
@@ -358,6 +398,23 @@ export const OpsView: React.FC = () => {
         isProcessing={isProcessingRelikes}
         processedCount={processedRelikesCount}
         totalCount={totalRelikesCount}
+      />
+
+      {/* Delete Modal */}
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        posts={likedPosts}
+        onClose={() => {
+          if (!isProcessingDeletes) {
+            setIsDeleteModalOpen(false);
+            trackModalClosed('delete_posts');
+          }
+        }}
+        onConfirm={handleBulkDelete}
+        getThemeColors={getThemeColors}
+        isProcessing={isProcessingDeletes}
+        processedCount={processedDeletesCount}
+        totalCount={totalDeletesCount}
       />
     </div>
   );

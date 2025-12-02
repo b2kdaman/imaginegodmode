@@ -32,6 +32,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Bulk Operations**: Batch process multiple posts with visual selection interface
   - **Upscale All Liked**: Select from liked posts to upscale videos in bulk
   - **Unlike Multiple Posts**: Manage liked posts with bulk unlike functionality
+  - **Delete Multiple Posts**: Permanently delete multiple posts with confirmation dialog
   - **Unliked Archive**: View and re-like previously unliked posts from local storage archive
   - Large modal interface (90vw × 85vh) with 5-column grid layout
   - Heart/broken heart indicators for intuitive like/unlike selection
@@ -165,6 +166,12 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
      - Import packs: Paste JSON or upload file with real-time validation
      - Import modes: Add (create new) or Replace (overwrite existing)
      - Copy Grok prompt: System prompt for generating custom packs via AI
+   - **Purge All Data**: Nuclear option to reset all data (5-click activation with arrow key challenge)
+     - Unlikes all liked posts
+     - Clears unliked archive
+     - Deletes all prompt packs
+     - Interactive arrow key sequence for safety
+     - Cyberpunk-themed UI with animations and sound effects
 8. **Video Controls**: Use the play/pause button or press Space to control video playback
 9. **Fullscreen**: Click the fullscreen button or press F to enter fullscreen mode
 
@@ -230,21 +237,24 @@ grkgoondl/
 - **useVideoProgress**: Real-time video generation progress tracking with polling
 - **useBulkUnlike**: Custom hook for bulk unliking posts with progress tracking and archive saving
 - **useBulkRelike**: Custom hook for bulk re-liking posts from archive with progress tracking
+- **useBulkDelete**: Custom hook for bulk deleting posts with progress tracking and confirmation
 - **useLikedPostsLoader**: Hook for loading and managing liked posts with loading state
 
 ### Components
 
 **Views** (src/components/views/)
 - **PromptView**: Prompt management interface with "Make + Next" workflow button
-- **OpsView**: Media controls with queue-based upscaling, HD-gated downloads, bulk operations (Upscale All Liked, Unlike Multiple Posts)
-- **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut, hide-unsave preferences, and data management with import/export
+- **OpsView**: Media controls with queue-based upscaling, HD-gated downloads, bulk operations (Upscale All Liked, Unlike Multiple Posts, Delete Multiple Posts)
+- **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut, hide-unsave preferences, data management with import/export, and purge all data functionality
 - **HelpView**: Help and documentation interface
 
 **Modals** (src/components/modals/)
 - **BaseModal**: Reusable modal foundation with animations, high z-index, portal rendering, and flexible configuration
 - **UpscaleAllModal**: Large modal (90vw × 85vh) with 5-column grid for bulk upscaling videos from liked posts
 - **UnlikeModal**: Large modal with 5-column grid, heart/broken heart indicators, and bulk unlike functionality with auto-redirect and archive saving
+- **DeleteModal**: Confirmation modal for bulk deleting posts with nested confirmation dialog for extra safety
 - **UnlikedArchiveModal**: Archive browser for viewing and re-liking previously unliked posts with timestamps and progress tracking
+- **PurgeModal**: Interactive modal with random arrow key sequence challenge, cyberpunk UI, animations, and Web Audio API sound effects
 - **SearchModal**: Type-ahead search modal for finding prompts across all packs
 - **PackSelectModal**: Modal for selecting which pack to export
 - **ImportPackModal**: Modal for importing packs via paste or file upload with validation
@@ -423,6 +433,12 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - Consistent across all components: buttons, modals, progress bars, queue indicator
   - Button component supports iconClassName prop for animation classes
   - Dynamic icon switching in loading states for better visual feedback
+- **Web Audio API Integration**: Procedural sound generation for UI feedback
+  - Cyberpunk-style aggressive sound design for purge modal
+  - Frequency sweeps and square wave synthesis
+  - No external audio files required (all sounds generated in-browser)
+  - Success melody with C major progression and harmonic layers
+  - Error sounds with harsh downward frequency sweeps
 
 ## Theme Customization
 
