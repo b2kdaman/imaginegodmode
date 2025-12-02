@@ -33,6 +33,7 @@ export const HelpView: React.FC = () => {
           }}
         >
           <ul className="space-y-1 ml-3" style={{ listStyleType: 'disc' }}>
+            <li>Firefox and Chrome cross-browser support</li>
             <li>Save and organize prompts with packs</li>
             <li>Create, delete, and switch between packs</li>
             <li>Rate prompts with 1-5 star ratings</li>
@@ -41,12 +42,14 @@ export const HelpView: React.FC = () => {
             <li>Generate new packs with AI using Grok prompt templates</li>
             <li>Download images and videos (when all videos are HD)</li>
             <li>Parallel video upscaling to HD quality</li>
-            <li>Bulk operations: Upscale liked posts or like unliked posts</li>
+            <li>Bulk operations: Delete, upscale, relike, unlike posts</li>
+            <li>Purge all data feature for complete data cleanup</li>
             <li>Shift-click batch selection in bulk operations modal</li>
             <li>Make + Next: Automate prompt application and post navigation</li>
             <li>Real-time video generation progress</li>
             <li>Play/pause video control</li>
             <li>Fullscreen video playback</li>
+            <li>Hide unsave button option</li>
             <li>Theme customization (Dark, Light, Dracula, Winamp, LimeWire, Steam, Discord)</li>
             <li>UI size scaling (Tiny to Large)</li>
             <li>Auto-download media when generation completes</li>
@@ -232,8 +235,9 @@ export const HelpView: React.FC = () => {
           <p className="mb-1">
             <strong style={{ color: colors.TEXT_PRIMARY }}>ImagineGodMode v{VERSION}</strong>
           </p>
-          <p>Chrome extension for Grok media management</p>
+          <p>Chrome/Firefox extension for Grok media management</p>
           <p className="mt-2">by b2kdaman</p>
+          <p className="mt-1 text-[11px]">Firefox support by wyntre</p>
         </div>
       </div>
     </div>
