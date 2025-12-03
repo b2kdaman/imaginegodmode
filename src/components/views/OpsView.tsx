@@ -238,6 +238,19 @@ export const OpsView: React.FC = () => {
     await processBulkRelike(postIds);
   };
 
+  // Handle import archive
+  const handleImportArchive = async (importedPosts: UnlikedPost[]) => {
+    const { addUnlikedPosts } = await import('@/utils/storage');
+    await addUnlikedPosts(importedPosts, userId ?? undefined);
+
+    // Refresh the archive list
+    const posts = await getUnlikedPosts(userId ?? undefined);
+    setUnlikedPosts(posts);
+
+    setStatusText(`Imported ${importedPosts.length} posts to archive`);
+    setTimeout(() => setStatusText(''), 3000);
+  };
+
   // Handle delete button click
   const handleDeleteClick = async () => {
     const posts = await loadLikedPosts();
@@ -396,6 +409,7 @@ export const OpsView: React.FC = () => {
           }
         }}
         onRelike={handleRelikeFromArchive}
+        onImport={handleImportArchive}
         getThemeColors={getThemeColors}
         isProcessing={isProcessingRelikes}
         processedCount={processedRelikesCount}

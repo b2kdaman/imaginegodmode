@@ -2,9 +2,9 @@
  * Modal component for viewing and re-liking unliked posts from archive
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '../inputs/Button';
-import { mdiHeart, mdiLoading } from '@mdi/js';
+import { mdiHeart, mdiLoading, mdiDownload, mdiUpload } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { UnlikedPost } from '@/utils/storage';
 import { trackBulkSelectAll, trackBulkDeselectAll, trackBulkOperationConfirmed } from '@/utils/analytics';
@@ -15,6 +15,7 @@ interface UnlikedArchiveModalProps {
   posts: UnlikedPost[];
   onClose: () => void;
   onRelike: (selectedPostIds: string[]) => void;
+  onImport?: (posts: UnlikedPost[]) => void;
   getThemeColors: () => any;
   isProcessing?: boolean;
   processedCount?: number;
@@ -26,6 +27,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
   posts,
   onClose,
   onRelike,
+  onImport,
   getThemeColors,
   isProcessing = false,
   processedCount = 0,
@@ -34,6 +36,8 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
   const colors = getThemeColors();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [lastClickedIndex, setLastClickedIndex] = useState<number | null>(null);
+  const [importError, setImportError] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Sort posts by date (newest first)
   const sortedPosts = [...posts].sort((a, b) => b.unlikedAt - a.unlikedAt);
@@ -122,6 +126,83 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
     });
   };
 
+  // Export archive to JSON
+  const handleExport = () => {
+    const exportData = {
+      version: '1.0',
+      exportDate: new Date().toISOString(),
+      posts: posts,
+      count: posts.length,
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: 'application/json',
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+
+    // Format: unliked-archive-YYYY-MM-DD.json
+    const dateStr = new Date().toISOString().split('T')[0];
+    a.download = `unliked-archive-${dateStr}.json`;
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Import archive from JSON file
+  const handleImportClick = () => {
+    setImportError('');
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const content = event.target?.result as string;
+        const data = JSON.parse(content);
+
+        // Validate structure
+        if (!data.posts || !Array.isArray(data.posts)) {
+          setImportError('Invalid file format: missing posts array');
+          return;
+        }
+
+        // Validate each post
+        for (const post of data.posts) {
+          if (!post.id || !post.prompt || !post.mediaUrl || !post.unlikedAt) {
+            setImportError('Invalid file format: posts missing required fields');
+            return;
+          }
+        }
+
+        // Call import handler
+        if (onImport) {
+          onImport(data.posts);
+          setImportError('');
+        }
+      } catch (error) {
+        setImportError(error instanceof Error ? error.message : 'Failed to parse file');
+      }
+    };
+
+    reader.onerror = () => {
+      setImportError('Failed to read file');
+    };
+
+    reader.readAsText(file);
+
+    // Reset input so the same file can be selected again
+    e.target.value = '';
+  };
+
   return (
     <BaseModal
       isOpen={isOpen}
@@ -137,30 +218,75 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
       closeOnOverlayClick={!isProcessing}
       disableClose={isProcessing}
       footer={
-        <div className="flex gap-2 justify-end">
-          <Button
-            onClick={onClose}
-            className="text-xs"
-            disabled={isProcessing}
-            icon={isProcessing ? mdiLoading : undefined}
-            iconClassName={isProcessing ? "animate-spin" : ""}
-          >
-            {isProcessing ? 'Processing' : 'Close'}
-          </Button>
-          {!isProcessing && (
+        <div className="flex gap-2 justify-between">
+          <div className="flex gap-2">
             <Button
-              onClick={handleRelike}
+              onClick={handleExport}
               className="text-xs"
-              disabled={selectedIds.size === 0}
-              icon={mdiHeart}
+              disabled={isProcessing || posts.length === 0}
+              icon={mdiDownload}
             >
-              {relikeButtonText}
+              Export
             </Button>
-          )}
+            {onImport && (
+              <Button
+                onClick={handleImportClick}
+                className="text-xs"
+                disabled={isProcessing}
+                icon={mdiUpload}
+              >
+                Import
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={onClose}
+              className="text-xs"
+              disabled={isProcessing}
+              icon={isProcessing ? mdiLoading : undefined}
+              iconClassName={isProcessing ? "animate-spin" : ""}
+            >
+              {isProcessing ? 'Processing' : 'Close'}
+            </Button>
+            {!isProcessing && (
+              <Button
+                onClick={handleRelike}
+                className="text-xs"
+                disabled={selectedIds.size === 0}
+                icon={mdiHeart}
+              >
+                {relikeButtonText}
+              </Button>
+            )}
+          </div>
         </div>
       }
     >
       <>
+        {/* Hidden File Input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+        />
+
+        {/* Import Error Message */}
+        {importError && (
+          <div
+            className="mb-3 p-2 rounded text-xs"
+            style={{
+              backgroundColor: colors.BACKGROUND_MEDIUM,
+              color: colors.DANGER || '#ff4444',
+              border: `1px solid ${colors.DANGER || '#ff4444'}`,
+            }}
+          >
+            {importError}
+          </div>
+        )}
+
         {/* Progress Bar (shown when processing) */}
         {isProcessing && (
           <div className="mb-3">
