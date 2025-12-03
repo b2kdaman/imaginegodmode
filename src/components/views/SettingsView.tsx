@@ -187,334 +187,386 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
 
   return (
     <div
-      className="flex flex-col gap-4 w-full max-h-[400px] overflow-y-scroll custom-scrollbar pr-2 p-2"
+      className="flex flex-col gap-4 w-full max-h-[400px] overflow-y-scroll custom-scrollbar pr-2"
       style={{
         scrollbarGutter: 'stable',
       }}
     >
-      {/* Theme Setting */}
-      <div className="flex flex-col gap-2">
-        <label
-          className="text-xs flex items-center gap-1.5"
-          style={{ color: colors.TEXT_SECONDARY }}
-        >
-          <Icon path={mdiPalette} size={0.6} color={colors.TEXT_SECONDARY} />
-          {t('settings.theme')}
-        </label>
-        <Dropdown
-          value={theme}
-          onChange={(value) => {
-            const newTheme = value as 'dark' | 'light' | 'dracula' | 'winamp' | 'limewire' | 'steam' | 'discord';
-            setTheme(newTheme);
-            trackThemeChanged(newTheme);
-          }}
-          options={[
-            { value: 'dark', label: t('settings.themes.dark') },
-            { value: 'light', label: t('settings.themes.light') },
-            { value: 'dracula', label: t('settings.themes.dracula') },
-            { value: 'winamp', label: t('settings.themes.winamp') },
-            { value: 'limewire', label: t('settings.themes.limewire') },
-            { value: 'steam', label: t('settings.themes.steam') },
-            { value: 'discord', label: t('settings.themes.discord') },
-          ]}
-          className="w-full"
-        />
-      </div>
-
-      {/* Size Setting */}
-      <div className="flex flex-col gap-2">
-        <label
-          className="text-xs flex items-center gap-1.5"
-          style={{ color: colors.TEXT_SECONDARY }}
-        >
-          <Icon path={mdiResize} size={0.6} color={colors.TEXT_SECONDARY} />
-          {t('settings.size')}
-        </label>
-        <Dropdown
-          value={size}
-          onChange={(value) => {
-            const newSize = value as 'tiny' | 'small' | 'medium' | 'large';
-            setSize(newSize);
-            trackSizeChanged(newSize);
-          }}
-          options={[
-            { value: 'tiny', label: t('settings.sizes.tiny') },
-            { value: 'small', label: t('settings.sizes.small') },
-            { value: 'medium', label: t('settings.sizes.medium') },
-            { value: 'large', label: t('settings.sizes.large') },
-          ]}
-          className="w-full"
-        />
-      </div>
-
-      {/* Language Setting */}
-      <div className="flex flex-col gap-2">
-        <label
-          className="text-xs flex items-center gap-1.5"
-          style={{ color: colors.TEXT_SECONDARY }}
-        >
-          <Icon path={mdiTranslate} size={0.6} color={colors.TEXT_SECONDARY} />
-          {t('settings.language')}
-        </label>
-        <Dropdown
-          value={locale}
-          onChange={(value) => {
-            setLocale(value);
-            trackLanguageChanged(value);
-          }}
-          options={[
-            { value: 'en', label: t('settings.languages.en') },
-            { value: 'es', label: t('settings.languages.es') },
-            { value: 'ru', label: t('settings.languages.ru') },
-          ]}
-          className="w-full"
-        />
-      </div>
-
-      {/* Auto Download Setting */}
+      {/* Appearance Panel */}
       <div
-        className="flex items-center justify-between gap-2 cursor-help"
-        data-tooltip-id="app-tooltip"
-        data-tooltip-content="Automatically download media files when video generation completes"
+        className="rounded-xl p-4 backdrop-blur-md border"
+        style={{
+          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
+          borderColor: `${colors.BORDER}50`,
+          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
+        }}
       >
-        <label
-          className="text-sm cursor-pointer flex items-center gap-1.5"
-          style={{ color: colors.TEXT_PRIMARY }}
-          htmlFor="auto-download-toggle"
-        >
-          <Icon path={mdiDownloadCircle} size={0.7} color={colors.TEXT_PRIMARY} />
-          {t('settings.autoDownload')}
-        </label>
-        <Toggle
-          id="auto-download-toggle"
-          checked={autoDownload}
-          onChange={(checked) => {
-            setAutoDownload(checked);
-            trackAutoDownloadToggled(checked);
+        {/* Panel Header */}
+        <div
+          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
+          style={{
+            color: colors.TEXT_SECONDARY,
+            borderColor: `${colors.BORDER}40`,
           }}
-        />
-      </div>
-
-      {/* Remember Post State Setting */}
-      <div
-        className="flex items-center justify-between gap-2 cursor-help"
-        data-tooltip-id="app-tooltip"
-        data-tooltip-content="Remember which prompt pack was used for each post, automatically switching packs when navigating between posts"
-      >
-        <label
-          className="text-sm cursor-pointer flex items-center gap-1.5"
-          style={{ color: colors.TEXT_PRIMARY }}
-          htmlFor="remember-post-state-toggle"
         >
-          <Icon path={mdiDatabase} size={0.7} color={colors.TEXT_PRIMARY} />
-          {t('settings.rememberPostState')}
-        </label>
-        <Toggle
-          id="remember-post-state-toggle"
-          checked={rememberPostState}
-          onChange={(checked) => {
-            setRememberPostState(checked);
-            trackRememberPostStateToggled(checked);
-          }}
-        />
-      </div>
-
-      {/* Simple Shortcut Setting */}
-      <div
-        className="flex items-center justify-between gap-2 cursor-help"
-        data-tooltip-id="app-tooltip"
-        data-tooltip-content="Use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter to apply prompt"
-      >
-        <label
-          className="text-sm cursor-pointer flex items-center gap-1.5"
-          style={{ color: colors.TEXT_PRIMARY }}
-          htmlFor="simple-shortcut-toggle"
-        >
-          <Icon path={mdiKeyboard} size={0.7} color={colors.TEXT_PRIMARY} />
-          {t('settings.simpleShortcut')}
-        </label>
-        <Toggle
-          id="simple-shortcut-toggle"
-          checked={simpleShortcut}
-          onChange={(checked) => {
-            setSimpleShortcut(checked);
-            trackSimpleShortcutToggled(checked);
-          }}
-        />
-      </div>
-
-      {/* Hide Unsave Setting */}
-      <div
-        className="flex items-center justify-between gap-2 cursor-help"
-        data-tooltip-id="app-tooltip"
-        data-tooltip-content="Hide the Unsave button from the page"
-      >
-        <label
-          className="text-sm cursor-pointer flex items-center gap-1.5"
-          style={{ color: colors.TEXT_PRIMARY }}
-          htmlFor="hide-unsave-toggle"
-        >
-          <Icon path={mdiEyeOff} size={0.7} color={colors.TEXT_PRIMARY} />
-          {t('settings.hideUnsave')}
-        </label>
-        <Toggle
-          id="hide-unsave-toggle"
-          checked={hideUnsave}
-          onChange={(checked) => {
-            setHideUnsave(checked);
-            trackHideUnsaveToggled(checked);
-          }}
-        />
-      </div>
-
-      {/* Enable Sound Setting */}
-      <div
-        className="flex items-center justify-between gap-2 cursor-help"
-        data-tooltip-id="app-tooltip"
-        data-tooltip-content="Enable sound effects for UI interactions"
-      >
-        <label
-          className="text-sm cursor-pointer flex items-center gap-1.5"
-          style={{ color: colors.TEXT_PRIMARY }}
-          htmlFor="enable-sound-toggle"
-        >
-          <Icon path={mdiVolumeHigh} size={0.7} color={colors.TEXT_PRIMARY} />
-          {t('settings.enableSound')}
-        </label>
-        <Toggle
-          id="enable-sound-toggle"
-          checked={enableSound}
-          onChange={(checked) => {
-            setEnableSound(checked);
-            trackSoundToggled(checked);
-          }}
-        />
-      </div>
-
-      {/* Divider */}
-      <div
-        className="w-full h-px"
-        style={{ backgroundColor: colors.BORDER }}
-      />
-
-      {/* Data Management Section */}
-      <div className="flex flex-col gap-3">
-        <label
-          className="text-xs flex items-center gap-1.5"
-          style={{ color: colors.TEXT_SECONDARY }}
-        >
-          <Icon path={mdiDatabase} size={0.6} color={colors.TEXT_SECONDARY} />
-          {t('settings.dataManagement')}
-        </label>
-
-        {/* Import Mode Selection */}
-        <div className="flex flex-col gap-2">
-          <label
-            className="text-xs flex items-center gap-1.5"
-            style={{ color: colors.TEXT_SECONDARY }}
-          >
-            <Icon path={mdiSwapHorizontal} size={0.6} color={colors.TEXT_SECONDARY} />
-            {t('settings.importMode')}
-          </label>
-          <div className="flex gap-2">
-            <label
-              className="flex items-center gap-2 cursor-pointer text-sm"
-              style={{ color: colors.TEXT_PRIMARY }}
-            >
-              <input
-                type="radio"
-                name="import-mode"
-                value="add"
-                checked={importMode === 'add'}
-                onChange={(e) => setImportMode(e.target.value as 'add')}
-                className="cursor-pointer"
-                style={{ accentColor: colors.SUCCESS }}
-              />
-              {t('settings.importModeAdd')}
-            </label>
-            <label
-              className="flex items-center gap-2 cursor-pointer text-sm"
-              style={{ color: colors.TEXT_PRIMARY }}
-            >
-              <input
-                type="radio"
-                name="import-mode"
-                value="replace"
-                checked={importMode === 'replace'}
-                onChange={(e) => setImportMode(e.target.value as 'replace')}
-                className="cursor-pointer"
-                style={{ accentColor: colors.SUCCESS }}
-              />
-              {t('settings.importModeReplace')}
-            </label>
-          </div>
+          Appearance
         </div>
 
-        {/* Export/Import Buttons */}
-        <div className="flex gap-2 items-center">
-          <Button
-            onClick={handleExportClick}
-            icon={mdiDownload}
-            className="flex-1"
-            tooltip={`Export pack to JSON
-For backup or sharing`}
-          >
-            {t('common.export')}
-          </Button>
-          <button
-            onClick={handleCopyGrokPrompt}
-            className="flex items-center justify-center transition-all rounded-full"
-            style={{
-              width: '36px',
-              height: '36px',
-              minWidth: '36px',
-              minHeight: '36px',
-              backgroundColor: colors.BACKGROUND_MEDIUM,
-              border: `1px solid ${colors.BORDER}`,
-              color: colors.TEXT_PRIMARY,
-              cursor: 'pointer',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = colors.BACKGROUND_LIGHT;
-              e.currentTarget.style.borderColor = colors.TEXT_SECONDARY;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
-              e.currentTarget.style.borderColor = colors.BORDER;
-            }}
+        <div className="flex flex-col gap-3">
+          {/* Theme Setting */}
+          <div className="flex flex-col gap-2">
+            <label
+              className="text-xs flex items-center gap-1.5"
+              style={{ color: colors.TEXT_SECONDARY }}
+            >
+              <Icon path={mdiPalette} size={0.6} color={colors.TEXT_SECONDARY} />
+              {t('settings.theme')}
+            </label>
+            <Dropdown
+              value={theme}
+              onChange={(value) => {
+                const newTheme = value as 'dark' | 'light' | 'dracula' | 'winamp' | 'limewire' | 'steam' | 'discord';
+                setTheme(newTheme);
+                trackThemeChanged(newTheme);
+              }}
+              options={[
+                { value: 'dark', label: t('settings.themes.dark') },
+                { value: 'light', label: t('settings.themes.light') },
+                { value: 'dracula', label: t('settings.themes.dracula') },
+                { value: 'winamp', label: t('settings.themes.winamp') },
+                { value: 'limewire', label: t('settings.themes.limewire') },
+                { value: 'steam', label: t('settings.themes.steam') },
+                { value: 'discord', label: t('settings.themes.discord') },
+              ]}
+              className="w-full"
+            />
+          </div>
+
+          {/* Size Setting */}
+          <div className="flex flex-col gap-2">
+            <label
+              className="text-xs flex items-center gap-1.5"
+              style={{ color: colors.TEXT_SECONDARY }}
+            >
+              <Icon path={mdiResize} size={0.6} color={colors.TEXT_SECONDARY} />
+              {t('settings.size')}
+            </label>
+            <Dropdown
+              value={size}
+              onChange={(value) => {
+                const newSize = value as 'tiny' | 'small' | 'medium' | 'large';
+                setSize(newSize);
+                trackSizeChanged(newSize);
+              }}
+              options={[
+                { value: 'tiny', label: t('settings.sizes.tiny') },
+                { value: 'small', label: t('settings.sizes.small') },
+                { value: 'medium', label: t('settings.sizes.medium') },
+                { value: 'large', label: t('settings.sizes.large') },
+              ]}
+              className="w-full"
+            />
+          </div>
+
+          {/* Language Setting */}
+          <div className="flex flex-col gap-2">
+            <label
+              className="text-xs flex items-center gap-1.5"
+              style={{ color: colors.TEXT_SECONDARY }}
+            >
+              <Icon path={mdiTranslate} size={0.6} color={colors.TEXT_SECONDARY} />
+              {t('settings.language')}
+            </label>
+            <Dropdown
+              value={locale}
+              onChange={(value) => {
+                setLocale(value);
+                trackLanguageChanged(value);
+              }}
+              options={[
+                { value: 'en', label: t('settings.languages.en') },
+                { value: 'es', label: t('settings.languages.es') },
+                { value: 'ru', label: t('settings.languages.ru') },
+              ]}
+              className="w-full"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Behavior Panel */}
+      <div
+        className="rounded-xl p-4 backdrop-blur-md border"
+        style={{
+          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
+          borderColor: `${colors.BORDER}50`,
+          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
+        }}
+      >
+        {/* Panel Header */}
+        <div
+          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
+          style={{
+            color: colors.TEXT_SECONDARY,
+            borderColor: `${colors.BORDER}40`,
+          }}
+        >
+          Behavior
+        </div>
+
+        <div className="flex flex-col gap-3">
+          {/* Auto Download Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
             data-tooltip-id="app-tooltip"
-            data-tooltip-content={`Copy Grok system prompt
+            data-tooltip-content="Automatically download media files when video generation completes"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="auto-download-toggle"
+            >
+              <Icon path={mdiDownloadCircle} size={0.7} color={colors.TEXT_PRIMARY} />
+              {t('settings.autoDownload')}
+            </label>
+            <Toggle
+              id="auto-download-toggle"
+              checked={autoDownload}
+              onChange={(checked) => {
+                setAutoDownload(checked);
+                trackAutoDownloadToggled(checked);
+              }}
+            />
+          </div>
+
+          {/* Remember Post State Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-id="app-tooltip"
+            data-tooltip-content="Remember which prompt pack was used for each post, automatically switching packs when navigating between posts"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="remember-post-state-toggle"
+            >
+              <Icon path={mdiDatabase} size={0.7} color={colors.TEXT_PRIMARY} />
+              {t('settings.rememberPostState')}
+            </label>
+            <Toggle
+              id="remember-post-state-toggle"
+              checked={rememberPostState}
+              onChange={(checked) => {
+                setRememberPostState(checked);
+                trackRememberPostStateToggled(checked);
+              }}
+            />
+          </div>
+
+          {/* Simple Shortcut Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-id="app-tooltip"
+            data-tooltip-content="Use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter to apply prompt"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="simple-shortcut-toggle"
+            >
+              <Icon path={mdiKeyboard} size={0.7} color={colors.TEXT_PRIMARY} />
+              {t('settings.simpleShortcut')}
+            </label>
+            <Toggle
+              id="simple-shortcut-toggle"
+              checked={simpleShortcut}
+              onChange={(checked) => {
+                setSimpleShortcut(checked);
+                trackSimpleShortcutToggled(checked);
+              }}
+            />
+          </div>
+
+          {/* Hide Unsave Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-id="app-tooltip"
+            data-tooltip-content="Hide the Unsave button from the page"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="hide-unsave-toggle"
+            >
+              <Icon path={mdiEyeOff} size={0.7} color={colors.TEXT_PRIMARY} />
+              {t('settings.hideUnsave')}
+            </label>
+            <Toggle
+              id="hide-unsave-toggle"
+              checked={hideUnsave}
+              onChange={(checked) => {
+                setHideUnsave(checked);
+                trackHideUnsaveToggled(checked);
+              }}
+            />
+          </div>
+
+          {/* Enable Sound Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-id="app-tooltip"
+            data-tooltip-content="Enable sound effects for UI interactions"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="enable-sound-toggle"
+            >
+              <Icon path={mdiVolumeHigh} size={0.7} color={colors.TEXT_PRIMARY} />
+              {t('settings.enableSound')}
+            </label>
+            <Toggle
+              id="enable-sound-toggle"
+              checked={enableSound}
+              onChange={(checked) => {
+                setEnableSound(checked);
+                trackSoundToggled(checked);
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Data Management Panel */}
+      <div
+        className="rounded-xl p-4 backdrop-blur-md border"
+        style={{
+          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
+          borderColor: `${colors.BORDER}50`,
+          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
+        }}
+      >
+        {/* Panel Header */}
+        <div
+          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
+          style={{
+            color: colors.TEXT_SECONDARY,
+            borderColor: `${colors.BORDER}40`,
+          }}
+        >
+          Data Management
+        </div>
+
+        <div className="flex flex-col gap-3">
+          {/* Import Mode Selection */}
+          <div className="flex flex-col gap-2">
+            <label
+              className="text-xs flex items-center gap-1.5"
+              style={{ color: colors.TEXT_SECONDARY }}
+            >
+              <Icon path={mdiSwapHorizontal} size={0.6} color={colors.TEXT_SECONDARY} />
+              {t('settings.importMode')}
+            </label>
+            <div className="flex gap-2">
+              <label
+                className="flex items-center gap-2 cursor-pointer text-sm"
+                style={{ color: colors.TEXT_PRIMARY }}
+              >
+                <input
+                  type="radio"
+                  name="import-mode"
+                  value="add"
+                  checked={importMode === 'add'}
+                  onChange={(e) => setImportMode(e.target.value as 'add')}
+                  className="cursor-pointer"
+                  style={{ accentColor: colors.SUCCESS }}
+                />
+                {t('settings.importModeAdd')}
+              </label>
+              <label
+                className="flex items-center gap-2 cursor-pointer text-sm"
+                style={{ color: colors.TEXT_PRIMARY }}
+              >
+                <input
+                  type="radio"
+                  name="import-mode"
+                  value="replace"
+                  checked={importMode === 'replace'}
+                  onChange={(e) => setImportMode(e.target.value as 'replace')}
+                  className="cursor-pointer"
+                  style={{ accentColor: colors.SUCCESS }}
+                />
+                {t('settings.importModeReplace')}
+              </label>
+            </div>
+          </div>
+
+          {/* Export/Import Buttons */}
+          <div className="flex gap-2 items-center">
+            <Button
+              onClick={handleExportClick}
+              icon={mdiDownload}
+              className="flex-1"
+              tooltip={`Export pack to JSON
+For backup or sharing`}
+            >
+              {t('common.export')}
+            </Button>
+            <button
+              onClick={handleCopyGrokPrompt}
+              className="flex items-center justify-center transition-all rounded-full"
+              style={{
+                width: '36px',
+                height: '36px',
+                minWidth: '36px',
+                minHeight: '36px',
+                backgroundColor: colors.BACKGROUND_MEDIUM,
+                border: `1px solid ${colors.BORDER}`,
+                color: colors.TEXT_PRIMARY,
+                cursor: 'pointer',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = colors.BACKGROUND_LIGHT;
+                e.currentTarget.style.borderColor = colors.TEXT_SECONDARY;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
+                e.currentTarget.style.borderColor = colors.BORDER;
+              }}
+              data-tooltip-id="app-tooltip"
+              data-tooltip-content={`Copy Grok system prompt
 Paste → describe pack theme
 Grok generates JSON (10-15 prompts)
 Includes: format, quality rules, ratings`}
-          >
-            <Icon path={mdiContentCopy} size={0.6} color={colors.TEXT_PRIMARY} />
-          </button>
-          <Button
-            onClick={handleImportClick}
-            icon={mdiUpload}
-            className="flex-1"
-            tooltip={`Import pack from JSON
+            >
+              <Icon path={mdiContentCopy} size={0.6} color={colors.TEXT_PRIMARY} />
+            </button>
+            <Button
+              onClick={handleImportClick}
+              icon={mdiUpload}
+              className="flex-1"
+              tooltip={`Import pack from JSON
 Mode: ${importMode}
 ${importMode === 'add' ? 'Add: Creates new (fails if exists)' : 'Replace: Overwrites or creates new'}`}
-          >
-            {t('common.import')}
-          </Button>
-        </div>
-
-        {/* Status Message */}
-        {statusMessage && (
-          <div
-            className="text-xs text-center p-2 rounded-lg"
-            style={{
-              backgroundColor: colors.BACKGROUND_MEDIUM,
-              color: statusMessage.includes('failed') ? colors.TEXT_SECONDARY : colors.SUCCESS,
-              border: `1px solid ${colors.BORDER}`,
-            }}
-          >
-            {statusMessage}
+            >
+              {t('common.import')}
+            </Button>
           </div>
-        )}
+
+          {/* Status Message */}
+          {statusMessage && (
+            <div
+              className="text-xs text-center p-2 rounded-lg"
+              style={{
+                backgroundColor: colors.BACKGROUND_MEDIUM,
+                color: statusMessage.includes('failed') ? colors.TEXT_SECONDARY : colors.SUCCESS,
+                border: `1px solid ${colors.BORDER}`,
+              }}
+            >
+              {statusMessage}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Pack Select Modal */}
@@ -544,46 +596,50 @@ ${importMode === 'add' ? 'Add: Creates new (fails if exists)' : 'Replace: Overwr
         getThemeColors={getThemeColors}
       />
 
-      {/* Divider */}
+      {/* Danger Zone Panel */}
       <div
-        className="w-full h-px mt-4"
-        style={{ backgroundColor: colors.BORDER }}
-      />
-
-      {/* Purge Section */}
-      <div className="flex flex-col gap-3 mt-4">
-        <label
-          className="text-xs flex items-center gap-1.5"
-          style={{ color: colors.TEXT_SECONDARY }}
+        className="rounded-xl p-4 backdrop-blur-md border"
+        style={{
+          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
+          borderColor: `${colors.BORDER}50`,
+          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
+        }}
+      >
+        {/* Panel Header */}
+        <div
+          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
+          style={{
+            color: colors.TEXT_SECONDARY,
+            borderColor: `${colors.BORDER}40`,
+          }}
         >
-          <Icon path={mdiDeleteForever} size={0.6} color={colors.TEXT_SECONDARY} />
           {t('settings.purge')}
-        </label>
+        </div>
 
         {/* Purge All Button */}
         <div className="flex flex-col gap-2">
-        <button
-          onClick={handlePurgeClick}
-          className="w-full px-3 py-2 text-xs rounded-full transition-all flex items-center justify-center gap-1"
-          style={{
-            backgroundColor: isPurgeButtonHovered ? '#fff' : '#ef4444',
-            color: isPurgeButtonHovered ? '#ef4444' : '#fff',
-            border: '1px solid #ef4444',
-          }}
-          onMouseEnter={() => setIsPurgeButtonHovered(true)}
-          onMouseLeave={() => setIsPurgeButtonHovered(false)}
-        >
-          <Icon path={mdiDeleteForever} size={0.6} color={isPurgeButtonHovered ? '#ef4444' : '#fff'} />
-          {purgeClickCount > 0 && purgeClickCount < 5
-            ? `${t('settings.purgeAllData')} (${purgeClickCount}/5)`
-            : t('settings.purgeAllData')}
-        </button>
-        <div
-          className="text-xs text-center"
-          style={{ color: colors.TEXT_SECONDARY }}
-        >
-          {t('settings.purgeClickHint')}
-        </div>
+          <button
+            onClick={handlePurgeClick}
+            className="w-full px-3 py-2 text-xs rounded-full transition-all flex items-center justify-center gap-1"
+            style={{
+              backgroundColor: isPurgeButtonHovered ? '#fff' : '#ef4444',
+              color: isPurgeButtonHovered ? '#ef4444' : '#fff',
+              border: '1px solid #ef4444',
+            }}
+            onMouseEnter={() => setIsPurgeButtonHovered(true)}
+            onMouseLeave={() => setIsPurgeButtonHovered(false)}
+          >
+            <Icon path={mdiDeleteForever} size={0.6} color={isPurgeButtonHovered ? '#ef4444' : '#fff'} />
+            {purgeClickCount > 0 && purgeClickCount < 5
+              ? `${t('settings.purgeAllData')} (${purgeClickCount}/5)`
+              : t('settings.purgeAllData')}
+          </button>
+          <div
+            className="text-xs text-center"
+            style={{ color: colors.TEXT_SECONDARY }}
+          >
+            {t('settings.purgeClickHint')}
+          </div>
         </div>
       </div>
 

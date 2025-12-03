@@ -324,9 +324,9 @@ export const OpsView: React.FC = () => {
       <div
         className="mt-4 rounded-xl p-4 backdrop-blur-md border"
         style={{
-          background: 'linear-gradient(135deg, rgba(30, 30, 35, 0.9) 0%, rgba(20, 20, 25, 0.95) 100%)',
-          borderColor: 'rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
+          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
+          borderColor: `${colors.BORDER}50`,
+          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
         }}
       >
         {/* Panel Header */}
@@ -334,7 +334,7 @@ export const OpsView: React.FC = () => {
           className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
           style={{
             color: colors.TEXT_SECONDARY,
-            borderColor: 'rgba(255, 255, 255, 0.06)',
+            borderColor: `${colors.BORDER}40`,
           }}
         >
           Bulk Actions
@@ -377,7 +377,7 @@ export const OpsView: React.FC = () => {
         {/* Divider */}
         <div
           className="h-px my-3"
-          style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%)' }}
+          style={{ background: `linear-gradient(90deg, transparent 0%, ${colors.BORDER}50 50%, transparent 100%)` }}
         />
 
         {/* Destructive Action */}
