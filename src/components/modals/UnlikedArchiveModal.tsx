@@ -175,10 +175,22 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
           return;
         }
 
-        // Validate each post
+        // Validate each post (only check required fields)
         for (const post of data.posts) {
-          if (!post.id || !post.prompt || !post.mediaUrl || !post.unlikedAt) {
-            setImportError('Invalid file format: posts missing required fields');
+          if (!post.id || typeof post.id !== 'string') {
+            setImportError('Invalid file format: post missing id field');
+            return;
+          }
+          if (!post.prompt || typeof post.prompt !== 'string') {
+            setImportError('Invalid file format: post missing prompt field');
+            return;
+          }
+          if (!post.mediaUrl || typeof post.mediaUrl !== 'string') {
+            setImportError('Invalid file format: post missing mediaUrl field');
+            return;
+          }
+          if (post.unlikedAt === undefined || typeof post.unlikedAt !== 'number') {
+            setImportError('Invalid file format: post missing unlikedAt field');
             return;
           }
         }
