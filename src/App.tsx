@@ -65,7 +65,7 @@ export const App: React.FC = () => {
   return (
     <I18nProvider>
       <MainPanel />
-      <Tooltip id="app-tooltip" className="z-[999999]" />
+      <Tooltip id="app-tooltip" className="z-[999999] !text-xs !max-w-[20rem]" />
     </I18nProvider>
   );
 };

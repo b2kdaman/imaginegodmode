@@ -163,6 +163,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Toggle Hide Unsave to hide the "Unsave" button from the page (off by default)
    - Toggle Enable Sound to control UI sound effects (on by default) - affects purge modal audio feedback
    - All settings labels include visual icons for easy identification
+   - **Tooltips**: Hover over any setting row for detailed explanations
    - **Data Management**:
      - Export packs: Select any pack to export to JSON (backup/sharing)
      - Import packs: Paste JSON or upload file with real-time validation
@@ -172,10 +173,19 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
      - Unlikes all liked posts
      - Clears unliked archive
      - Deletes all prompt packs
-     - Interactive arrow key sequence for safety
+     - Interactive arrow key sequence for safety with timed countdown
+     - Real-time progress tracking for each purge step (pending → in progress → completed)
+     - Visual status indicators with color-coded icons and animations
+     - 2-second completion display before final confirmation
      - Cyberpunk-themed UI with animations and sound effects
-8. **Video Controls**: Use the play/pause button or press Space to control video playback
-9. **Fullscreen**: Click the fullscreen button or press F to enter fullscreen mode
+8. **Help View**: Comprehensive feature documentation
+   - Complete list of all extension features with descriptions
+   - Interactive tooltips on hover for detailed explanations
+   - Keyboard shortcuts reference with visual key indicators
+   - About section with version and credits
+   - Multi-language support for all help content
+9. **Video Controls**: Use the play/pause button or press Space to control video playback
+10. **Fullscreen**: Click the fullscreen button or press F to enter fullscreen mode
 
 ## Project Structure
 
@@ -387,6 +397,12 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - CSS selector targets `button[aria-label="Unsave"]`
   - Cleanup on unmount and setting toggle
 - **Internationalization**: Complete i18n infrastructure with English, Spanish, and Russian translations
+- **Tooltip System**: Enhanced global tooltip system with consistent styling
+  - Smaller text size (`text-xs`) for better readability
+  - Max width of 20rem with automatic text wrapping
+  - Whole-row hover areas in Settings and Help views
+  - Detailed explanations for all features and settings
+  - Multi-language tooltip support across all three languages
   - Live language switching without reload
   - Translation context with parameter interpolation
   - Fallback mechanism for missing keys

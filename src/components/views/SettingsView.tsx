@@ -272,7 +272,11 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
       </div>
 
       {/* Auto Download Setting */}
-      <div className="flex items-center justify-between gap-2">
+      <div
+        className="flex items-center justify-between gap-2 cursor-help"
+        data-tooltip-id="app-tooltip"
+        data-tooltip-content="Automatically download media files when video generation completes"
+      >
         <label
           className="text-sm cursor-pointer flex items-center gap-1.5"
           style={{ color: colors.TEXT_PRIMARY }}
@@ -292,7 +296,11 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
       </div>
 
       {/* Remember Post State Setting */}
-      <div className="flex items-center justify-between gap-2">
+      <div
+        className="flex items-center justify-between gap-2 cursor-help"
+        data-tooltip-id="app-tooltip"
+        data-tooltip-content="Remember which prompt pack was used for each post, automatically switching packs when navigating between posts"
+      >
         <label
           className="text-sm cursor-pointer flex items-center gap-1.5"
           style={{ color: colors.TEXT_PRIMARY }}
@@ -312,13 +320,15 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
       </div>
 
       {/* Simple Shortcut Setting */}
-      <div className="flex items-center justify-between gap-2">
+      <div
+        className="flex items-center justify-between gap-2 cursor-help"
+        data-tooltip-id="app-tooltip"
+        data-tooltip-content="Use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter to apply prompt"
+      >
         <label
           className="text-sm cursor-pointer flex items-center gap-1.5"
           style={{ color: colors.TEXT_PRIMARY }}
           htmlFor="simple-shortcut-toggle"
-          data-tooltip-id="app-tooltip"
-          data-tooltip-content="Use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter to apply prompt"
         >
           <Icon path={mdiKeyboard} size={0.7} color={colors.TEXT_PRIMARY} />
           {t('settings.simpleShortcut')}
@@ -334,13 +344,15 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
       </div>
 
       {/* Hide Unsave Setting */}
-      <div className="flex items-center justify-between gap-2">
+      <div
+        className="flex items-center justify-between gap-2 cursor-help"
+        data-tooltip-id="app-tooltip"
+        data-tooltip-content="Hide the Unsave button from the page"
+      >
         <label
           className="text-sm cursor-pointer flex items-center gap-1.5"
           style={{ color: colors.TEXT_PRIMARY }}
           htmlFor="hide-unsave-toggle"
-          data-tooltip-id="app-tooltip"
-          data-tooltip-content="Hide the Unsave button from the page"
         >
           <Icon path={mdiEyeOff} size={0.7} color={colors.TEXT_PRIMARY} />
           {t('settings.hideUnsave')}
@@ -356,13 +368,15 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
       </div>
 
       {/* Enable Sound Setting */}
-      <div className="flex items-center justify-between gap-2">
+      <div
+        className="flex items-center justify-between gap-2 cursor-help"
+        data-tooltip-id="app-tooltip"
+        data-tooltip-content="Enable sound effects for UI interactions"
+      >
         <label
           className="text-sm cursor-pointer flex items-center gap-1.5"
           style={{ color: colors.TEXT_PRIMARY }}
           htmlFor="enable-sound-toggle"
-          data-tooltip-id="app-tooltip"
-          data-tooltip-content="Enable sound effects for UI interactions"
         >
           <Icon path={mdiVolumeHigh} size={0.7} color={colors.TEXT_PRIMARY} />
           {t('settings.enableSound')}

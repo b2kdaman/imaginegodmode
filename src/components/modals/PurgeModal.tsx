@@ -30,6 +30,19 @@ interface PurgeModalProps {
   getThemeColors: () => any;
 }
 
+enum PurgeItemStatus {
+  PENDING = 'pending',
+  IN_PROGRESS = 'in_progress',
+  COMPLETED = 'completed',
+}
+
+interface PurgeItem {
+  id: string;
+  titleKey: string;
+  descKey: string;
+  status: PurgeItemStatus;
+}
+
 export const PurgeModal: React.FC<PurgeModalProps> = ({
   isOpen,
   onClose,
@@ -46,6 +59,12 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
   const [timeRemaining, setTimeRemaining] = useState<number>(ANIMATION_TIMINGS.SEQUENCE_TIMEOUT);
   const [timerActive, setTimerActive] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
+  const [purgeItems, setPurgeItems] = useState<PurgeItem[]>([
+    { id: 'liked-posts', titleKey: 'modals.purge.allLikedPosts', descKey: 'modals.purge.allLikedPostsDesc', status: PurgeItemStatus.PENDING },
+    { id: 'unliked-archive', titleKey: 'modals.purge.unlikedArchive', descKey: 'modals.purge.unlikedArchiveDesc', status: PurgeItemStatus.PENDING },
+    { id: 'prompt-packs', titleKey: 'modals.purge.allPromptPacks', descKey: 'modals.purge.allPromptPacksDesc', status: PurgeItemStatus.PENDING },
+  ]);
+  const [isPurging, setIsPurging] = useState(false);
   const timerRef = React.useRef<number | null>(null);
   const startTimeRef = React.useRef<number | null>(null);
 
@@ -70,6 +89,12 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
       setUserInput([]);
       setIsCompleted(false);
       setIsAscending(false);
+      setIsPurging(false);
+      setPurgeItems([
+        { id: 'liked-posts', titleKey: 'modals.purge.allLikedPosts', descKey: 'modals.purge.allLikedPostsDesc', status: PurgeItemStatus.PENDING },
+        { id: 'unliked-archive', titleKey: 'modals.purge.unlikedArchive', descKey: 'modals.purge.unlikedArchiveDesc', status: PurgeItemStatus.PENDING },
+        { id: 'prompt-packs', titleKey: 'modals.purge.allPromptPacks', descKey: 'modals.purge.allPromptPacksDesc', status: PurgeItemStatus.PENDING },
+      ]);
       resetSequence();
     }
   }, [isOpen]);
@@ -164,7 +189,29 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, userInput, arrowSequence, isCompleted, timerActive]);
 
-  const handlePurge = () => {
+  const handlePurge = async () => {
+    setIsPurging(true);
+
+    // Simulate purging each item with delays
+    for (let i = 0; i < purgeItems.length; i++) {
+      // Mark current item as in progress
+      setPurgeItems(prev => prev.map((item, idx) =>
+        idx === i ? { ...item, status: PurgeItemStatus.IN_PROGRESS } : item
+      ));
+
+      // Simulate deletion delay (you would call actual deletion logic here)
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // Mark current item as completed
+      setPurgeItems(prev => prev.map((item, idx) =>
+        idx === i ? { ...item, status: PurgeItemStatus.COMPLETED } : item
+      ));
+    }
+
+    // Wait 2 seconds to show completion status
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Actually purge the data
     onConfirm();
     onClose();
   };
@@ -218,18 +265,30 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
             className="text-sm space-y-2"
             style={{ color: colors.TEXT_PRIMARY }}
           >
-            <li className="flex items-start gap-2">
-              <span style={{ color: '#ef4444' }}>•</span>
-              <span><strong>{t('modals.purge.allLikedPosts')}</strong> - {t('modals.purge.allLikedPostsDesc')}</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span style={{ color: '#ef4444' }}>•</span>
-              <span><strong>{t('modals.purge.unlikedArchive')}</strong> - {t('modals.purge.unlikedArchiveDesc')}</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span style={{ color: '#ef4444' }}>•</span>
-              <span><strong>{t('modals.purge.allPromptPacks')}</strong> - {t('modals.purge.allPromptPacksDesc')}</span>
-            </li>
+            {purgeItems.map((item) => {
+              const isCompleted = item.status === PurgeItemStatus.COMPLETED;
+              const isInProgress = item.status === PurgeItemStatus.IN_PROGRESS;
+
+              return (
+                <li key={item.id} className="flex items-start gap-2">
+                  <span
+                    style={{
+                      color: isCompleted ? colors.SUCCESS : isInProgress ? '#f59e0b' : '#ef4444',
+                      transition: 'color 0.3s ease',
+                    }}
+                  >
+                    {isCompleted ? '✓' : isInProgress ? '⟳' : '•'}
+                  </span>
+                  <span style={{
+                    opacity: isCompleted ? 0.6 : 1,
+                    textDecoration: isCompleted ? 'line-through' : 'none',
+                    transition: 'all 0.3s ease',
+                  }}>
+                    <strong>{t(item.titleKey)}</strong> - {t(item.descKey)}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </div>
 
@@ -367,6 +426,11 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
           <Button
             onClick={onClose}
             className="flex-1"
+            disabled={isPurging}
+            style={{
+              opacity: isPurging ? 0.5 : 1,
+              cursor: isPurging ? 'not-allowed' : 'pointer',
+            }}
           >
             {t('common.cancel')}
           </Button>
@@ -374,15 +438,15 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
             onClick={handlePurge}
             icon={mdiDelete}
             className="flex-1"
-            disabled={!isCompleted}
+            disabled={!isCompleted || isPurging}
             style={{
-              backgroundColor: isCompleted ? colors.DANGER : colors.BACKGROUND_MEDIUM,
-              color: isCompleted ? '#fff' : colors.TEXT_SECONDARY,
-              opacity: isCompleted ? 1 : 0.5,
-              cursor: isCompleted ? 'pointer' : 'not-allowed',
+              backgroundColor: isCompleted && !isPurging ? colors.DANGER : colors.BACKGROUND_MEDIUM,
+              color: isCompleted && !isPurging ? '#fff' : colors.TEXT_SECONDARY,
+              opacity: isCompleted && !isPurging ? 1 : 0.5,
+              cursor: isCompleted && !isPurging ? 'pointer' : 'not-allowed',
             }}
           >
-            {t('modals.purge.purgeAllDataButton')}
+            {isPurging ? 'Purging...' : t('modals.purge.purgeAllDataButton')}
           </Button>
         </div>
       </div>

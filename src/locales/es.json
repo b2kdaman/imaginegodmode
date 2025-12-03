@@ -105,7 +105,30 @@
       "togglePanel": "Alternar Panel",
       "switchTabs": "Cambiar Pestañas"
     },
-    "aboutText": "ImagineGodMode te ayuda a gestionar prompts de generación de video con características como guardar paquetes de prompts, calificación, importar/exportar, mejorar videos a HD y descarga automática de medios."
+    "aboutText": "ImagineGodMode te ayuda a gestionar prompts de generación de video con características como guardar paquetes de prompts, calificación, importar/exportar, mejorar videos a HD y descarga automática de medios.",
+    "tooltips": {
+      "crossBrowser": "Funciona perfectamente en navegadores Firefox y Chrome",
+      "saveOrganize": "Crea múltiples paquetes para organizar tus prompts por tema o proyecto",
+      "packManagement": "Agrega nuevos paquetes, elimina los existentes y cambia fácilmente entre ellos",
+      "ratePrompts": "Haz clic en las estrellas para calificar tus prompts de 1 a 5 estrellas",
+      "arrowKeys": "Usa las teclas de flecha izquierda/derecha para navegar rápidamente entre videos",
+      "importExport": "Comparte paquetes con otros o haz copias de seguridad de tus prompts como archivos JSON",
+      "aiGenerate": "Usa Grok AI para generar paquetes completos de prompts desde plantillas",
+      "downloadMedia": "Descarga automáticamente todas las imágenes y videos HD de una publicación",
+      "parallelUpscale": "Mejora múltiples videos a calidad HD simultáneamente para un procesamiento más rápido",
+      "bulkOperations": "Realiza acciones de eliminar, mejorar, volver a gustar o dejar de gustar en múltiples publicaciones a la vez",
+      "purgeData": "Elimina completamente todos los datos de la extensión con una secuencia de confirmación segura",
+      "batchSelection": "Mantén presionado Shift y haz clic para seleccionar múltiples elementos en operaciones masivas",
+      "makeNext": "Aplica automáticamente el prompt y navega a la siguiente publicación en secuencia",
+      "realtimeProgress": "Ve la barra de progreso en vivo mientras se generan los videos",
+      "playPause": "Controla la reproducción del video con el botón de reproducir/pausar o la barra espaciadora",
+      "fullscreen": "Mira videos en modo de pantalla completa presionando F o haciendo clic en el botón",
+      "hideUnsave": "Elimina el botón de no guardar de la interfaz para una interfaz más limpia",
+      "themeCustomization": "Elige entre 7 temas diferentes para que coincida con tu estilo",
+      "uiScaling": "Escala toda la interfaz desde 70% (Pequeño) hasta 115% (Grande)",
+      "autoDownloadMedia": "Habilita descargas automáticas cuando se complete la generación de video",
+      "multiLanguage": "Cambia entre los idiomas inglés, español y ruso"
+    }
   },
   "packManager": {
     "addPackTooltip": "Agregar nuevo paquete",

@@ -105,7 +105,30 @@
       "togglePanel": "Toggle Panel",
       "switchTabs": "Switch Tabs"
     },
-    "aboutText": "ImagineGodMode helps you manage video generation prompts with features like saving prompt packs, rating, importing/exporting, upscaling videos to HD, and auto-downloading media."
+    "aboutText": "ImagineGodMode helps you manage video generation prompts with features like saving prompt packs, rating, importing/exporting, upscaling videos to HD, and auto-downloading media.",
+    "tooltips": {
+      "crossBrowser": "Works seamlessly on both Firefox and Chrome browsers",
+      "saveOrganize": "Create multiple packs to organize your prompts by theme or project",
+      "packManagement": "Add new packs, delete existing ones, and easily switch between them",
+      "ratePrompts": "Click stars to rate your prompts from 1-5 stars for easy quality tracking",
+      "arrowKeys": "Use left/right arrow keys to quickly browse through videos",
+      "importExport": "Share packs with others or backup your prompts as JSON files",
+      "aiGenerate": "Use Grok AI to generate entire prompt packs from templates",
+      "downloadMedia": "Automatically download all images and HD videos from a post",
+      "parallelUpscale": "Upscale multiple videos to HD quality simultaneously for faster processing",
+      "bulkOperations": "Perform delete, upscale, relike, or unlike actions on multiple posts at once",
+      "purgeData": "Completely wipe all extension data with a secure confirmation sequence",
+      "batchSelection": "Hold Shift and click to select multiple items in bulk operations",
+      "makeNext": "Automatically apply prompt and navigate to next post in sequence",
+      "realtimeProgress": "See live progress bar while videos are generating",
+      "playPause": "Control video playback with play/pause button or spacebar",
+      "fullscreen": "Watch videos in fullscreen mode by pressing F or clicking the button",
+      "hideUnsave": "Remove the unsave button from the UI for cleaner interface",
+      "themeCustomization": "Choose from 7 different themes to match your style",
+      "uiScaling": "Scale the entire UI from 70% (Tiny) to 115% (Large)",
+      "autoDownloadMedia": "Enable automatic downloads when video generation completes",
+      "multiLanguage": "Switch between English, Spanish, and Russian languages"
+    }
   },
   "packManager": {
     "addPackTooltip": "Add new pack",

@@ -4,11 +4,39 @@
 
 import React from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import { useTranslation } from '@/contexts/I18nContext';
 import { VERSION } from '@/utils/constants';
+import { mdiInformationOutline } from '@mdi/js';
+import { Icon } from '../common/Icon';
 
 export const HelpView: React.FC = () => {
   const { getThemeColors } = useSettingsStore();
+  const { t } = useTranslation();
   const colors = getThemeColors();
+
+  const features = [
+    { text: 'Firefox and Chrome cross-browser support', tooltip: t('help.tooltips.crossBrowser') },
+    { text: 'Save and organize prompts with packs', tooltip: t('help.tooltips.saveOrganize') },
+    { text: 'Create, delete, and switch between packs', tooltip: t('help.tooltips.packManagement') },
+    { text: 'Rate prompts with 1-5 star ratings', tooltip: t('help.tooltips.ratePrompts') },
+    { text: 'Navigate prompts with arrow keys', tooltip: t('help.tooltips.arrowKeys') },
+    { text: 'Import and export packs (add or replace mode)', tooltip: t('help.tooltips.importExport') },
+    { text: 'Generate new packs with AI using Grok prompt templates', tooltip: t('help.tooltips.aiGenerate') },
+    { text: 'Download images and videos (when all videos are HD)', tooltip: t('help.tooltips.downloadMedia') },
+    { text: 'Parallel video upscaling to HD quality', tooltip: t('help.tooltips.parallelUpscale') },
+    { text: 'Bulk operations: Delete, upscale, relike, unlike posts', tooltip: t('help.tooltips.bulkOperations') },
+    { text: 'Purge all data feature for complete data cleanup', tooltip: t('help.tooltips.purgeData') },
+    { text: 'Shift-click batch selection in bulk operations modal', tooltip: t('help.tooltips.batchSelection') },
+    { text: 'Make + Next: Automate prompt application and post navigation', tooltip: t('help.tooltips.makeNext') },
+    { text: 'Real-time video generation progress', tooltip: t('help.tooltips.realtimeProgress') },
+    { text: 'Play/pause video control', tooltip: t('help.tooltips.playPause') },
+    { text: 'Fullscreen video playback', tooltip: t('help.tooltips.fullscreen') },
+    { text: 'Hide unsave button option', tooltip: t('help.tooltips.hideUnsave') },
+    { text: 'Theme customization (Dark, Light, Dracula, Winamp, LimeWire, Steam, Discord)', tooltip: t('help.tooltips.themeCustomization') },
+    { text: 'UI size scaling (Tiny to Large)', tooltip: t('help.tooltips.uiScaling') },
+    { text: 'Auto-download media when generation completes', tooltip: t('help.tooltips.autoDownloadMedia') },
+    { text: 'Multi-language support (English, Spanish, Russian)', tooltip: t('help.tooltips.multiLanguage') },
+  ];
 
   return (
     <div
@@ -32,28 +60,26 @@ export const HelpView: React.FC = () => {
             color: colors.TEXT_SECONDARY,
           }}
         >
-          <ul className="space-y-1 ml-3" style={{ listStyleType: 'disc' }}>
-            <li>Firefox and Chrome cross-browser support</li>
-            <li>Save and organize prompts with packs</li>
-            <li>Create, delete, and switch between packs</li>
-            <li>Rate prompts with 1-5 star ratings</li>
-            <li>Navigate prompts with arrow keys</li>
-            <li>Import and export packs (add or replace mode)</li>
-            <li>Generate new packs with AI using Grok prompt templates</li>
-            <li>Download images and videos (when all videos are HD)</li>
-            <li>Parallel video upscaling to HD quality</li>
-            <li>Bulk operations: Delete, upscale, relike, unlike posts</li>
-            <li>Purge all data feature for complete data cleanup</li>
-            <li>Shift-click batch selection in bulk operations modal</li>
-            <li>Make + Next: Automate prompt application and post navigation</li>
-            <li>Real-time video generation progress</li>
-            <li>Play/pause video control</li>
-            <li>Fullscreen video playback</li>
-            <li>Hide unsave button option</li>
-            <li>Theme customization (Dark, Light, Dracula, Winamp, LimeWire, Steam, Discord)</li>
-            <li>UI size scaling (Tiny to Large)</li>
-            <li>Auto-download media when generation completes</li>
-            <li>Multi-language support (English, Spanish, Russian)</li>
+          <ul className="space-y-1 ml-3">
+            {features.map((feature, index) => (
+              <li key={index} className="flex items-start gap-2">
+                <span style={{ color: colors.TEXT_SECONDARY, marginTop: '2px' }}>•</span>
+                <span
+                  className="flex items-center gap-1 group cursor-help flex-1"
+                  data-tooltip-id="app-tooltip"
+                  data-tooltip-content={feature.tooltip}
+                >
+                  <span>{feature.text}</span>
+                  <span className="inline-flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Icon
+                      path={mdiInformationOutline}
+                      size={0.5}
+                      color={colors.TEXT_SECONDARY}
+                    />
+                  </span>
+                </span>
+              </li>
+            ))}
           </ul>
         </div>
       </div>
