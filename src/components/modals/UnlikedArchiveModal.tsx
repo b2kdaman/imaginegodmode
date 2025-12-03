@@ -181,7 +181,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
             setImportError('Invalid file format: post missing id field');
             return;
           }
-          if (!post.prompt || typeof post.prompt !== 'string') {
+          if (post.prompt === undefined || typeof post.prompt !== 'string') {
             setImportError('Invalid file format: post missing prompt field');
             return;
           }
