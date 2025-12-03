@@ -62,6 +62,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Visual Settings**: Settings labels enhanced with Material Design Icons for better UX
 - **Simple Shortcut Setting**: Optional setting to use `Ctrl/Cmd + Enter` instead of `Ctrl/Cmd + Shift + Enter` for applying prompts
 - **Hide Unsave Button**: Optional setting to hide the "Unsave" button from the Grok page interface (off by default)
+- **Sound Effects Control**: Optional setting to enable/disable UI sound effects (on by default) - controls cyberpunk-style audio feedback for purge modal interactions
 - **Keyboard Shortcuts**:
   - `Ctrl/Cmd + Shift + Enter`: Apply current prompt with prefix and click "Make a Video" (default)
   - `Ctrl/Cmd + Enter`: Apply current prompt with prefix and click "Make a Video" (when Simple Shortcut enabled)
@@ -160,6 +161,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Toggle Remember Pack Per Post to control per-post state persistence (enabled by default)
    - Toggle Simple Shortcut to use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter for applying prompts
    - Toggle Hide Unsave to hide the "Unsave" button from the page (off by default)
+   - Toggle Enable Sound to control UI sound effects (on by default) - affects purge modal audio feedback
    - All settings labels include visual icons for easy identification
    - **Data Management**:
      - Export packs: Select any pack to export to JSON (backup/sharing)
@@ -217,7 +219,7 @@ grkgoondl/
 - **usePromptStore**: Manages prompts, packs, ratings, and import/export operations
 - **useMediaStore**: Handles media URLs, upscaling, and status
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
-- **useSettingsStore**: Manages theme, size, auto-download, remember-post-state, simple-shortcut, and hide-unsave preferences with localStorage persistence
+- **useSettingsStore**: Manages theme, size, auto-download, remember-post-state, simple-shortcut, hide-unsave, and enable-sound preferences with localStorage persistence
 - **useUpscaleQueueStore**: Global upscale queue with batch processing (15 at a time), auto-download, and localStorage persistence
 - **usePostsStore**: Manages fetched posts list and navigation helpers for "Make + Next" workflow
 
@@ -245,7 +247,7 @@ grkgoondl/
 **Views** (src/components/views/)
 - **PromptView**: Prompt management interface with "Make + Next" workflow button
 - **OpsView**: Media controls with queue-based upscaling, HD-gated downloads, bulk operations (Upscale All Liked, Unlike Multiple Posts, Delete Multiple Posts)
-- **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut, hide-unsave preferences, data management with import/export, and purge all data functionality
+- **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut, hide-unsave, enable-sound preferences, data management with import/export, and purge all data functionality
 - **HelpView**: Help and documentation interface
 
 **Modals** (src/components/modals/)
@@ -373,7 +375,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Video progress polling every 500ms with auto-removal on completion
 - Console initialization tag with styled branding using theme colors
 - API architecture refactored: content script handles authenticated calls, background worker handles downloads
-- Settings persist in localStorage for instant theme/size/language/auto-download/remember-post-state/simple-shortcut/hide-unsave application on load
+- Settings persist in localStorage for instant theme/size/language/auto-download/remember-post-state/simple-shortcut/hide-unsave/enable-sound application on load
 - **Hide Unsave Feature**: Dynamic CSS injection to hide Unsave button when enabled
   - Uses `useEffect` hook to inject/remove style element
   - CSS selector targets `button[aria-label="Unsave"]`
@@ -439,6 +441,8 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - No external audio files required (all sounds generated in-browser)
   - Success melody with C major progression and harmonic layers
   - Error sounds with harsh downward frequency sweeps
+  - Sound effects can be toggled on/off via Settings (enabled by default)
+  - Settings preference checked before playing any sound
 
 ## Theme Customization
 

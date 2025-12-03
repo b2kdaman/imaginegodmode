@@ -15,6 +15,7 @@ interface SettingsState {
   rememberPostState: boolean;
   simpleShortcut: boolean;
   hideUnsave: boolean;
+  enableSound: boolean;
   themes: Record<string, ThemeColors>;
   loadThemes: () => Promise<void>;
   setTheme: (theme: Theme) => void;
@@ -23,6 +24,7 @@ interface SettingsState {
   setRememberPostState: (rememberPostState: boolean) => void;
   setSimpleShortcut: (simpleShortcut: boolean) => void;
   setHideUnsave: (hideUnsave: boolean) => void;
+  setEnableSound: (enableSound: boolean) => void;
   getThemeColors: () => ThemeColors;
   getScale: () => number;
 }
@@ -38,7 +40,7 @@ const SIZE_SCALE_MAP: Record<Size, number> = {
 };
 
 // Load settings from localStorage
-const loadSettings = (): { theme: Theme; size: Size; autoDownload: boolean; rememberPostState: boolean; simpleShortcut: boolean; hideUnsave: boolean } => {
+const loadSettings = (): { theme: Theme; size: Size; autoDownload: boolean; rememberPostState: boolean; simpleShortcut: boolean; hideUnsave: boolean; enableSound: boolean } => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
@@ -52,18 +54,19 @@ const loadSettings = (): { theme: Theme; size: Size; autoDownload: boolean; reme
         rememberPostState: typeof parsed.rememberPostState === 'boolean' ? parsed.rememberPostState : true,
         simpleShortcut: typeof parsed.simpleShortcut === 'boolean' ? parsed.simpleShortcut : false,
         hideUnsave: typeof parsed.hideUnsave === 'boolean' ? parsed.hideUnsave : false,
+        enableSound: typeof parsed.enableSound === 'boolean' ? parsed.enableSound : true,
       };
     }
   } catch (error) {
     console.error('[Settings] Failed to load from localStorage:', error);
   }
-  return { theme: 'dark', size: 'medium', autoDownload: false, rememberPostState: true, simpleShortcut: false, hideUnsave: false };
+  return { theme: 'dark', size: 'medium', autoDownload: false, rememberPostState: true, simpleShortcut: false, hideUnsave: false, enableSound: true };
 };
 
 // Save settings to localStorage
-const saveSettings = (theme: Theme, size: Size, autoDownload: boolean, rememberPostState: boolean, simpleShortcut: boolean, hideUnsave: boolean) => {
+const saveSettings = (theme: Theme, size: Size, autoDownload: boolean, rememberPostState: boolean, simpleShortcut: boolean, hideUnsave: boolean, enableSound: boolean) => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound }));
   } catch (error) {
     console.error('[Settings] Failed to save to localStorage:', error);
   }
@@ -79,39 +82,45 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   },
 
   setTheme: (theme: Theme) => {
-    const { size, autoDownload, rememberPostState, simpleShortcut, hideUnsave } = get();
-    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave);
+    const { size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound);
     set({ theme });
   },
 
   setSize: (size: Size) => {
-    const { theme, autoDownload, rememberPostState, simpleShortcut, hideUnsave } = get();
-    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave);
+    const { theme, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound);
     set({ size });
   },
 
   setAutoDownload: (autoDownload: boolean) => {
-    const { theme, size, rememberPostState, simpleShortcut, hideUnsave } = get();
-    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave);
+    const { theme, size, rememberPostState, simpleShortcut, hideUnsave, enableSound } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound);
     set({ autoDownload });
   },
 
   setRememberPostState: (rememberPostState: boolean) => {
-    const { theme, size, autoDownload, simpleShortcut, hideUnsave } = get();
-    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave);
+    const { theme, size, autoDownload, simpleShortcut, hideUnsave, enableSound } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound);
     set({ rememberPostState });
   },
 
   setSimpleShortcut: (simpleShortcut: boolean) => {
-    const { theme, size, autoDownload, rememberPostState, hideUnsave } = get();
-    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave);
+    const { theme, size, autoDownload, rememberPostState, hideUnsave, enableSound } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound);
     set({ simpleShortcut });
   },
 
   setHideUnsave: (hideUnsave: boolean) => {
-    const { theme, size, autoDownload, rememberPostState, simpleShortcut } = get();
-    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave);
+    const { theme, size, autoDownload, rememberPostState, simpleShortcut, enableSound } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound);
     set({ hideUnsave });
+  },
+
+  setEnableSound: (enableSound: boolean) => {
+    const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound);
+    set({ enableSound });
   },
 
   getThemeColors: () => {

@@ -43,6 +43,7 @@
     "rememberPostState": "Запомнить пак для поста",
     "simpleShortcut": "Простое сочетание клавиш",
     "hideUnsave": "Скрыть кнопку Unsave",
+    "enableSound": "Включить звук",
     "dataManagement": "Управление данными",
     "importMode": "Режим импорта пака",
     "importModeAdd": "Добавить",

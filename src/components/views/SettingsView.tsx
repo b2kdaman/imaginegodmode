@@ -25,7 +25,8 @@ import {
   mdiSwapHorizontal,
   mdiKeyboard,
   mdiEyeOff,
-  mdiDeleteForever
+  mdiDeleteForever,
+  mdiVolumeHigh
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -36,10 +37,11 @@ import {
   trackRememberPostStateToggled,
   trackSimpleShortcutToggled,
   trackHideUnsaveToggled,
+  trackSoundToggled,
 } from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableSound, getThemeColors } = useSettingsStore();
   const { importPack, currentPack, packs, clearAllPacks } = usePromptStore();
   const { t, locale, setLocale } = useTranslation();
   const colors = getThemeColors();
@@ -373,6 +375,28 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
           onChange={(checked) => {
             setHideUnsave(checked);
             trackHideUnsaveToggled(checked);
+          }}
+        />
+      </div>
+
+      {/* Enable Sound Setting */}
+      <div className="flex items-center justify-between gap-2">
+        <label
+          className="text-sm cursor-pointer flex items-center gap-1.5"
+          style={{ color: colors.TEXT_PRIMARY }}
+          htmlFor="enable-sound-toggle"
+          data-tooltip-id="app-tooltip"
+          data-tooltip-content="Enable sound effects for UI interactions"
+        >
+          <Icon path={mdiVolumeHigh} size={0.7} color={colors.TEXT_PRIMARY} />
+          {t('settings.enableSound')}
+        </label>
+        <Toggle
+          id="enable-sound-toggle"
+          checked={enableSound}
+          onChange={(checked) => {
+            setEnableSound(checked);
+            trackSoundToggled(checked);
           }}
         />
       </div>

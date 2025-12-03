@@ -3,6 +3,15 @@
  * Cyberpunk/aggressive sound design
  */
 
+import { useSettingsStore } from '@/store/useSettingsStore';
+
+/**
+ * Check if sound is enabled
+ */
+const isSoundEnabled = (): boolean => {
+  return useSettingsStore.getState().enableSound;
+};
+
 /**
  * Play a tone using Web Audio API with optional distortion
  */
@@ -63,6 +72,7 @@ const playFrequencySweep = (startFreq: number, endFreq: number, duration: number
  * Play cyberpunk correct key sound - digital blip with pitch rise
  */
 export const playCorrectKeySound = (): void => {
+  if (!isSoundEnabled()) return;
   // Sharp digital blip with upward sweep
   playFrequencySweep(800, 1600, 0.08);
   // Add harmonic layer
@@ -73,6 +83,7 @@ export const playCorrectKeySound = (): void => {
  * Play cyberpunk wrong key sound - harsh glitch
  */
 export const playWrongKeySound = (): void => {
+  if (!isSoundEnabled()) return;
   // Deep harsh buzz with downward pitch
   playFrequencySweep(400, 80, 0.25);
   // Add distorted layer
@@ -85,6 +96,7 @@ export const playWrongKeySound = (): void => {
  * Play cyberpunk success sound - aggressive digital fanfare with melody
  */
 export const playSuccessChord = (): void => {
+  if (!isSoundEnabled()) return;
   // Melody notes (in Hz) - cyberpunk style ascending pattern
   const melody = [
     { freq: 523.25, duration: 0.15 },  // C5

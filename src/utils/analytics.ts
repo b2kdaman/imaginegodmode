@@ -209,6 +209,10 @@ export const trackHideUnsaveToggled = (enabled: boolean): void => {
   trackEvent('hide_unsave_toggled', { enabled });
 };
 
+export const trackSoundToggled = (enabled: boolean): void => {
+  trackEvent('sound_toggled', { enabled });
+};
+
 /**
  * Track settings changes
  */
