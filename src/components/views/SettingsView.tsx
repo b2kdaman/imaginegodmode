@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { usePromptStore } from '@/store/usePromptStore';
+import { useUserStore } from '@/store/useUserStore';
 import { exportPack } from '@/utils/storage';
 import { Button } from '../inputs/Button';
 import { Toggle } from '../inputs/Toggle';
@@ -43,6 +44,7 @@ import {
 export const SettingsView: React.FC = () => {
   const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableSound, getThemeColors } = useSettingsStore();
   const { importPack, currentPack, packs, clearAllPacks } = usePromptStore();
+  const { userId } = useUserStore();
   const { t, locale, setLocale } = useTranslation();
   const colors = getThemeColors();
 
@@ -186,7 +188,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
       clearAllPacks();
 
       // Clear unliked archive
-      await clearUnlikedPosts();
+      await clearUnlikedPosts(userId ?? undefined);
 
       // Unlike all liked posts
       const likedPostsResponse = await fetchLikedPosts(1000);

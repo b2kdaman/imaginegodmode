@@ -8,6 +8,7 @@ import { unlikePost } from '@/api/grokApi';
 import { addUnlikedPosts, UnlikedPost } from '@/utils/storage';
 import { processBatch, convertToUnlikedPost, sleep, navigateTo } from '@/utils/opsHelpers';
 import { PROCESSING_DELAYS, NAVIGATION_URLS, LOG_PREFIX, STATUS_MESSAGES } from '@/constants/opsView';
+import { useUserStore } from '@/store/useUserStore';
 
 export interface UseBulkUnlikeReturn {
   isProcessing: boolean;
@@ -22,6 +23,7 @@ export const useBulkUnlike = (
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedCount, setProcessedCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const { userId } = useUserStore();
 
   const processBulkUnlike = async (
     selectedPostIds: string[],
@@ -57,7 +59,7 @@ export const useBulkUnlike = (
 
     // Save unliked posts to storage
     if (unlikedPosts.length > 0) {
-      await addUnlikedPosts(unlikedPosts);
+      await addUnlikedPosts(unlikedPosts, userId ?? undefined);
       console.log(`${LOG_PREFIX} ${STATUS_MESSAGES.SAVED_TO_ARCHIVE(unlikedPosts.length)}`);
     }
 

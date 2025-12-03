@@ -33,7 +33,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - **Upscale All Liked**: Select from liked posts to upscale videos in bulk
   - **Unlike Multiple Posts**: Manage liked posts with bulk unlike functionality
   - **Delete Multiple Posts**: Permanently delete multiple posts with confirmation dialog
-  - **Unliked Archive**: View and re-like previously unliked posts from local storage archive
+  - **Unliked Archive**: View and re-like previously unliked posts from local storage archive (per-user with automatic migration)
   - Large modal interface (90vw × 85vh) with 5-column grid layout
   - Heart/broken heart indicators for intuitive like/unlike selection
   - Click anywhere on item to toggle selection (no navigation)
@@ -222,6 +222,7 @@ grkgoondl/
 - **useSettingsStore**: Manages theme, size, auto-download, remember-post-state, simple-shortcut, hide-unsave, and enable-sound preferences with localStorage persistence
 - **useUpscaleQueueStore**: Global upscale queue with batch processing (15 at a time), auto-download, and localStorage persistence
 - **usePostsStore**: Manages fetched posts list and navigation helpers for "Make + Next" workflow
+- **useUserStore**: Manages user ID from API with localStorage persistence and automatic initialization
 
 ### Contexts
 
@@ -306,10 +307,15 @@ Uses `chrome.runtime.sendMessage()` for communication:
 
 ### Storage
 Uses multiple storage mechanisms with context validation:
-- **chrome.storage.local**: Packs with prompts and ratings, prompt prefixes per-post, per-post state (selected pack and prompt index), unliked posts archive with minimal metadata, automatic migration from old format
-- **localStorage**: Theme, size, language, and auto-download preferences for instant loading
+- **chrome.storage.local**: Packs with prompts and ratings, prompt prefixes per-post, per-post state (selected pack and prompt index), unliked posts archive with minimal metadata per-user
+- **localStorage**: Theme, size, language, auto-download preferences, and user ID for instant loading
 - **Extension Context Validation**: All storage operations check for valid extension context to gracefully handle extension reloads
-- **Unliked Posts Archive**: Stores minimal data (ID, prompt, thumbnail URL, media URL, timestamp, child post count) for efficient browsing and re-liking
+- **Unliked Posts Archive**:
+  - Per-user storage: Each Grok user ID has separate unliked posts
+  - Automatic user ID detection from fetchLikedPosts API on extension init
+  - Backward compatibility: Old format automatically migrated to current user
+  - Stores minimal data (ID, prompt, thumbnail URL, media URL, timestamp, child post count) for efficient browsing and re-liking
+  - Multi-account support: Switch between Grok accounts without data conflicts
 - **Import/Export**:
   - Per-pack JSON export with timestamped filenames
   - Import via paste or file upload with real-time validation

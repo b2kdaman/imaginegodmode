@@ -7,6 +7,7 @@ import { likePost } from '@/api/grokApi';
 import { removeUnlikedPosts } from '@/utils/storage';
 import { processBatch, sleep, navigateTo } from '@/utils/opsHelpers';
 import { PROCESSING_DELAYS, NAVIGATION_URLS, LOG_PREFIX, STATUS_MESSAGES } from '@/constants/opsView';
+import { useUserStore } from '@/store/useUserStore';
 
 export interface UseBulkRelikeReturn {
   isProcessing: boolean;
@@ -21,6 +22,7 @@ export const useBulkRelike = (
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedCount, setProcessedCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const { userId } = useUserStore();
 
   const processBulkRelike = async (selectedPostIds: string[]): Promise<void> => {
     setIsProcessing(true);
@@ -44,7 +46,7 @@ export const useBulkRelike = (
     // Remove re-liked posts from archive
     if (successCount > 0) {
       const relikedIds = selectedPostIds.slice(0, successCount);
-      await removeUnlikedPosts(relikedIds);
+      await removeUnlikedPosts(relikedIds, userId ?? undefined);
       console.log(`${LOG_PREFIX} ${STATUS_MESSAGES.REMOVED_FROM_ARCHIVE(relikedIds.length)}`);
     }
 

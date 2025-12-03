@@ -7,6 +7,7 @@ import { useMediaStore } from '@/store/useMediaStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useUpscaleQueueStore } from '@/store/useUpscaleQueueStore';
 import { usePostsStore } from '@/store/usePostsStore';
+import { useUserStore } from '@/store/useUserStore';
 import { getPostIdFromUrl } from '@/utils/helpers';
 import { fetchPost, downloadMedia } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
@@ -42,6 +43,7 @@ export const OpsView: React.FC = () => {
   const { getThemeColors } = useSettingsStore();
   const { addToQueue, isProcessing: isQueueProcessing } = useUpscaleQueueStore();
   const { setPosts, setCurrentPostId, ensureCurrentPostInList } = usePostsStore();
+  const { userId } = useUserStore();
   const colors = getThemeColors();
 
   const [postId, setPostId] = useState<string | null>(null);
@@ -224,7 +226,7 @@ export const OpsView: React.FC = () => {
 
   // Handle archive button click
   const handleArchiveClick = async () => {
-    const posts = await getUnlikedPosts();
+    const posts = await getUnlikedPosts(userId ?? undefined);
     setUnlikedPosts(posts);
     setIsArchiveModalOpen(true);
     trackModalOpened('unliked_archive');

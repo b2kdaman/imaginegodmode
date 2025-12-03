@@ -42,6 +42,10 @@ export interface UnlikedPostsStorageData {
   posts: UnlikedPost[];
 }
 
+export interface PerUserUnlikedPostsStorageData {
+  [userId: string]: UnlikedPost[];
+}
+
 /**
  * Check if the extension context is still valid
  */
@@ -353,18 +357,74 @@ export const setPostState = async (postId: string, state: PostState): Promise<bo
 };
 
 /**
- * Get all unliked posts from storage
+ * Migrate old storage format to per-user format
+ * @param userId - Current user ID to assign old data to
+ * @returns true if migration was performed, false otherwise
  */
-export const getUnlikedPosts = async (): Promise<UnlikedPost[]> => {
+const migrateUnlikedPostsStorage = async (userId: string): Promise<boolean> => {
+  if (!isExtensionContextValid()) {
+    return false;
+  }
+
+  try {
+    const result = await browserAPI.storage.local.get(UNLIKED_POSTS_STORAGE_KEY);
+    const data = result[UNLIKED_POSTS_STORAGE_KEY];
+
+    // Check if old format exists (has 'posts' array at root level)
+    if (data && Array.isArray(data.posts)) {
+      console.log('[Storage] Migrating old unliked posts format to per-user format for userId:', userId);
+
+      // Convert to new format: assign old posts to current user
+      const newData: PerUserUnlikedPostsStorageData = {
+        [userId]: data.posts
+      };
+
+      await browserAPI.storage.local.set({
+        [UNLIKED_POSTS_STORAGE_KEY]: newData
+      });
+
+      console.log('[Storage] Migration completed. Migrated', data.posts.length, 'posts to userId:', userId);
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    console.error('[Storage] Failed to migrate unliked posts:', error);
+    return false;
+  }
+};
+
+/**
+ * Get all unliked posts from storage for a specific user
+ * @param userId - User ID to get posts for (optional - if not provided, returns empty array)
+ */
+export const getUnlikedPosts = async (userId?: string): Promise<UnlikedPost[]> => {
   if (!isExtensionContextValid()) {
     console.warn('[ImagineGodMode] Extension context invalidated - unliked posts storage unavailable');
     return [];
   }
 
+  if (!userId) {
+    console.warn('[Storage] No userId provided to getUnlikedPosts');
+    return [];
+  }
+
   try {
     const result = await browserAPI.storage.local.get(UNLIKED_POSTS_STORAGE_KEY);
-    const data: UnlikedPostsStorageData = result[UNLIKED_POSTS_STORAGE_KEY] || { posts: [] };
-    return data.posts || [];
+    const data = result[UNLIKED_POSTS_STORAGE_KEY];
+
+    // Check if old format exists and migrate
+    if (data && Array.isArray(data.posts)) {
+      await migrateUnlikedPostsStorage(userId);
+      // Re-fetch after migration
+      const migratedResult = await browserAPI.storage.local.get(UNLIKED_POSTS_STORAGE_KEY);
+      const migratedData: PerUserUnlikedPostsStorageData = migratedResult[UNLIKED_POSTS_STORAGE_KEY] || {};
+      return migratedData[userId] || [];
+    }
+
+    // New format: per-user storage
+    const perUserData: PerUserUnlikedPostsStorageData = data || {};
+    return perUserData[userId] || [];
   } catch (error) {
     console.error('Failed to get unliked posts:', error);
     return [];
@@ -372,15 +432,22 @@ export const getUnlikedPosts = async (): Promise<UnlikedPost[]> => {
 };
 
 /**
- * Add unliked posts to storage
+ * Add unliked posts to storage for a specific user
+ * @param posts - Posts to add
+ * @param userId - User ID to add posts for (required)
  */
-export const addUnlikedPosts = async (posts: UnlikedPost[]): Promise<boolean> => {
+export const addUnlikedPosts = async (posts: UnlikedPost[], userId?: string): Promise<boolean> => {
   if (!isExtensionContextValid()) {
     return false;
   }
 
+  if (!userId) {
+    console.warn('[Storage] No userId provided to addUnlikedPosts');
+    return false;
+  }
+
   try {
-    const existingPosts = await getUnlikedPosts();
+    const existingPosts = await getUnlikedPosts(userId);
     const existingIds = new Set(existingPosts.map(p => p.id));
 
     // Only add posts that don't already exist
@@ -391,8 +458,16 @@ export const addUnlikedPosts = async (posts: UnlikedPost[]): Promise<boolean> =>
     }
 
     const updatedPosts = [...existingPosts, ...newPosts];
+
+    // Get existing data for all users
+    const result = await browserAPI.storage.local.get(UNLIKED_POSTS_STORAGE_KEY);
+    const allUserData: PerUserUnlikedPostsStorageData = result[UNLIKED_POSTS_STORAGE_KEY] || {};
+
+    // Update only this user's posts
+    allUserData[userId] = updatedPosts;
+
     await browserAPI.storage.local.set({
-      [UNLIKED_POSTS_STORAGE_KEY]: { posts: updatedPosts }
+      [UNLIKED_POSTS_STORAGE_KEY]: allUserData
     });
     return true;
   } catch (error) {
@@ -402,20 +477,34 @@ export const addUnlikedPosts = async (posts: UnlikedPost[]): Promise<boolean> =>
 };
 
 /**
- * Remove unliked posts from storage by IDs
+ * Remove unliked posts from storage by IDs for a specific user
+ * @param postIds - Post IDs to remove
+ * @param userId - User ID to remove posts for (required)
  */
-export const removeUnlikedPosts = async (postIds: string[]): Promise<boolean> => {
+export const removeUnlikedPosts = async (postIds: string[], userId?: string): Promise<boolean> => {
   if (!isExtensionContextValid()) {
     return false;
   }
 
+  if (!userId) {
+    console.warn('[Storage] No userId provided to removeUnlikedPosts');
+    return false;
+  }
+
   try {
-    const existingPosts = await getUnlikedPosts();
+    const existingPosts = await getUnlikedPosts(userId);
     const idsToRemove = new Set(postIds);
     const updatedPosts = existingPosts.filter(p => !idsToRemove.has(p.id));
 
+    // Get existing data for all users
+    const result = await browserAPI.storage.local.get(UNLIKED_POSTS_STORAGE_KEY);
+    const allUserData: PerUserUnlikedPostsStorageData = result[UNLIKED_POSTS_STORAGE_KEY] || {};
+
+    // Update only this user's posts
+    allUserData[userId] = updatedPosts;
+
     await browserAPI.storage.local.set({
-      [UNLIKED_POSTS_STORAGE_KEY]: { posts: updatedPosts }
+      [UNLIKED_POSTS_STORAGE_KEY]: allUserData
     });
     return true;
   } catch (error) {
@@ -425,16 +514,29 @@ export const removeUnlikedPosts = async (postIds: string[]): Promise<boolean> =>
 };
 
 /**
- * Clear all unliked posts from storage
+ * Clear all unliked posts from storage for a specific user
+ * @param userId - User ID to clear posts for (required)
  */
-export const clearUnlikedPosts = async (): Promise<boolean> => {
+export const clearUnlikedPosts = async (userId?: string): Promise<boolean> => {
   if (!isExtensionContextValid()) {
     return false;
   }
 
+  if (!userId) {
+    console.warn('[Storage] No userId provided to clearUnlikedPosts');
+    return false;
+  }
+
   try {
+    // Get existing data for all users
+    const result = await browserAPI.storage.local.get(UNLIKED_POSTS_STORAGE_KEY);
+    const allUserData: PerUserUnlikedPostsStorageData = result[UNLIKED_POSTS_STORAGE_KEY] || {};
+
+    // Clear only this user's posts
+    allUserData[userId] = [];
+
     await browserAPI.storage.local.set({
-      [UNLIKED_POSTS_STORAGE_KEY]: { posts: [] }
+      [UNLIKED_POSTS_STORAGE_KEY]: allUserData
     });
     return true;
   } catch (error) {
