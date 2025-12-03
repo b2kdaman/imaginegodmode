@@ -16,7 +16,7 @@ import { initAnalytics } from './utils/analytics';
 
 export const App: React.FC = () => {
   const { loadFromStorage } = usePromptStore();
-  const { loadThemes } = useSettingsStore();
+  const { loadThemes, hideUnsave } = useSettingsStore();
   const { loadUserId } = useUserStore();
 
   // Initialize data from storage and load themes
@@ -26,6 +26,32 @@ export const App: React.FC = () => {
     loadUserId();
     initAnalytics();
   }, [loadFromStorage, loadThemes, loadUserId]);
+
+  // Apply CSS rule to hide Unsave button when setting is enabled (global effect)
+  useEffect(() => {
+    const styleId = 'hide-unsave-style';
+    let styleElement = document.getElementById(styleId) as HTMLStyleElement;
+
+    if (hideUnsave) {
+      if (!styleElement) {
+        styleElement = document.createElement('style');
+        styleElement.id = styleId;
+        document.head.appendChild(styleElement);
+      }
+      styleElement.textContent = 'button[aria-label="Unsave"] { display: none !important; }';
+    } else {
+      if (styleElement) {
+        styleElement.remove();
+      }
+    }
+
+    return () => {
+      const el = document.getElementById(styleId);
+      if (el) {
+        el.remove();
+      }
+    };
+  }, [hideUnsave]);
 
   // Set up keyboard shortcuts
   useKeyboardShortcuts();

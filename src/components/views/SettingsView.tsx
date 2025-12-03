@@ -2,7 +2,7 @@
  * Settings view component
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { usePromptStore } from '@/store/usePromptStore';
 import { useUserStore } from '@/store/useUserStore';
@@ -55,32 +55,6 @@ export const SettingsView: React.FC = () => {
   const [isPurgeModalOpen, setIsPurgeModalOpen] = useState(false);
   const [purgeClickCount, setPurgeClickCount] = useState(0);
   const [isPurgeButtonHovered, setIsPurgeButtonHovered] = useState(false);
-
-  // Apply CSS rule to hide Unsave button when setting is enabled
-  useEffect(() => {
-    const styleId = 'hide-unsave-style';
-    let styleElement = document.getElementById(styleId) as HTMLStyleElement;
-
-    if (hideUnsave) {
-      if (!styleElement) {
-        styleElement = document.createElement('style');
-        styleElement.id = styleId;
-        document.head.appendChild(styleElement);
-      }
-      styleElement.textContent = 'button[aria-label="Unsave"] { display: none !important; }';
-    } else {
-      if (styleElement) {
-        styleElement.remove();
-      }
-    }
-
-    return () => {
-      const el = document.getElementById(styleId);
-      if (el) {
-        el.remove();
-      }
-    };
-  }, [hideUnsave]);
 
   const handleExportClick = () => {
     setIsExportModalOpen(true);
