@@ -320,50 +320,83 @@ export const OpsView: React.FC = () => {
         </div>
       )}
 
-      {/* Upscale All Liked & Unlike Buttons - always visible */}
-      <div className="flex flex-col gap-2 mt-2">
-        <Button
-          onClick={handleUpscaleAllClick}
-          icon={isLoadingLikedPosts ? mdiLoading : mdiFormatListBulletedSquare}
-          iconClassName={isLoadingLikedPosts ? "animate-spin" : ""}
-          disabled={isLoadingLikedPosts}
-          className="w-full"
-          tooltip="Upscale videos from multiple liked posts"
-        >
-          {isLoadingLikedPosts ? 'Loading' : 'Upscale All Liked'}
-        </Button>
-        <Button
-          onClick={handleUnlikeClick}
-          icon={isLoadingLikedPosts ? mdiLoading : mdiHeartBroken}
-          iconClassName={isLoadingLikedPosts ? "animate-spin" : ""}
-          disabled={isLoadingLikedPosts}
-          className="w-full"
-          tooltip="Unlike multiple posts at once"
-        >
-          {isLoadingLikedPosts ? 'Loading' : 'Unlike Multiple Posts'}
-        </Button>
-        <Button
-          onClick={handleArchiveClick}
-          icon={mdiArchive}
-          className="w-full"
-          tooltip="View and manage unliked posts archive"
-        >
-          Unliked Archive
-        </Button>
-        <Button
-          onClick={handleDeleteClick}
-          icon={isLoadingLikedPosts ? mdiLoading : mdiDelete}
-          iconClassName={isLoadingLikedPosts ? "animate-spin" : ""}
-          disabled={isLoadingLikedPosts}
-          className="w-full"
-          tooltip="Delete multiple posts permanently"
+      {/* Bulk Actions Panel - Modern Glassy Design */}
+      <div
+        className="mt-4 rounded-xl p-4 backdrop-blur-md border"
+        style={{
+          background: 'linear-gradient(135deg, rgba(30, 30, 35, 0.9) 0%, rgba(20, 20, 25, 0.95) 100%)',
+          borderColor: 'rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
+        }}
+      >
+        {/* Panel Header */}
+        <div
+          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
           style={{
-            backgroundColor: colors.DANGER,
-            color: '#fff',
+            color: colors.TEXT_SECONDARY,
+            borderColor: 'rgba(255, 255, 255, 0.06)',
           }}
         >
-          {isLoadingLikedPosts ? 'Loading' : 'Delete Multiple Posts'}
-        </Button>
+          Bulk Actions
+        </div>
+
+        {/* Safe Actions Group */}
+        <div className="flex flex-col gap-2 mb-3">
+          <Button
+            onClick={handleUpscaleAllClick}
+            icon={isLoadingLikedPosts ? mdiLoading : mdiFormatListBulletedSquare}
+            iconClassName={isLoadingLikedPosts ? "animate-spin" : ""}
+            disabled={isLoadingLikedPosts}
+            className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            tooltip="Upscale videos from multiple liked posts"
+          >
+            {isLoadingLikedPosts ? 'Loading' : 'Upscale All Liked'}
+          </Button>
+
+          <Button
+            onClick={handleUnlikeClick}
+            icon={isLoadingLikedPosts ? mdiLoading : mdiHeartBroken}
+            iconClassName={isLoadingLikedPosts ? "animate-spin" : ""}
+            disabled={isLoadingLikedPosts}
+            className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            tooltip="Unlike multiple posts at once"
+          >
+            {isLoadingLikedPosts ? 'Loading' : 'Unlike Multiple Posts'}
+          </Button>
+
+          <Button
+            onClick={handleArchiveClick}
+            icon={mdiArchive}
+            className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            tooltip="View and manage unliked posts archive"
+          >
+            Unliked Archive
+          </Button>
+        </div>
+
+        {/* Divider */}
+        <div
+          className="h-px my-3"
+          style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%)' }}
+        />
+
+        {/* Destructive Action */}
+        <div>
+          <Button
+            onClick={handleDeleteClick}
+            icon={isLoadingLikedPosts ? mdiLoading : mdiDelete}
+            iconClassName={isLoadingLikedPosts ? "animate-spin" : ""}
+            disabled={isLoadingLikedPosts}
+            className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            tooltip="Delete multiple posts permanently"
+            style={{
+              backgroundColor: colors.DANGER,
+              color: '#fff',
+            }}
+          >
+            {isLoadingLikedPosts ? 'Loading' : 'Delete Multiple Posts'}
+          </Button>
+        </div>
       </div>
 
       {/* Upscale All Modal */}
