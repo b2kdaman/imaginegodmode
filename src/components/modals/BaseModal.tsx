@@ -46,7 +46,7 @@ export const BaseModal: React.FC<BaseModalProps> = ({
   maxHeight,
   width,
   height,
-  padding = 'p-4',
+  padding = 'p-3',
   overlayOpacity = 0.5,
   showCloseButton = true,
   closeOnOverlayClick = true,
@@ -82,9 +82,11 @@ export const BaseModal: React.FC<BaseModalProps> = ({
       onClick={handleOverlayClick}
     >
       <div
-        className={`modal-content rounded-xl ${padding} ${maxWidthClass} w-full mx-4 flex flex-col`}
+        className={`modal-content rounded-xl ${padding} ${maxWidthClass} w-full mx-4 flex flex-col gap-2`}
         style={{
-          backgroundColor: colors.BACKGROUND_DARK,
+          backgroundColor: `${colors.BACKGROUND_DARK}aa`,
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
           border: `1px solid ${colors.BORDER}`,
           boxShadow: `0 8px 32px ${colors.SHADOW}`,
           ...(width && { width }),
@@ -94,7 +96,7 @@ export const BaseModal: React.FC<BaseModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 flex-1">
             <h2
               className="text-sm font-semibold"
@@ -140,7 +142,7 @@ export const BaseModal: React.FC<BaseModalProps> = ({
 
         {/* Footer */}
         {footer && (
-          <div className="mt-3">
+          <div>
             {footer}
           </div>
         )}

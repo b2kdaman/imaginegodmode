@@ -58,16 +58,18 @@ export const UpscaleQueueIndicator: React.FC = () => {
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-9 h-9 rounded-full flex items-center justify-center transition-colors relative"
         style={{
-          backgroundColor: colors.BACKGROUND_MEDIUM,
+          backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
           border: `1px solid ${colors.BORDER}`,
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
         }}
         data-tooltip-id="app-tooltip"
         data-tooltip-content={`Upscale Queue: ${processingCount + pendingCount} pending`}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = colors.BACKGROUND_LIGHT;
+          e.currentTarget.style.backgroundColor = `${colors.BACKGROUND_LIGHT}aa`;
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
+          e.currentTarget.style.backgroundColor = `${colors.BACKGROUND_MEDIUM}aa`;
         }}
       >
         <Icon path={mdiTrayFull} size={0.7} color={colors.TEXT_SECONDARY} />

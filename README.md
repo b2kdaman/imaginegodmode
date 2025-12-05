@@ -76,7 +76,12 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Persistent Storage**: All data saved with `chrome.storage.local` (prompts) and `localStorage` (settings, currentView)
 - **Extension Context Validation**: Graceful handling of extension reloads with proper error suppression
 - **Persistent View State**: Remembers last opened tab (Prompt/Ops/Settings/Help) across sessions
-- **Modern UI**: Bottom-placed tabs, pill-shaped buttons, Material Design Icons, dynamic theming, theme-aware backgrounds with transparency layers
+- **Modern UI**: Bottom-placed tabs, pill-shaped buttons, Material Design Icons, dynamic theming, glassmorphism design with frosted glass effects
+- **Glassmorphism Design**: Semi-transparent UI elements with backdrop blur creating modern frosted glass aesthetic
+  - Main panel and buttons: 67% opacity + 12px blur
+  - All modals: 67% opacity + 16px blur
+  - Consistent glass effect across entire extension UI
+  - Cross-browser compatibility with WebkitBackdropFilter support
 - **Spin Feature**: Batch process list items (from userscript version)
 
 ## Technology Stack
@@ -486,13 +491,14 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - Error sounds with harsh downward frequency sweeps
   - Sound effects can be toggled on/off via Settings (enabled by default)
   - Settings preference checked before playing any sound
-- **Theme-Aware Backgrounds**: Dynamic background images with theme-specific color tints
-  - Original image converted to greyscale with themed color overlay
-  - Separate background image for each theme (7 total)
-  - Semi-transparent overlay for optimal text readability
-  - Automated background processing script with Sharp library
-  - 25% opacity tint using each theme's primary accent color
-  - Background assets stored in `public/assets/` directory
+- **Glassmorphism UI**: Modern frosted glass design throughout the extension
+  - Semi-transparent backgrounds with backdrop blur on all UI elements
+  - Main panel, buttons, and controls: 67% opacity (`aa` suffix) + 12px blur
+  - All modals: 67% opacity + 16px blur for deeper glass effect
+  - Cross-browser support with both `backdropFilter` and `WebkitBackdropFilter`
+  - Hover states maintain transparency for consistent glass aesthetic
+  - Flexbox gap-based spacing in modals for cleaner layout (gap-2 = 8px)
+  - Compact modal padding (p-3 = 12px) for modern, space-efficient design
 - **Component Refactoring**: Modular architecture for bulk operation modals
   - Shared components eliminate code duplication across UnlikeModal, UnlikedArchiveModal, and UpscaleAllModal
   - PostGrid component handles all grid rendering logic with customizable overlays and badges

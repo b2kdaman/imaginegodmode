@@ -41,9 +41,11 @@ export const Button: React.FC<ButtonProps> = ({
   const finalIconColor = iconColor || colors.TEXT_SECONDARY;
 
   const buttonStyle = {
-    backgroundColor: colors.BACKGROUND_MEDIUM,
+    backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
     color: colors.TEXT_SECONDARY,
     border: `1px solid ${colors.BORDER}`,
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
     ...style,
   };
 
@@ -56,13 +58,13 @@ export const Button: React.FC<ButtonProps> = ({
       data-tooltip-content={tooltip}
       onMouseEnter={(e) => {
         if (!disabled && !className.includes('!bg-white')) {
-          e.currentTarget.style.backgroundColor = colors.BACKGROUND_LIGHT;
+          e.currentTarget.style.backgroundColor = `${colors.BACKGROUND_LIGHT}aa`;
           e.currentTarget.style.color = colors.TEXT_HOVER;
         }
       }}
       onMouseLeave={(e) => {
         if (!disabled && !className.includes('!bg-white')) {
-          e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
+          e.currentTarget.style.backgroundColor = `${colors.BACKGROUND_MEDIUM}aa`;
           e.currentTarget.style.color = colors.TEXT_SECONDARY;
         }
       }}
