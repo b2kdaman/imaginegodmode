@@ -15,7 +15,8 @@
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "lint": "tsc --noEmit --strict",
-    "generate-icons": "node scripts/generate-icons.js"
+    "generate-icons": "node scripts/generate-icons.js",
+    "process-bg": "node scripts/process-background.js"
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",

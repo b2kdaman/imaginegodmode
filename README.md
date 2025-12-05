@@ -38,6 +38,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - Heart/broken heart indicators for intuitive like/unlike selection
   - Click anywhere on item to toggle selection (no navigation)
   - Shift-click for batch selection/deselection (standard multi-select behavior)
+  - Reusable shared components for consistent UX across all bulk operation modals
   - Real-time progress bar with 0.5-1 second delays between API calls
   - Visual progress updates with smooth animations
   - Automatic redirect to /favorites after bulk operations
@@ -72,9 +73,10 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - `Space`: Play/pause video (works globally, even without extension panel open)
 - **Arrow Key Navigation**: Navigate videos with Left/Right arrow keys
 - **Automatic Data Refetch**: Automatically refetches post data when navigating between posts
-- **Persistent Storage**: All data saved with `chrome.storage.local` (prompts) and `localStorage` (settings)
+- **Persistent Storage**: All data saved with `chrome.storage.local` (prompts) and `localStorage` (settings, currentView)
 - **Extension Context Validation**: Graceful handling of extension reloads with proper error suppression
-- **Modern UI**: Bottom-placed tabs, pill-shaped buttons, Material Design Icons, dynamic theming
+- **Persistent View State**: Remembers last opened tab (Prompt/Ops/Settings/Help) across sessions
+- **Modern UI**: Bottom-placed tabs, pill-shaped buttons, Material Design Icons, dynamic theming, theme-aware backgrounds with transparency layers
 - **Spin Feature**: Batch process list items (from userscript version)
 
 ## Technology Stack
@@ -252,6 +254,7 @@ grkgoondl/
 - **useBulkRelike**: Custom hook for bulk re-liking posts from archive with progress tracking
 - **useBulkDelete**: Custom hook for bulk deleting posts with progress tracking and confirmation
 - **useLikedPostsLoader**: Hook for loading and managing liked posts with loading state
+- **useShiftSelection**: Reusable hook for shift-click multi-selection behavior across bulk operation modals
 
 ### Components
 
@@ -272,6 +275,11 @@ grkgoondl/
 - **PackSelectModal**: Modal for selecting which pack to export
 - **ImportPackModal**: Modal for importing packs via paste or file upload with validation
 - **ConfirmDeleteModal**: Confirmation dialog for pack deletion with warning message
+
+**Shared Modal Components** (src/components/modals/shared/)
+- **ProgressBar**: Reusable progress bar component for bulk operations with animated loading indicator
+- **SelectionControls**: Reusable select/deselect all buttons for consistent bulk selection UX
+- **PostGrid**: Reusable grid component for displaying posts with selection state, hover effects, video count badges, and customizable overlays
 
 All modals extend BaseModal for consistent animations, behavior, and appearance.
 
@@ -323,7 +331,7 @@ Uses `chrome.runtime.sendMessage()` for communication:
 ### Storage
 Uses multiple storage mechanisms with context validation:
 - **chrome.storage.local**: Packs with prompts and ratings, prompt prefixes per-post, per-post state (selected pack and prompt index), unliked posts archive with minimal metadata per-user
-- **localStorage**: Theme, size, language, auto-download preferences, and user ID for instant loading
+- **localStorage**: Theme, size, language, auto-download preferences, user ID, and currentView (last opened tab) for instant loading
 - **Extension Context Validation**: All storage operations check for valid extension context to gracefully handle extension reloads
 - **Unliked Posts Archive**:
   - Per-user storage: Each Grok user ID has separate unliked posts
@@ -478,6 +486,20 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - Error sounds with harsh downward frequency sweeps
   - Sound effects can be toggled on/off via Settings (enabled by default)
   - Settings preference checked before playing any sound
+- **Theme-Aware Backgrounds**: Dynamic background images with theme-specific color tints
+  - Original image converted to greyscale with themed color overlay
+  - Separate background image for each theme (7 total)
+  - Semi-transparent overlay for optimal text readability
+  - Automated background processing script with Sharp library
+  - 25% opacity tint using each theme's primary accent color
+  - Background assets stored in `public/assets/` directory
+- **Component Refactoring**: Modular architecture for bulk operation modals
+  - Shared components eliminate code duplication across UnlikeModal, UnlikedArchiveModal, and UpscaleAllModal
+  - PostGrid component handles all grid rendering logic with customizable overlays and badges
+  - ProgressBar component provides consistent progress tracking UI
+  - SelectionControls component standardizes select/deselect all buttons
+  - useShiftSelection hook encapsulates shift-click selection logic
+  - Reduced ~400+ lines of duplicate code with reusable abstractions
 
 ## Theme Customization
 
@@ -513,6 +535,7 @@ npm run zip             # Create zip from existing dist folder
 npm run dev             # Development mode with hot reload
 npm run type-check      # TypeScript type checking
 npm run generate-icons  # Regenerate extension icons
+npm run process-bg      # Process background images with theme-specific color tints
 ```
 
 ## Future Enhancements

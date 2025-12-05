@@ -20,7 +20,7 @@ import { useTranslation } from '@/contexts/I18nContext';
 
 export const MainPanel: React.FC = () => {
   const { isExpanded, currentView, toggleExpanded, setCurrentView } = useUIStore();
-  const { getThemeColors, getScale } = useSettingsStore();
+  const { getThemeColors, getScale, theme } = useSettingsStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
   const scale = getScale();
@@ -114,26 +114,50 @@ export const MainPanel: React.FC = () => {
 
         {/* Content wrapper */}
         <div
-          className="rounded-2xl p-4 shadow-2xl w-[320px]"
+          className="rounded-2xl shadow-2xl w-[320px] relative overflow-hidden"
           style={{
-            backgroundColor: colors.BACKGROUND_DARK,
             border: `1px solid ${colors.BORDER}`,
             display: isExpanded ? 'block' : 'none',
           }}
         >
-          {/* View content */}
-          {currentView === 'prompt' && <PromptView />}
-          {currentView === 'ops' && <OpsView />}
-          {currentView === 'settings' && <SettingsView />}
-          {currentView === 'help' && <HelpView />}
-
-          {/* Tabs */}
-          <Tabs
-            tabs={tabs}
-            activeTab={currentView}
-            onChange={(tabId) => setCurrentView(tabId as any)}
-            direction="up"
+          {/* Background image layer */}
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url(/assets/bg-${theme}.jpg)`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              opacity: 0.3,
+              zIndex: 0,
+            }}
           />
+
+          {/* Semi-transparent overlay for readability */}
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundColor: colors.BACKGROUND_DARK,
+              opacity: 0.85,
+              zIndex: 1,
+            }}
+          />
+
+          {/* Content layer */}
+          <div className="relative z-10 p-4">
+            {/* View content */}
+            {currentView === 'prompt' && <PromptView />}
+            {currentView === 'ops' && <OpsView />}
+            {currentView === 'settings' && <SettingsView />}
+            {currentView === 'help' && <HelpView />}
+
+            {/* Tabs */}
+            <Tabs
+              tabs={tabs}
+              activeTab={currentView}
+              onChange={(tabId) => setCurrentView(tabId as any)}
+              direction="up"
+            />
+          </div>
         </div>
       </div>
     </div>

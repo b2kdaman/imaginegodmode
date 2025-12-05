@@ -424,7 +424,6 @@ export const OpsView: React.FC = () => {
           }
         }}
         onConfirm={handleBulkUnlike}
-        onImageClick={handleImageClick}
         getThemeColors={getThemeColors}
         isProcessing={isProcessingUnlikes}
         processedCount={processedUnlikesCount}
