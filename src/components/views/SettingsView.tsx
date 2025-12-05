@@ -6,7 +6,8 @@ import React, { useState } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { usePromptStore } from '@/store/usePromptStore';
 import { useUserStore } from '@/store/useUserStore';
-import { exportPack, exportAllPacks } from '@/utils/storage';
+import { exportPack, exportAllPacks, clearUnlikedPosts } from '@/utils/storage';
+import { fetchLikedPosts, unlikePost } from '@/api/grokApi';
 import { Button } from '../inputs/Button';
 import { Toggle } from '../inputs/Toggle';
 import { Dropdown } from '../inputs/Dropdown';
@@ -177,10 +178,6 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
 
   const handlePurgeConfirm = async () => {
     try {
-      // Import the storage utilities
-      const { clearUnlikedPosts } = await import('@/utils/storage');
-      const { fetchLikedPosts, unlikePost } = await import('@/api/grokApi');
-
       // Clear all packs
       clearAllPacks();
 

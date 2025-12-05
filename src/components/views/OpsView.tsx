@@ -25,7 +25,7 @@ import { UpscaleAllModal } from '../modals/UpscaleAllModal';
 import { UnlikeModal } from '../modals/UnlikeModal';
 import { UnlikedArchiveModal } from '../modals/UnlikedArchiveModal';
 import { DeleteModal } from '../modals/DeleteModal';
-import { UnlikedPost, getUnlikedPosts } from '@/utils/storage';
+import { UnlikedPost, getUnlikedPosts, addUnlikedPosts } from '@/utils/storage';
 import { navigateTo } from '@/utils/opsHelpers';
 import { STATUS_MESSAGES, NAVIGATION_URLS, LOG_PREFIX } from '@/constants/opsView';
 
@@ -240,7 +240,6 @@ export const OpsView: React.FC = () => {
 
   // Handle import archive
   const handleImportArchive = async (importedPosts: UnlikedPost[]) => {
-    const { addUnlikedPosts } = await import('@/utils/storage');
     await addUnlikedPosts(importedPosts, userId ?? undefined);
 
     // Refresh the archive list
