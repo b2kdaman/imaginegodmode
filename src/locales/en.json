@@ -152,7 +152,11 @@
       "error": "Import failed"
     },
     "selectPack": {
-      "title": "Select Pack"
+      "title": "Select Packs to Export",
+      "exportAll": "Export All Packs",
+      "selectAll": "Select All",
+      "deselectAll": "Deselect All",
+      "selectedCount": "{{count}} pack(s) selected"
     },
     "searchPrompts": {
       "title": "Search Prompts",

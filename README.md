@@ -20,7 +20,15 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - Real-time search results with prompt preview
   - Display pack name, prompt number, and star ratings
   - Click to navigate directly to any prompt
-- **Import/Export**: Backup and restore packs with .pak files (base64 encoded) or raw JSON (merge or replace modes)
+- **Import/Export**: Flexible pack management with multi-format support
+  - **Multi-Select Export**: Choose specific packs to export with checkbox interface
+  - **Select All/Deselect All**: Quick selection controls for batch operations
+  - **Smart Export Format**: Single pack → v1.0 format, Multiple packs → v2.0 format
+  - **Minified JSON**: Compact file sizes with base64 encoding in .pak files
+  - **Backward Compatible Import**: Supports both v1.0 (single) and v2.0 (multi-pack) formats
+  - **Visual Validation**: Real-time JSON validation with format detection and pack counts
+  - **Theme-Aware UI**: Export button with accent color hover states
+  - **Merge or Replace Modes**: Import new packs or overwrite existing ones
 - **Media Downloading**: Download images and videos from Grok posts (disabled until all videos are HD)
 - **Auto Download**: Optional setting to automatically download all media after upscaling completes
 - **Video Upscaling**: Parallel upscale requests with staggered start times for optimal performance

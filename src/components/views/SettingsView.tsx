@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { usePromptStore } from '@/store/usePromptStore';
 import { useUserStore } from '@/store/useUserStore';
-import { exportPack } from '@/utils/storage';
+import { exportPack, exportAllPacks } from '@/utils/storage';
 import { Button } from '../inputs/Button';
 import { Toggle } from '../inputs/Toggle';
 import { Dropdown } from '../inputs/Dropdown';
@@ -60,10 +60,25 @@ export const SettingsView: React.FC = () => {
     setIsExportModalOpen(true);
   };
 
-  const handleExportPack = (packName: string) => {
-    const prompts = packs[packName] || [];
-    exportPack(packName, prompts);
-    setStatusMessage(`Pack "${packName}" exported successfully!`);
+  const handleExportPack = (packNames: string[]) => {
+    if (packNames.length === 0) {
+      return;
+    }
+
+    if (packNames.length === 1) {
+      // Export single pack
+      const packName = packNames[0];
+      const prompts = packs[packName] || [];
+      exportPack(packName, prompts);
+      setStatusMessage(`Pack "${packName}" exported successfully!`);
+    } else {
+      // Export multiple packs
+      const selectedPacks = Object.fromEntries(
+        packNames.map(name => [name, packs[name] || []])
+      );
+      exportAllPacks(selectedPacks);
+      setStatusMessage(`${packNames.length} packs exported successfully!`);
+    }
     setTimeout(() => setStatusMessage(''), 3000);
     setIsExportModalOpen(false);
   };
@@ -134,8 +149,16 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
   const handleImport = async (file: File) => {
     const result = await importPack(file, importMode);
 
-    if (result.success && result.packName) {
-      setStatusMessage(`Pack "${result.packName}" imported successfully (${importMode} mode)!`);
+    if (result.success) {
+      if (result.importedCount && result.importedCount > 1) {
+        // Multi-pack import
+        setStatusMessage(`${result.importedCount} packs imported successfully (${importMode} mode)!`);
+      } else if (result.packName) {
+        // Single pack import
+        setStatusMessage(`Pack "${result.packName}" imported successfully (${importMode} mode)!`);
+      } else {
+        setStatusMessage(`Import successful (${importMode} mode)!`);
+      }
       setTimeout(() => setStatusMessage(''), 3000);
     } else {
       throw new Error(result.error || 'Unknown error');

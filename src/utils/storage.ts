@@ -142,7 +142,7 @@ export const onStorageChange = (
 };
 
 /**
- * Export data structure for import/export
+ * Export data structure for import/export (single pack - v1.0)
  */
 export interface ExportData {
   version: string;
@@ -152,7 +152,19 @@ export interface ExportData {
 }
 
 /**
- * Export single pack to .pak file with base64 encoded JSON
+ * Multi-pack export data structure (v2.0)
+ */
+export interface MultiPackExportData {
+  version: string;
+  exportDate: string;
+  packs: Array<{
+    packName: string;
+    prompts: PromptItem[];
+  }>;
+}
+
+/**
+ * Export single pack to .pak file with base64 encoded minified JSON
  */
 export const exportPack = (packName: string, prompts: PromptItem[]): void => {
   const exportData: ExportData = {
@@ -162,7 +174,7 @@ export const exportPack = (packName: string, prompts: PromptItem[]): void => {
     prompts,
   };
 
-  // Convert JSON to base64
+  // Convert JSON to base64 (minified - no whitespace)
   const jsonString = JSON.stringify(exportData);
   const base64Data = btoa(unescape(encodeURIComponent(jsonString)));
 
@@ -186,7 +198,44 @@ export const exportPack = (packName: string, prompts: PromptItem[]): void => {
 };
 
 /**
- * Validate import data structure (per-pack)
+ * Export all packs to .pak file with base64 encoded minified JSON
+ */
+export const exportAllPacks = (packs: Packs): void => {
+  const packsArray = Object.entries(packs).map(([packName, prompts]) => ({
+    packName,
+    prompts,
+  }));
+
+  const exportData: MultiPackExportData = {
+    version: '2.0',
+    exportDate: new Date().toISOString(),
+    packs: packsArray,
+  };
+
+  // Convert JSON to base64 (minified - no whitespace)
+  const jsonString = JSON.stringify(exportData);
+  const base64Data = btoa(unescape(encodeURIComponent(jsonString)));
+
+  const blob = new Blob([base64Data], {
+    type: 'application/octet-stream',
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+
+  // Format: imaginegodmode-all-packs-YYYY-MM-DD.pak
+  const dateStr = new Date().toISOString().split('T')[0];
+  a.download = `imaginegodmode-all-packs-${dateStr}.pak`;
+
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+/**
+ * Validate import data structure (single pack v1.0)
  */
 const validateImportData = (data: unknown): data is ExportData => {
   if (!data || typeof data !== 'object') return false;
@@ -215,6 +264,44 @@ const validateImportData = (data: unknown): data is ExportData => {
 };
 
 /**
+ * Validate multi-pack import data structure (v2.0)
+ */
+const validateMultiPackImportData = (data: unknown): data is MultiPackExportData => {
+  if (!data || typeof data !== 'object') return false;
+
+  const obj = data as Record<string, unknown>;
+
+  // Check required fields
+  if (typeof obj.version !== 'string') return false;
+  if (typeof obj.exportDate !== 'string') return false;
+  if (!Array.isArray(obj.packs)) return false;
+
+  const packs = obj.packs as unknown[];
+
+  // Validate each pack
+  for (const pack of packs) {
+    if (!pack || typeof pack !== 'object') return false;
+    const p = pack as Record<string, unknown>;
+
+    if (typeof p.packName !== 'string' || p.packName.trim() === '') return false;
+    if (!Array.isArray(p.prompts)) return false;
+
+    // Validate prompts in this pack
+    const prompts = p.prompts as unknown[];
+    for (const prompt of prompts) {
+      if (!prompt || typeof prompt !== 'object') return false;
+      const pr = prompt as Record<string, unknown>;
+
+      if (typeof pr.text !== 'string') return false;
+      if (typeof pr.rating !== 'number') return false;
+      if (pr.rating < 0 || pr.rating > 5) return false;
+    }
+  }
+
+  return true;
+};
+
+/**
  * Decode base64 string to JSON object
  */
 const decodeBase64ToJson = (base64String: string): unknown => {
@@ -227,7 +314,8 @@ const decodeBase64ToJson = (base64String: string): unknown => {
 };
 
 /**
- * Import pack from .pak file (base64 encoded) or raw JSON
+ * Import pack(s) from .pak file (base64 encoded) or raw JSON
+ * Supports both v1.0 (single pack) and v2.0 (multi-pack) formats
  */
 export const importPack = (
   file: File,
@@ -238,7 +326,8 @@ export const importPack = (
   packName?: string;
   prompts?: PromptItem[];
   packs?: Packs;
-  error?: string
+  error?: string;
+  importedCount?: number;
 }> => {
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -272,36 +361,73 @@ export const importPack = (
           }
         }
 
-        // Validate structure
-        if (!validateImportData(data)) {
-          resolve({ success: false, error: 'Invalid file format' });
-          return;
-        }
-
         let resultPacks: Packs = { ...currentPacks };
 
-        if (mode === 'replace') {
-          // Replace: overwrite pack if exists, otherwise add new
-          resultPacks[data.packName] = data.prompts;
-        } else {
-          // Add: only add if pack doesn't exist
-          if (!resultPacks[data.packName]) {
-            resultPacks[data.packName] = data.prompts;
-          } else {
+        // Check if multi-pack format (v2.0)
+        if (validateMultiPackImportData(data)) {
+          // Multi-pack import
+          const conflicts: string[] = [];
+          let importedCount = 0;
+
+          for (const pack of data.packs) {
+            if (mode === 'replace') {
+              // Replace: overwrite pack if exists, otherwise add new
+              resultPacks[pack.packName] = pack.prompts;
+              importedCount++;
+            } else {
+              // Add: only add if pack doesn't exist
+              if (!resultPacks[pack.packName]) {
+                resultPacks[pack.packName] = pack.prompts;
+                importedCount++;
+              } else {
+                conflicts.push(pack.packName);
+              }
+            }
+          }
+
+          if (conflicts.length > 0 && mode === 'add') {
             resolve({
               success: false,
-              error: `Pack "${data.packName}" already exists. Use Replace mode to overwrite.`
+              error: `${conflicts.length} pack(s) already exist: ${conflicts.join(', ')}. Use Replace mode to overwrite.`
             });
             return;
           }
-        }
 
-        resolve({
-          success: true,
-          packName: data.packName,
-          prompts: data.prompts,
-          packs: resultPacks
-        });
+          resolve({
+            success: true,
+            packs: resultPacks,
+            importedCount,
+          });
+        }
+        // Check if single pack format (v1.0)
+        else if (validateImportData(data)) {
+          // Single pack import
+          if (mode === 'replace') {
+            // Replace: overwrite pack if exists, otherwise add new
+            resultPacks[data.packName] = data.prompts;
+          } else {
+            // Add: only add if pack doesn't exist
+            if (!resultPacks[data.packName]) {
+              resultPacks[data.packName] = data.prompts;
+            } else {
+              resolve({
+                success: false,
+                error: `Pack "${data.packName}" already exists. Use Replace mode to overwrite.`
+              });
+              return;
+            }
+          }
+
+          resolve({
+            success: true,
+            packName: data.packName,
+            prompts: data.prompts,
+            packs: resultPacks,
+            importedCount: 1,
+          });
+        } else {
+          resolve({ success: false, error: 'Invalid file format' });
+        }
       } catch (error) {
         resolve({
           success: false,

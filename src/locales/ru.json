@@ -152,7 +152,11 @@
       "error": "Ошибка импорта"
     },
     "selectPack": {
-      "title": "Выбрать пак"
+      "title": "Выбрать паки для экспорта",
+      "exportAll": "Экспортировать все паки",
+      "selectAll": "Выбрать все",
+      "deselectAll": "Снять выделение",
+      "selectedCount": "Выбрано: {{count}}"
     },
     "searchPrompts": {
       "title": "Поиск промптов",

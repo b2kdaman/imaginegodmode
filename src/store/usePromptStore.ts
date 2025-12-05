@@ -48,7 +48,7 @@ interface PromptStore {
 
   // Import/Export
   exportCurrentPack: () => void;
-  importPack: (file: File, mode: 'add' | 'replace') => Promise<{ success: boolean; error?: string; packName?: string }>;
+  importPack: (file: File, mode: 'add' | 'replace') => Promise<{ success: boolean; error?: string; packName?: string; importedCount?: number }>;
 
   // Per-post state management
   loadPostState: (postId: string) => Promise<void>;
@@ -319,22 +319,41 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     const { packs } = get();
     const result = await importPack(file, mode, packs);
 
-    if (result.success && result.packs && result.packName) {
+    if (result.success && result.packs) {
       // Update packs
-      set({
+      const newState: Partial<PromptStore> = {
         packs: result.packs,
-        currentPack: result.packName, // Switch to imported pack
         currentIndex: 0,
-      });
+      };
+
+      // For single pack import, switch to imported pack
+      // For multi-pack import, stay on current pack or switch to first imported pack
+      if (result.packName) {
+        newState.currentPack = result.packName;
+      } else if (result.importedCount && result.importedCount > 1) {
+        // Multi-pack import: switch to first imported pack
+        const importedPackNames = Object.keys(result.packs).filter(name => !packs[name]);
+        if (importedPackNames.length > 0) {
+          newState.currentPack = importedPackNames[0];
+        }
+      }
+
+      set(newState);
 
       // Save to storage
       await get().saveToStorage();
 
       // Track import with prompt count
-      const importedPrompts = result.packs[result.packName] || [];
-      trackPackImported(mode, importedPrompts.length);
+      if (result.packName) {
+        const importedPrompts = result.packs[result.packName] || [];
+        trackPackImported(mode, importedPrompts.length);
+      }
 
-      return { success: true, packName: result.packName };
+      return {
+        success: true,
+        packName: result.packName,
+        importedCount: result.importedCount
+      };
     }
 
     return { success: false, error: result.error };

@@ -23,6 +23,8 @@ interface ValidationResult {
   packName?: string;
   promptCount?: number;
   jsonText?: string;
+  isMultiPack?: boolean;
+  packCount?: number;
 }
 
 export const ImportPackModal: React.FC<ImportPackModalProps> = ({
@@ -52,6 +54,47 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
       if (typeof data.version !== 'string') {
         return { isValid: false, error: 'Missing or invalid "version" field' };
       }
+
+      // Check if multi-pack format (v2.0)
+      if (data.version === '2.0' && Array.isArray(data.packs)) {
+        // Validate multi-pack structure
+        if (typeof data.exportDate !== 'string') {
+          return { isValid: false, error: 'Missing or invalid "exportDate" field' };
+        }
+
+        let totalPrompts = 0;
+        for (let i = 0; i < data.packs.length; i++) {
+          const pack = data.packs[i];
+          if (typeof pack.packName !== 'string' || !pack.packName.trim()) {
+            return { isValid: false, error: `Pack ${i + 1}: missing or invalid "packName"` };
+          }
+          if (!Array.isArray(pack.prompts)) {
+            return { isValid: false, error: `Pack ${i + 1}: "prompts" must be an array` };
+          }
+
+          // Validate prompts in this pack
+          for (let j = 0; j < pack.prompts.length; j++) {
+            const prompt = pack.prompts[j];
+            if (typeof prompt.text !== 'string') {
+              return { isValid: false, error: `Pack "${pack.packName}", Prompt ${j + 1}: missing or invalid "text"` };
+            }
+            if (typeof prompt.rating !== 'number' || prompt.rating < 0 || prompt.rating > 5) {
+              return { isValid: false, error: `Pack "${pack.packName}", Prompt ${j + 1}: "rating" must be 0-5` };
+            }
+          }
+          totalPrompts += pack.prompts.length;
+        }
+
+        return {
+          isValid: true,
+          isMultiPack: true,
+          packCount: data.packs.length,
+          promptCount: totalPrompts,
+          jsonText: text,
+        };
+      }
+
+      // Single pack format (v1.0)
       if (typeof data.packName !== 'string' || !data.packName.trim()) {
         return { isValid: false, error: 'Missing or invalid "packName" field' };
       }
@@ -72,6 +115,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
 
       return {
         isValid: true,
+        isMultiPack: false,
         packName: data.packName,
         promptCount: data.prompts.length,
         jsonText: text,
@@ -299,12 +343,31 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
                   >
                     {t('modals.importPack.validJson')}
                   </div>
-                  <div style={{ color: colors.TEXT_SECONDARY }}>
-                    Pack: <span style={{ color: colors.TEXT_PRIMARY }}>{validation.packName}</span>
-                  </div>
-                  <div style={{ color: colors.TEXT_SECONDARY }}>
-                    Prompts: <span style={{ color: colors.TEXT_PRIMARY }}>{validation.promptCount}</span>
-                  </div>
+                  {validation.isMultiPack ? (
+                    <>
+                      <div style={{ color: colors.TEXT_SECONDARY }}>
+                        Format: <span style={{ color: colors.TEXT_PRIMARY }}>Multi-pack (v2.0)</span>
+                      </div>
+                      <div style={{ color: colors.TEXT_SECONDARY }}>
+                        Packs: <span style={{ color: colors.TEXT_PRIMARY }}>{validation.packCount}</span>
+                      </div>
+                      <div style={{ color: colors.TEXT_SECONDARY }}>
+                        Total Prompts: <span style={{ color: colors.TEXT_PRIMARY }}>{validation.promptCount}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ color: colors.TEXT_SECONDARY }}>
+                        Format: <span style={{ color: colors.TEXT_PRIMARY }}>Single pack (v1.0)</span>
+                      </div>
+                      <div style={{ color: colors.TEXT_SECONDARY }}>
+                        Pack: <span style={{ color: colors.TEXT_PRIMARY }}>{validation.packName}</span>
+                      </div>
+                      <div style={{ color: colors.TEXT_SECONDARY }}>
+                        Prompts: <span style={{ color: colors.TEXT_PRIMARY }}>{validation.promptCount}</span>
+                      </div>
+                    </>
+                  )}
                 </div>
               ) : (
                 <div className="text-xs">

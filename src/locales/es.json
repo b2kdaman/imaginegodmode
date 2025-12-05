@@ -152,7 +152,11 @@
       "error": "Error al importar"
     },
     "selectPack": {
-      "title": "Seleccionar Paquete"
+      "title": "Seleccionar Paquetes para Exportar",
+      "exportAll": "Exportar Todos los Paquetes",
+      "selectAll": "Seleccionar Todo",
+      "deselectAll": "Deseleccionar Todo",
+      "selectedCount": "{{count}} paquete(s) seleccionado(s)"
     },
     "searchPrompts": {
       "title": "Buscar Prompts",
