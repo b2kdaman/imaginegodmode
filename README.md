@@ -20,7 +20,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - Real-time search results with prompt preview
   - Display pack name, prompt number, and star ratings
   - Click to navigate directly to any prompt
-- **Import/Export**: Backup and restore packs with JSON files (merge or replace modes)
+- **Import/Export**: Backup and restore packs with .pak files (base64 encoded) or raw JSON (merge or replace modes)
 - **Media Downloading**: Download images and videos from Grok posts (disabled until all videos are HD)
 - **Auto Download**: Optional setting to automatically download all media after upscaling completes
 - **Video Upscaling**: Parallel upscale requests with staggered start times for optimal performance
@@ -165,8 +165,8 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - All settings labels include visual icons for easy identification
    - **Tooltips**: Hover over any setting row for detailed explanations
    - **Data Management**:
-     - Export packs: Select any pack to export to JSON (backup/sharing)
-     - Import packs: Paste JSON or upload file with real-time validation
+     - Export packs: Select any pack to export to .pak file (base64 encoded for backup/sharing)
+     - Import packs: Upload .pak/.json files or paste raw JSON with real-time validation
      - Import modes: Add (create new) or Replace (overwrite existing)
      - Copy Grok prompt: System prompt for generating custom packs via AI
    - **Purge All Data**: Nuclear option to reset all data (5-click activation with arrow key challenge)
@@ -327,8 +327,9 @@ Uses multiple storage mechanisms with context validation:
   - Stores minimal data (ID, prompt, thumbnail URL, media URL, timestamp, child post count) for efficient browsing and re-liking
   - Multi-account support: Switch between Grok accounts without data conflicts
 - **Import/Export**:
-  - Per-pack JSON export with timestamped filenames
-  - Import via paste or file upload with real-time validation
+  - Per-pack .pak export (base64 encoded) with timestamped filenames
+  - Import via .pak/.json file upload or raw JSON paste with real-time validation
+  - Automatic base64 decoding for .pak files, direct JSON parsing for .json files
   - Add/Replace modes with pack name conflict handling
   - Version tracking and comprehensive data validation
   - Interactive Grok prompt for AI-generated pack creation
@@ -423,9 +424,11 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - **Extension Reload Handling**: Storage operations validate extension context and fail gracefully during reloads
 - **Smart URL Watching**: URL changes trigger automatic data refetch via callback pattern in OpsView component
 - **Pack Import/Export**:
-  - Per-pack exports with descriptive filenames (imaginegodmode-pack-Name-Date.json)
+  - Per-pack exports with descriptive filenames (imaginegodmode-pack-Name-Date.pak)
+  - Base64 encoded .pak files for secure storage and sharing
   - PackSelectModal for choosing which pack to export
-  - ImportPackModal with paste/upload options and live JSON validation
+  - ImportPackModal with paste/upload options supporting .pak and .json files
+  - Automatic base64 decoding for .pak files, raw JSON paste support
   - Real-time validation showing pack name, prompt count, and error details
   - Add mode prevents overwriting, Replace mode allows updates
   - Grok AI integration: Copy system prompt to generate custom packs via conversation

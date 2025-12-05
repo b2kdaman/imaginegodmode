@@ -84,6 +84,15 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
     }
   };
 
+  const decodeBase64ToJson = (base64String: string): unknown => {
+    try {
+      const decodedString = decodeURIComponent(escape(atob(base64String)));
+      return JSON.parse(decodedString);
+    } catch (error) {
+      throw new Error('Invalid base64 or JSON format');
+    }
+  };
+
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
@@ -114,10 +123,36 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      const text = event.target?.result as string;
-      setJsonInput(text);
-      const result = validateJSON(text);
-      setValidation(result);
+      try {
+        const content = event.target?.result as string;
+        let jsonText: string;
+
+        // Check if file is .pak (base64 encoded)
+        if (file.name.endsWith('.pak')) {
+          try {
+            const decoded = decodeBase64ToJson(content);
+            jsonText = JSON.stringify(decoded, null, 2);
+          } catch (error) {
+            setValidation({
+              isValid: false,
+              error: 'Invalid .pak file format. File must contain base64 encoded JSON.'
+            });
+            return;
+          }
+        } else {
+          // Assume it's raw JSON
+          jsonText = content;
+        }
+
+        setJsonInput(jsonText);
+        const result = validateJSON(jsonText);
+        setValidation(result);
+      } catch (error) {
+        setValidation({
+          isValid: false,
+          error: error instanceof Error ? error.message : 'Failed to process file'
+        });
+      }
     };
     reader.onerror = () => {
       setValidation({ isValid: false, error: 'Failed to read file' });
@@ -208,7 +243,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
         <input
           ref={fileInputRef}
           type="file"
-          accept=".json"
+          accept=".pak,.json"
           onChange={handleFileSelect}
           className="hidden"
         />

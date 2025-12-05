@@ -152,7 +152,7 @@ export interface ExportData {
 }
 
 /**
- * Export single pack to JSON file
+ * Export single pack to .pak file with base64 encoded JSON
  */
 export const exportPack = (packName: string, prompts: PromptItem[]): void => {
   const exportData: ExportData = {
@@ -162,18 +162,22 @@ export const exportPack = (packName: string, prompts: PromptItem[]): void => {
     prompts,
   };
 
-  const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-    type: 'application/json',
+  // Convert JSON to base64
+  const jsonString = JSON.stringify(exportData);
+  const base64Data = btoa(unescape(encodeURIComponent(jsonString)));
+
+  const blob = new Blob([base64Data], {
+    type: 'application/octet-stream',
   });
 
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
 
-  // Format: imaginegodmode-pack-PackName-YYYY-MM-DD.json
+  // Format: imaginegodmode-pack-PackName-YYYY-MM-DD.pak
   const dateStr = new Date().toISOString().split('T')[0];
   const safePackName = packName.replace(/[^a-z0-9]/gi, '_');
-  a.download = `imaginegodmode-pack-${safePackName}-${dateStr}.json`;
+  a.download = `imaginegodmode-pack-${safePackName}-${dateStr}.pak`;
 
   document.body.appendChild(a);
   a.click();
@@ -211,7 +215,19 @@ const validateImportData = (data: unknown): data is ExportData => {
 };
 
 /**
- * Import pack from JSON file
+ * Decode base64 string to JSON object
+ */
+const decodeBase64ToJson = (base64String: string): unknown => {
+  try {
+    const decodedString = decodeURIComponent(escape(atob(base64String)));
+    return JSON.parse(decodedString);
+  } catch (error) {
+    throw new Error('Invalid base64 or JSON format');
+  }
+};
+
+/**
+ * Import pack from .pak file (base64 encoded) or raw JSON
  */
 export const importPack = (
   file: File,
@@ -230,7 +246,31 @@ export const importPack = (
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
-        const data = JSON.parse(content);
+        let data: unknown;
+
+        // Check if file is .pak (base64 encoded)
+        if (file.name.endsWith('.pak')) {
+          try {
+            data = decodeBase64ToJson(content);
+          } catch (error) {
+            resolve({
+              success: false,
+              error: 'Invalid .pak file format. File must contain base64 encoded JSON.'
+            });
+            return;
+          }
+        } else {
+          // Assume it's raw JSON
+          try {
+            data = JSON.parse(content);
+          } catch (error) {
+            resolve({
+              success: false,
+              error: 'Invalid JSON format'
+            });
+            return;
+          }
+        }
 
         // Validate structure
         if (!validateImportData(data)) {
