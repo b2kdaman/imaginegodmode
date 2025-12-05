@@ -163,6 +163,9 @@ export const PromptView: React.FC = () => {
     applyPromptMakeAndNext(currentPrompt.text, prefix, nextPostId);
   };
 
+  // Check if both prompt and prefix are empty
+  const isPromptAndPrefixEmpty = !currentPrompt?.text.trim() && !prefix.trim();
+
   // If no post ID, show a message instead of the prompt content
   if (!postId) {
     return <NoPostMessage subMessage="Navigate to a post to manage prompts" />;
@@ -307,6 +310,7 @@ export const PromptView: React.FC = () => {
             icon={mdiPlay}
             iconColor={UI_COLORS.BLACK}
             className="flex-1 !bg-white !text-black hover:!bg-white/90"
+            disabled={isPromptAndPrefixEmpty}
             tooltip={t('prompt.makeTooltip')}
           >
             {t('common.make')}
@@ -320,7 +324,7 @@ export const PromptView: React.FC = () => {
             icon={mdiSkipNext}
             iconColor={UI_COLORS.BLACK}
             className="w-full !bg-white !text-black hover:!bg-white/90"
-            disabled={!getNextPostId()}
+            disabled={!getNextPostId() || isPromptAndPrefixEmpty}
             tooltip="Make video and navigate to next post"
           >
             Make + Next
