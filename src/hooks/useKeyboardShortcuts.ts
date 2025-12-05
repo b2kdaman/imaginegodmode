@@ -64,7 +64,7 @@ export const useKeyboardShortcuts = () => {
         e.preventDefault();
 
         // Try to find play/pause button in extension UI first
-        let playPauseBtn = document.querySelector(SELECTORS.PLAY_PAUSE_BUTTON) as HTMLButtonElement;
+        const playPauseBtn = document.querySelector(SELECTORS.PLAY_PAUSE_BUTTON) as HTMLButtonElement;
 
         if (playPauseBtn) {
           playPauseBtn.click();

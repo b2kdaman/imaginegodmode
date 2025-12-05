@@ -137,12 +137,12 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     const { packs, currentPack } = get();
 
     // Safety check: ensure packs exists
-    if (!packs) return;
+    if (!packs) {return;}
 
     const packNames = Object.keys(packs);
 
     // Don't delete if it's the only pack
-    if (packNames.length <= 1) return;
+    if (packNames.length <= 1) {return;}
 
     const newPacks = { ...packs };
     delete newPacks[name];
@@ -196,7 +196,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     const currentPrompts = packs[currentPack] || [];
 
     // Don't remove if it's the only prompt
-    if (currentPrompts.length <= 1) return;
+    if (currentPrompts.length <= 1) {return;}
 
     const newPrompts = currentPrompts.filter((_, i) => i !== currentIndex);
     const newIndex = Math.min(currentIndex, newPrompts.length - 1);
@@ -264,7 +264,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     const count = get().getCurrentPromptCount();
 
     // Don't navigate if no prompts
-    if (count === 0) return;
+    if (count === 0) {return;}
 
     const newIndex = currentIndex < count - 1 ? currentIndex + 1 : 0;
     set({ currentIndex: newIndex });
@@ -276,7 +276,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     const count = get().getCurrentPromptCount();
 
     // Don't navigate if no prompts
-    if (count === 0) return;
+    if (count === 0) {return;}
 
     const newIndex = currentIndex > 0 ? currentIndex - 1 : count - 1;
     set({ currentIndex: newIndex });

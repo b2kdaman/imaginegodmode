@@ -98,7 +98,7 @@ export const useUpscaleQueueStore = create<UpscaleQueueStore>()(
 
       startProcessing: () => {
         const { isProcessing, _processNextBatch } = get();
-        if (isProcessing) return;
+        if (isProcessing) {return;}
 
         set({ isProcessing: true });
         _processNextBatch();
@@ -117,7 +117,7 @@ export const useUpscaleQueueStore = create<UpscaleQueueStore>()(
       },
 
       _downloadCompletedBatch: async (hdUrls) => {
-        if (hdUrls.length === 0) return;
+        if (hdUrls.length === 0) {return;}
 
         // Check if auto-download is enabled
         const { autoDownload } = useSettingsStore.getState();
@@ -151,7 +151,7 @@ export const useUpscaleQueueStore = create<UpscaleQueueStore>()(
         const { queue } = get();
         videoIds.forEach((videoId) => {
           const item = queue.find((q) => q.videoId === videoId);
-          if (item) postIds.add(item.postId);
+          if (item) {postIds.add(item.postId);}
         });
 
         // Poll until all videos have HD URLs or timeout
@@ -197,7 +197,7 @@ export const useUpscaleQueueStore = create<UpscaleQueueStore>()(
         const { queue, isProcessing, _updateItemStatus, _downloadCompletedBatch, _pollForHdUrls } =
           get();
 
-        if (!isProcessing) return;
+        if (!isProcessing) {return;}
 
         // Get pending items
         const pendingItems = queue.filter((item) => item.status === 'pending');

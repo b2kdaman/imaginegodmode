@@ -238,26 +238,26 @@ export const exportAllPacks = (packs: Packs): void => {
  * Validate import data structure (single pack v1.0)
  */
 const validateImportData = (data: unknown): data is ExportData => {
-  if (!data || typeof data !== 'object') return false;
+  if (!data || typeof data !== 'object') {return false;}
 
   const obj = data as Record<string, unknown>;
 
   // Check required fields
-  if (typeof obj.version !== 'string') return false;
-  if (typeof obj.exportDate !== 'string') return false;
-  if (typeof obj.packName !== 'string' || obj.packName.trim() === '') return false;
-  if (!Array.isArray(obj.prompts)) return false;
+  if (typeof obj.version !== 'string') {return false;}
+  if (typeof obj.exportDate !== 'string') {return false;}
+  if (typeof obj.packName !== 'string' || obj.packName.trim() === '') {return false;}
+  if (!Array.isArray(obj.prompts)) {return false;}
 
   const prompts = obj.prompts as unknown[];
 
   // Validate each prompt
   for (const prompt of prompts) {
-    if (!prompt || typeof prompt !== 'object') return false;
+    if (!prompt || typeof prompt !== 'object') {return false;}
     const p = prompt as Record<string, unknown>;
 
-    if (typeof p.text !== 'string') return false;
-    if (typeof p.rating !== 'number') return false;
-    if (p.rating < 0 || p.rating > 5) return false;
+    if (typeof p.text !== 'string') {return false;}
+    if (typeof p.rating !== 'number') {return false;}
+    if (p.rating < 0 || p.rating > 5) {return false;}
   }
 
   return true;
@@ -267,34 +267,34 @@ const validateImportData = (data: unknown): data is ExportData => {
  * Validate multi-pack import data structure (v2.0)
  */
 const validateMultiPackImportData = (data: unknown): data is MultiPackExportData => {
-  if (!data || typeof data !== 'object') return false;
+  if (!data || typeof data !== 'object') {return false;}
 
   const obj = data as Record<string, unknown>;
 
   // Check required fields
-  if (typeof obj.version !== 'string') return false;
-  if (typeof obj.exportDate !== 'string') return false;
-  if (!Array.isArray(obj.packs)) return false;
+  if (typeof obj.version !== 'string') {return false;}
+  if (typeof obj.exportDate !== 'string') {return false;}
+  if (!Array.isArray(obj.packs)) {return false;}
 
   const packs = obj.packs as unknown[];
 
   // Validate each pack
   for (const pack of packs) {
-    if (!pack || typeof pack !== 'object') return false;
+    if (!pack || typeof pack !== 'object') {return false;}
     const p = pack as Record<string, unknown>;
 
-    if (typeof p.packName !== 'string' || p.packName.trim() === '') return false;
-    if (!Array.isArray(p.prompts)) return false;
+    if (typeof p.packName !== 'string' || p.packName.trim() === '') {return false;}
+    if (!Array.isArray(p.prompts)) {return false;}
 
     // Validate prompts in this pack
     const prompts = p.prompts as unknown[];
     for (const prompt of prompts) {
-      if (!prompt || typeof prompt !== 'object') return false;
+      if (!prompt || typeof prompt !== 'object') {return false;}
       const pr = prompt as Record<string, unknown>;
 
-      if (typeof pr.text !== 'string') return false;
-      if (typeof pr.rating !== 'number') return false;
-      if (pr.rating < 0 || pr.rating > 5) return false;
+      if (typeof pr.text !== 'string') {return false;}
+      if (typeof pr.rating !== 'number') {return false;}
+      if (pr.rating < 0 || pr.rating > 5) {return false;}
     }
   }
 
@@ -308,7 +308,7 @@ const decodeBase64ToJson = (base64String: string): unknown => {
   try {
     const decodedString = decodeURIComponent(escape(atob(base64String)));
     return JSON.parse(decodedString);
-  } catch (error) {
+  } catch (_error) {
     throw new Error('Invalid base64 or JSON format');
   }
 };
@@ -341,7 +341,7 @@ export const importPack = (
         if (file.name.endsWith('.pak')) {
           try {
             data = decodeBase64ToJson(content);
-          } catch (error) {
+          } catch (_error) {
             resolve({
               success: false,
               error: 'Invalid .pak file format. File must contain base64 encoded JSON.'
@@ -352,7 +352,7 @@ export const importPack = (
           // Assume it's raw JSON
           try {
             data = JSON.parse(content);
-          } catch (error) {
+          } catch (_error) {
             resolve({
               success: false,
               error: 'Invalid JSON format'
@@ -361,7 +361,7 @@ export const importPack = (
           }
         }
 
-        let resultPacks: Packs = { ...currentPacks };
+        const resultPacks: Packs = { ...currentPacks };
 
         // Check if multi-pack format (v2.0)
         if (validateMultiPackImportData(data)) {

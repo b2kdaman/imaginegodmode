@@ -16,7 +16,7 @@ export const useVideoProgress = () => {
 
     // Create progress bar element
     function createProgressBar() {
-      if (progressBar) return progressBar;
+      if (progressBar) {return progressBar;}
 
       const colors = getThemeColors();
       progressBar = document.createElement('div');

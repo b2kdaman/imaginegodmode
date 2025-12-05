@@ -136,7 +136,7 @@ export const PromptView: React.FC = () => {
   };
 
   const handlePlayClick = () => {
-    if (!currentPrompt) return;
+    if (!currentPrompt) {return;}
 
     // Track video make action
     trackVideoMakeClicked();
@@ -146,7 +146,7 @@ export const PromptView: React.FC = () => {
   };
 
   const handleMakeAndNextClick = () => {
-    if (!currentPrompt) return;
+    if (!currentPrompt) {return;}
 
     const nextPostId = getNextPostId();
 

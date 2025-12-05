@@ -51,7 +51,7 @@ const getSessionId = (): string => {
         localStorage.setItem(SESSION_ID_KEY, JSON.stringify({ id, timestamp: now }));
         return id;
       }
-    } catch (e) {
+    } catch (_e) {
       // Invalid stored session, create new one
     }
   }

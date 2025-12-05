@@ -119,7 +119,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {return;}
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -321,7 +321,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
             )}
             renderBadges={(post) => {
               const unlikedPost = sortedPosts.find(p => p.id === post.id);
-              if (!unlikedPost) return null;
+              if (!unlikedPost) {return null;}
 
               return (
                 <div

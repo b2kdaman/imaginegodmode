@@ -137,7 +137,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
       await navigator.clipboard.writeText(grokPrompt);
       setStatusMessage('Grok prompt copied to clipboard!');
       setTimeout(() => setStatusMessage(''), 3000);
-    } catch (error) {
+    } catch (_error) {
       setStatusMessage('Failed to copy prompt');
       setTimeout(() => setStatusMessage(''), 3000);
     }

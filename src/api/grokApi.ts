@@ -22,6 +22,14 @@ export enum MediaPostSource {
 }
 
 /**
+ * Simple API response type for like/unlike/delete operations
+ */
+export interface SimpleApiResponse {
+  success: boolean;
+  error?: string;
+}
+
+/**
  * Fetch post data from Grok API
  * @param postId - Post ID to fetch
  * @returns Post data
@@ -97,7 +105,7 @@ export const fetchLikedPosts = async (limit: number = DEFAULT_POST_FETCH_LIMIT):
 export const fetchUnlikedPosts = async (limit: number = DEFAULT_POST_FETCH_LIMIT, userId?: string): Promise<LikedPostsResponse> => {
   console.log('[ImagineGodMode API] Fetching unliked posts, limit:', limit, 'userId:', userId);
 
-  const filter: any = {
+  const filter: { source: MediaPostSource; userId?: string } = {
     source: MediaPostSource.Invalid,
   };
 
@@ -132,7 +140,7 @@ export const fetchUnlikedPosts = async (limit: number = DEFAULT_POST_FETCH_LIMIT
  * @param postId - Post ID to like
  * @returns Like response
  */
-export const likePost = async (postId: string): Promise<any> => {
+export const likePost = async (postId: string): Promise<SimpleApiResponse> => {
   console.log('[ImagineGodMode API] Liking post:', postId);
 
   const res = await fetch(API_ENDPOINTS.POST_LIKE, {
@@ -161,7 +169,7 @@ export const likePost = async (postId: string): Promise<any> => {
  * @param postId - Post ID to unlike
  * @returns Unlike response
  */
-export const unlikePost = async (postId: string): Promise<any> => {
+export const unlikePost = async (postId: string): Promise<SimpleApiResponse> => {
   console.log('[ImagineGodMode API] Unliking post:', postId);
 
   const res = await fetch(API_ENDPOINTS.POST_UNLIKE, {
@@ -190,7 +198,7 @@ export const unlikePost = async (postId: string): Promise<any> => {
  * @param postId - Post ID to delete
  * @returns Delete response
  */
-export const deletePost = async (postId: string): Promise<any> => {
+export const deletePost = async (postId: string): Promise<SimpleApiResponse> => {
   console.log('[ImagineGodMode API] Deleting post:', postId);
 
   const res = await fetch(API_ENDPOINTS.POST_DELETE, {
@@ -219,7 +227,7 @@ export const deletePost = async (postId: string): Promise<any> => {
  * @param videoId - Video ID to upscale
  * @returns Upscale response
  */
-export const upscaleVideo = async (videoId: string): Promise<any> => {
+export const upscaleVideo = async (videoId: string): Promise<SimpleApiResponse> => {
   const res = await fetch(API_ENDPOINTS.VIDEO_UPSCALE, {
     method: 'POST',
     headers: {

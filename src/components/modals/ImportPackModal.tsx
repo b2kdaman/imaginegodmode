@@ -132,7 +132,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
     try {
       const decodedString = decodeURIComponent(escape(atob(base64String)));
       return JSON.parse(decodedString);
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Invalid base64 or JSON format');
     }
   };
@@ -143,7 +143,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
       setJsonInput(text);
       const result = validateJSON(text);
       setValidation(result);
-    } catch (error) {
+    } catch (_error) {
       setValidation({
         isValid: false,
         error: 'Failed to read clipboard',
@@ -163,7 +163,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {return;}
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -176,7 +176,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
           try {
             const decoded = decodeBase64ToJson(content);
             jsonText = JSON.stringify(decoded, null, 2);
-          } catch (error) {
+          } catch (_error) {
             setValidation({
               isValid: false,
               error: 'Invalid .pak file format. File must contain base64 encoded JSON.'
@@ -205,7 +205,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
   };
 
   const handleImport = async () => {
-    if (!validation?.isValid || !validation.jsonText) return;
+    if (!validation?.isValid || !validation.jsonText) {return;}
 
     setIsImporting(true);
     try {

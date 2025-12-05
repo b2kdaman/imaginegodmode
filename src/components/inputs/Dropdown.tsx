@@ -38,7 +38,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
   // Detect if dropdown is inside a modal by checking parent elements
   const isInsideModal = useMemo(() => {
-    if (typeof window === 'undefined') return false;
+    if (typeof window === 'undefined') {return false;}
     // Check if any parent has the modal-overlay class
     return !!document.querySelector('.modal-overlay');
   }, []);

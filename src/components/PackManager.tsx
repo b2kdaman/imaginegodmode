@@ -47,7 +47,7 @@ export const PackManager: React.FC = () => {
   };
 
   const handleDeletePack = () => {
-    if (packNames.length <= 1) return;
+    if (packNames.length <= 1) {return;}
     deletePack(currentPack);
   };
 
@@ -105,7 +105,7 @@ export const PackManager: React.FC = () => {
             value={newPackName}
             onChange={(e) => setNewPackName(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') handleAddPack();
+              if (e.key === 'Enter') {handleAddPack();}
               if (e.key === 'Escape') {
                 setIsAdding(false);
                 setNewPackName('');

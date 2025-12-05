@@ -7,12 +7,13 @@ import { createPortal } from 'react-dom';
 import { mdiClose } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { Z_INDEX } from '@/utils/constants';
+import type { ThemeColors } from '@/utils/themeLoader';
 
 interface BaseModalProps {
   isOpen: boolean;
   title: string;
   onClose: () => void;
-  getThemeColors: () => any;
+  getThemeColors: () => ThemeColors;
   children: React.ReactNode;
   maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
   maxHeight?: string;
@@ -56,7 +57,7 @@ export const BaseModal: React.FC<BaseModalProps> = ({
 }) => {
   const colors = getThemeColors();
 
-  if (!isOpen) return null;
+  if (!isOpen) {return null;}
 
   const handleOverlayClick = () => {
     if (closeOnOverlayClick && !disableClose) {

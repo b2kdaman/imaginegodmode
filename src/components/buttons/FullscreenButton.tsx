@@ -80,14 +80,22 @@ export const FullscreenButton: React.FC = () => {
       trackVideoFullscreen('button');
 
       // Request fullscreen on the video element
+      // Type assertion for browser-specific fullscreen methods
+      interface ExtendedHTMLVideoElement extends HTMLVideoElement {
+        webkitRequestFullscreen?: () => Promise<void>;
+        mozRequestFullScreen?: () => Promise<void>;
+        msRequestFullscreen?: () => Promise<void>;
+      }
+      const videoElement = video as ExtendedHTMLVideoElement;
+
       if (video.requestFullscreen) {
         video.requestFullscreen();
-      } else if ((video as any).webkitRequestFullscreen) {
-        (video as any).webkitRequestFullscreen();
-      } else if ((video as any).mozRequestFullScreen) {
-        (video as any).mozRequestFullScreen();
-      } else if ((video as any).msRequestFullscreen) {
-        (video as any).msRequestFullscreen();
+      } else if (videoElement.webkitRequestFullscreen) {
+        videoElement.webkitRequestFullscreen();
+      } else if (videoElement.mozRequestFullScreen) {
+        videoElement.mozRequestFullScreen();
+      } else if (videoElement.msRequestFullscreen) {
+        videoElement.msRequestFullscreen();
       }
     } catch (error) {
       console.error('[ImagineGodMode] Fullscreen error:', error);

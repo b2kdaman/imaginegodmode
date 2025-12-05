@@ -130,7 +130,7 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
 
   // Listen for arrow key presses
   useEffect(() => {
-    if (!isOpen || isCompleted) return;
+    if (!isOpen || isCompleted) {return;}
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isArrowKey(e.key)) {
