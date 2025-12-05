@@ -9,7 +9,7 @@ import { PromptView } from './views/PromptView';
 import { OpsView } from './views/OpsView';
 import { SettingsView } from './views/SettingsView';
 import { HelpView } from './views/HelpView';
-import { UI_POSITION, VERSION } from '@/utils/constants';
+import { UI_POSITION, VERSION, Z_INDEX } from '@/utils/constants';
 import { Button } from './inputs/Button';
 import { Tabs } from './inputs/Tabs';
 import { FullscreenButton } from './buttons/FullscreenButton';
@@ -66,12 +66,13 @@ export const MainPanel: React.FC = () => {
 
   return (
     <div
-      className="fixed z-[99999] flex flex-col transition-transform duration-200"
+      className="fixed flex flex-col transition-transform duration-200"
       style={{
         bottom: UI_POSITION.BOTTOM,
         right: UI_POSITION.RIGHT,
         transform: `scale(${scale})`,
         transformOrigin: 'bottom right',
+        zIndex: Z_INDEX.MAIN_PANEL,
       }}
     >
       {/* Main container */}

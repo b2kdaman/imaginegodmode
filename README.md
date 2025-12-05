@@ -281,7 +281,12 @@ All modals extend BaseModal for consistent animations, behavior, and appearance.
 
 **Inputs** (src/components/inputs/)
 - **Button**: Reusable button component with theme-aware styling and hover states
-- **Dropdown**: Custom dropdown component with theme-aware styling, hover effects, and consistent overlay appearance
+- **Dropdown**: Custom dropdown component with portal-based rendering for proper z-index stacking
+  - Theme-aware styling with hover effects and smooth transitions
+  - Context-aware z-index (uses higher value when inside modals)
+  - Portal rendering to dedicated container with fixed positioning
+  - Dynamic position calculation with scroll and resize handling
+  - Click-outside detection for seamless UX
 - **RatingSystem**: 5-star rating component with white icons and optional readonly mode
 - **Tabs**: Tab navigation component with theme support and bottom placement
 - **Toggle**: Reusable toggle switch component with theme-aware styling and animations
@@ -447,13 +452,18 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - Uses GA4 Measurement Protocol (no script loading)
 - **Modal System**: Unified modal architecture with BaseModal component
   - Smooth fade-in and slide-in animations (0.2s/0.3s)
-  - Highest z-index (999999) ensures modals appear above all content
   - Portal rendering to document.body for proper stacking
   - Modals persist when extension panel is collapsed (no state loss)
   - Consistent behavior: overlay click, close button, keyboard shortcuts
   - Flexible sizing: configurable width, height, padding, overlay opacity
   - Optional footer for action buttons with theme-aware styling
   - DRY principle reduces code duplication across 7+ modals (~250 lines saved)
+- **Z-Index Management**: Centralized layering system for predictable element stacking
+  - Hierarchical constants defined in `constants.ts` (10000-10600 range)
+  - Main panel (10000) → Video progress (10100) → Dropdown (10200) → Tooltip (10300) → Modal (10400) → Modal dropdown (10500) → Modal tooltip (10600)
+  - Context-aware dropdowns automatically use higher z-index when rendered inside modals
+  - Portal-based rendering with fixed positioning for reliable overlay behavior
+  - Prevents z-index conflicts and ensures proper layering across all UI elements
 - **Loading Indicators**: Animated spinner icons for all loading states
   - Material Design Icons rotating spinner (mdiLoading) replaces static "..." text
   - Tailwind's animate-spin for smooth rotation animation

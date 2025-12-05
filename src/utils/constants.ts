@@ -12,6 +12,24 @@ export const UI_POSITION = {
   Z_INDEX: '99999',
 } as const;
 
+// Z-Index Hierarchy
+// Extension content should layer above the page but not interfere with browser UI
+// Proper stacking ensures overlays work correctly in all contexts
+export const Z_INDEX = {
+  // Base layer
+  MAIN_PANEL: 10000,        // Main floating panel (base layer)
+  VIDEO_PROGRESS: 10100,    // Video progress bar (above main panel)
+
+  // Interactive overlays for main panel
+  DROPDOWN: 10200,          // Dropdown menus (above main panel content)
+  TOOLTIP: 10300,           // Tooltips (above dropdowns)
+
+  // Modal layer (highest priority for user interaction)
+  MODAL: 10400,             // Modal overlay (above everything else)
+  MODAL_DROPDOWN: 10500,    // Dropdowns inside modals (above modal content)
+  MODAL_TOOLTIP: 10600,     // Tooltips inside modals (highest priority)
+} as const;
+
 // UI Spacing
 export const UI_SPACING = {
   GAP_SMALL: '4px',

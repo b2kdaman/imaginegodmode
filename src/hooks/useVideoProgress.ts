@@ -4,6 +4,7 @@
 
 import { useEffect } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import { Z_INDEX } from '@/utils/constants';
 
 export const useVideoProgress = () => {
   const { getThemeColors } = useSettingsStore();
@@ -28,7 +29,7 @@ export const useVideoProgress = () => {
         width: '0%',
         background: colors.PROGRESS_BAR,
         opacity: '0.5',
-        zIndex: '999999',
+        zIndex: String(Z_INDEX.VIDEO_PROGRESS),
         transition: 'width 0.3s ease',
         pointerEvents: 'none',
       });

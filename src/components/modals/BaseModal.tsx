@@ -6,6 +6,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { mdiClose } from '@mdi/js';
 import { Icon } from '../common/Icon';
+import { Z_INDEX } from '@/utils/constants';
 
 interface BaseModalProps {
   isOpen: boolean;
@@ -73,9 +74,10 @@ export const BaseModal: React.FC<BaseModalProps> = ({
 
   const modalContent = (
     <div
-      className="modal-overlay fixed inset-0 flex items-center justify-center z-[999999] p-4"
+      className="modal-overlay fixed inset-0 flex items-center justify-center p-4"
       style={{
         backgroundColor: `rgba(0, 0, 0, ${overlayOpacity})`,
+        zIndex: Z_INDEX.MODAL,
       }}
       onClick={handleOverlayClick}
     >
