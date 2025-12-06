@@ -73,6 +73,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Simple Shortcut Setting**: Optional setting to use `Ctrl/Cmd + Enter` instead of `Ctrl/Cmd + Shift + Enter` for applying prompts
 - **Hide Unsave Button**: Optional setting to hide the "Unsave" button from the Grok page interface (off by default)
 - **Sound Effects Control**: Optional setting to enable/disable UI sound effects (on by default) - controls cyberpunk-style audio feedback for purge modal interactions
+- **Confirm Copy From**: Optional setting to show confirmation dialog when copying from page would replace existing prompt text (on by default)
 - **Keyboard Shortcuts**:
   - `Ctrl/Cmd + Shift + Enter`: Apply current prompt with prefix and click "Make a Video" (default)
   - `Ctrl/Cmd + Enter`: Apply current prompt with prefix and click "Make a Video" (when Simple Shortcut enabled)
@@ -183,6 +184,7 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Toggle Simple Shortcut to use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter for applying prompts
    - Toggle Hide Unsave to hide the "Unsave" button from the page (off by default)
    - Toggle Enable Sound to control UI sound effects (on by default) - affects purge modal audio feedback
+   - Toggle Confirm Copy From to show confirmation when replacing existing prompt text (on by default)
    - All settings labels include visual icons for easy identification
    - **Tooltips**: Hover over any setting row for detailed explanations
    - **Data Management**:
@@ -257,7 +259,7 @@ grkgoondl/
 - **usePromptStore**: Manages prompts, packs, ratings, and import/export operations
 - **useMediaStore**: Handles media URLs, upscaling, and status
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
-- **useSettingsStore**: Manages theme, size, auto-download, remember-post-state, simple-shortcut, hide-unsave, and enable-sound preferences with localStorage persistence
+- **useSettingsStore**: Manages theme, size, auto-download, remember-post-state, simple-shortcut, hide-unsave, enable-sound, and confirm-copy-from preferences with localStorage persistence
 - **useUpscaleQueueStore**: Global upscale queue with batch processing (15 at a time), auto-download, and localStorage persistence
 - **usePostsStore**: Manages fetched posts list and navigation helpers for "Make + Next" workflow
 - **useUserStore**: Manages user ID from API with localStorage persistence and automatic initialization
@@ -289,7 +291,7 @@ grkgoondl/
 **Views** (src/components/views/)
 - **PromptView**: Prompt management interface with "Make + Next" workflow button
 - **OpsView**: Media controls with queue-based upscaling, HD-gated downloads, bulk operations (Upscale All Liked, Unlike Multiple Posts, Delete Multiple Posts)
-- **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut, hide-unsave, enable-sound preferences, data management with import/export, and purge all data functionality
+- **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut, hide-unsave, enable-sound, confirm-copy-from preferences, data management with import/export, and purge all data functionality
 - **HelpView**: Help and documentation interface
 - **QueueView**: Dedicated upscale queue management with progress tracking, stats, queue list, and controls
 
@@ -304,6 +306,7 @@ grkgoondl/
 - **PackSelectModal**: Modal for selecting which pack to export
 - **ImportPackModal**: Modal for importing packs via paste or file upload with validation
 - **ConfirmDeleteModal**: Confirmation dialog for pack deletion with warning message
+- **ConfirmModal**: Generic confirmation modal with variant support (danger/warning/info) for reusable confirmation dialogs
 
 **Shared Modal Components** (src/components/modals/shared/)
 - **ProgressBar**: Reusable progress bar component for bulk operations with animated loading indicator
@@ -435,7 +438,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Video progress polling every 500ms with auto-removal on completion
 - Console initialization tag with styled branding using theme colors
 - API architecture refactored: content script handles authenticated calls, background worker handles downloads
-- Settings persist in localStorage for instant theme/size/language/auto-download/remember-post-state/simple-shortcut/hide-unsave/enable-sound application on load
+- Settings persist in localStorage for instant theme/size/language/auto-download/remember-post-state/simple-shortcut/hide-unsave/enable-sound/confirm-copy-from application on load
 - **Hide Unsave Feature**: Dynamic CSS injection to hide Unsave button when enabled
   - Uses `useEffect` hook to inject/remove style element
   - CSS selector targets `button[aria-label="Unsave"]`

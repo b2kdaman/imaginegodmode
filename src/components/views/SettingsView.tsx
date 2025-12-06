@@ -28,7 +28,8 @@ import {
   mdiKeyboard,
   mdiEyeOff,
   mdiDeleteForever,
-  mdiVolumeHigh
+  mdiVolumeHigh,
+  mdiAlertCircleOutline
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -40,10 +41,11 @@ import {
   trackSimpleShortcutToggled,
   trackHideUnsaveToggled,
   trackSoundToggled,
+  trackConfirmCopyFromToggled,
 } from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableSound, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableSound, setConfirmCopyFrom, getThemeColors } = useSettingsStore();
   const { importPack, currentPack, packs, clearAllPacks } = usePromptStore();
   const { userId } = useUserStore();
   const { t, locale, setLocale } = useTranslation();
@@ -451,6 +453,30 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
               onChange={(checked) => {
                 setEnableSound(checked);
                 trackSoundToggled(checked);
+              }}
+            />
+          </div>
+
+          {/* Confirm Copy From Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-id="app-tooltip"
+            data-tooltip-content="Show confirmation dialog when copying from page would replace existing prompt text"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="confirm-copy-from-toggle"
+            >
+              <Icon path={mdiAlertCircleOutline} size={0.7} color={colors.TEXT_PRIMARY} />
+              Confirm Copy From
+            </label>
+            <Toggle
+              id="confirm-copy-from-toggle"
+              checked={confirmCopyFrom}
+              onChange={(checked) => {
+                setConfirmCopyFrom(checked);
+                trackConfirmCopyFromToggled(checked);
               }}
             />
           </div>

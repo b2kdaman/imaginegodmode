@@ -9,6 +9,7 @@ import { usePostsStore } from '@/store/usePostsStore';
 import { PackManager } from '../PackManager';
 import { RatingSystem } from '../inputs/RatingSystem';
 import { Button } from '../inputs/Button';
+import { ConfirmModal } from '../modals/ConfirmModal';
 import { UI_COLORS, SELECTORS } from '@/utils/constants';
 import {
   mdiChevronLeft,
@@ -52,7 +53,7 @@ export const PromptView: React.FC = () => {
     loadPostState,
     savePostState,
   } = usePromptStore();
-  const { getThemeColors, rememberPostState } = useSettingsStore();
+  const { getThemeColors, rememberPostState, confirmCopyFrom } = useSettingsStore();
   const { getNextPostId, setCurrentPostId } = usePostsStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
@@ -62,6 +63,7 @@ export const PromptView: React.FC = () => {
 
   const [prefix, setLocalPrefix] = useState<string>('');
   const [postId, setPostId] = useState<string | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   // Load prefix and post state from storage when component mounts or URL changes
   const loadPostData = useCallback(async () => {
@@ -128,11 +130,27 @@ export const PromptView: React.FC = () => {
 
   const handleCopyFromPage = () => {
     const textarea = document.querySelector(SELECTORS.TEXTAREA) as HTMLTextAreaElement;
-    if (textarea) {
-      updatePromptText(textarea.value);
-      trackPromptEdited();
-      trackPromptCopiedFromPage();
+    if (!textarea) return;
+
+    // Show confirmation if current prompt is not empty and setting is enabled
+    if (currentPrompt?.text.trim() && confirmCopyFrom) {
+      setShowConfirmModal(true);
+      return;
     }
+
+    // If empty or confirmation disabled, copy directly
+    updatePromptText(textarea.value);
+    trackPromptEdited();
+    trackPromptCopiedFromPage();
+  };
+
+  const handleConfirmCopyFromPage = () => {
+    const textarea = document.querySelector(SELECTORS.TEXTAREA) as HTMLTextAreaElement;
+    if (!textarea) return;
+
+    updatePromptText(textarea.value);
+    trackPromptEdited();
+    trackPromptCopiedFromPage();
   };
 
   const handlePlayClick = () => {
@@ -331,6 +349,17 @@ export const PromptView: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={showConfirmModal}
+        title="Replace Prompt Text?"
+        message="This will replace the current prompt text. Are you sure you want to continue?"
+        confirmText="Replace"
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmCopyFromPage}
+        getThemeColors={getThemeColors}
+        variant="warning"
+      />
     </div>
   );
 };

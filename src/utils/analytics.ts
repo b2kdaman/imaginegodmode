@@ -213,6 +213,10 @@ export const trackSoundToggled = (enabled: boolean): void => {
   trackEvent('sound_toggled', { enabled });
 };
 
+export const trackConfirmCopyFromToggled = (enabled: boolean): void => {
+  trackEvent('confirm_copy_from_toggled', { enabled });
+};
+
 /**
  * Track settings changes
  */
