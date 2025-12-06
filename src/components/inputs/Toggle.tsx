@@ -53,18 +53,25 @@ export const Toggle: React.FC<ToggleProps> = ({
           }}
           onMouseEnter={(e) => {
             if (!disabled) {
-              handleMouseEnter(e);
-              // Override default hover styles to maintain toggle colors
-              e.currentTarget.style.backgroundColor = checked ? colors.SUCCESS : colors.BACKGROUND_MEDIUM;
-              e.currentTarget.style.borderColor = checked ? colors.SUCCESS : colors.BORDER;
+              handleMouseEnter(e, disabled);
+              // Force override styles after glow handler
+              requestAnimationFrame(() => {
+                e.currentTarget.style.backgroundColor = checked ? colors.SUCCESS : colors.BACKGROUND_MEDIUM;
+                e.currentTarget.style.borderColor = checked ? colors.SUCCESS : colors.BORDER;
+                e.currentTarget.style.color = 'transparent';
+              });
             }
           }}
           onMouseLeave={(e) => {
             if (!disabled) {
-              handleMouseLeave(e);
-              // Override default hover styles to maintain toggle colors
-              e.currentTarget.style.backgroundColor = checked ? colors.SUCCESS : colors.BACKGROUND_MEDIUM;
-              e.currentTarget.style.borderColor = checked ? colors.SUCCESS : colors.BORDER;
+              handleMouseLeave(e, disabled);
+              // Force override styles after glow handler
+              requestAnimationFrame(() => {
+                e.currentTarget.style.backgroundColor = checked ? colors.SUCCESS : colors.BACKGROUND_MEDIUM;
+                e.currentTarget.style.borderColor = checked ? colors.SUCCESS : colors.BORDER;
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.color = 'transparent';
+              });
             }
           }}
         >
