@@ -8,6 +8,7 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 import { Icon } from '../common/Icon';
 import { mdiChevronDown } from '@mdi/js';
 import { Z_INDEX } from '@/utils/constants';
+import { useGlowAnimation, useMultiGlowAnimation } from '@/hooks/useGlowAnimation';
 
 interface DropdownOption {
   value: string;
@@ -35,6 +36,10 @@ export const Dropdown: React.FC<DropdownProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
+
+  // Glow animations for trigger button and dropdown options
+  const triggerGlow = useGlowAnimation({ scaleFactor: 1.02 });
+  const optionsGlow = useMultiGlowAnimation();
 
   // Detect if dropdown is inside a modal by checking parent elements
   const isInsideModal = useMemo(() => {
@@ -129,6 +134,8 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
   return (
     <>
+      <style>{triggerGlow.glowStyles}</style>
+      <style>{optionsGlow.glowStyles}</style>
       <div className={`relative ${className}`}>
         {/* Trigger Button */}
         <button
@@ -136,7 +143,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
           type="button"
           onClick={handleToggle}
           disabled={disabled}
-          className="pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none transition-colors text-left relative block"
+          className="pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none transition-all duration-300 text-left relative block overflow-hidden"
           style={{
             backgroundColor: colors.BACKGROUND_MEDIUM,
             color: colors.TEXT_PRIMARY,
@@ -144,22 +151,28 @@ export const Dropdown: React.FC<DropdownProps> = ({
             opacity: disabled ? 0.5 : 1,
             cursor: disabled ? 'not-allowed' : 'pointer',
             width: '100%',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
           }}
           onMouseEnter={(e) => {
             if (!disabled) {
+              triggerGlow.handleMouseEnter(e);
+              // Override with dropdown-specific colors
               e.currentTarget.style.backgroundColor = colors.BACKGROUND_LIGHT;
+              e.currentTarget.style.color = colors.TEXT_PRIMARY;
             }
           }}
           onMouseLeave={(e) => {
             if (!disabled) {
+              triggerGlow.handleMouseLeave(e);
+              // Override with dropdown-specific colors
               e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
+              e.currentTarget.style.color = colors.TEXT_PRIMARY;
             }
           }}
         >
+          {/* Glow effect for trigger */}
+          {!disabled && <triggerGlow.GlowOverlay />}
           <span
+            className="relative z-10"
             style={{
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -170,7 +183,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
           >
             {selectedLabel}
           </span>
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
             <Icon
               path={mdiChevronDown}
               size={0.6}
@@ -198,34 +211,52 @@ export const Dropdown: React.FC<DropdownProps> = ({
             overflowY: 'auto',
           }}
         >
-          {options.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => handleSelect(option.value)}
-              className="w-full px-3 py-2 text-sm text-left cursor-pointer transition-colors"
-              style={{
-                backgroundColor: option.value === value ? colors.BACKGROUND_LIGHT : colors.BACKGROUND_MEDIUM,
-                color: option.value === value ? colors.TEXT_HOVER || colors.TEXT_PRIMARY : colors.TEXT_PRIMARY,
-                border: 'none',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = colors.BACKGROUND_LIGHT;
-                e.currentTarget.style.color = colors.TEXT_HOVER || colors.TEXT_PRIMARY;
-              }}
-              onMouseLeave={(e) => {
-                if (option.value !== value) {
-                  e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
-                  e.currentTarget.style.color = colors.TEXT_PRIMARY;
-                } else {
-                  e.currentTarget.style.backgroundColor = colors.BACKGROUND_LIGHT;
-                  e.currentTarget.style.color = colors.TEXT_HOVER || colors.TEXT_PRIMARY;
-                }
-              }}
-            >
-              {option.label}
-            </button>
-          ))}
+          {options.map((option) => {
+            const isSelected = option.value === value;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => handleSelect(option.value)}
+                className="w-full px-3 py-2 text-sm text-left cursor-pointer transition-all duration-300 relative overflow-hidden"
+                style={{
+                  backgroundColor: isSelected ? colors.BACKGROUND_LIGHT : colors.BACKGROUND_MEDIUM,
+                  color: isSelected ? colors.TEXT_HOVER || colors.TEXT_PRIMARY : colors.TEXT_PRIMARY,
+                  border: 'none',
+                }}
+                onMouseEnter={(e) => {
+                  optionsGlow.handleMouseEnter(
+                    e,
+                    option.value,
+                    false,
+                    {
+                      backgroundColor: colors.BACKGROUND_LIGHT,
+                      color: colors.TEXT_HOVER || colors.TEXT_PRIMARY,
+                    }
+                  );
+                }}
+                onMouseLeave={(e) => {
+                  optionsGlow.handleMouseLeave(
+                    e,
+                    false,
+                    isSelected
+                      ? {
+                          backgroundColor: colors.BACKGROUND_LIGHT,
+                          color: colors.TEXT_HOVER || colors.TEXT_PRIMARY,
+                        }
+                      : {
+                          backgroundColor: colors.BACKGROUND_MEDIUM,
+                          color: colors.TEXT_PRIMARY,
+                        }
+                  );
+                }}
+              >
+                {/* Glow effect for options */}
+                {optionsGlow.getGlowOverlay(option.value)}
+                <span className="relative z-10">{option.label}</span>
+              </button>
+            );
+          })}
         </div>,
         portalContainer
       )}

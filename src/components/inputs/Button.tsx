@@ -5,6 +5,7 @@
 import React from 'react';
 import { Icon } from '../common/Icon';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import { useGlowAnimation } from '@/hooks/useGlowAnimation';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'default' | 'icon';
@@ -30,8 +31,9 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
   const { getThemeColors } = useSettingsStore();
   const colors = getThemeColors();
+  const { glowStyles, handleMouseEnter, handleMouseLeave, GlowOverlay } = useGlowAnimation();
 
-  const baseStyles = 'rounded-full transition-colors flex items-center justify-center';
+  const baseStyles = 'rounded-full transition-all duration-300 flex items-center justify-center relative overflow-hidden';
   const variantStyles = {
     default: 'px-3 py-2 text-xs disabled:opacity-30',
     icon: 'w-9 h-9 disabled:opacity-30',
@@ -50,32 +52,39 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   return (
-    <button
-      className={`${baseStyles} ${variantStyles[variant]} ${className}`}
-      disabled={disabled}
-      style={buttonStyle}
-      data-tooltip-id={tooltip ? 'app-tooltip' : undefined}
-      data-tooltip-content={tooltip}
-      onMouseEnter={(e) => {
-        if (!disabled && !className.includes('!bg-white')) {
-          e.currentTarget.style.backgroundColor = `${colors.BACKGROUND_LIGHT}aa`;
-          e.currentTarget.style.color = colors.TEXT_HOVER;
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!disabled && !className.includes('!bg-white')) {
-          e.currentTarget.style.backgroundColor = `${colors.BACKGROUND_MEDIUM}aa`;
-          e.currentTarget.style.color = colors.TEXT_SECONDARY;
-        }
-      }}
-      {...props}
-    >
-      {icon && <Icon path={icon} size={variant === 'icon' ? 0.8 : iconSize} color={finalIconColor} className={iconClassName} />}
-      {children && (
-        <span className={icon ? 'ml-1' : ''}>
-          {children}
+    <>
+      <style>{glowStyles}</style>
+      <button
+        className={`${baseStyles} ${variantStyles[variant]} ${className}`}
+        disabled={disabled}
+        style={buttonStyle}
+        data-tooltip-id={tooltip ? 'app-tooltip' : undefined}
+        data-tooltip-content={tooltip}
+        onMouseEnter={(e) => {
+          if (!disabled && !className.includes('!bg-white')) {
+            handleMouseEnter(e);
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!disabled && !className.includes('!bg-white')) {
+            handleMouseLeave(e);
+          }
+        }}
+        {...props}
+      >
+        {/* Glow light run effect overlay */}
+        {!disabled && <GlowOverlay />}
+
+        {/* Content wrapper for z-index control */}
+        <span className="relative z-10 flex items-center justify-center">
+          {icon && <Icon path={icon} size={variant === 'icon' ? 0.8 : iconSize} color={finalIconColor} className={iconClassName} />}
+          {children && (
+            <span className={icon ? 'ml-1' : ''}>
+              {children}
+            </span>
+          )}
         </span>
-      )}
-    </button>
+      </button>
+    </>
   );
 };

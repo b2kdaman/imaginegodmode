@@ -68,7 +68,7 @@ export interface PostData {
   };
 }
 
-export type ViewMode = 'prompt' | 'ops' | 'settings' | 'help';
+export type ViewMode = 'prompt' | 'ops' | 'settings' | 'help' | 'queue';
 
 export type QueueItemStatus = 'pending' | 'processing' | 'completed' | 'failed';
 

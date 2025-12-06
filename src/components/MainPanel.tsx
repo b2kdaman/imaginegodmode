@@ -2,35 +2,86 @@
  * Main floating panel component
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUIStore } from '@/store/useUIStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import { useUpscaleQueueStore } from '@/store/useUpscaleQueueStore';
 import { PromptView } from './views/PromptView';
 import { OpsView } from './views/OpsView';
 import { SettingsView } from './views/SettingsView';
 import { HelpView } from './views/HelpView';
+import { QueueView } from './views/QueueView';
 import { UI_POSITION, Z_INDEX } from '@/utils/constants';
 import { Tabs } from './inputs/Tabs';
 import { PanelControls } from './common/PanelControls';
 import { useUrlVisibility } from '@/hooks/useUrlVisibility';
 import { useTranslation } from '@/contexts/I18nContext';
+import { mdiTrayFull } from '@mdi/js';
 
-type ViewType = 'prompt' | 'ops' | 'settings' | 'help';
+type ViewType = 'prompt' | 'ops' | 'settings' | 'help' | 'queue';
 
 const VIEW_COMPONENTS: Record<ViewType, React.FC> = {
   prompt: PromptView,
   ops: OpsView,
   settings: SettingsView,
   help: HelpView,
+  queue: QueueView,
 };
 
 export const MainPanel: React.FC = () => {
   const { isExpanded, currentView, setCurrentView } = useUIStore();
   const { getThemeColors, getScale } = useSettingsStore();
+  const { queue } = useUpscaleQueueStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
   const scale = getScale();
   const isVisible = useUrlVisibility('/imagine');
+
+  // Calculate queue count
+  const queueCount = queue.filter((item) => item.status === 'pending' || item.status === 'processing').length;
+
+  // Animation state
+  const [shouldRender, setShouldRender] = useState(isExpanded);
+  const [isAnimatingIn, setIsAnimatingIn] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [previousView, setPreviousView] = useState<ViewType>(currentView as ViewType);
+
+  // Handle expand/collapse animation
+  useEffect(() => {
+    if (isExpanded) {
+      // Start with element rendered but in collapsed state
+      setShouldRender(true);
+      setIsAnimatingIn(false);
+
+      // Trigger animation on next frame
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsAnimatingIn(true);
+        });
+      });
+    } else {
+      // Collapse animation
+      setIsAnimatingIn(false);
+
+      // Delay unmounting until animation completes
+      const timer = setTimeout(() => {
+        setShouldRender(false);
+      }, 300); // Match transition duration
+      return () => clearTimeout(timer);
+    }
+  }, [isExpanded]);
+
+  // Handle tab switch animation
+  useEffect(() => {
+    if (previousView !== currentView) {
+      setIsTransitioning(true);
+      const timer = setTimeout(() => {
+        setPreviousView(currentView as ViewType);
+        setIsTransitioning(false);
+      }, 200); // Animation duration
+      return () => clearTimeout(timer);
+    }
+  }, [currentView, previousView]);
 
   // Don't render if URL doesn't contain /imagine
   if (!isVisible) {
@@ -38,12 +89,20 @@ export const MainPanel: React.FC = () => {
   }
 
   const CurrentView = VIEW_COMPONENTS[currentView as ViewType] || PromptView;
+  const PreviousViewComponent = VIEW_COMPONENTS[previousView] || PromptView;
 
   const tabs = [
     { id: 'prompt', label: t('tabs.prompt') },
     { id: 'ops', label: t('tabs.ops') },
     { id: 'settings', label: t('tabs.settings') },
     { id: 'help', label: t('tabs.help') },
+    // Queue tab - icon only with badge, always visible
+    {
+      id: 'queue',
+      icon: mdiTrayFull,
+      badge: queueCount,
+      iconOnly: true,
+    },
   ];
 
   return (
@@ -62,28 +121,58 @@ export const MainPanel: React.FC = () => {
         {/* Panel controls */}
         <PanelControls />
 
-        {/* Content wrapper */}
-        <div
-          className="rounded-2xl p-4 shadow-2xl w-[320px]"
-          style={{
-            backgroundColor: `${colors.BACKGROUND_DARK}aa`,
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            border: `1px solid ${colors.BORDER}`,
-            display: isExpanded ? 'block' : 'none',
-          }}
-        >
-          {/* View content */}
-          <CurrentView />
+        {/* Content wrapper with expand/collapse animation */}
+        {shouldRender && (
+          <div
+            className="rounded-2xl p-4 shadow-2xl w-[360px] overflow-hidden transition-all duration-300 ease-out"
+            style={{
+              backgroundColor: `${colors.BACKGROUND_DARK}aa`,
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: `1px solid ${colors.BORDER}`,
+              maxHeight: isAnimatingIn ? '800px' : '0px',
+              opacity: isAnimatingIn ? 1 : 0,
+              padding: isAnimatingIn ? '16px' : '0px 16px',
+              transform: isAnimatingIn ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.95)',
+              transformOrigin: 'bottom right',
+            }}
+          >
+            {/* View content with transition */}
+            <div className="relative">
+              {/* Previous view fading out */}
+              {isTransitioning && (
+                <div
+                  className="absolute inset-0 transition-all duration-200 ease-out pointer-events-none"
+                  style={{
+                    opacity: 0,
+                    transform: 'translateX(-20px)',
+                  }}
+                >
+                  <PreviousViewComponent />
+                </div>
+              )}
 
-          {/* Tabs */}
-          <Tabs
-            tabs={tabs}
-            activeTab={currentView}
-            onChange={(tabId) => setCurrentView(tabId as ViewType)}
-            direction="up"
-          />
-        </div>
+              {/* Current view fading in */}
+              <div
+                className="transition-all duration-200 ease-out"
+                style={{
+                  opacity: isTransitioning ? 0 : 1,
+                  transform: isTransitioning ? 'translateX(20px)' : 'translateX(0)',
+                }}
+              >
+                <CurrentView />
+              </div>
+            </div>
+
+            {/* Tabs */}
+            <Tabs
+              tabs={tabs}
+              activeTab={currentView}
+              onChange={(tabId) => setCurrentView(tabId as ViewType)}
+              direction="up"
+            />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -36,7 +36,8 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - Processes 15 videos at a time per batch
   - Auto-downloads completed batch before starting next
   - Persists across post navigation
-  - Visual indicator with progress and status
+  - Dedicated Queue View tab with icon-only badge showing pending/processing count
+  - Full queue management interface with progress tracking, stats, and controls
 - **Bulk Operations**: Batch process multiple posts with visual selection interface
   - **Upscale All Liked**: Select from liked posts to upscale videos in bulk
   - **Unlike Multiple Posts**: Manage liked posts with bulk unlike functionality
@@ -84,12 +85,17 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Persistent Storage**: All data saved with `chrome.storage.local` (prompts) and `localStorage` (settings, currentView)
 - **Extension Context Validation**: Graceful handling of extension reloads with proper error suppression
 - **Persistent View State**: Remembers last opened tab (Prompt/Ops/Settings/Help) across sessions
-- **Modern UI**: Bottom-placed tabs, pill-shaped buttons, Material Design Icons, dynamic theming, glassmorphism design with frosted glass effects
+- **Modern UI**: Bottom-placed tabs with icon-only queue tab, pill-shaped buttons, Material Design Icons, dynamic theming, glassmorphism design with frosted glass effects
 - **Glassmorphism Design**: Semi-transparent UI elements with backdrop blur creating modern frosted glass aesthetic
   - Main panel and buttons: 67% opacity + 12px blur
   - All modals: 67% opacity + 16px blur
   - Consistent glass effect across entire extension UI
   - Cross-browser compatibility with WebkitBackdropFilter support
+- **Glow Animation Effects**: Interactive hover effects with light sweep animations
+  - Universal glow hook for reusable animations across components
+  - Multi-item glow support for tabs, dropdowns, and lists
+  - Configurable animation duration, intensity, and scale effects
+  - Theme-aware glow colors matching UI theme
 - **Spin Feature**: Batch process list items (from userscript version)
 
 ## Technology Stack
@@ -132,9 +138,9 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 ### Usage
 
 1. Navigate to Grok Imagine: `https://grok.com/imagine` or any post: `https://grok.com/imagine/post/*`
-2. The extension UI will appear in the bottom-right corner
+2. The extension UI will appear in the bottom-right corner with smooth expand/collapse animations
 3. Click the expand button to open the panel
-4. Switch between "Prompt", "Ops", and "Settings" tabs (bottom navigation)
+4. Switch between "Prompt", "Ops", "Settings", "Help", and "Queue" tabs (bottom navigation with smooth transitions)
 5. **Prompt View**: Manage and organize your prompts
    - Each post remembers its own pack selection and prompt position
    - Prefix input: Add prefix text that automatically prepends to prompts (with comma) when pressing Make
@@ -199,8 +205,15 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - Keyboard shortcuts reference with visual key indicators
    - About section with version and credits
    - Multi-language support for all help content
-9. **Video Controls**: Use the play/pause button or press Space to control video playback
-10. **Fullscreen**: Click the fullscreen button or press F to enter fullscreen mode
+9. **Queue View**: Dedicated upscale queue management interface
+   - Real-time progress tracking for current batch
+   - Queue statistics (pending, processing, completed, failed counts)
+   - Visual queue list showing up to 20 items with status indicators
+   - Queue controls: Resume/Pause processing, Clear completed, Clear all
+   - Icon-only tab with badge showing active queue count
+   - Empty state message when queue is empty
+10. **Video Controls**: Use the play/pause button or press Space to control video playback
+11. **Fullscreen**: Click the fullscreen button or press F to enter fullscreen mode
 
 ## Project Structure
 
@@ -214,13 +227,13 @@ grkgoondl/
 │   │   ├── common/       # Shared components (Icon, NoPostMessage, UpscaleQueueIndicator)
 │   │   ├── inputs/       # Input components (Button, RatingSystem, Tabs)
 │   │   ├── modals/       # Modal components (Upscale, Unlike, UnlikedArchive, Import, etc.)
-│   │   ├── views/        # Main view components (Prompt, Ops, Settings, Help)
-│   │   ├── MainPanel.tsx # Main panel container
+│   │   ├── views/        # Main view components (Prompt, Ops, Settings, Help, Queue)
+│   │   ├── MainPanel.tsx # Main panel container with expand/collapse animations
 │   │   └── PackManager.tsx # Pack management component
 │   ├── constants/        # Constants and configuration
 │   ├── content/          # Content script (injection point)
 │   ├── contexts/         # React contexts (i18n)
-│   ├── hooks/            # Custom React hooks (bulk operations, loaders)
+│   ├── hooks/            # Custom React hooks (bulk operations, loaders, glow animations)
 │   ├── locales/          # Translation files (en.json, es.json, ru.json)
 │   ├── store/            # Zustand stores
 │   ├── types/            # TypeScript type definitions
@@ -268,6 +281,8 @@ grkgoondl/
 - **useBulkDelete**: Custom hook for bulk deleting posts with progress tracking and confirmation
 - **useLikedPostsLoader**: Hook for loading and managing liked posts with loading state
 - **useShiftSelection**: Reusable hook for shift-click multi-selection behavior across bulk operation modals
+- **useGlowAnimation**: Universal glow animation hook for button hover effects with configurable settings
+- **useMultiGlowAnimation**: Multi-item glow animation hook for tabs, dropdowns, and lists with individual tracking
 
 ### Components
 
@@ -276,6 +291,7 @@ grkgoondl/
 - **OpsView**: Media controls with queue-based upscaling, HD-gated downloads, bulk operations (Upscale All Liked, Unlike Multiple Posts, Delete Multiple Posts)
 - **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut, hide-unsave, enable-sound preferences, data management with import/export, and purge all data functionality
 - **HelpView**: Help and documentation interface
+- **QueueView**: Dedicated upscale queue management with progress tracking, stats, queue list, and controls
 
 **Modals** (src/components/modals/)
 - **BaseModal**: Reusable modal foundation with animations, high z-index, portal rendering, and flexible configuration
@@ -301,15 +317,16 @@ All modals extend BaseModal for consistent animations, behavior, and appearance.
 - **FullscreenButton**: Intelligent fullscreen toggle with video detection
 
 **Inputs** (src/components/inputs/)
-- **Button**: Reusable button component with theme-aware styling and hover states
-- **Dropdown**: Custom dropdown component with portal-based rendering for proper z-index stacking
+- **Button**: Reusable button component with theme-aware styling, hover states, and glow animations
+- **Dropdown**: Custom dropdown component with portal-based rendering for proper z-index stacking and glow animations
   - Theme-aware styling with hover effects and smooth transitions
   - Context-aware z-index (uses higher value when inside modals)
   - Portal rendering to dedicated container with fixed positioning
   - Dynamic position calculation with scroll and resize handling
   - Click-outside detection for seamless UX
+  - Glow animation effects on hover for trigger and options
 - **RatingSystem**: 5-star rating component with white icons and optional readonly mode
-- **Tabs**: Tab navigation component with theme support and bottom placement
+- **Tabs**: Tab navigation component with theme support, bottom placement, icon-only mode, badges, and glow animations
 - **Toggle**: Reusable toggle switch component with theme-aware styling and animations
 
 **Common** (src/components/common/)
@@ -318,7 +335,7 @@ All modals extend BaseModal for consistent animations, behavior, and appearance.
 - **UpscaleQueueIndicator**: Minimal queue status button with expandable panel showing progress, stats, and queue items
 
 **Root** (src/components/)
-- **MainPanel**: Floating panel container with pause, fullscreen, collapse buttons, queue indicator, and version badge
+- **MainPanel**: Floating panel container with pause, fullscreen, collapse buttons, version badge, smooth expand/collapse animations, and tab transition effects
 - **PackManager**: Pack dropdown with search button, text truncation, and CRUD operations
 
 ## Architecture
@@ -514,6 +531,12 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - SelectionControls component standardizes select/deselect all buttons
   - useShiftSelection hook encapsulates shift-click selection logic
   - Reduced ~400+ lines of duplicate code with reusable abstractions
+- **Animation System**: Smooth transitions and effects throughout the UI
+  - Panel expand/collapse with scale and fade animations
+  - Tab switching with slide transitions
+  - Glow effects on button and dropdown hovers
+  - Progress bar animations with smooth loading indicators
+  - Configurable animation hooks for reusability
 
 ## Theme Customization
 

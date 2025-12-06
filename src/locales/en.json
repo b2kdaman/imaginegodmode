@@ -3,7 +3,8 @@
     "prompt": "Prompt",
     "ops": "Ops",
     "settings": "Settings",
-    "help": "Help"
+    "help": "Help",
+    "queue": "Queue"
   },
   "common": {
     "cancel": "Cancel",
