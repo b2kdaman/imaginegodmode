@@ -2,9 +2,8 @@
  * Reusable toggle switch component with theme-aware styling and glow animations
  */
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
-import { useGlowAnimation } from '@/hooks/useGlowAnimation';
 
 interface ToggleProps {
   id: string;
@@ -12,6 +11,9 @@ interface ToggleProps {
   onChange: (checked: boolean) => void;
   disabled?: boolean;
 }
+
+// Static counter for unique IDs
+let toggleCounter = 0;
 
 export const Toggle: React.FC<ToggleProps> = ({
   id,
@@ -21,15 +23,33 @@ export const Toggle: React.FC<ToggleProps> = ({
 }) => {
   const { getThemeColors } = useSettingsStore();
   const colors = getThemeColors();
-  const { glowStyles, handleMouseEnter, handleMouseLeave, GlowOverlay } = useGlowAnimation({
-    width: 60,
-    duration: 0.6,
-    rotation: 20,
-    opacity: 50,
-    enableScale: false,
-    enableShadow: true,
-    shadowBlur: 15,
-  });
+
+  // Custom glow state management (separate from useGlowAnimation to avoid style conflicts)
+  const [isHovered, setIsHovered] = useState(false);
+  const [animationKey, setAnimationKey] = useState(0);
+
+  // Generate unique ID for animation (lazy initialization)
+  const idRef = useRef<number>();
+  if (idRef.current === undefined) {
+    idRef.current = ++toggleCounter;
+  }
+  const animationName = `toggleGlow-${idRef.current}`;
+
+  const glowStyles = `
+    @keyframes ${animationName} {
+      0% {
+        left: -150%;
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        left: 150%;
+        opacity: 0;
+      }
+    }
+  `;
 
   return (
     <>
@@ -50,33 +70,37 @@ export const Toggle: React.FC<ToggleProps> = ({
             border: `1px solid ${checked ? colors.SUCCESS : colors.BORDER}`,
             opacity: disabled ? 0.5 : 1,
             cursor: disabled ? 'not-allowed' : 'pointer',
+            boxShadow: isHovered && !disabled ? `0 0 15px ${colors.TEXT_HOVER}30` : 'none',
           }}
-          onMouseEnter={(e) => {
+          onMouseEnter={() => {
             if (!disabled) {
-              handleMouseEnter(e, disabled);
-              // Force override styles after glow handler
-              requestAnimationFrame(() => {
-                e.currentTarget.style.backgroundColor = checked ? colors.SUCCESS : colors.BACKGROUND_MEDIUM;
-                e.currentTarget.style.borderColor = checked ? colors.SUCCESS : colors.BORDER;
-                e.currentTarget.style.color = 'transparent';
-              });
+              setIsHovered(true);
+              setAnimationKey(prev => prev + 1);
             }
           }}
-          onMouseLeave={(e) => {
+          onMouseLeave={() => {
             if (!disabled) {
-              handleMouseLeave(e, disabled);
-              // Force override styles after glow handler
-              requestAnimationFrame(() => {
-                e.currentTarget.style.backgroundColor = checked ? colors.SUCCESS : colors.BACKGROUND_MEDIUM;
-                e.currentTarget.style.borderColor = checked ? colors.SUCCESS : colors.BORDER;
-                e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.color = 'transparent';
-              });
+              setIsHovered(false);
             }
           }}
         >
           {/* Glow effect overlay */}
-          {!disabled && <GlowOverlay />}
+          {isHovered && !disabled && (
+            <span
+              key={animationKey}
+              className="absolute pointer-events-none"
+              style={{
+                background: `linear-gradient(90deg, transparent 0%, ${colors.TEXT_HOVER}50 50%, transparent 100%)`,
+                width: '60px',
+                height: '200%',
+                top: '-50%',
+                left: '-150%',
+                transform: 'rotate(20deg)',
+                animation: `${animationName} 0.6s ease-out forwards`,
+                zIndex: 1,
+              }}
+            />
+          )}
 
           {/* Toggle knob */}
           <div
