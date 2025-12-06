@@ -40,27 +40,33 @@ export const HelpView: React.FC = () => {
 
   return (
     <div
-      className="flex flex-col gap-4 w-full max-h-[400px] overflow-y-scroll custom-scrollbar pr-2 p-2"
+      className="flex flex-col gap-4 w-full max-h-[400px] overflow-y-scroll custom-scrollbar pr-2"
       style={{
         scrollbarGutter: 'stable',
       }}
     >
       {/* Features Section */}
-      <div className="flex flex-col gap-2">
-        <label
-          className="text-sm font-medium"
-          style={{ color: colors.TEXT_PRIMARY }}
-        >
-          Available Features
-        </label>
+      <div
+        className="rounded-xl p-4 backdrop-blur-md border"
+        style={{
+          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
+          borderColor: `${colors.BORDER}50`,
+          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
+        }}
+      >
+        {/* Panel Header */}
         <div
-          className="text-xs p-3 rounded-lg"
+          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
           style={{
-            backgroundColor: colors.BACKGROUND_MEDIUM,
             color: colors.TEXT_SECONDARY,
+            borderColor: `${colors.BORDER}40`,
           }}
         >
-          <ul className="space-y-1 ml-3">
+          Available Features
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <ul className="space-y-1 ml-3 text-xs" style={{ color: colors.TEXT_SECONDARY }}>
             {features.map((feature, index) => (
               <li key={index} className="flex items-start gap-2">
                 <span style={{ color: colors.TEXT_SECONDARY, marginTop: '2px' }}>•</span>
@@ -85,20 +91,27 @@ export const HelpView: React.FC = () => {
       </div>
 
       {/* Keyboard Shortcuts Section */}
-      <div className="flex flex-col gap-2">
-        <label
-          className="text-sm font-medium"
-          style={{ color: colors.TEXT_PRIMARY }}
-        >
-          Keyboard Shortcuts
-        </label>
+      <div
+        className="rounded-xl p-4 backdrop-blur-md border"
+        style={{
+          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
+          borderColor: `${colors.BORDER}50`,
+          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
+        }}
+      >
+        {/* Panel Header */}
         <div
-          className="text-xs p-3 rounded-lg flex flex-col gap-2"
+          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
           style={{
-            backgroundColor: colors.BACKGROUND_MEDIUM,
             color: colors.TEXT_SECONDARY,
+            borderColor: `${colors.BORDER}40`,
           }}
         >
+          Keyboard Shortcuts
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <div className="text-xs flex flex-col gap-2" style={{ color: colors.TEXT_SECONDARY }}>
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1">
               <span
@@ -240,30 +253,39 @@ export const HelpView: React.FC = () => {
             </div>
             <span>Play/pause video</span>
           </div>
+          </div>
         </div>
       </div>
 
       {/* About Section */}
-      <div className="flex flex-col gap-2">
-        <label
-          className="text-sm font-medium"
-          style={{ color: colors.TEXT_PRIMARY }}
-        >
-          About
-        </label>
+      <div
+        className="rounded-xl p-4 backdrop-blur-md border"
+        style={{
+          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
+          borderColor: `${colors.BORDER}50`,
+          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
+        }}
+      >
+        {/* Panel Header */}
         <div
-          className="text-xs p-3 rounded-lg"
+          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
           style={{
-            backgroundColor: colors.BACKGROUND_MEDIUM,
             color: colors.TEXT_SECONDARY,
+            borderColor: `${colors.BORDER}40`,
           }}
         >
-          <p className="mb-1">
-            <strong style={{ color: colors.TEXT_PRIMARY }}>ImagineGodMode v{VERSION}</strong>
-          </p>
-          <p>Chrome/Firefox extension for Grok media management</p>
-          <p className="mt-2">by b2kdaman</p>
-          <p className="mt-1 text-[11px]">Firefox support by wyntre</p>
+          About
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <div className="text-xs" style={{ color: colors.TEXT_SECONDARY }}>
+            <p className="mb-1">
+              <strong style={{ color: colors.TEXT_PRIMARY }}>ImagineGodMode v{VERSION}</strong>
+            </p>
+            <p>Chrome/Firefox extension for Grok media management</p>
+            <p className="mt-2">by b2kdaman</p>
+            <p className="mt-1 text-[11px]">Firefox support by wyntre</p>
+          </div>
         </div>
       </div>
     </div>
