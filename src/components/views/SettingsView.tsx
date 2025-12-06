@@ -532,35 +532,15 @@ For backup or sharing`}
             >
               {t('common.export')}
             </Button>
-            <button
+            <Button
               onClick={handleCopyGrokPrompt}
-              className="flex items-center justify-center transition-all rounded-full"
-              style={{
-                width: '36px',
-                height: '36px',
-                minWidth: '36px',
-                minHeight: '36px',
-                backgroundColor: colors.BACKGROUND_MEDIUM,
-                border: `1px solid ${colors.BORDER}`,
-                color: colors.TEXT_PRIMARY,
-                cursor: 'pointer',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = colors.BACKGROUND_LIGHT;
-                e.currentTarget.style.borderColor = colors.TEXT_SECONDARY;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
-                e.currentTarget.style.borderColor = colors.BORDER;
-              }}
-              data-tooltip-id="app-tooltip"
-              data-tooltip-content={`Copy Grok system prompt
+              variant="icon"
+              icon={mdiContentCopy}
+              tooltip={`Copy Grok system prompt
 Paste → describe pack theme
 Grok generates JSON (10-15 prompts)
 Includes: format, quality rules, ratings`}
-            >
-              <Icon path={mdiContentCopy} size={0.6} color={colors.TEXT_PRIMARY} />
-            </button>
+            />
             <Button
               onClick={handleImportClick}
               icon={mdiUpload}
