@@ -56,7 +56,7 @@ export const HelpView: React.FC = () => {
         <div
           className="text-xs p-3 rounded-lg"
           style={{
-            backgroundColor: colors.BACKGROUND_LIGHT,
+            backgroundColor: colors.BACKGROUND_MEDIUM,
             color: colors.TEXT_SECONDARY,
           }}
         >
@@ -95,7 +95,7 @@ export const HelpView: React.FC = () => {
         <div
           className="text-xs p-3 rounded-lg flex flex-col gap-2"
           style={{
-            backgroundColor: colors.BACKGROUND_LIGHT,
+            backgroundColor: colors.BACKGROUND_MEDIUM,
             color: colors.TEXT_SECONDARY,
           }}
         >
@@ -254,7 +254,7 @@ export const HelpView: React.FC = () => {
         <div
           className="text-xs p-3 rounded-lg"
           style={{
-            backgroundColor: colors.BACKGROUND_LIGHT,
+            backgroundColor: colors.BACKGROUND_MEDIUM,
             color: colors.TEXT_SECONDARY,
           }}
         >
