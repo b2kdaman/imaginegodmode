@@ -56,6 +56,7 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, direction
               }}
               data-tooltip-id={tab.tooltip ? "app-tooltip" : undefined}
               data-tooltip-content={tab.tooltip}
+              data-tooltip-place="top"
               onMouseEnter={(e) => {
                 if (!isActive) {
                   handleMouseEnter(
