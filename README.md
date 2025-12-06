@@ -327,7 +327,7 @@ All modals extend BaseModal for consistent animations, behavior, and appearance.
   - Glow animation effects on hover for trigger and options
 - **RatingSystem**: 5-star rating component with white icons and optional readonly mode
 - **Tabs**: Tab navigation component with theme support, bottom placement, icon-only mode, badges, and glow animations
-- **Toggle**: Reusable toggle switch component with theme-aware styling and animations
+- **Toggle**: Reusable toggle switch component with theme-aware SUCCESS color for active state
 
 **Common** (src/components/common/)
 - **Icon**: Material Design Icons wrapper
