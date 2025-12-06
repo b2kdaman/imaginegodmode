@@ -66,8 +66,8 @@ export const Toggle: React.FC<ToggleProps> = ({
         <div
           className="toggle-track w-full h-full rounded-full relative overflow-hidden transition-all duration-300"
           style={{
-            backgroundColor: checked ? colors.SUCCESS : colors.BACKGROUND_MEDIUM,
-            border: `1px solid ${checked ? colors.SUCCESS : colors.BORDER}`,
+            backgroundColor: checked ? colors.GLOW_PRIMARY : colors.BACKGROUND_MEDIUM,
+            border: `1px solid ${checked ? colors.GLOW_PRIMARY : colors.BORDER}`,
             opacity: disabled ? 0.5 : 1,
             cursor: disabled ? 'not-allowed' : 'pointer',
             boxShadow: isHovered && !disabled ? `0 0 15px ${colors.TEXT_HOVER}30` : 'none',
