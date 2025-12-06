@@ -90,7 +90,9 @@ export const Toggle: React.FC<ToggleProps> = ({
               key={animationKey}
               className="absolute pointer-events-none"
               style={{
-                background: `linear-gradient(90deg, transparent 0%, ${colors.TEXT_HOVER}50 50%, transparent 100%)`,
+                background: checked
+                  ? 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%)'
+                  : `linear-gradient(90deg, transparent 0%, ${colors.TEXT_HOVER}50 50%, transparent 100%)`,
                 width: '60px',
                 height: '200%',
                 top: '-50%',
