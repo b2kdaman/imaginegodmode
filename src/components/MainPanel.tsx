@@ -102,6 +102,7 @@ export const MainPanel: React.FC = () => {
       icon: mdiTrayFull,
       badge: queueCount,
       iconOnly: true,
+      tooltip: t('tabs.queueTooltip'),
     },
   ];
 

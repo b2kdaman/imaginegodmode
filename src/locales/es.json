@@ -4,7 +4,8 @@
     "ops": "Ops",
     "settings": "Ajustes",
     "help": "Ayuda",
-    "queue": "Cola"
+    "queue": "Cola",
+    "queueTooltip": "Cola de Ampliación"
   },
   "common": {
     "cancel": "Cancelar",

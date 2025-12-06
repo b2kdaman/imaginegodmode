@@ -13,6 +13,7 @@ export interface Tab {
   icon?: string;
   badge?: number;
   iconOnly?: boolean;
+  tooltip?: string;
 }
 
 interface TabsProps {
@@ -53,6 +54,8 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, direction
                 marginBottom: !isUp && isActive ? '-1px' : '0',
                 marginTop: isUp && isActive ? '-1px' : '0',
               }}
+              data-tooltip-id={tab.tooltip ? "app-tooltip" : undefined}
+              data-tooltip-content={tab.tooltip}
               onMouseEnter={(e) => {
                 if (!isActive) {
                   handleMouseEnter(
