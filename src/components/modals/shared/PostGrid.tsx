@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { ThemeColors } from '@/types';
 import { Icon } from '@/components/common/Icon';
 import { mdiFilmstripBoxMultiple } from '@mdi/js';
 
@@ -22,7 +23,7 @@ interface PostGridProps {
   renderOverlay: (post: PostGridItem, isSelected: boolean) => React.ReactNode;
   renderBadges?: (post: PostGridItem) => React.ReactNode;
   getBorderColor: (isSelected: boolean) => string;
-  colors: any;
+  colors: ThemeColors;
 }
 
 export const PostGrid: React.FC<PostGridProps> = ({

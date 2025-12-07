@@ -67,7 +67,9 @@ export const useGlowAnimation = (config: GlowAnimationConfig = {}) => {
   `;
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLElement>, disabled = false) => {
-    if (disabled) return;
+    if (disabled) {
+      return;
+    }
 
     setIsHovered(true);
     setAnimationKey(prev => prev + 1);
@@ -86,7 +88,9 @@ export const useGlowAnimation = (config: GlowAnimationConfig = {}) => {
   };
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLElement>, disabled = false) => {
-    if (disabled) return;
+    if (disabled) {
+      return;
+    }
 
     setIsHovered(false);
 
@@ -101,7 +105,9 @@ export const useGlowAnimation = (config: GlowAnimationConfig = {}) => {
   };
 
   const GlowOverlay: React.FC = () => {
-    if (!isHovered) return null;
+    if (!isHovered) {
+      return null;
+    }
 
     return (
       <span
@@ -182,7 +188,9 @@ export const useMultiGlowAnimation = (config: GlowAnimationConfig = {}) => {
     disabled = false,
     customStyles?: { backgroundColor?: string; color?: string }
   ) => {
-    if (disabled) return;
+    if (disabled) {
+      return;
+    }
 
     setHoveredId(id);
     setAnimationKeys(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
@@ -205,7 +213,9 @@ export const useMultiGlowAnimation = (config: GlowAnimationConfig = {}) => {
     disabled = false,
     resetStyles?: { backgroundColor?: string; color?: string }
   ) => {
-    if (disabled) return;
+    if (disabled) {
+      return;
+    }
 
     setHoveredId(null);
 
@@ -220,7 +230,9 @@ export const useMultiGlowAnimation = (config: GlowAnimationConfig = {}) => {
   };
 
   const getGlowOverlay = (id: string) => {
-    if (hoveredId !== id) return null;
+    if (hoveredId !== id) {
+      return null;
+    }
 
     return (
       <span

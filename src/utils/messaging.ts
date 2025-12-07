@@ -9,7 +9,7 @@ import { browserAPI } from './browserAPI';
 /**
  * Send message to background service worker
  */
-export const sendMessageToBackground = async <T = any>(
+export const sendMessageToBackground = async <T = unknown>(
   payload: MessagePayload
 ): Promise<MessageResponse<T>> => {
   try {

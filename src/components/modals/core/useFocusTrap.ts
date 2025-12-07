@@ -53,7 +53,9 @@ export const useFocusTrap = (
   const previouslyFocusedElement = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (!enabled || !containerRef.current) return;
+    if (!enabled || !containerRef.current) {
+      return;
+    }
 
     // Store the currently focused element to restore later
     if (returnFocus) {
@@ -79,10 +81,14 @@ export const useFocusTrap = (
   }, [enabled, returnFocus, containerRef, onActivate, onDeactivate]);
 
   useEffect(() => {
-    if (!enabled || !containerRef.current) return;
+    if (!enabled || !containerRef.current) {
+      return;
+    }
 
     const handleTab = (event: KeyboardEvent) => {
-      if (event.key !== 'Tab' || !containerRef.current) return;
+      if (event.key !== 'Tab' || !containerRef.current) {
+        return;
+      }
 
       const focusableElements = getFocusableElements(containerRef.current);
 

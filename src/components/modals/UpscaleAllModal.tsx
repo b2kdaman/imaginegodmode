@@ -6,7 +6,7 @@ import React, { useEffect } from 'react';
 import { Button } from '../inputs/Button';
 import { mdiCheckboxMarked, mdiCheckboxBlankOutline, mdiLoading } from '@mdi/js';
 import { Icon } from '../common/Icon';
-import { LikedPost } from '@/types';
+import { LikedPost, ThemeColors } from '@/types';
 import { trackBulkSelectAll, trackBulkDeselectAll, trackBulkOperationConfirmed } from '@/utils/analytics';
 import { BaseModal } from './BaseModal';
 import { ProgressBar } from './shared/ProgressBar';
@@ -20,7 +20,7 @@ interface UpscaleAllModalProps {
   mode: 'upscale' | 'like';
   onClose: () => void;
   onConfirm: (selectedPostIds: string[]) => void;
-  getThemeColors: () => any;
+  getThemeColors: () => ThemeColors;
   isProcessing?: boolean;
   processedCount?: number;
   totalCount?: number;
@@ -70,7 +70,8 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
   };
 
   // Convert LikedPost to PostGridItem
-  const gridItems: PostGridItem[] = posts.map(post => ({
+  const safePosts = posts || [];
+  const gridItems: PostGridItem[] = safePosts.map(post => ({
     id: post.id,
     thumbnailImageUrl: post.thumbnailImageUrl,
     mediaUrl: post.mediaUrl,
@@ -79,8 +80,8 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
   }));
 
   const title = mode === 'upscale'
-    ? `Select Posts to Upscale (${selectedIds.size}/${posts.length})`
-    : `Select Posts to Like (${selectedIds.size}/${posts.length})`;
+    ? `Select Posts to Upscale (${selectedIds.size}/${safePosts.length})`
+    : `Select Posts to Like (${selectedIds.size}/${safePosts.length})`;
 
   const confirmButtonText = mode === 'upscale'
     ? `Upscale ${selectedIds.size} Post${selectedIds.size !== 1 ? 's' : ''}`

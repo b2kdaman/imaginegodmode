@@ -7,6 +7,7 @@ import { Button } from '../inputs/Button';
 import { mdiHeart, mdiLoading, mdiDownload, mdiUpload } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { UnlikedPost } from '@/utils/storage';
+import { ThemeColors } from '@/types';
 import { trackBulkSelectAll, trackBulkDeselectAll, trackBulkOperationConfirmed } from '@/utils/analytics';
 import { BaseModal } from './BaseModal';
 import { ProgressBar } from './shared/ProgressBar';
@@ -20,7 +21,7 @@ interface UnlikedArchiveModalProps {
   onClose: () => void;
   onRelike: (selectedPostIds: string[]) => void;
   onImport?: (posts: UnlikedPost[]) => void;
-  getThemeColors: () => any;
+  getThemeColors: () => ThemeColors;
   isProcessing?: boolean;
   processedCount?: number;
   totalCount?: number;

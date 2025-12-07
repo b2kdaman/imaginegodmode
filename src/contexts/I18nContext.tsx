@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import enTranslations from '../locales/en.json';
 import esTranslations from '../locales/es.json';
 import ruTranslations from '../locales/ru.json';
@@ -20,15 +20,11 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [locale, setLocaleState] = useState<string>('en');
-
-  useEffect(() => {
-    // Load saved locale from localStorage
+  // Initialize locale from localStorage synchronously to avoid effect warning
+  const [locale, setLocaleState] = useState<string>(() => {
     const savedLocale = localStorage.getItem('i18n_locale');
-    if (savedLocale && translations[savedLocale]) {
-      setLocaleState(savedLocale);
-    }
-  }, []);
+    return (savedLocale && translations[savedLocale]) ? savedLocale : 'en';
+  });
 
   const setLocale = (newLocale: string) => {
     if (translations[newLocale]) {
@@ -39,6 +35,7 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const t = (key: string, params?: Record<string, string | number>): string => {
     const keys = key.split('.');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let value: any = translations[locale];
 
     for (const k of keys) {
@@ -46,7 +43,8 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
         value = value[k];
       } else {
         // Fallback to English if key not found
-        value = translations.en;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        value = translations.en as any;
         for (const fallbackKey of keys) {
           if (value && typeof value === 'object' && fallbackKey in value) {
             value = value[fallbackKey];

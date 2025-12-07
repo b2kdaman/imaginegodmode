@@ -63,7 +63,9 @@ export const useModalStore = create<ModalState>((set, get) => ({
   getZIndex: (id: string): number => {
     const state = get();
     const index = state.modals.findIndex((modal) => modal.id === id);
-    if (index === -1) return Z_INDEX.MODAL;
+    if (index === -1) {
+      return Z_INDEX.MODAL;
+    }
     return Z_INDEX.MODAL + (index * 10);
   },
 
@@ -80,7 +82,9 @@ export const useModalStore = create<ModalState>((set, get) => ({
    */
   getTopModal: (): ModalStackItem | null => {
     const state = get();
-    if (state.modals.length === 0) return null;
+    if (state.modals.length === 0) {
+      return null;
+    }
     return state.modals[state.modals.length - 1];
   },
 }));

@@ -33,8 +33,11 @@ export const extractFilename = (url: string, fallbackIndex: number = 0): string 
  * @param obj - Media object
  * @returns Best available URL or null
  */
-export const pickDownloadUrl = (obj: any): string | null => {
-  return obj && (obj.hdMediaUrl || obj.mediaUrl || obj.thumbnailImageUrl || null);
+export const pickDownloadUrl = (obj: { hdMediaUrl?: string; mediaUrl?: string; thumbnailImageUrl?: string } | null | undefined): string | null => {
+  if (!obj) {
+    return null;
+  }
+  return obj.hdMediaUrl || obj.mediaUrl || obj.thumbnailImageUrl || null;
 };
 
 /**

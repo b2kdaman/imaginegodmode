@@ -51,7 +51,6 @@ export const MainPanel: React.FC = () => {
     if (isExpanded) {
       // Start with element rendered but in collapsed state
       setShouldRender(true);
-      setIsAnimatingIn(false);
 
       // Trigger animation on next frame
       requestAnimationFrame(() => {

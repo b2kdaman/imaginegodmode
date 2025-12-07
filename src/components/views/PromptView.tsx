@@ -130,7 +130,9 @@ export const PromptView: React.FC = () => {
 
   const handleCopyFromPage = () => {
     const textarea = document.querySelector(SELECTORS.TEXTAREA) as HTMLTextAreaElement;
-    if (!textarea) return;
+    if (!textarea) {
+      return;
+    }
 
     // Show confirmation if current prompt is not empty and setting is enabled
     if (currentPrompt?.text.trim() && confirmCopyFrom) {
@@ -146,7 +148,9 @@ export const PromptView: React.FC = () => {
 
   const handleConfirmCopyFromPage = () => {
     const textarea = document.querySelector(SELECTORS.TEXTAREA) as HTMLTextAreaElement;
-    if (!textarea) return;
+    if (!textarea) {
+      return;
+    }
 
     updatePromptText(textarea.value);
     trackPromptEdited();
@@ -154,7 +158,9 @@ export const PromptView: React.FC = () => {
   };
 
   const handlePlayClick = () => {
-    if (!currentPrompt) {return;}
+    if (!currentPrompt) {
+      return;
+    }
 
     // Track video make action
     trackVideoMakeClicked();
@@ -164,7 +170,9 @@ export const PromptView: React.FC = () => {
   };
 
   const handleMakeAndNextClick = () => {
-    if (!currentPrompt) {return;}
+    if (!currentPrompt) {
+      return;
+    }
 
     const nextPostId = getNextPostId();
 

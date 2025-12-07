@@ -8,6 +8,7 @@ import { mdiAlertCircle, mdiCheck } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { useTranslation } from '@/contexts/I18nContext';
 import { BaseModal } from './BaseModal';
+import { ThemeColors } from '@/types';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -17,7 +18,7 @@ interface ConfirmModalProps {
   cancelText?: string;
   onClose: () => void;
   onConfirm: () => void;
-  getThemeColors: () => any;
+  getThemeColors: () => ThemeColors;
   variant?: 'danger' | 'warning' | 'info';
 }
 
@@ -36,8 +37,8 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   const { t } = useTranslation();
 
   const variantColor = variant === 'danger' ? colors.DANGER :
-                       variant === 'warning' ? colors.WARNING :
-                       colors.PRIMARY;
+                       variant === 'warning' ? colors.DANGER :
+                       colors.GLOW_PRIMARY;
 
   return (
     <BaseModal
@@ -52,10 +53,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             {cancelText || t('common.cancel')}
           </Button>
           <Button
-            onClick={() => {
-              onConfirm();
-              onClose();
-            }}
+            onClick={onConfirm}
             icon={mdiCheck}
             iconSize={0.7}
             className="flex-1 text-xs"

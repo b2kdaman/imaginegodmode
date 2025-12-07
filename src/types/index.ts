@@ -1,5 +1,8 @@
 // Core types for the application
 
+// Re-export ThemeColors from themeLoader for convenience
+export type { ThemeColors } from '@/utils/themeLoader';
+
 export interface PromptItem {
   text: string;
   rating: number; // 0-5 stars
@@ -82,10 +85,10 @@ export interface QueueItem {
 
 export interface MessagePayload {
   type: 'FETCH_POST' | 'UPSCALE_VIDEO' | 'DOWNLOAD_MEDIA' | 'GET_STORAGE' | 'SET_STORAGE';
-  data?: any;
+  data?: unknown;
 }
 
-export interface MessageResponse<T = any> {
+export interface MessageResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;

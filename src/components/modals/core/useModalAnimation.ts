@@ -62,7 +62,6 @@ export const useModalAnimation = (
     if (isOpen) {
       // Opening: render immediately and trigger enter animation
       setShouldRender(true);
-      setIsExiting(false);
 
       // Slight delay before starting animation (allows browser to render)
       requestAnimationFrame(() => {

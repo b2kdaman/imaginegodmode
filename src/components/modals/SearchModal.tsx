@@ -10,11 +10,12 @@ import { RatingSystem } from '../inputs/RatingSystem';
 import { mdiMagnify } from '@mdi/js';
 import { trackPromptSearched } from '@/utils/analytics';
 import { BaseModal } from './BaseModal';
+import { ThemeColors } from '@/utils/themeLoader';
 
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  getThemeColors: () => any;
+  getThemeColors: () => ThemeColors;
 }
 
 interface SearchResult {

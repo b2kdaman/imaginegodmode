@@ -85,7 +85,8 @@ export function GridSelectionModal<T extends GridItem>({
   };
 
   // Convert posts to PostGridItem format
-  const gridItems: PostGridItem[] = posts.map((post) => ({
+  const safePosts = posts || [];
+  const gridItems: PostGridItem[] = safePosts.map((post) => ({
     id: post.id,
     thumbnailImageUrl: post.thumbnailImageUrl,
     mediaUrl: post.mediaUrl,
@@ -94,7 +95,7 @@ export function GridSelectionModal<T extends GridItem>({
   }));
 
   const dynamicTitle = title.includes('{count}')
-    ? title.replace('{count}', `${selectedIds.size}/${posts.length}`)
+    ? title.replace('{count}', `${selectedIds.size}/${safePosts.length}`)
     : title;
 
   return (
@@ -172,11 +173,11 @@ export function GridSelectionModal<T extends GridItem>({
           colors={colors}
           renderOverlay={(gridPost, isSelected) => {
             // Find the original post to pass to renderOverlay
-            const originalPost = posts.find((p) => p.id === gridPost.id);
+            const originalPost = safePosts.find((p) => p.id === gridPost.id);
             return originalPost ? renderOverlay(originalPost, isSelected) : null;
           }}
           renderBadges={renderBadges ? (gridPost) => {
-            const originalPost = posts.find((p) => p.id === gridPost.id);
+            const originalPost = safePosts.find((p) => p.id === gridPost.id);
             return originalPost ? renderBadges(originalPost) : null;
           } : undefined}
         />

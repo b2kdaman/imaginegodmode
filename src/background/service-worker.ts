@@ -29,7 +29,13 @@ browserAPI.runtime.onMessage.addListener((message: MessagePayload, _sender, send
 async function handleMessage(message: MessagePayload): Promise<MessageResponse> {
   switch (message.type) {
     case 'DOWNLOAD_MEDIA':
-      return handleDownloadMedia(message.data.urls);
+      if (message.data && typeof message.data === 'object' && 'urls' in message.data) {
+        return handleDownloadMedia((message.data as { urls: string[] }).urls);
+      }
+      return {
+        success: false,
+        error: 'Invalid message data',
+      };
 
     default:
       return {

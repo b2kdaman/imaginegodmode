@@ -106,7 +106,9 @@ export const calculateProgress = (
   processedCount: number,
   totalCount: number
 ): number => {
-  if (totalCount === 0) return 0;
+  if (totalCount === 0) {
+    return 0;
+  }
   return Math.min(100, Math.round((processedCount / totalCount) * 100));
 };
 
@@ -145,7 +147,9 @@ export const interpolateMessage = (
   message: string,
   params?: Record<string, string>
 ): string => {
-  if (!params) return message;
+  if (!params) {
+    return message;
+  }
 
   return Object.entries(params).reduce((msg, [key, value]) => {
     return msg.replace(new RegExp(`\\{${key}\\}`, 'g'), value);

@@ -8,6 +8,7 @@ import { useTranslation } from '@/contexts/I18nContext';
 import { BaseModal } from './BaseModal';
 import { Icon } from '../common/Icon';
 import { mdiPackageVariant, mdiCheckboxMarked, mdiCheckboxBlankOutline, mdiSelectAll, mdiSelect } from '@mdi/js';
+import { ThemeColors } from '@/utils/themeLoader';
 
 interface PackSelectModalProps {
   isOpen: boolean;
@@ -15,7 +16,7 @@ interface PackSelectModalProps {
   currentPack: string;
   onClose: () => void;
   onSelectPack: (packNames: string[]) => void;
-  getThemeColors: () => any;
+  getThemeColors: () => ThemeColors;
 }
 
 export const EXPORT_ALL_KEY = '__EXPORT_ALL__';
@@ -32,13 +33,15 @@ export const PackSelectModal: React.FC<PackSelectModalProps> = ({
   const { t } = useTranslation();
   const [selectedPacks, setSelectedPacks] = useState<Set<string>>(new Set());
   const [isExportHovered, setIsExportHovered] = useState(false);
+  const [lastOpenState, setLastOpenState] = useState(isOpen);
 
   // Reset selection when modal opens
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !lastOpenState) {
       setSelectedPacks(new Set());
     }
-  }, [isOpen]);
+    setLastOpenState(isOpen);
+  }, [isOpen, lastOpenState]);
 
   const togglePack = (packName: string) => {
     const newSelection = new Set(selectedPacks);
@@ -83,7 +86,7 @@ export const PackSelectModal: React.FC<PackSelectModalProps> = ({
             className="text-xs"
             style={{
               backgroundColor: selectedPacks.size > 0
-                ? (isExportHovered ? colors.ACCENT : colors.SUCCESS)
+                ? (isExportHovered ? colors.TEXT_HOVER : colors.SUCCESS)
                 : undefined,
               color: selectedPacks.size > 0 ? '#fff' : undefined,
               opacity: selectedPacks.size === 0 ? 0.5 : 1,

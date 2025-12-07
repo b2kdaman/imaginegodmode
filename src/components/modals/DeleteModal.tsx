@@ -9,7 +9,7 @@
 import React, { useState } from 'react';
 import { mdiDelete } from '@mdi/js';
 import { Icon } from '../common/Icon';
-import { LikedPost } from '@/types';
+import { LikedPost, ThemeColors } from '@/types';
 import { GridSelectionModal } from './shared/GridSelectionModal';
 import { ConfirmModal } from './ConfirmModal';
 
@@ -18,7 +18,7 @@ interface DeleteModalProps {
   posts: LikedPost[];
   onClose: () => void;
   onConfirm: (selectedPostIds: string[]) => void;
-  getThemeColors: () => any;
+  getThemeColors: () => ThemeColors;
   isProcessing?: boolean;
   processedCount?: number;
   totalCount?: number;
@@ -46,18 +46,23 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
   const handleConfirmDelete = () => {
     setShowConfirmDialog(false);
     onConfirm(selectedPostIds);
+    // Don't close the main modal - let it show processing state
   };
 
   const handleCancelDelete = () => {
     setShowConfirmDialog(false);
+    setSelectedPostIds([]);
   };
+
+  // Safety check for posts
+  const safePosts = posts || [];
 
   return (
     <>
       <GridSelectionModal
         isOpen={isOpen}
-        posts={posts}
-        title={`Delete Posts (${posts.length} total)`}
+        posts={safePosts}
+        title={`Delete Posts (${safePosts.length} total)`}
         onClose={onClose}
         onConfirm={handleDeleteClick}
         getThemeColors={getThemeColors}

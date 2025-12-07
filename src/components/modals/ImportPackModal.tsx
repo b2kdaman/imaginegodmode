@@ -8,13 +8,14 @@ import { mdiUpload, mdiContentPaste, mdiCheckCircle, mdiAlertCircle } from '@mdi
 import { Icon } from '../common/Icon';
 import { useTranslation } from '@/contexts/I18nContext';
 import { BaseModal } from './BaseModal';
+import { ThemeColors } from '@/utils/themeLoader';
 
 interface ImportPackModalProps {
   isOpen: boolean;
   importMode: 'add' | 'replace';
   onClose: () => void;
   onImport: (file: File) => Promise<void>;
-  getThemeColors: () => any;
+  getThemeColors: () => ThemeColors;
 }
 
 interface ValidationResult {

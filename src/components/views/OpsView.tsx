@@ -14,17 +14,17 @@ import { processPostData } from '@/utils/mediaProcessor';
 import { fetchPostData } from '@/api/grokApi';
 import { Button } from '../inputs/Button';
 import { Icon } from '../common/Icon';
-import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle, mdiFormatListBulletedSquare, mdiHeartBroken, mdiArchive, mdiLoading, mdiDelete } from '@mdi/js';
+import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle, mdiFormatListBulletedSquare, mdiHeartBroken, mdiArchive, mdiLoading /*, mdiDelete */ } from '@mdi/js';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
 import { useBulkUnlike } from '@/hooks/useBulkUnlike';
 import { useBulkRelike } from '@/hooks/useBulkRelike';
-import { useBulkDelete } from '@/hooks/useBulkDelete';
+// import { useBulkDelete } from '@/hooks/useBulkDelete';
 import { useLikedPostsLoader } from '@/hooks/useLikedPostsLoader';
 import { trackMediaDownloaded, trackModalOpened, trackModalClosed } from '@/utils/analytics';
 import { UpscaleAllModal } from '../modals/UpscaleAllModal';
 import { UnlikeModal } from '../modals/UnlikeModal';
 import { UnlikedArchiveModal } from '../modals/UnlikedArchiveModal';
-import { DeleteModal } from '../modals/DeleteModal';
+// import { DeleteModal } from '../modals/DeleteModal';
 import { UnlikedPost, getUnlikedPosts, addUnlikedPosts } from '@/utils/storage';
 import { STATUS_MESSAGES, LOG_PREFIX } from '@/constants/opsView';
 
@@ -48,7 +48,7 @@ export const OpsView: React.FC = () => {
   const [postId, setPostId] = useState<string | null>(null);
   const [isUpscaleAllModalOpen, setIsUpscaleAllModalOpen] = useState(false);
   const [isUnlikeModalOpen, setIsUnlikeModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  // const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
   const [unlikedPosts, setUnlikedPosts] = useState<UnlikedPost[]>([]);
 
@@ -73,12 +73,12 @@ export const OpsView: React.FC = () => {
     processBulkRelike,
   } = useBulkRelike(setStatusText);
 
-  const {
-    isProcessing: isProcessingDeletes,
-    processedCount: processedDeletesCount,
-    totalCount: totalDeletesCount,
-    processBulkDelete,
-  } = useBulkDelete(setStatusText);
+  // const {
+  //   isProcessing: isProcessingDeletes,
+  //   processedCount: processedDeletesCount,
+  //   totalCount: totalDeletesCount,
+  //   processBulkDelete,
+  // } = useBulkDelete(setStatusText);
 
   // Fetch post data
   const handleFetchPost = useCallback(async () => {
@@ -103,7 +103,7 @@ export const OpsView: React.FC = () => {
 
       // Ensure current post is in the posts list for navigation
       if (response.data?.post) {
-        ensureCurrentPostInList(response.data.post as any);
+        ensureCurrentPostInList(response.data.post);
       }
 
       setMediaUrls(processed.mediaUrls);
@@ -133,9 +133,10 @@ export const OpsView: React.FC = () => {
     const urlStrings = urls.map((m) => m.url);
     const response = await downloadMedia(urlStrings);
 
-    if (response.success) {
-      setStatusText(STATUS_MESSAGES.DOWNLOADED(response.data.count));
-      trackMediaDownloaded(response.data.count, 'mixed');
+    if (response.success && response.data && typeof response.data === 'object' && 'count' in response.data) {
+      const count = (response.data as { count: number }).count;
+      setStatusText(STATUS_MESSAGES.DOWNLOADED(count));
+      trackMediaDownloaded(count, 'mixed');
     } else {
       setStatusText(STATUS_MESSAGES.DOWNLOAD_FAILED);
     }
@@ -244,21 +245,21 @@ export const OpsView: React.FC = () => {
     setTimeout(() => setStatusText(''), 3000);
   };
 
-  // Handle delete button click
-  const handleDeleteClick = async () => {
-    const posts = await loadLikedPosts();
-    setPosts(posts);
-    if (posts.length > 0) {
-      setIsDeleteModalOpen(true);
-      trackModalOpened('delete_posts');
-    }
-  };
+  // // Handle delete button click - HIDDEN FOR NOW
+  // const handleDeleteClick = async () => {
+  //   const posts = await loadLikedPosts();
+  //   setPosts(posts);
+  //   if (posts.length > 0) {
+  //     setIsDeleteModalOpen(true);
+  //     trackModalOpened('delete_posts');
+  //   }
+  // };
 
-  // Handle bulk delete from modal
-  const handleBulkDelete = async (selectedPostIds: string[]) => {
-    setIsDeleteModalOpen(false);
-    await processBulkDelete(selectedPostIds);
-  };
+  // // Handle bulk delete from modal - HIDDEN FOR NOW
+  // const handleBulkDelete = async (selectedPostIds: string[]) => {
+  //   await processBulkDelete(selectedPostIds);
+  //   // Modal will close after processing completes
+  // };
 
   // Check if all videos are HD
   const allVideosHD = urls.length > 0 && videoIdsToUpscale.length === 0 && hdVideoCount > 0;
@@ -368,13 +369,13 @@ export const OpsView: React.FC = () => {
         </div>
 
         {/* Divider */}
-        <div
+        {/* <div
           className="h-px my-3"
           style={{ background: `linear-gradient(90deg, transparent 0%, ${colors.BORDER}50 50%, transparent 100%)` }}
-        />
+        /> */}
 
-        {/* Destructive Action */}
-        <div>
+        {/* Destructive Action - HIDDEN FOR NOW */}
+        {/* <div>
           <Button
             onClick={handleDeleteClick}
             icon={isLoadingLikedPosts ? mdiLoading : mdiDelete}
@@ -389,7 +390,7 @@ export const OpsView: React.FC = () => {
           >
             {isLoadingLikedPosts ? 'Loading' : 'Delete Multiple Posts'}
           </Button>
-        </div>
+        </div> */}
       </div>
 
       {/* Upscale All Modal */}
@@ -440,8 +441,8 @@ export const OpsView: React.FC = () => {
         totalCount={totalRelikesCount}
       />
 
-      {/* Delete Modal */}
-      <DeleteModal
+      {/* Delete Modal - HIDDEN FOR NOW */}
+      {/* <DeleteModal
         isOpen={isDeleteModalOpen}
         posts={likedPosts}
         onClose={() => {
@@ -455,7 +456,7 @@ export const OpsView: React.FC = () => {
         isProcessing={isProcessingDeletes}
         processedCount={processedDeletesCount}
         totalCount={totalDeletesCount}
-      />
+      /> */}
     </div>
   );
 };

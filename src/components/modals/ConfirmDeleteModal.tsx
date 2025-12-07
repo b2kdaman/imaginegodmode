@@ -8,13 +8,14 @@ import { mdiDelete, mdiAlertCircle } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { useTranslation } from '@/contexts/I18nContext';
 import { BaseModal } from './BaseModal';
+import { ThemeColors } from '@/utils/themeLoader';
 
 interface ConfirmDeleteModalProps {
   isOpen: boolean;
   packName: string;
   onClose: () => void;
   onConfirm: () => void;
-  getThemeColors: () => any;
+  getThemeColors: () => ThemeColors;
 }
 
 export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({

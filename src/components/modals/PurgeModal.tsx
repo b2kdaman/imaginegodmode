@@ -22,12 +22,13 @@ import {
   getAscendTransform,
   getAscendDelay,
 } from './PurgeModal.utils';
+import { ThemeColors } from '@/utils/themeLoader';
 
 interface PurgeModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  getThemeColors: () => any;
+  getThemeColors: () => ThemeColors;
 }
 
 enum PurgeItemStatus {
