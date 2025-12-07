@@ -26,8 +26,7 @@ import { UnlikeModal } from '../modals/UnlikeModal';
 import { UnlikedArchiveModal } from '../modals/UnlikedArchiveModal';
 import { DeleteModal } from '../modals/DeleteModal';
 import { UnlikedPost, getUnlikedPosts, addUnlikedPosts } from '@/utils/storage';
-import { navigateTo } from '@/utils/opsHelpers';
-import { STATUS_MESSAGES, NAVIGATION_URLS, LOG_PREFIX } from '@/constants/opsView';
+import { STATUS_MESSAGES, LOG_PREFIX } from '@/constants/opsView';
 
 export const OpsView: React.FC = () => {
   const {
@@ -219,11 +218,6 @@ export const OpsView: React.FC = () => {
     await processBulkUnlike(selectedPostIds, likedPosts);
   };
 
-  // Handle image click to navigate to post
-  const handleImageClick = (postId: string) => {
-    navigateTo(NAVIGATION_URLS.POST(postId));
-  };
-
   // Handle archive button click
   const handleArchiveClick = async () => {
     const posts = await getUnlikedPosts(userId ?? undefined);
@@ -408,7 +402,6 @@ export const OpsView: React.FC = () => {
           trackModalClosed('upscale_all');
         }}
         onConfirm={handleBulkUpscale}
-        onImageClick={handleImageClick}
         getThemeColors={getThemeColors}
       />
 

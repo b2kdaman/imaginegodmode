@@ -20,7 +20,6 @@ interface UpscaleAllModalProps {
   mode: 'upscale' | 'like';
   onClose: () => void;
   onConfirm: (selectedPostIds: string[]) => void;
-  onImageClick?: (postId: string) => void;
   getThemeColors: () => any;
   isProcessing?: boolean;
   processedCount?: number;
@@ -33,7 +32,6 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
   mode,
   onClose,
   onConfirm,
-  onImageClick,
   getThemeColors,
   isProcessing = false,
   processedCount = 0,
@@ -69,12 +67,6 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
     const selectedPostIds = Array.from(selectedIds);
     trackBulkOperationConfirmed(mode, selectedPostIds.length);
     onConfirm(selectedPostIds);
-  };
-
-  const handleImageClick = (postId: string) => {
-    if (onImageClick) {
-      onImageClick(postId);
-    }
   };
 
   // Convert LikedPost to PostGridItem
@@ -157,14 +149,14 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
           posts={gridItems}
           selectedIds={selectedIds}
           isProcessing={isProcessing}
-          onItemClick={handleImageClick}
+          onItemClick={toggleSelection}
           getBorderColor={(isSelected) => isSelected ? colors.SUCCESS : colors.BORDER}
           colors={colors}
           renderOverlay={(post, isSelected) => (
             <button
               onClick={(e) => toggleSelection(post.id, e)}
               disabled={isProcessing}
-              className="absolute bottom-1 right-1 rounded-full p-0.5"
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full p-2"
               style={{
                 backgroundColor: isSelected ? colors.SUCCESS : colors.BACKGROUND_MEDIUM,
                 cursor: isProcessing ? 'not-allowed' : 'pointer',
@@ -172,8 +164,8 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
             >
               <Icon
                 path={isSelected ? mdiCheckboxMarked : mdiCheckboxBlankOutline}
-                size={0.7}
-                color={isSelected ? '#fff' : colors.TEXT_SECONDARY}
+                size={1.5}
+                color='#fff'
               />
             </button>
           )}

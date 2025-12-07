@@ -31,7 +31,9 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
   const { getThemeColors } = useSettingsStore();
   const colors = getThemeColors();
-  const { glowStyles, handleMouseEnter, handleMouseLeave, GlowOverlay } = useGlowAnimation();
+  const { glowStyles, handleMouseEnter, handleMouseLeave, GlowOverlay } = useGlowAnimation({
+    enableScale: false, // Disable scale animation on buttons
+  });
 
   const baseStyles = 'rounded-full transition-all duration-300 flex items-center justify-center relative overflow-hidden';
   const variantStyles = {

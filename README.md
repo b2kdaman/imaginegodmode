@@ -95,20 +95,39 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Glow Animation Effects**: Interactive hover effects with light sweep animations
   - Universal glow hook for reusable animations across components
   - Multi-item glow support for tabs, dropdowns, and lists
-  - Configurable animation duration, intensity, and scale effects
+  - Configurable animation duration, intensity, and effects
   - Theme-aware glow colors matching UI theme
+  - Scale animation disabled on buttons for cleaner interactions
 - **Spin Feature**: Batch process list items (from userscript version)
 
 ## Technology Stack
 
 - **React 18** - UI framework
-- **TypeScript** - Type safety
-- **Zustand** - Lightweight state management
+- **TypeScript** - Type safety with strict mode
+- **Zustand** - Lightweight state management (settings, media, posts, modals)
 - **Tailwind CSS** - Utility-first styling
 - **Vite** - Fast build tool
 - **CRXJS** - Vite plugin for Chrome extensions
 - **Chrome Manifest V3** - Latest extension API
 - **Google Analytics 4** - Anonymous usage analytics via Measurement Protocol
+
+## Architecture
+
+### Modal System
+The extension features a modern, scalable modal architecture:
+- **Centralized State**: Zustand-based modal store for optimal performance
+- **Reusable Components**: GridSelectionModal base for all bulk operation modals
+- **Composition Utilities**: Shared footer buttons, warning banners, and validation displays
+- **Focus Management**: Custom hooks for accessibility (focus trapping, animations)
+- **Type Safety**: Comprehensive TypeScript definitions for all modal patterns
+- **Code Reduction**: DeleteModal refactored from 387 to 124 lines (67% reduction)
+
+### Key Components
+- **GridSelectionModal**: Base component for Delete, Unlike, Upscale, and Archive modals
+- **useShiftSelection**: Custom hook providing shift-click multi-selection behavior
+- **ModalFooterButtons**: Three reusable footer patterns (Confirm, Action, BulkAction)
+- **WarningBanner**: Themed warning/info banners for modal alerts
+- **ValidationDisplay**: Form validation with success/error states
 
 ## Installation
 
@@ -159,16 +178,27 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
    - **Upscale All Liked**: Bulk upscale videos from multiple liked posts
      - Opens large modal (90vw × 85vh) with 5-column image grid
      - All posts selected by default, click to toggle selection
-     - Click image preview to navigate to that post
+     - Centered checkbox indicator for clear visual feedback
+     - Click anywhere on item to toggle (no navigation on click)
+     - Shift-click for batch selection/deselection
      - Processes selected posts and adds videos to upscale queue
    - **Unlike Multiple Posts**: Manage liked posts with bulk unlike
      - Opens large modal with 5-column grid of liked posts
-     - Heart/broken heart visual indicators for selection state
+     - Centered heart/broken heart indicators for intuitive selection
      - Click anywhere on item to toggle (no navigation on click)
+     - Shift-click for batch selection/deselection
      - Real-time progress bar during bulk unlike operation
      - Automatic redirect to /favorites after completion
      - Automatically saves unliked posts to archive
      - 0.5-1 second delays between API calls for faster processing
+   - **Delete Multiple Posts**: Permanently delete posts with safety confirmation
+     - Opens large modal with 5-column grid layout
+     - Centered delete icon indicator when selected
+     - Click anywhere on item to toggle selection
+     - Shift-click for batch selection/deselection
+     - Warning banner: "Deleting posts is permanent and cannot be undone!"
+     - Two-step confirmation: select posts → confirm deletion dialog
+     - Real-time progress tracking during deletion
    - **Unliked Archive**: Browse and restore previously unliked posts
      - Opens archive modal showing all unliked posts with timestamps
      - Re-like multiple posts at once to restore them to favorites
