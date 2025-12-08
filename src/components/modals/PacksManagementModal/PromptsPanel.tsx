@@ -32,6 +32,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
   } = usePacksManagementStore();
 
   const [targetPackForMove, setTargetPackForMove] = useState<string>('');
+  const [emptyPackText, setEmptyPackText] = useState<string>('');
 
   const packName = selectedPackName || '';
   const prompts = packs[packName] || [];
@@ -90,6 +91,18 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
     }
     addPromptToPack(packName, '');
     setStatusMessage('New prompt added');
+  };
+
+  const handleEmptyPackTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const text = e.target.value;
+    setEmptyPackText(text);
+
+    // If pack is empty and user starts typing, create a prompt
+    if (prompts.length === 0 && text.trim()) {
+      addPromptToPack(packName, text);
+      setEmptyPackText('');
+      setStatusMessage('Prompt created');
+    }
   };
 
   return (
@@ -190,11 +203,23 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
       <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar pl-2 pr-4 py-2">
         {prompts.length === 0 ? (
           <div
-            className="flex flex-col items-center justify-center py-12"
+            className="flex flex-col items-center justify-center py-12 px-4"
             style={{ color: colors.TEXT_SECONDARY }}
           >
             <Icon path={mdiPackageVariant} size={2} color={colors.TEXT_SECONDARY} />
-            <p className="mt-2 text-sm">No prompts in this pack</p>
+            <p className="mt-2 mb-4 text-sm">No prompts in this pack</p>
+            <textarea
+              value={emptyPackText}
+              onChange={handleEmptyPackTextChange}
+              placeholder="Start typing to create a prompt..."
+              className="w-full max-w-md px-3 py-2 rounded text-sm resize-none custom-scrollbar"
+              style={{
+                backgroundColor: colors.BACKGROUND_MEDIUM,
+                color: colors.TEXT_PRIMARY,
+                border: `1px solid ${colors.BORDER}`,
+                minHeight: '80px',
+              }}
+            />
           </div>
         ) : (
           prompts.map((prompt, index) => (
