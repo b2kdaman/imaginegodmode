@@ -572,7 +572,13 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
       rating: 0,
     };
 
-    const newPrompts = [...prompts, newPrompt];
+    // If adding a non-empty prompt, remove any empty prompts first
+    let basePrompts = prompts;
+    if (text.trim()) {
+      basePrompts = prompts.filter(p => p.text.trim() !== '');
+    }
+
+    const newPrompts = [...basePrompts, newPrompt];
 
     set({
       packs: {
