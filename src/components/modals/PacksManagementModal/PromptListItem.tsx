@@ -171,7 +171,8 @@ export const PromptListItem: React.FC<PromptListItemProps> = ({
                 style={{
                   backgroundColor: colors.BACKGROUND_MEDIUM,
                   color: colors.TEXT_PRIMARY,
-                  border: `1px solid ${colors.BORDER}`,
+                  border: 'none',
+                  outline: 'none',
                   minHeight: '60px',
                 }}
                 autoFocus
