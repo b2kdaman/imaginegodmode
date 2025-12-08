@@ -156,6 +156,12 @@ export const PackListItem: React.FC<PackListItemProps> = ({
     }
   };
 
+  const handleDoubleClick = () => {
+    if (!isPackSelectionMode && !isEditing) {
+      setIsEditing(true);
+    }
+  };
+
   return (
     <div
       draggable={!isPackSelectionMode && isDraggable && !isEditing}
@@ -190,6 +196,7 @@ export const PackListItem: React.FC<PackListItemProps> = ({
         cursor: isEditing ? 'text' : isPackSelectionMode ? 'pointer' : isDraggable ? 'ns-resize' : 'pointer',
       }}
       onClick={handlePackClick}
+      onDoubleClick={handleDoubleClick}
     >
       {isEditing ? (
         <div className="flex items-center gap-2 w-full">

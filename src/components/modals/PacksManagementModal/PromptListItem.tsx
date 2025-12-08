@@ -121,6 +121,12 @@ export const PromptListItem: React.FC<PromptListItemProps> = ({
     togglePromptSelection(index);
   };
 
+  const handleDoubleClick = () => {
+    if (!isSelectionMode && !isEditing) {
+      handleEditClick();
+    }
+  };
+
   return (
     <div
       draggable={!isSelectionMode && !isEditing && isDraggable}
@@ -147,6 +153,7 @@ export const PromptListItem: React.FC<PromptListItemProps> = ({
         cursor: isSelectionMode ? 'pointer' : isDraggable && !isEditing ? 'move' : 'default',
       }}
       onClick={isSelectionMode ? handleCheckboxClick : undefined}
+      onDoubleClick={handleDoubleClick}
     >
       <div className="flex items-start gap-2">
         {/* Selection Checkbox or Drag Handle */}
