@@ -8,7 +8,7 @@ import { Button } from '@/components/inputs/Button';
 import { Icon } from '@/components/common/Icon';
 import { usePromptStore } from '@/store/usePromptStore';
 import { usePacksManagementStore } from './usePacksManagementStore';
-import { mdiPencil, mdiDelete, mdiDrag, mdiEmoticonSadOutline } from '@mdi/js';
+import { mdiPencil, mdiDelete, mdiDrag, mdiEmoticonSadOutline, mdiCheckboxBlankOutline, mdiCheckboxMarked } from '@mdi/js';
 import type { PackListItemProps } from './types';
 
 export const PackListItem: React.FC<PackListItemProps> = ({
@@ -22,9 +22,17 @@ export const PackListItem: React.FC<PackListItemProps> = ({
   getThemeColors,
 }) => {
   const { currentPack } = usePromptStore();
-  const { selectedPackName, setSelectedPackName, setIsPackDragging } = usePacksManagementStore();
+  const {
+    selectedPackName,
+    setSelectedPackName,
+    setIsPackDragging,
+    isPackSelectionMode,
+    selectedPackNames,
+    togglePackSelection,
+  } = usePacksManagementStore();
   const isSelected = packName === selectedPackName;
   const isCurrent = packName === currentPack;
+  const isPackSelected = selectedPackNames.has(packName);
   const isDraggable = true;
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(packName);
@@ -137,9 +145,20 @@ export const PackListItem: React.FC<PackListItemProps> = ({
     }
   };
 
+  const handlePackClick = () => {
+    if (isEditing) {
+      return;
+    }
+    if (isPackSelectionMode) {
+      togglePackSelection(packName);
+    } else {
+      setSelectedPackName(packName);
+    }
+  };
+
   return (
     <div
-      draggable={isDraggable && !isEditing}
+      draggable={!isPackSelectionMode && isDraggable && !isEditing}
       onDragStart={handlePackDragStart}
       onDragEnd={handlePackDragEnd}
       onDragOver={handlePromptDragOver}
@@ -147,7 +166,9 @@ export const PackListItem: React.FC<PackListItemProps> = ({
       onDrop={handleDrop}
       className="p-2 mb-1 rounded-lg transition-all"
       style={{
-        backgroundColor: isSelected
+        backgroundColor: isPackSelected
+          ? `${colors.SUCCESS}20`
+          : isSelected
           ? colors.BACKGROUND_MEDIUM
           : isPromptDragOver
           ? `${colors.SUCCESS}20`
@@ -155,7 +176,9 @@ export const PackListItem: React.FC<PackListItemProps> = ({
           ? `${colors.TEXT_SECONDARY}20`
           : colors.BACKGROUND_DARK,
         border: `1px solid ${
-          isPromptDragOver
+          isPackSelected
+            ? colors.SUCCESS
+            : isPromptDragOver
             ? colors.SUCCESS
             : isPackDragOver
             ? colors.TEXT_SECONDARY
@@ -164,9 +187,9 @@ export const PackListItem: React.FC<PackListItemProps> = ({
             : colors.BORDER
         }`,
         opacity: isLocalPackDragging ? 0.5 : 1,
-        cursor: isEditing ? 'text' : isDraggable ? 'ns-resize' : 'pointer',
+        cursor: isEditing ? 'text' : isPackSelectionMode ? 'pointer' : isDraggable ? 'ns-resize' : 'pointer',
       }}
-      onClick={() => !isEditing && setSelectedPackName(packName)}
+      onClick={handlePackClick}
     >
       {isEditing ? (
         <input
@@ -186,8 +209,16 @@ export const PackListItem: React.FC<PackListItemProps> = ({
         />
       ) : (
         <div className="flex items-center justify-between gap-2">
-          {isDraggable && (
-            <Icon path={mdiDrag} size={0.6} color={colors.TEXT_SECONDARY} />
+          {isPackSelectionMode ? (
+            <Icon
+              path={isPackSelected ? mdiCheckboxMarked : mdiCheckboxBlankOutline}
+              size={0.8}
+              color={isPackSelected ? colors.SUCCESS : colors.TEXT_SECONDARY}
+            />
+          ) : (
+            isDraggable && (
+              <Icon path={mdiDrag} size={0.6} color={colors.TEXT_SECONDARY} />
+            )
           )}
           <div className="flex-1 min-w-0 flex items-center gap-2">
             <div
@@ -211,23 +242,24 @@ export const PackListItem: React.FC<PackListItemProps> = ({
             )}
           </div>
 
-          <div className="flex items-center gap-1">
-            {isCurrent && (
-              <span
-                className="text-xs px-1.5 py-0.5 rounded-full"
-                style={{
-                  backgroundColor: colors.SUCCESS,
-                  color: '#fff',
-                }}
-              >
-                Current
-              </span>
-            )}
+          {!isPackSelectionMode && (
+            <div className="flex items-center gap-1">
+              {isCurrent && (
+                <span
+                  className="text-xs px-1.5 py-0.5 rounded-full"
+                  style={{
+                    backgroundColor: colors.SUCCESS,
+                    color: '#fff',
+                  }}
+                >
+                  Current
+                </span>
+              )}
 
-            <Button
-              icon={mdiPencil}
-              iconSize={0.5}
-              variant="icon"
+              <Button
+                icon={mdiPencil}
+                iconSize={0.5}
+                variant="icon"
               onClick={(e) => {
                 e.stopPropagation();
                 setIsEditing(true);
@@ -235,17 +267,18 @@ export const PackListItem: React.FC<PackListItemProps> = ({
               tooltip="Rename pack"
             />
 
-            <Button
-              icon={mdiDelete}
-              iconSize={0.5}
-              variant="icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(packName);
-              }}
-              tooltip="Delete pack"
-            />
-          </div>
+              <Button
+                icon={mdiDelete}
+                iconSize={0.5}
+                variant="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(packName);
+                }}
+                tooltip="Delete pack"
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

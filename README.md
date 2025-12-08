@@ -19,10 +19,23 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - **Split-Panel Design**: Left panel for packs (33%), right panel for prompts (67%)
   - **Drag & Drop Reordering**: Reorder packs and prompts within the same pack with visual feedback
   - **Pack Operations**: Create, rename, delete packs with inline editing
+  - **Prompt Editing**: Click edit button to modify prompt text in textarea with save/cancel buttons
+  - **Individual Deletion**: Delete single prompts or packs with confirmation
+  - **Selection Mode for Prompts**: Toggle selection mode to select multiple prompts with checkboxes
+    - Click anywhere on prompt to select/deselect
+    - Select All / Deselect All controls
+    - Batch delete multiple prompts at once
+    - Batch move selected prompts to another pack via dropdown
+    - Selected count displayed in header
+  - **Selection Mode for Packs**: Toggle selection mode to select multiple packs with checkboxes
+    - Click anywhere on pack to select/deselect
+    - Select All / Deselect All controls
+    - Batch delete multiple packs at once (keeps at least one pack)
+    - Selected count displayed in header
   - **Empty Pack Indicators**: Sad icon for empty packs, count badges for populated packs
   - **Prompt Filtering**: Automatically hides empty prompts from display
   - **Drop Notifications**: Toast-style notifications at top with slide-in/fade-out animations
-  - **Visual Feedback**: Drag-over highlighting with theme-aware colors
+  - **Visual Feedback**: Drag-over highlighting with theme-aware colors, green highlight for selected items
   - **Pack Transfer**: Drag prompts between packs to reorganize content
   - **AI Pack Generation**: Copy Grok system prompt for generating themed prompt packs
 - **Global Search**: Type-ahead search across all packs with instant results

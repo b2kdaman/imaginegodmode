@@ -8,7 +8,8 @@ import { Button } from '@/components/inputs/Button';
 import { PackListItem } from './PackListItem';
 import { PacksManagementFooter } from './PacksManagementFooter';
 import { usePromptStore } from '@/store/usePromptStore';
-import { mdiPlus } from '@mdi/js';
+import { usePacksManagementStore } from './usePacksManagementStore';
+import { mdiPlus, mdiCheckboxMultipleMarked, mdiSelectAll, mdiSelectOff, mdiDelete } from '@mdi/js';
 import type { PacksPanelProps } from './types';
 
 export const PacksPanel: React.FC<PacksPanelProps> = ({
@@ -24,7 +25,15 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
   getThemeColors,
 }) => {
   const colors = getThemeColors();
-  const { packs, packOrder, reorderPacks } = usePromptStore();
+  const { packs, packOrder, reorderPacks, deletePacksByNames } = usePromptStore();
+  const {
+    isPackSelectionMode,
+    setIsPackSelectionMode,
+    selectedPackNames,
+    selectAllPacks,
+    deselectAllPacks,
+    setStatusMessage,
+  } = usePacksManagementStore();
   const packNames = packOrder || Object.keys(packs);
   const [isCreating, setIsCreating] = useState(false);
   const [newPackName, setNewPackName] = useState('');
@@ -59,6 +68,29 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
     }
   };
 
+  const handleTogglePackSelectionMode = () => {
+    setIsPackSelectionMode(!isPackSelectionMode);
+  };
+
+  const handleSelectAllPacks = () => {
+    selectAllPacks(packNames);
+  };
+
+  const handleDeselectAllPacks = () => {
+    deselectAllPacks();
+  };
+
+  const handleBatchDeletePacks = () => {
+    if (selectedPackNames.size === 0) {
+      setStatusMessage('No packs selected');
+      return;
+    }
+
+    const packsToDelete = Array.from(selectedPackNames);
+    deletePacksByNames(packsToDelete);
+    setStatusMessage(`${packsToDelete.length} pack${packsToDelete.length !== 1 ? 's' : ''} deleted`);
+  };
+
   return (
     <div
       className="flex flex-col"
@@ -78,15 +110,62 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
           style={{ color: colors.TEXT_PRIMARY }}
         >
           Packs ({packNames.length})
+          {isPackSelectionMode && selectedPackNames.size > 0 && (
+            <span style={{ color: colors.SUCCESS }}> - {selectedPackNames.size} selected</span>
+          )}
         </h3>
-        <Button
-          icon={mdiPlus}
-          iconSize={0.6}
-          variant="icon"
-          onClick={() => setIsCreating(true)}
-          tooltip="Create new pack"
-        />
+        <div className="flex gap-1">
+          {!isPackSelectionMode && (
+            <Button
+              icon={mdiPlus}
+              iconSize={0.6}
+              variant="icon"
+              onClick={() => setIsCreating(true)}
+              tooltip="Create new pack"
+            />
+          )}
+          <Button
+            icon={mdiCheckboxMultipleMarked}
+            iconSize={0.6}
+            variant="icon"
+            onClick={handleTogglePackSelectionMode}
+            tooltip={isPackSelectionMode ? 'Exit selection mode' : 'Enter selection mode'}
+            style={isPackSelectionMode ? { backgroundColor: `${colors.SUCCESS}40` } : undefined}
+          />
+        </div>
       </div>
+
+      {/* Selection Mode Controls */}
+      {isPackSelectionMode && (
+        <div
+          className="px-3 py-2 border-b flex items-center gap-2"
+          style={{ borderColor: colors.BORDER, backgroundColor: `${colors.BACKGROUND_MEDIUM}80` }}
+        >
+          <Button
+            icon={mdiSelectAll}
+            iconSize={0.5}
+            variant="icon"
+            onClick={handleSelectAllPacks}
+            tooltip="Select all packs"
+          />
+          <Button
+            icon={mdiSelectOff}
+            iconSize={0.5}
+            variant="icon"
+            onClick={handleDeselectAllPacks}
+            tooltip="Deselect all packs"
+          />
+          <div className="flex-1" />
+          <Button
+            icon={mdiDelete}
+            iconSize={0.5}
+            variant="icon"
+            onClick={handleBatchDeletePacks}
+            tooltip="Delete selected packs"
+            disabled={selectedPackNames.size === 0}
+          />
+        </div>
+      )}
 
       {/* Scrollable Pack List */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar pl-2 pr-3 py-2">

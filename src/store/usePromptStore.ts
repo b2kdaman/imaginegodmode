@@ -32,6 +32,7 @@ interface PromptStore {
   setCurrentPack: (pack: string) => void;
   addPack: (name: string) => void;
   deletePack: (name: string) => void;
+  deletePacksByNames: (packNames: string[]) => void;
   renamePack: (oldName: string, newName: string) => void;
   reorderPacks: (newOrder: string[]) => void;
   clearAllPacks: () => void;
@@ -46,6 +47,9 @@ interface PromptStore {
   nextPrompt: () => void;
   prevPrompt: () => void;
   reorderPrompts: (packName: string, dragIndex: number, hoverIndex: number) => void;
+  deletePromptByIndex: (packName: string, index: number) => void;
+  deletePromptsByIndices: (packName: string, indices: number[]) => void;
+  updatePromptByIndex: (packName: string, index: number, text: string) => void;
 
   // Computed
   getCurrentPrompt: () => PromptItem | null;
@@ -181,6 +185,42 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     });
     get().saveToStorage();
     trackPackDeleted();
+  },
+
+  deletePacksByNames: (packNames) => {
+    const { packs, packOrder, currentPack } = get();
+
+    // Safety check: ensure packs exists
+    if (!packs || packNames.length === 0) {return;}
+
+    const allPackNames = Object.keys(packs);
+
+    // Don't delete all packs - must keep at least one
+    if (packNames.length >= allPackNames.length) {return;}
+
+    const packNamesSet = new Set(packNames);
+    const newPacks = { ...packs };
+
+    // Delete all specified packs
+    packNames.forEach(name => {
+      delete newPacks[name];
+    });
+
+    // Remove from pack order
+    const newPackOrder = packOrder.filter(p => !packNamesSet.has(p));
+
+    // Switch to first remaining pack if current pack was deleted
+    const newCurrentPack = packNamesSet.has(currentPack) ? newPackOrder[0] : currentPack;
+
+    set({
+      packs: newPacks,
+      packOrder: newPackOrder,
+      currentPack: newCurrentPack,
+      currentIndex: 0,
+    });
+    get().saveToStorage();
+    // Track each deletion
+    packNames.forEach(() => trackPackDeleted());
   },
 
   renamePack: (oldName, newName) => {
@@ -384,6 +424,84 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
         ...packs,
         [sourcePack]: sourcePrompts,
         [targetPack]: targetPrompts,
+      },
+    });
+
+    get().saveToStorage();
+  },
+
+  deletePromptByIndex: (packName, index) => {
+    const { packs } = get();
+    const prompts = packs[packName];
+
+    if (!prompts || index < 0 || index >= prompts.length) {
+      return;
+    }
+
+    // Don't allow deleting if it's the only prompt
+    if (prompts.length <= 1) {
+      return;
+    }
+
+    const newPrompts = prompts.filter((_, i) => i !== index);
+
+    set({
+      packs: {
+        ...packs,
+        [packName]: newPrompts,
+      },
+    });
+
+    get().saveToStorage();
+    trackPromptDeleted();
+  },
+
+  deletePromptsByIndices: (packName, indices) => {
+    const { packs } = get();
+    const prompts = packs[packName];
+
+    if (!prompts || indices.length === 0) {
+      return;
+    }
+
+    // Don't allow deleting all prompts
+    if (indices.length >= prompts.length) {
+      return;
+    }
+
+    const indicesSet = new Set(indices);
+    const newPrompts = prompts.filter((_, i) => !indicesSet.has(i));
+
+    set({
+      packs: {
+        ...packs,
+        [packName]: newPrompts,
+      },
+    });
+
+    get().saveToStorage();
+    // Track each deletion
+    indices.forEach(() => trackPromptDeleted());
+  },
+
+  updatePromptByIndex: (packName, index, text) => {
+    const { packs } = get();
+    const prompts = packs[packName];
+
+    if (!prompts || index < 0 || index >= prompts.length) {
+      return;
+    }
+
+    const newPrompts = [...prompts];
+    newPrompts[index] = {
+      ...newPrompts[index],
+      text,
+    };
+
+    set({
+      packs: {
+        ...packs,
+        [packName]: newPrompts,
       },
     });
 

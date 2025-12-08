@@ -3,12 +3,14 @@
  * Displays all prompts with drag-and-drop functionality
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Icon } from '@/components/common/Icon';
+import { Button } from '@/components/inputs/Button';
+import { Dropdown } from '@/components/inputs/Dropdown';
 import { PromptListItem } from './PromptListItem';
 import { usePromptStore } from '@/store/usePromptStore';
 import { usePacksManagementStore } from './usePacksManagementStore';
-import { mdiPackageVariant } from '@mdi/js';
+import { mdiPackageVariant, mdiCheckboxMultipleMarked, mdiSelectAll, mdiSelectOff, mdiDelete, mdiSwapHorizontal } from '@mdi/js';
 import type { PromptsPanelProps } from './types';
 
 export const PromptsPanel: React.FC<PromptsPanelProps> = ({
@@ -16,14 +18,76 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
   getThemeColors,
 }) => {
   const colors = getThemeColors();
-  const { packs } = usePromptStore();
-  const { selectedPackName, isPackDragging, setDraggedPromptIndex } = usePacksManagementStore();
+  const { packs, deletePromptsByIndices, movePromptToPack } = usePromptStore();
+  const {
+    selectedPackName,
+    isPackDragging,
+    setDraggedPromptIndex,
+    isSelectionMode,
+    setIsSelectionMode,
+    selectedPromptIndices,
+    selectAllPrompts,
+    deselectAllPrompts,
+    setStatusMessage,
+  } = usePacksManagementStore();
+
+  const [targetPackForMove, setTargetPackForMove] = useState<string>('');
 
   const packName = selectedPackName || '';
   const prompts = packs[packName] || [];
 
   // Filter out empty prompts
   const nonEmptyPrompts = prompts.filter(prompt => prompt.text && prompt.text.trim() !== '');
+  const nonEmptyIndices = prompts
+    .map((p, i) => (p.text && p.text.trim() !== '' ? i : -1))
+    .filter(i => i !== -1);
+
+  const allPackNames = Object.keys(packs).filter(p => p !== packName);
+
+  const handleToggleSelectionMode = () => {
+    setIsSelectionMode(!isSelectionMode);
+  };
+
+  const handleSelectAll = () => {
+    selectAllPrompts(nonEmptyIndices);
+  };
+
+  const handleDeselectAll = () => {
+    deselectAllPrompts();
+  };
+
+  const handleBatchDelete = () => {
+    if (selectedPromptIndices.size === 0) {
+      setStatusMessage('No prompts selected');
+      return;
+    }
+
+    const indices = Array.from(selectedPromptIndices).sort((a, b) => b - a);
+    deletePromptsByIndices(packName, indices);
+    setStatusMessage(`${indices.length} prompt${indices.length !== 1 ? 's' : ''} deleted`);
+  };
+
+  const handleBatchMove = () => {
+    if (selectedPromptIndices.size === 0) {
+      setStatusMessage('No prompts selected');
+      return;
+    }
+
+    if (!targetPackForMove) {
+      setStatusMessage('Please select a target pack');
+      return;
+    }
+
+    const indices = Array.from(selectedPromptIndices).sort((a, b) => b - a);
+
+    // Move each prompt (in reverse order to maintain indices)
+    indices.forEach(index => {
+      movePromptToPack(index, packName, targetPackForMove);
+    });
+
+    setStatusMessage(`${indices.length} prompt${indices.length !== 1 ? 's' : ''} moved to "${targetPackForMove}"`);
+    setTargetPackForMove('');
+  };
 
   return (
     <div
@@ -37,7 +101,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
     >
       {/* Header */}
       <div
-        className="px-3 border-b flex items-center"
+        className="pl-3 pr-4 border-b flex items-center justify-between gap-2"
         style={{ borderColor: colors.BORDER, height: '44px' }}
       >
         <h3
@@ -45,11 +109,71 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
           style={{ color: colors.TEXT_PRIMARY }}
         >
           {packName} ({nonEmptyPrompts.length} prompt{nonEmptyPrompts.length !== 1 ? 's' : ''})
+          {isSelectionMode && selectedPromptIndices.size > 0 && (
+            <span style={{ color: colors.SUCCESS }}> - {selectedPromptIndices.size} selected</span>
+          )}
         </h3>
+        <Button
+          icon={mdiCheckboxMultipleMarked}
+          iconSize={0.6}
+          variant="icon"
+          onClick={handleToggleSelectionMode}
+          tooltip={isSelectionMode ? 'Exit selection mode' : 'Enter selection mode'}
+          style={isSelectionMode ? { backgroundColor: `${colors.SUCCESS}40` } : undefined}
+        />
       </div>
 
+      {/* Selection Mode Controls */}
+      {isSelectionMode && (
+        <div
+          className="px-3 py-2 border-b flex items-center gap-2"
+          style={{ borderColor: colors.BORDER, backgroundColor: `${colors.BACKGROUND_MEDIUM}80` }}
+        >
+          <Button
+            icon={mdiSelectAll}
+            iconSize={0.5}
+            variant="icon"
+            onClick={handleSelectAll}
+            tooltip="Select all"
+          />
+          <Button
+            icon={mdiSelectOff}
+            iconSize={0.5}
+            variant="icon"
+            onClick={handleDeselectAll}
+            tooltip="Deselect all"
+          />
+          <div className="flex-1" />
+          {allPackNames.length > 0 && (
+            <>
+              <Dropdown
+                options={[{ value: '', label: 'Move to...' }, ...allPackNames.map(p => ({ value: p, label: p }))]}
+                value={targetPackForMove}
+                onChange={setTargetPackForMove}
+              />
+              <Button
+                icon={mdiSwapHorizontal}
+                iconSize={0.5}
+                variant="icon"
+                onClick={handleBatchMove}
+                tooltip="Move selected prompts"
+                disabled={selectedPromptIndices.size === 0 || !targetPackForMove}
+              />
+            </>
+          )}
+          <Button
+            icon={mdiDelete}
+            iconSize={0.5}
+            variant="icon"
+            onClick={handleBatchDelete}
+            tooltip="Delete selected prompts"
+            disabled={selectedPromptIndices.size === 0}
+          />
+        </div>
+      )}
+
       {/* Scrollable Prompts List */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar pl-2 pr-3 py-2">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar pl-2 pr-4 py-2">
         {nonEmptyPrompts.length === 0 ? (
           <div
             className="flex flex-col items-center justify-center py-12"
