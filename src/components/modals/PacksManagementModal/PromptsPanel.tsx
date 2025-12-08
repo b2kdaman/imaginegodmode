@@ -196,6 +196,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
             onClick={handleBatchDelete}
             tooltip="Delete selected prompts"
             disabled={selectedPromptIndices.size === 0}
+            className="pr-3"
           />
         </div>
       )}
