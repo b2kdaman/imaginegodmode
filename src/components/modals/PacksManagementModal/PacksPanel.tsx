@@ -182,7 +182,6 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
             onClick={handleBatchDeletePacks}
             tooltip="Delete selected packs"
             disabled={selectedPackNames.size === 0}
-            className="pr-3"
           />
         </div>
       )}

@@ -154,7 +154,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
       {/* Selection Mode Controls */}
       {isSelectionMode && (
         <div
-          className="px-3 pr-3 py-2 border-b flex items-center gap-2"
+          className="px-3 py-2 border-b flex items-center gap-2 pr-3"
           style={{ borderColor: colors.BORDER, backgroundColor: `${colors.BACKGROUND_MEDIUM}80` }}
         >
           <Button
@@ -196,7 +196,6 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
             onClick={handleBatchDelete}
             tooltip="Delete selected prompts"
             disabled={selectedPromptIndices.size === 0}
-            className="pr-3"
           />
         </div>
       )}
