@@ -90,12 +90,6 @@ export const PacksManagementModal: React.FC<PacksManagementModalProps> = ({
   };
 
   const handleDeletePack = (name: string) => {
-    const packNames = Object.keys(packs);
-    if (packNames.length <= 1) {
-      setStatusMessage('Cannot delete the last pack');
-      return;
-    }
-
     // Show confirmation modal
     setPackToDelete(name);
   };
@@ -107,11 +101,11 @@ export const PacksManagementModal: React.FC<PacksManagementModalProps> = ({
 
     deletePack(packToDelete);
 
-    // Switch to first available pack if deleted pack was selected
-    if (selectedPackName === packToDelete) {
-      const remainingPacks = Object.keys(packs).filter(p => p !== packToDelete);
-      setSelectedPackName(remainingPacks[0] || currentPack);
-    }
+    // Always switch to first available pack after deletion
+    const remainingPacks = Object.keys(packs).filter(p => p !== packToDelete);
+    // If no packs remain, the store will create a "Default" pack
+    const nextPack = remainingPacks.length > 0 ? remainingPacks[0] : 'Default';
+    setSelectedPackName(nextPack);
 
     setStatusMessage(`Pack "${packToDelete}" deleted`);
     setPackToDelete(null);

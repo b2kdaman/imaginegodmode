@@ -8,7 +8,7 @@ import { Button } from '@/components/inputs/Button';
 import { Icon } from '@/components/common/Icon';
 import { usePromptStore } from '@/store/usePromptStore';
 import { usePacksManagementStore } from './usePacksManagementStore';
-import { mdiPencil, mdiDelete, mdiDrag, mdiEmoticonSadOutline, mdiCheckboxBlankOutline, mdiCheckboxMarked } from '@mdi/js';
+import { mdiPencil, mdiDelete, mdiDrag, mdiEmoticonSadOutline, mdiCheckboxBlankOutline, mdiCheckboxMarked, mdiCheck, mdiClose } from '@mdi/js';
 import type { PackListItemProps } from './types';
 
 export const PackListItem: React.FC<PackListItemProps> = ({
@@ -192,21 +192,45 @@ export const PackListItem: React.FC<PackListItemProps> = ({
       onClick={handlePackClick}
     >
       {isEditing ? (
-        <input
-          type="text"
-          value={editName}
-          onChange={(e) => setEditName(e.target.value)}
-          onBlur={handleRename}
-          onKeyDown={handleKeyDown}
-          className="w-full px-1 rounded text-sm"
-          style={{
-            backgroundColor: colors.BACKGROUND_MEDIUM,
-            color: colors.TEXT_PRIMARY,
-            border: `1px solid ${colors.BORDER}`,
-          }}
-          autoFocus
-          onClick={(e) => e.stopPropagation()}
-        />
+        <div className="flex items-center gap-2 w-full">
+          <input
+            type="text"
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onFocus={(e) => e.target.select()}
+            className="flex-1 px-1 rounded text-sm"
+            style={{
+              backgroundColor: 'transparent',
+              color: colors.TEXT_PRIMARY,
+              border: 'none',
+              outline: 'none',
+            }}
+            autoFocus
+            onClick={(e) => e.stopPropagation()}
+          />
+          <Button
+            icon={mdiCheck}
+            iconSize={0.5}
+            variant="icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRename();
+            }}
+            tooltip="Save"
+          />
+          <Button
+            icon={mdiClose}
+            iconSize={0.5}
+            variant="icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditName(packName);
+              setIsEditing(false);
+            }}
+            tooltip="Cancel"
+          />
+        </div>
       ) : (
         <div className="flex items-center justify-between gap-2">
           {isPackSelectionMode ? (

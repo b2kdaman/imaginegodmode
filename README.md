@@ -19,8 +19,15 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - **Split-Panel Design**: Left panel for packs (33%), right panel for prompts (67%)
   - **Drag & Drop Reordering**: Reorder packs and prompts within the same pack with visual feedback
   - **Pack Operations**: Create, rename, delete packs with inline editing
-  - **Prompt Editing**: Click edit button to modify prompt text in textarea with save/cancel buttons
-  - **Individual Deletion**: Delete single prompts or packs with confirmation
+    - Inline rename with save/cancel buttons
+    - Automatic pack creation when all packs deleted (creates "Default")
+    - Smart pack switching after deletion to first available pack
+  - **Prompt Operations**: Full CRUD operations for prompts
+    - Edit prompt text in textarea with save/cancel buttons
+    - Add new prompts directly to current pack
+    - Duplicate prompts with single click
+    - Delete prompts without "last prompt" restriction
+  - **Individual Deletion**: Delete single prompts or packs with confirmation modals
   - **Selection Mode for Prompts**: Toggle selection mode to select multiple prompts with checkboxes
     - Click anywhere on prompt to select/deselect
     - Select All / Deselect All controls
@@ -30,10 +37,10 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
   - **Selection Mode for Packs**: Toggle selection mode to select multiple packs with checkboxes
     - Click anywhere on pack to select/deselect
     - Select All / Deselect All controls
-    - Batch delete multiple packs at once (keeps at least one pack)
+    - Batch delete multiple packs with confirmation dialog
     - Selected count displayed in header
-  - **Empty Pack Indicators**: Sad icon for empty packs, count badges for populated packs
-  - **Prompt Filtering**: Automatically hides empty prompts from display
+  - **Smart Prompt Counting**: Displays actual non-empty prompt count in pack badges
+  - **Empty State Handling**: Shows all prompts including empty ones for easy management
   - **Drop Notifications**: Toast-style notifications at top with slide-in/fade-out animations
   - **Visual Feedback**: Drag-over highlighting with theme-aware colors, green highlight for selected items
   - **Pack Transfer**: Drag prompts between packs to reorganize content

@@ -5,11 +5,12 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/inputs/Button';
+import { BaseModal } from '../BaseModal';
 import { PackListItem } from './PackListItem';
 import { PacksManagementFooter } from './PacksManagementFooter';
 import { usePromptStore } from '@/store/usePromptStore';
 import { usePacksManagementStore } from './usePacksManagementStore';
-import { mdiPlus, mdiCheckboxMultipleMarked, mdiSelectAll, mdiSelectOff, mdiDelete } from '@mdi/js';
+import { mdiPlus, mdiCheckboxMultipleMarked, mdiSelectAll, mdiSelectOff, mdiDelete, mdiCheck, mdiClose } from '@mdi/js';
 import type { PacksPanelProps } from './types';
 
 export const PacksPanel: React.FC<PacksPanelProps> = ({
@@ -33,10 +34,12 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
     selectAllPacks,
     deselectAllPacks,
     setStatusMessage,
+    setSelectedPackName,
   } = usePacksManagementStore();
   const packNames = packOrder || Object.keys(packs);
   const [isCreating, setIsCreating] = useState(false);
   const [newPackName, setNewPackName] = useState('');
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   const handlePackMove = (dragIndex: number, hoverIndex: number) => {
     if (dragIndex === hoverIndex) {
@@ -86,9 +89,24 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
       return;
     }
 
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const confirmBatchDeletePacks = () => {
     const packsToDelete = Array.from(selectedPackNames);
     deletePacksByNames(packsToDelete);
+
+    // Select first remaining pack or Default if all deleted
+    const remainingPacks = packNames.filter(p => !selectedPackNames.has(p));
+    const nextPack = remainingPacks.length > 0 ? remainingPacks[0] : 'Default';
+    setSelectedPackName(nextPack);
+
     setStatusMessage(`${packsToDelete.length} pack${packsToDelete.length !== 1 ? 's' : ''} deleted`);
+    setIsDeleteConfirmOpen(false);
+  };
+
+  const cancelBatchDeletePacks = () => {
+    setIsDeleteConfirmOpen(false);
   };
 
   return (
@@ -171,40 +189,63 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
       <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar pl-2 pr-3 py-2">
         {/* Create New Pack Input */}
         {isCreating && (
-          <div className="mb-2 p-2 rounded-lg border" style={{ borderColor: colors.SUCCESS }}>
-            <input
-              type="text"
-              value={newPackName}
-              onChange={(e) => setNewPackName(e.target.value)}
-              onBlur={handleCreatePack}
-              onKeyDown={handleKeyDown}
-              placeholder="New pack name..."
-              className="w-full px-2 py-1 rounded text-sm"
-              style={{
-                backgroundColor: colors.BACKGROUND_MEDIUM,
-                color: colors.TEXT_PRIMARY,
-                border: `1px solid ${colors.BORDER}`,
-              }}
-              autoFocus
-            />
+          <div className="mb-2 p-2 rounded-lg" style={{ backgroundColor: colors.BACKGROUND_DARK, border: `1px solid ${colors.BORDER}` }}>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={newPackName}
+                onChange={(e) => setNewPackName(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onFocus={(e) => e.target.select()}
+                placeholder="New pack name..."
+                className="flex-1 px-1 rounded text-sm"
+                style={{
+                  backgroundColor: 'transparent',
+                  color: colors.TEXT_PRIMARY,
+                  border: 'none',
+                  outline: 'none',
+                }}
+                autoFocus
+              />
+              <Button
+                icon={mdiCheck}
+                iconSize={0.5}
+                variant="icon"
+                onClick={handleCreatePack}
+                tooltip="Create"
+              />
+              <Button
+                icon={mdiClose}
+                iconSize={0.5}
+                variant="icon"
+                onClick={() => {
+                  setNewPackName('');
+                  setIsCreating(false);
+                }}
+                tooltip="Cancel"
+              />
+            </div>
           </div>
         )}
 
-        {packNames.map((packName, index) => (
-          <PackListItem
-            key={packName}
-            packName={packName}
-            index={index}
-            promptCount={packs[packName].length}
-            onRename={onRenamePack}
-            onDelete={onDeletePack}
-            onDropPrompt={(promptIndex, sourcePack) =>
-              onDropPrompt(packName, promptIndex, sourcePack)
-            }
-            onPackMove={handlePackMove}
-            getThemeColors={getThemeColors}
-          />
-        ))}
+        {packNames.map((packName, index) => {
+          const nonEmptyCount = packs[packName].filter(prompt => prompt.text && prompt.text.trim() !== '').length;
+          return (
+            <PackListItem
+              key={packName}
+              packName={packName}
+              index={index}
+              promptCount={nonEmptyCount}
+              onRename={onRenamePack}
+              onDelete={onDeletePack}
+              onDropPrompt={(promptIndex, sourcePack) =>
+                onDropPrompt(packName, promptIndex, sourcePack)
+              }
+              onPackMove={handlePackMove}
+              getThemeColors={getThemeColors}
+            />
+          );
+        })}
       </div>
 
       {/* Footer */}
@@ -218,6 +259,54 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
           getThemeColors={getThemeColors}
         />
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteConfirmOpen && (
+        <BaseModal
+          isOpen={true}
+          title="Confirm Delete"
+          onClose={cancelBatchDeletePacks}
+          getThemeColors={getThemeColors}
+          maxWidth="sm"
+        >
+          <div className="flex flex-col gap-4">
+            <p style={{ color: colors.TEXT_PRIMARY }}>
+              Are you sure you want to delete <strong>{selectedPackNames.size} pack{selectedPackNames.size !== 1 ? 's' : ''}</strong>?
+              {Array.from(selectedPackNames).some(name => packs[name]?.length > 0) && (
+                <>
+                  <br /><br />
+                  This will delete:
+                  <ul className="list-disc ml-5 mt-2">
+                    {Array.from(selectedPackNames).map(name => (
+                      <li key={name}>
+                        <strong>{name}</strong> ({packs[name]?.length || 0} prompt{packs[name]?.length !== 1 ? 's' : ''})
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </p>
+            <div className="flex gap-2 justify-end">
+              <Button
+                onClick={cancelBatchDeletePacks}
+                variant="default"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmBatchDeletePacks}
+                variant="default"
+                style={{
+                  backgroundColor: colors.DANGER,
+                  color: '#fff',
+                }}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </BaseModal>
+      )}
     </div>
   );
 };

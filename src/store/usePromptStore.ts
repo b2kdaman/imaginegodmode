@@ -50,6 +50,8 @@ interface PromptStore {
   deletePromptByIndex: (packName: string, index: number) => void;
   deletePromptsByIndices: (packName: string, indices: number[]) => void;
   updatePromptByIndex: (packName: string, index: number, text: string) => void;
+  addPromptToPack: (packName: string, text?: string) => void;
+  duplicatePromptByIndex: (packName: string, index: number) => void;
 
   // Computed
   getCurrentPrompt: () => PromptItem | null;
@@ -164,8 +166,19 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
     const packNames = Object.keys(packs);
 
-    // Don't delete if it's the only pack
-    if (packNames.length <= 1) {return;}
+    // If deleting the last pack, create a new default pack
+    if (packNames.length <= 1) {
+      const defaultPack = 'Default';
+      set({
+        packs: { [defaultPack]: [{ text: '', rating: 0 }] },
+        packOrder: [defaultPack],
+        currentPack: defaultPack,
+        currentIndex: 0,
+      });
+      get().saveToStorage();
+      trackPackDeleted();
+      return;
+    }
 
     const newPacks = { ...packs };
     delete newPacks[name];
@@ -195,8 +208,20 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
     const allPackNames = Object.keys(packs);
 
-    // Don't delete all packs - must keep at least one
-    if (packNames.length >= allPackNames.length) {return;}
+    // If deleting all packs, create a new default pack
+    if (packNames.length >= allPackNames.length) {
+      const defaultPack = 'Default';
+      set({
+        packs: { [defaultPack]: [{ text: '', rating: 0 }] },
+        packOrder: [defaultPack],
+        currentPack: defaultPack,
+        currentIndex: 0,
+      });
+      get().saveToStorage();
+      // Track each deletion
+      packNames.forEach(() => trackPackDeleted());
+      return;
+    }
 
     const packNamesSet = new Set(packNames);
     const newPacks = { ...packs };
@@ -431,53 +456,57 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
   },
 
   deletePromptByIndex: (packName, index) => {
-    const { packs } = get();
+    const { packs, currentPack } = get();
     const prompts = packs[packName];
 
     if (!prompts || index < 0 || index >= prompts.length) {
       return;
     }
 
-    // Don't allow deleting if it's the only prompt
-    if (prompts.length <= 1) {
-      return;
-    }
-
     const newPrompts = prompts.filter((_, i) => i !== index);
 
-    set({
+    // If deleting from current pack, reset to first prompt
+    const updates: any = {
       packs: {
         ...packs,
         [packName]: newPrompts,
       },
-    });
+    };
+
+    if (packName === currentPack) {
+      updates.currentIndex = 0;
+    }
+
+    set(updates);
 
     get().saveToStorage();
     trackPromptDeleted();
   },
 
   deletePromptsByIndices: (packName, indices) => {
-    const { packs } = get();
+    const { packs, currentPack } = get();
     const prompts = packs[packName];
 
     if (!prompts || indices.length === 0) {
       return;
     }
 
-    // Don't allow deleting all prompts
-    if (indices.length >= prompts.length) {
-      return;
-    }
-
     const indicesSet = new Set(indices);
     const newPrompts = prompts.filter((_, i) => !indicesSet.has(i));
 
-    set({
+    // If deleting from current pack, reset to first prompt
+    const updates: any = {
       packs: {
         ...packs,
         [packName]: newPrompts,
       },
-    });
+    };
+
+    if (packName === currentPack) {
+      updates.currentIndex = 0;
+    }
+
+    set(updates);
 
     get().saveToStorage();
     // Track each deletion
@@ -506,6 +535,60 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     });
 
     get().saveToStorage();
+  },
+
+  addPromptToPack: (packName, text = '') => {
+    const { packs } = get();
+    const prompts = packs[packName];
+
+    if (!prompts) {
+      return;
+    }
+
+    const newPrompt: PromptItem = {
+      text,
+      rating: 0,
+    };
+
+    const newPrompts = [...prompts, newPrompt];
+
+    set({
+      packs: {
+        ...packs,
+        [packName]: newPrompts,
+      },
+    });
+
+    get().saveToStorage();
+    trackPromptCreated();
+  },
+
+  duplicatePromptByIndex: (packName, index) => {
+    const { packs } = get();
+    const prompts = packs[packName];
+
+    if (!prompts || index < 0 || index >= prompts.length) {
+      return;
+    }
+
+    const promptToDuplicate = prompts[index];
+    const duplicatedPrompt: PromptItem = {
+      text: promptToDuplicate.text,
+      rating: promptToDuplicate.rating,
+    };
+
+    const newPrompts = [...prompts];
+    newPrompts.splice(index + 1, 0, duplicatedPrompt);
+
+    set({
+      packs: {
+        ...packs,
+        [packName]: newPrompts,
+      },
+    });
+
+    get().saveToStorage();
+    trackPromptCreated();
   },
 
   // Computed

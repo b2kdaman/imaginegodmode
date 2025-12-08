@@ -8,7 +8,7 @@ import { Icon } from '@/components/common/Icon';
 import { Button } from '@/components/inputs/Button';
 import { usePromptStore } from '@/store/usePromptStore';
 import { usePacksManagementStore } from './usePacksManagementStore';
-import { mdiDrag, mdiStar, mdiStarOutline, mdiPencil, mdiDelete, mdiCheck, mdiClose, mdiCheckboxBlankOutline, mdiCheckboxMarked } from '@mdi/js';
+import { mdiDrag, mdiStar, mdiStarOutline, mdiPencil, mdiDelete, mdiCheck, mdiClose, mdiCheckboxBlankOutline, mdiCheckboxMarked, mdiContentDuplicate } from '@mdi/js';
 import type { PromptListItemProps } from './types';
 
 export const PromptListItem: React.FC<PromptListItemProps> = ({
@@ -22,7 +22,7 @@ export const PromptListItem: React.FC<PromptListItemProps> = ({
   getThemeColors,
 }) => {
   const colors = getThemeColors();
-  const { deletePromptByIndex, updatePromptByIndex } = usePromptStore();
+  const { deletePromptByIndex, updatePromptByIndex, duplicatePromptByIndex } = usePromptStore();
   const { isSelectionMode, selectedPromptIndices, togglePromptSelection, setStatusMessage } = usePacksManagementStore();
   const [isDragging, setIsDragging] = useState(false);
   const [isPromptDragOver, setIsPromptDragOver] = useState(false);
@@ -109,6 +109,11 @@ export const PromptListItem: React.FC<PromptListItemProps> = ({
   const handleDelete = () => {
     deletePromptByIndex(packName, index);
     setStatusMessage('Prompt deleted');
+  };
+
+  const handleDuplicate = () => {
+    duplicatePromptByIndex(packName, index);
+    setStatusMessage('Prompt duplicated');
   };
 
   const handleCheckboxClick = (e: React.MouseEvent) => {
@@ -234,6 +239,16 @@ export const PromptListItem: React.FC<PromptListItemProps> = ({
                 handleEditClick();
               }}
               tooltip="Edit prompt"
+            />
+            <Button
+              icon={mdiContentDuplicate}
+              iconSize={0.6}
+              variant="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDuplicate();
+              }}
+              tooltip="Duplicate prompt"
             />
             <Button
               icon={mdiDelete}

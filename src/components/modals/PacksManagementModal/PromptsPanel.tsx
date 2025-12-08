@@ -10,7 +10,7 @@ import { Dropdown } from '@/components/inputs/Dropdown';
 import { PromptListItem } from './PromptListItem';
 import { usePromptStore } from '@/store/usePromptStore';
 import { usePacksManagementStore } from './usePacksManagementStore';
-import { mdiPackageVariant, mdiCheckboxMultipleMarked, mdiSelectAll, mdiSelectOff, mdiDelete, mdiSwapHorizontal } from '@mdi/js';
+import { mdiPackageVariant, mdiCheckboxMultipleMarked, mdiSelectAll, mdiSelectOff, mdiDelete, mdiSwapHorizontal, mdiPlus } from '@mdi/js';
 import type { PromptsPanelProps } from './types';
 
 export const PromptsPanel: React.FC<PromptsPanelProps> = ({
@@ -18,7 +18,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
   getThemeColors,
 }) => {
   const colors = getThemeColors();
-  const { packs, deletePromptsByIndices, movePromptToPack } = usePromptStore();
+  const { packs, deletePromptsByIndices, movePromptToPack, addPromptToPack } = usePromptStore();
   const {
     selectedPackName,
     isPackDragging,
@@ -36,12 +36,6 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
   const packName = selectedPackName || '';
   const prompts = packs[packName] || [];
 
-  // Filter out empty prompts
-  const nonEmptyPrompts = prompts.filter(prompt => prompt.text && prompt.text.trim() !== '');
-  const nonEmptyIndices = prompts
-    .map((p, i) => (p.text && p.text.trim() !== '' ? i : -1))
-    .filter(i => i !== -1);
-
   const allPackNames = Object.keys(packs).filter(p => p !== packName);
 
   const handleToggleSelectionMode = () => {
@@ -49,7 +43,8 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
   };
 
   const handleSelectAll = () => {
-    selectAllPrompts(nonEmptyIndices);
+    const allIndices = prompts.map((_, i) => i);
+    selectAllPrompts(allIndices);
   };
 
   const handleDeselectAll = () => {
@@ -89,6 +84,14 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
     setTargetPackForMove('');
   };
 
+  const handleAddPrompt = () => {
+    if (!packName) {
+      return;
+    }
+    addPromptToPack(packName, '');
+    setStatusMessage('New prompt added');
+  };
+
   return (
     <div
       className="flex flex-col transition-opacity duration-200"
@@ -108,19 +111,30 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
           className="text-sm font-semibold truncate"
           style={{ color: colors.TEXT_PRIMARY }}
         >
-          {packName} ({nonEmptyPrompts.length} prompt{nonEmptyPrompts.length !== 1 ? 's' : ''})
+          {packName} ({prompts.length} prompt{prompts.length !== 1 ? 's' : ''})
           {isSelectionMode && selectedPromptIndices.size > 0 && (
             <span style={{ color: colors.SUCCESS }}> - {selectedPromptIndices.size} selected</span>
           )}
         </h3>
-        <Button
-          icon={mdiCheckboxMultipleMarked}
-          iconSize={0.6}
-          variant="icon"
-          onClick={handleToggleSelectionMode}
-          tooltip={isSelectionMode ? 'Exit selection mode' : 'Enter selection mode'}
-          style={isSelectionMode ? { backgroundColor: `${colors.SUCCESS}40` } : undefined}
-        />
+        <div className="flex gap-1">
+          {!isSelectionMode && (
+            <Button
+              icon={mdiPlus}
+              iconSize={0.6}
+              variant="icon"
+              onClick={handleAddPrompt}
+              tooltip="Add new prompt"
+            />
+          )}
+          <Button
+            icon={mdiCheckboxMultipleMarked}
+            iconSize={0.6}
+            variant="icon"
+            onClick={handleToggleSelectionMode}
+            tooltip={isSelectionMode ? 'Exit selection mode' : 'Enter selection mode'}
+            style={isSelectionMode ? { backgroundColor: `${colors.SUCCESS}40` } : undefined}
+          />
+        </div>
       </div>
 
       {/* Selection Mode Controls */}
@@ -174,7 +188,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
 
       {/* Scrollable Prompts List */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar pl-2 pr-4 py-2">
-        {nonEmptyPrompts.length === 0 ? (
+        {prompts.length === 0 ? (
           <div
             className="flex flex-col items-center justify-center py-12"
             style={{ color: colors.TEXT_SECONDARY }}
@@ -183,7 +197,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
             <p className="mt-2 text-sm">No prompts in this pack</p>
           </div>
         ) : (
-          nonEmptyPrompts.map((prompt, index) => (
+          prompts.map((prompt, index) => (
             <PromptListItem
               key={index}
               prompt={prompt}
