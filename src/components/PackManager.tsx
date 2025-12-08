@@ -9,7 +9,7 @@ import { Button } from './inputs/Button';
 import { DraggableDropdown } from './inputs/DraggableDropdown';
 import { SearchModal } from './modals/SearchModal';
 import { PacksManagementModal } from './modals/PacksManagementModal/PacksManagementModal';
-import { mdiMagnify, mdiCog } from '@mdi/js';
+import { mdiMagnify, mdiPackageVariant } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 
 export const PackManager: React.FC = () => {
@@ -52,7 +52,7 @@ export const PackManager: React.FC = () => {
 
       <Button
         onClick={() => setShowPacksModal(true)}
-        icon={mdiCog}
+        icon={mdiPackageVariant}
         iconSize={0.7}
         variant="icon"
         tooltip="Manage packs and prompts"
