@@ -156,7 +156,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
       {/* Selection Mode Controls */}
       {isPackSelectionMode && (
         <div
-          className="px-3 py-2 border-b flex items-center gap-2"
+          className="px-3 pr-3 py-2 border-b flex items-center gap-2"
           style={{ borderColor: colors.BORDER, backgroundColor: `${colors.BACKGROUND_MEDIUM}80` }}
         >
           <Button

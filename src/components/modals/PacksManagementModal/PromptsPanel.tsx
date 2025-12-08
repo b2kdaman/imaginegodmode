@@ -153,7 +153,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
       {/* Selection Mode Controls */}
       {isSelectionMode && (
         <div
-          className="px-3 py-2 border-b flex items-center gap-2"
+          className="px-3 pr-3 py-2 border-b flex items-center gap-2"
           style={{ borderColor: colors.BORDER, backgroundColor: `${colors.BACKGROUND_MEDIUM}80` }}
         >
           <Button
