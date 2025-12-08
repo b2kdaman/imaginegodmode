@@ -434,11 +434,13 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
     if (!promptToMove) {return;}
 
-    // Don't allow moving if it's the only prompt in source pack
-    if (sourcePrompts.length <= 1) {return;}
-
     // Remove from source pack
     sourcePrompts.splice(promptIndex, 1);
+
+    // If source pack is now empty, add an empty prompt
+    const finalSourcePrompts = sourcePrompts.length === 0
+      ? [{ text: '', rating: 0 }]
+      : sourcePrompts;
 
     // Add to target pack
     const targetPrompts = [...packs[targetPack], promptToMove];
@@ -447,7 +449,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     set({
       packs: {
         ...packs,
-        [sourcePack]: sourcePrompts,
+        [sourcePack]: finalSourcePrompts,
         [targetPack]: targetPrompts,
       },
     });
