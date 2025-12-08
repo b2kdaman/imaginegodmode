@@ -214,11 +214,13 @@ export const PromptView: React.FC = () => {
           value={prefix}
           onChange={(e) => handlePrefixChange(e.target.value)}
           placeholder="Enter prefix text..."
-          className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none"
+          className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none backdrop-blur-xl"
           style={{
-            backgroundColor: colors.BACKGROUND_MEDIUM,
+            backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
             color: colors.TEXT_PRIMARY,
             border: `1px solid ${colors.BORDER}`,
+            WebkitBackdropFilter: 'blur(12px)',
+            backdropFilter: 'blur(12px)',
           }}
         />
       </div>
@@ -228,11 +230,13 @@ export const PromptView: React.FC = () => {
         value={currentPrompt?.text || ''}
         onChange={(e) => updatePromptText(e.target.value)}
         placeholder={t('prompt.placeholder')}
-        className="w-full h-32 px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar mt-3"
+        className="w-full h-32 px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar mt-3 backdrop-blur-xl"
         style={{
-          backgroundColor: colors.BACKGROUND_MEDIUM,
+          backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
           color: colors.TEXT_PRIMARY,
           border: `1px solid ${colors.BORDER}`,
+          WebkitBackdropFilter: 'blur(12px)',
+          backdropFilter: 'blur(12px)',
         }}
       />
 

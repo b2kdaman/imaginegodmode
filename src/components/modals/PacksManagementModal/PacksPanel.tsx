@@ -6,23 +6,25 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/inputs/Button';
 import { PackListItem } from './PackListItem';
+import { PacksManagementFooter } from './PacksManagementFooter';
+import { usePromptStore } from '@/store/usePromptStore';
 import { mdiPlus } from '@mdi/js';
 import type { PacksPanelProps } from './types';
 
 export const PacksPanel: React.FC<PacksPanelProps> = ({
-  packs,
-  packOrder,
-  selectedPackName,
-  currentPack,
-  onSelectPack,
   onAddPack,
   onRenamePack,
   onDeletePack,
   onDropPrompt,
-  onReorderPacks,
+  importMode,
+  onImportModeChange,
+  onImport,
+  onExport,
+  onCopyGrokPrompt,
   getThemeColors,
 }) => {
   const colors = getThemeColors();
+  const { packs, packOrder, reorderPacks } = usePromptStore();
   const packNames = packOrder || Object.keys(packs);
   const [isCreating, setIsCreating] = useState(false);
   const [newPackName, setNewPackName] = useState('');
@@ -36,9 +38,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
     const [removed] = newOrder.splice(dragIndex, 1);
     newOrder.splice(hoverIndex, 0, removed);
 
-    if (onReorderPacks) {
-      onReorderPacks(newOrder);
-    }
+    reorderPacks(newOrder);
   };
 
   const handleCreatePack = () => {
@@ -117,10 +117,6 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
             packName={packName}
             index={index}
             promptCount={packs[packName].length}
-            isSelected={packName === selectedPackName}
-            isCurrent={packName === currentPack}
-            isDraggable={true}
-            onSelect={onSelectPack}
             onRename={onRenamePack}
             onDelete={onDeletePack}
             onDropPrompt={(promptIndex, sourcePack) =>
@@ -130,6 +126,18 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
             getThemeColors={getThemeColors}
           />
         ))}
+      </div>
+
+      {/* Footer */}
+      <div className="pr-3">
+        <PacksManagementFooter
+          importMode={importMode}
+          onImportModeChange={onImportModeChange}
+          onImport={onImport}
+          onExport={onExport}
+          onCopyGrokPrompt={onCopyGrokPrompt}
+          getThemeColors={getThemeColors}
+        />
       </div>
     </div>
   );

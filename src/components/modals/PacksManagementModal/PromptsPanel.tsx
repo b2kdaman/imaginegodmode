@@ -6,26 +6,34 @@
 import React from 'react';
 import { Icon } from '@/components/common/Icon';
 import { PromptListItem } from './PromptListItem';
+import { usePromptStore } from '@/store/usePromptStore';
+import { usePacksManagementStore } from './usePacksManagementStore';
 import { mdiPackageVariant } from '@mdi/js';
 import type { PromptsPanelProps } from './types';
 
 export const PromptsPanel: React.FC<PromptsPanelProps> = ({
-  packName,
-  prompts,
-  onDragStart,
-  onDragEnd,
   onReorderPrompts,
   getThemeColors,
 }) => {
   const colors = getThemeColors();
+  const { packs } = usePromptStore();
+  const { selectedPackName, isPackDragging, setDraggedPromptIndex } = usePacksManagementStore();
+
+  const packName = selectedPackName || '';
+  const prompts = packs[packName] || [];
 
   // Filter out empty prompts
   const nonEmptyPrompts = prompts.filter(prompt => prompt.text && prompt.text.trim() !== '');
 
   return (
     <div
-      className="flex flex-col"
-      style={{ flex: '0 0 66.667%', minWidth: 0 }}
+      className="flex flex-col transition-opacity duration-200"
+      style={{
+        flex: '0 0 66.667%',
+        minWidth: 0,
+        opacity: isPackDragging ? 0.3 : 1,
+        pointerEvents: isPackDragging ? 'none' : 'auto',
+      }}
     >
       {/* Header */}
       <div
@@ -58,8 +66,8 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
               index={index}
               packName={packName}
               isDraggable={true}
-              onDragStart={onDragStart}
-              onDragEnd={onDragEnd}
+              onDragStart={setDraggedPromptIndex}
+              onDragEnd={() => setDraggedPromptIndex(null)}
               onPromptMove={onReorderPrompts}
               getThemeColors={getThemeColors}
             />

@@ -104,8 +104,8 @@ export const PromptListItem: React.FC<PromptListItemProps> = ({
 
         <div className="flex-1 min-w-0">
           <p
-            className="text-sm line-clamp-2"
-            style={{ color: colors.TEXT_PRIMARY }}
+            className="text-sm line-clamp-2 break-words"
+            style={{ color: colors.TEXT_PRIMARY, wordBreak: 'break-word', overflowWrap: 'break-word' }}
           >
             {prompt.text || (
               <em style={{ color: colors.TEXT_SECONDARY }}>Empty prompt</em>

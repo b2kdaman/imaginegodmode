@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Button } from '@/components/inputs/Button';
-import { mdiUpload, mdiDownload, mdiContentCopy } from '@mdi/js';
+import { mdiUpload, mdiContentCopy } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import type { PacksManagementFooterProps } from './types';
 
@@ -73,7 +73,7 @@ export const PacksManagementFooter: React.FC<PacksManagementFooterProps> = ({
 
         <Button
           onClick={onExport}
-          icon={mdiDownload}
+          icon={mdiUpload}
           className="flex-1"
           tooltip="Export selected packs to file"
         >

@@ -6,6 +6,8 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/inputs/Button';
 import { Icon } from '@/components/common/Icon';
+import { usePromptStore } from '@/store/usePromptStore';
+import { usePacksManagementStore } from './usePacksManagementStore';
 import { mdiPencil, mdiDelete, mdiDrag, mdiEmoticonSadOutline } from '@mdi/js';
 import type { PackListItemProps } from './types';
 
@@ -13,21 +15,22 @@ export const PackListItem: React.FC<PackListItemProps> = ({
   packName,
   index,
   promptCount,
-  isSelected,
-  isCurrent,
-  isDraggable,
-  onSelect,
   onRename,
   onDelete,
   onDropPrompt,
   onPackMove,
   getThemeColors,
 }) => {
+  const { currentPack } = usePromptStore();
+  const { selectedPackName, setSelectedPackName, setIsPackDragging } = usePacksManagementStore();
+  const isSelected = packName === selectedPackName;
+  const isCurrent = packName === currentPack;
+  const isDraggable = true;
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(packName);
   const [isPromptDragOver, setIsPromptDragOver] = useState(false);
   const [isPackDragOver, setIsPackDragOver] = useState(false);
-  const [isPackDragging, setIsPackDragging] = useState(false);
+  const [isLocalPackDragging, setIsLocalPackDragging] = useState(false);
   const colors = getThemeColors();
 
   // Pack reordering drag handlers
@@ -38,9 +41,23 @@ export const PackListItem: React.FC<PackListItemProps> = ({
     }
 
     console.log('[DnD] Starting pack drag:', { packName, index });
+    setIsLocalPackDragging(true);
     setIsPackDragging(true);
 
+    // Restrict to vertical-only dragging by setting effectAllowed to 'move'
     e.dataTransfer.effectAllowed = 'move';
+
+    // Create custom drag image to indicate vertical-only movement
+    const dragElement = e.currentTarget as HTMLElement;
+    const clone = dragElement.cloneNode(true) as HTMLElement;
+    clone.style.position = 'absolute';
+    clone.style.top = '-9999px';
+    clone.style.width = dragElement.offsetWidth + 'px';
+    clone.style.opacity = '0.8';
+    document.body.appendChild(clone);
+    e.dataTransfer.setDragImage(clone, 0, 0);
+    setTimeout(() => document.body.removeChild(clone), 0);
+
     e.dataTransfer.setData('application/json', JSON.stringify({
       type: 'pack',
       packIndex: index,
@@ -51,6 +68,7 @@ export const PackListItem: React.FC<PackListItemProps> = ({
 
   const handlePackDragEnd = () => {
     console.log('[DnD] Ending pack drag');
+    setIsLocalPackDragging(false);
     setIsPackDragging(false);
   };
 
@@ -145,10 +163,10 @@ export const PackListItem: React.FC<PackListItemProps> = ({
             ? colors.TEXT_SECONDARY
             : colors.BORDER
         }`,
-        opacity: isPackDragging ? 0.5 : 1,
-        cursor: isEditing ? 'text' : isDraggable ? 'grab' : 'pointer',
+        opacity: isLocalPackDragging ? 0.5 : 1,
+        cursor: isEditing ? 'text' : isDraggable ? 'ns-resize' : 'pointer',
       }}
-      onClick={() => !isEditing && onSelect(packName)}
+      onClick={() => !isEditing && setSelectedPackName(packName)}
     >
       {isEditing ? (
         <input

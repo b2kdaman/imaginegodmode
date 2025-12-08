@@ -5,12 +5,13 @@
 
 import React, { useState } from 'react';
 import { BaseModal } from '../BaseModal';
+import { Button } from '@/components/inputs/Button';
 import { PacksPanel } from './PacksPanel';
 import { PromptsPanel } from './PromptsPanel';
-import { PacksManagementFooter } from './PacksManagementFooter';
 import { PackSelectModal } from '../PackSelectModal';
 import { ImportPackModal } from '../ImportPackModal';
 import { usePromptStore } from '@/store/usePromptStore';
+import { usePacksManagementStore } from './usePacksManagementStore';
 import { exportAllPacks, exportPack } from '@/utils/storage';
 import type { PacksManagementModalProps } from './types';
 
@@ -19,21 +20,35 @@ export const PacksManagementModal: React.FC<PacksManagementModalProps> = ({
   onClose,
   getThemeColors,
 }) => {
-  const { packs, packOrder, currentPack, addPack, renamePack, deletePack, importPack, movePromptToPack, reorderPacks, reorderPrompts } = usePromptStore();
-  const [selectedPackName, setSelectedPackName] = useState(currentPack);
+  const { packs, currentPack, addPack, renamePack, deletePack, importPack, movePromptToPack, reorderPrompts } = usePromptStore();
+  const {
+    selectedPackName,
+    setSelectedPackName,
+    statusMessage,
+    setStatusMessage,
+    isNotificationVisible,
+    setIsNotificationVisible,
+    resetState,
+  } = usePacksManagementStore();
+
   const [importMode, setImportMode] = useState<'add' | 'replace'>('add');
-  const [statusMessage, setStatusMessage] = useState('');
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [_draggedPromptIndex, setDraggedPromptIndex] = useState<number | null>(null);
-  const [isNotificationVisible, setIsNotificationVisible] = useState(false);
+  const [packToDelete, setPackToDelete] = useState<string | null>(null);
 
   // Update selected pack when current pack changes
   React.useEffect(() => {
     if (isOpen && !selectedPackName) {
       setSelectedPackName(currentPack);
     }
-  }, [isOpen, currentPack, selectedPackName]);
+  }, [isOpen, currentPack, selectedPackName, setSelectedPackName]);
+
+  // Reset state when modal closes
+  React.useEffect(() => {
+    if (!isOpen) {
+      resetState();
+    }
+  }, [isOpen, resetState]);
 
   // Manage notification visibility and animations
   React.useEffect(() => {
@@ -58,7 +73,7 @@ export const PacksManagementModal: React.FC<PacksManagementModalProps> = ({
     } else {
       setIsNotificationVisible(false);
     }
-  }, [statusMessage]);
+  }, [statusMessage, setIsNotificationVisible, setStatusMessage]);
 
   const handleAddPack = (name: string) => {
     addPack(name);
@@ -81,15 +96,29 @@ export const PacksManagementModal: React.FC<PacksManagementModalProps> = ({
       return;
     }
 
-    deletePack(name);
+    // Show confirmation modal
+    setPackToDelete(name);
+  };
+
+  const confirmDeletePack = () => {
+    if (!packToDelete) {
+      return;
+    }
+
+    deletePack(packToDelete);
 
     // Switch to first available pack if deleted pack was selected
-    if (selectedPackName === name) {
-      const remainingPacks = Object.keys(packs).filter(p => p !== name);
+    if (selectedPackName === packToDelete) {
+      const remainingPacks = Object.keys(packs).filter(p => p !== packToDelete);
       setSelectedPackName(remainingPacks[0] || currentPack);
     }
 
-    setStatusMessage(`Pack "${name}" deleted`);
+    setStatusMessage(`Pack "${packToDelete}" deleted`);
+    setPackToDelete(null);
+  };
+
+  const cancelDeletePack = () => {
+    setPackToDelete(null);
   };
 
   const handleDropPrompt = (targetPack: string, promptIndex: number, sourcePack: string) => {
@@ -103,7 +132,7 @@ export const PacksManagementModal: React.FC<PacksManagementModalProps> = ({
   };
 
   const handlePromptReorder = (dragIndex: number, hoverIndex: number) => {
-    if (dragIndex === hoverIndex) {
+    if (dragIndex === hoverIndex || !selectedPackName) {
       return;
     }
 
@@ -206,8 +235,6 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
     }
   };
 
-  const selectedPrompts = packs[selectedPackName] || [];
-
   return (
     <>
       <BaseModal
@@ -221,16 +248,6 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
         maxHeight="900px"
         padding="p-4"
         overlayOpacity={0.7}
-        footer={
-          <PacksManagementFooter
-            importMode={importMode}
-            onImportModeChange={setImportMode}
-            onImport={() => setIsImportModalOpen(true)}
-            onExport={() => setIsExportModalOpen(true)}
-            onCopyGrokPrompt={handleCopyGrokPrompt}
-            getThemeColors={getThemeColors}
-          />
-        }
       >
         {/* Drop Notification */}
         {statusMessage && (
@@ -253,23 +270,18 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
 
         <div className="flex gap-4 flex-1 min-h-0 overflow-hidden">
           <PacksPanel
-            packs={packs}
-            packOrder={packOrder}
-            selectedPackName={selectedPackName}
-            currentPack={currentPack}
-            onSelectPack={setSelectedPackName}
             onAddPack={handleAddPack}
             onRenamePack={handleRenamePack}
             onDeletePack={handleDeletePack}
             onDropPrompt={handleDropPrompt}
-            onReorderPacks={reorderPacks}
+            importMode={importMode}
+            onImportModeChange={setImportMode}
+            onImport={() => setIsImportModalOpen(true)}
+            onExport={() => setIsExportModalOpen(true)}
+            onCopyGrokPrompt={handleCopyGrokPrompt}
             getThemeColors={getThemeColors}
           />
           <PromptsPanel
-            packName={selectedPackName}
-            prompts={selectedPrompts}
-            onDragStart={(index) => setDraggedPromptIndex(index)}
-            onDragEnd={() => setDraggedPromptIndex(null)}
             onReorderPrompts={handlePromptReorder}
             getThemeColors={getThemeColors}
           />
@@ -294,6 +306,44 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
         onImport={handleImport}
         getThemeColors={getThemeColors}
       />
+
+      {/* Delete Confirmation Modal */}
+      {packToDelete && (
+        <BaseModal
+          isOpen={true}
+          title="Confirm Delete"
+          onClose={cancelDeletePack}
+          getThemeColors={getThemeColors}
+          maxWidth="sm"
+        >
+          <div className="flex flex-col gap-4">
+            <p style={{ color: getThemeColors().TEXT_PRIMARY }}>
+              Are you sure you want to delete the pack <strong>&quot;{packToDelete}&quot;</strong>?
+              {packs[packToDelete]?.length > 0 && (
+                <span> This will delete {packs[packToDelete].length} prompt{packs[packToDelete].length !== 1 ? 's' : ''}.</span>
+              )}
+            </p>
+            <div className="flex gap-2 justify-end">
+              <Button
+                onClick={cancelDeletePack}
+                variant="default"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmDeletePack}
+                variant="default"
+                style={{
+                  backgroundColor: getThemeColors().DANGER,
+                  color: '#fff',
+                }}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </BaseModal>
+      )}
     </>
   );
 };

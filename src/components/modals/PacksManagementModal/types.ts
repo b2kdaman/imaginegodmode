@@ -3,7 +3,7 @@
  */
 
 import type { ThemeColors } from '@/utils/themeLoader';
-import type { PromptItem, Packs } from '@/types';
+import type { PromptItem } from '@/types';
 
 // Drag and Drop types
 export const ItemTypes = {
@@ -20,10 +20,6 @@ export interface PackListItemProps {
   packName: string;
   index?: number;
   promptCount: number;
-  isSelected: boolean;
-  isCurrent: boolean;
-  isDraggable?: boolean;
-  onSelect: (name: string) => void;
   onRename: (oldName: string, newName: string) => void;
   onDelete: (name: string) => void;
   onDropPrompt: (promptIndex: number, sourcePack: string) => void;
@@ -43,24 +39,19 @@ export interface PromptListItemProps {
 }
 
 export interface PacksPanelProps {
-  packs: Packs;
-  packOrder?: string[];
-  selectedPackName: string;
-  currentPack: string;
-  onSelectPack: (name: string) => void;
   onAddPack: (name: string) => void;
   onRenamePack: (oldName: string, newName: string) => void;
   onDeletePack: (name: string) => void;
   onDropPrompt: (packName: string, promptIndex: number, sourcePack: string) => void;
-  onReorderPacks?: (newOrder: string[]) => void;
+  importMode: 'add' | 'replace';
+  onImportModeChange: (mode: 'add' | 'replace') => void;
+  onImport: () => void;
+  onExport: () => void;
+  onCopyGrokPrompt: () => void;
   getThemeColors: () => ThemeColors;
 }
 
 export interface PromptsPanelProps {
-  packName: string;
-  prompts: PromptItem[];
-  onDragStart: (index: number) => void;
-  onDragEnd: () => void;
   onReorderPrompts?: (dragIndex: number, hoverIndex: number) => void;
   getThemeColors: () => ThemeColors;
 }
