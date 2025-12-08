@@ -10,17 +10,17 @@ import { PackManager } from '../PackManager';
 import { RatingSystem } from '../inputs/RatingSystem';
 import { Button } from '../inputs/Button';
 import { ConfirmModal } from '../modals/ConfirmModal';
-import { PacksManagementModal } from '../modals/PacksManagementModal/PacksManagementModal';
 import { UI_COLORS, SELECTORS } from '@/utils/constants';
 import {
   mdiChevronLeft,
   mdiChevronRight,
+  mdiPlus,
+  mdiMinus,
   mdiPlay,
   mdiArrowDown,
   mdiArrowUp,
   mdiContentCopy,
   mdiSkipNext,
-  mdiCog,
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -48,6 +48,8 @@ export const PromptView: React.FC = () => {
     updatePromptRating,
     nextPrompt,
     prevPrompt,
+    addPrompt,
+    removePrompt,
     loadPostState,
     savePostState,
   } = usePromptStore();
@@ -62,7 +64,6 @@ export const PromptView: React.FC = () => {
   const [prefix, setLocalPrefix] = useState<string>('');
   const [postId, setPostId] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showPacksModal, setShowPacksModal] = useState(false);
 
   // Load prefix and post state from storage when component mounts or URL changes
   const loadPostData = useCallback(async () => {
@@ -317,12 +318,22 @@ export const PromptView: React.FC = () => {
         {/* Action buttons row 2 */}
         <div className="flex gap-2">
           <Button
-            onClick={() => setShowPacksModal(true)}
-            icon={mdiCog}
+            onClick={addPrompt}
+            icon={mdiPlus}
             className="flex-1"
-            tooltip="Manage packs and prompts"
+            tooltip={t('prompt.addTooltip')}
           >
-            Manage
+            {t('common.add')}
+          </Button>
+
+          <Button
+            onClick={removePrompt}
+            icon={mdiMinus}
+            disabled={promptCount <= 1}
+            className="flex-1"
+            tooltip={t('prompt.removeTooltip')}
+          >
+            {t('common.remove')}
           </Button>
 
           <Button
@@ -361,12 +372,6 @@ export const PromptView: React.FC = () => {
         onConfirm={handleConfirmCopyFromPage}
         getThemeColors={getThemeColors}
         variant="warning"
-      />
-
-      <PacksManagementModal
-        isOpen={showPacksModal}
-        onClose={() => setShowPacksModal(false)}
-        getThemeColors={getThemeColors}
       />
     </div>
   );
