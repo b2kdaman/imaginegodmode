@@ -155,6 +155,7 @@ export const PromptView: React.FC = () => {
     updatePromptText(textarea.value);
     trackPromptEdited();
     trackPromptCopiedFromPage();
+    setShowConfirmModal(false);
   };
 
   const handlePlayClick = () => {
