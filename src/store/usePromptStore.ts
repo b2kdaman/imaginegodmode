@@ -681,6 +681,9 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
       // Save to storage
       await get().saveToStorage();
 
+      // Refresh store from storage to ensure consistency
+      await get().loadFromStorage();
+
       // Track import with prompt count
       if (result.packName) {
         const importedPrompts = result.packs[result.packName] || [];
