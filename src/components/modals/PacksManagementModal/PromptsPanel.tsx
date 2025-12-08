@@ -105,7 +105,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
       {/* Header */}
       <div
         className="pl-3 pr-4 border-b flex items-center justify-between gap-2"
-        style={{ borderColor: colors.BORDER, height: '44px' }}
+        style={{ borderColor: colors.BORDER, height: '50px' }}
       >
         <h3
           className="text-sm font-semibold truncate"

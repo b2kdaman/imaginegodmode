@@ -121,7 +121,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
       {/* Header */}
       <div
         className="px-3 border-b flex items-center justify-between gap-2"
-        style={{ borderColor: colors.BORDER, height: '44px' }}
+        style={{ borderColor: colors.BORDER, height: '50px' }}
       >
         <h3
           className="text-sm font-semibold"
