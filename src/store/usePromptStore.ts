@@ -463,6 +463,25 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
       return;
     }
 
+    // Don't allow deleting if it's the only prompt - replace with empty instead
+    if (prompts.length <= 1) {
+      const updates: any = {
+        packs: {
+          ...packs,
+          [packName]: [{ text: '', rating: 0 }],
+        },
+      };
+
+      if (packName === currentPack) {
+        updates.currentIndex = 0;
+      }
+
+      set(updates);
+      get().saveToStorage();
+      trackPromptDeleted();
+      return;
+    }
+
     const newPrompts = prompts.filter((_, i) => i !== index);
 
     // If deleting from current pack, reset to first prompt
@@ -494,11 +513,14 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     const indicesSet = new Set(indices);
     const newPrompts = prompts.filter((_, i) => !indicesSet.has(i));
 
+    // If deleting all prompts, keep one empty prompt
+    const finalPrompts = newPrompts.length === 0 ? [{ text: '', rating: 0 }] : newPrompts;
+
     // If deleting from current pack, reset to first prompt
     const updates: any = {
       packs: {
         ...packs,
-        [packName]: newPrompts,
+        [packName]: finalPrompts,
       },
     };
 
