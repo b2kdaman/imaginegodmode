@@ -12,6 +12,7 @@ const UNLIKED_POSTS_STORAGE_KEY = 'grok-unliked-posts';
 
 export interface StorageData {
   packs: Packs;
+  packOrder?: string[];
   currentPack: string;
   currentIndex: number;
 }

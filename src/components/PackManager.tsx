@@ -6,7 +6,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { usePromptStore } from '@/store/usePromptStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { Button } from './inputs/Button';
-import { Dropdown } from './inputs/Dropdown';
+import { DraggableDropdown } from './inputs/DraggableDropdown';
 import { ConfirmDeleteModal } from './modals/ConfirmDeleteModal';
 import { SearchModal } from './modals/SearchModal';
 import { mdiPlus, mdiClose, mdiCheck, mdiDelete, mdiMagnify } from '@mdi/js';
@@ -14,11 +14,12 @@ import { useTranslation } from '@/contexts/I18nContext';
 
 export const PackManager: React.FC = () => {
   const {
-    packs,
+    packOrder,
     currentPack,
     setCurrentPack,
     addPack,
     deletePack,
+    reorderPacks,
   } = usePromptStore();
   const { getThemeColors } = useSettingsStore();
   const { t } = useTranslation();
@@ -30,7 +31,7 @@ export const PackManager: React.FC = () => {
   const [showSearchModal, setShowSearchModal] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const packNames = Object.keys(packs);
+  const packNames = packOrder;
 
   useEffect(() => {
     if (isAdding && inputRef.current) {
@@ -53,26 +54,27 @@ export const PackManager: React.FC = () => {
 
   return (
     <div className="flex items-center gap-2 mb-3">
-      {!isAdding ? (
-        <>
-          <Button
-            onClick={() => setShowSearchModal(true)}
-            icon={mdiMagnify}
-            iconSize={0.7}
-            variant="icon"
-            tooltip={t('packManager.searchTooltip')}
-            className="flex-shrink-0"
-          />
+        {!isAdding ? (
+          <>
+            <Button
+              onClick={() => setShowSearchModal(true)}
+              icon={mdiMagnify}
+              iconSize={0.7}
+              variant="icon"
+              tooltip={t('packManager.searchTooltip')}
+              className="flex-shrink-0"
+            />
 
-          <Dropdown
-            value={currentPack}
-            onChange={(value) => setCurrentPack(value)}
-            options={packNames.map((name) => ({
-              value: name,
-              label: name,
-            }))}
-            className="flex-1 min-w-0"
-          />
+            <DraggableDropdown
+              value={currentPack}
+              onChange={(value) => setCurrentPack(value)}
+              options={packNames.map((name) => ({
+                value: name,
+                label: name,
+              }))}
+              onReorder={(newOrder) => reorderPacks(newOrder)}
+              className="flex-1 min-w-0"
+            />
 
           <Button
             onClick={() => setIsAdding(true)}

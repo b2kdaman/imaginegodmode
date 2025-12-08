@@ -19,6 +19,7 @@ import {
 interface PromptStore {
   // State
   packs: Packs;
+  packOrder: string[]; // Order of pack names
   currentPack: string;
   currentIndex: number;
   isLoading: boolean;
@@ -31,7 +32,10 @@ interface PromptStore {
   setCurrentPack: (pack: string) => void;
   addPack: (name: string) => void;
   deletePack: (name: string) => void;
+  renamePack: (oldName: string, newName: string) => void;
+  reorderPacks: (newOrder: string[]) => void;
   clearAllPacks: () => void;
+  movePromptToPack: (promptIndex: number, sourcePack: string, targetPack: string) => void;
 
   // Prompt actions
   setCurrentIndex: (index: number) => void;
@@ -41,6 +45,7 @@ interface PromptStore {
   updatePromptRating: (rating: number) => void;
   nextPrompt: () => void;
   prevPrompt: () => void;
+  reorderPrompts: (packName: string, dragIndex: number, hoverIndex: number) => void;
 
   // Computed
   getCurrentPrompt: () => PromptItem | null;
@@ -58,6 +63,7 @@ interface PromptStore {
 export const usePromptStore = create<PromptStore>((set, get) => ({
   // Initial state
   packs: { Default: [{ text: '', rating: 0 }] },
+  packOrder: ['Default'],
   currentPack: 'Default',
   currentIndex: 0,
   isLoading: false,
@@ -81,8 +87,19 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
         ? data.currentPack
         : packNames[0];
 
+      // Restore pack order or create default order
+      let packOrder = data.packOrder || packNames;
+      // Ensure all packs are in the order (add missing ones)
+      const missingPacks = packNames.filter(name => !packOrder.includes(name));
+      if (missingPacks.length > 0) {
+        packOrder = [...packOrder, ...missingPacks];
+      }
+      // Remove deleted packs from order
+      packOrder = packOrder.filter(name => packNames.includes(name));
+
       set({
         packs: data.packs,
+        packOrder,
         currentPack: validCurrentPack,
         currentIndex: data.currentIndex || 0,
         isLoading: false,
@@ -94,8 +111,8 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
   // Save to chrome storage
   saveToStorage: async () => {
-    const { packs, currentPack, currentIndex } = get();
-    await setStorage({ packs, currentPack, currentIndex });
+    const { packs, packOrder, currentPack, currentIndex } = get();
+    await setStorage({ packs, packOrder, currentPack, currentIndex });
   },
 
   // Pack actions
@@ -106,12 +123,13 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
   },
 
   addPack: (name) => {
-    const { packs } = get();
+    const { packs, packOrder } = get();
 
     // Safety check: ensure packs exists
     if (!packs) {
       set({
         packs: { [name]: [{ text: '', rating: 0 }] },
+        packOrder: [name],
         currentPack: name,
         currentIndex: 0,
       });
@@ -125,6 +143,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
           ...packs,
           [name]: [{ text: '', rating: 0 }],
         },
+        packOrder: [...packOrder, name],
         currentPack: name,
         currentIndex: 0,
       });
@@ -134,7 +153,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
   },
 
   deletePack: (name) => {
-    const { packs, currentPack } = get();
+    const { packs, packOrder, currentPack } = get();
 
     // Safety check: ensure packs exists
     if (!packs) {return;}
@@ -147,12 +166,16 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     const newPacks = { ...packs };
     delete newPacks[name];
 
+    // Remove from pack order
+    const newPackOrder = packOrder.filter(p => p !== name);
+
     // Switch to first pack if deleting current
     const newCurrentPack =
-      currentPack === name ? Object.keys(newPacks)[0] : currentPack;
+      currentPack === name ? newPackOrder[0] : currentPack;
 
     set({
       packs: newPacks,
+      packOrder: newPackOrder,
       currentPack: newCurrentPack,
       currentIndex: 0,
     });
@@ -160,10 +183,39 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     trackPackDeleted();
   },
 
+  renamePack: (oldName, newName) => {
+    const { packs, packOrder, currentPack } = get();
+
+    // Validation: old pack must exist, new name must not exist and not be empty
+    if (!packs[oldName] || packs[newName] || !newName.trim()) {
+      return;
+    }
+
+    const newPacks = { ...packs };
+    newPacks[newName] = newPacks[oldName];
+    delete newPacks[oldName];
+
+    // Update pack order with new name
+    const newPackOrder = packOrder.map(name => name === oldName ? newName : name);
+
+    set({
+      packs: newPacks,
+      packOrder: newPackOrder,
+      currentPack: currentPack === oldName ? newName : currentPack,
+    });
+    get().saveToStorage();
+  },
+
+  reorderPacks: (newOrder) => {
+    set({ packOrder: newOrder });
+    get().saveToStorage();
+  },
+
   clearAllPacks: () => {
     // Reset to default state with one empty pack
     set({
       packs: { Default: [{ text: '', rating: 0 }] },
+      packOrder: ['Default'],
       currentPack: 'Default',
       currentIndex: 0,
     });
@@ -280,6 +332,61 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
     const newIndex = currentIndex > 0 ? currentIndex - 1 : count - 1;
     set({ currentIndex: newIndex });
+    get().saveToStorage();
+  },
+
+  reorderPrompts: (packName, dragIndex, hoverIndex) => {
+    const { packs } = get();
+
+    if (dragIndex === hoverIndex || !packs[packName]) {
+      return;
+    }
+
+    const prompts = [...packs[packName]];
+    const [removed] = prompts.splice(dragIndex, 1);
+    prompts.splice(hoverIndex, 0, removed);
+
+    set({
+      packs: {
+        ...packs,
+        [packName]: prompts,
+      },
+    });
+    get().saveToStorage();
+  },
+
+  movePromptToPack: (promptIndex, sourcePack, targetPack) => {
+    const { packs } = get();
+
+    // Validation
+    if (!packs[sourcePack] || !packs[targetPack] || sourcePack === targetPack) {
+      return;
+    }
+
+    // Get the prompt to move
+    const sourcePrompts = [...packs[sourcePack]];
+    const promptToMove = sourcePrompts[promptIndex];
+
+    if (!promptToMove) {return;}
+
+    // Don't allow moving if it's the only prompt in source pack
+    if (sourcePrompts.length <= 1) {return;}
+
+    // Remove from source pack
+    sourcePrompts.splice(promptIndex, 1);
+
+    // Add to target pack
+    const targetPrompts = [...packs[targetPack], promptToMove];
+
+    // Update state
+    set({
+      packs: {
+        ...packs,
+        [sourcePack]: sourcePrompts,
+        [targetPack]: targetPrompts,
+      },
+    });
+
     get().saveToStorage();
   },
 

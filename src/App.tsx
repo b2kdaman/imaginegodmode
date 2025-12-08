@@ -69,7 +69,7 @@ export const App: React.FC = () => {
       <Tooltip
         id="app-tooltip"
         className="!text-xs !max-w-[20rem]"
-        style={{ zIndex: Z_INDEX.TOOLTIP }}
+        style={{ zIndex: Z_INDEX.MODAL_TOOLTIP }}
         place="top"
       />
     </I18nProvider>

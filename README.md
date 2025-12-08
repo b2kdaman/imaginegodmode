@@ -15,6 +15,16 @@ A Chrome extension for Grok media management built with React, TypeScript, and T
 - **Prompt Prefix**: Per-post prefix text that automatically prepends to prompts when making videos (stored separately for each post)
 - **Star Ratings**: Rate your prompts with 1-5 stars (Material Design Icons)
 - **Pack System**: Create custom packs to organize prompts with confirmation dialog for deletion and text truncation
+- **Packs Management Modal**: Comprehensive pack and prompt management interface
+  - **Split-Panel Design**: Left panel for packs (33%), right panel for prompts (67%)
+  - **Drag & Drop Reordering**: Reorder packs and prompts within the same pack with visual feedback
+  - **Pack Operations**: Create, rename, delete packs with inline editing
+  - **Empty Pack Indicators**: Sad icon for empty packs, count badges for populated packs
+  - **Prompt Filtering**: Automatically hides empty prompts from display
+  - **Drop Notifications**: Toast-style notifications at top with slide-in/fade-out animations
+  - **Visual Feedback**: Drag-over highlighting with theme-aware colors
+  - **Pack Transfer**: Drag prompts between packs to reorganize content
+  - **AI Pack Generation**: Copy Grok system prompt for generating themed prompt packs
 - **Global Search**: Type-ahead search across all packs with instant results
   - Search button with magnifying glass icon
   - Real-time search results with prompt preview
@@ -124,6 +134,7 @@ The extension features a modern, scalable modal architecture:
 
 ### Key Components
 - **GridSelectionModal**: Base component for Delete, Unlike, Upscale, and Archive modals
+- **PacksManagementModal**: Full-featured pack and prompt management with drag & drop
 - **useShiftSelection**: Custom hook providing shift-click multi-selection behavior
 - **ModalFooterButtons**: Three reusable footer patterns (Confirm, Action, BulkAction)
 - **WarningBanner**: Themed warning/info banners for modal alerts

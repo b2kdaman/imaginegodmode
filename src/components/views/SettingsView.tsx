@@ -6,30 +6,26 @@ import React, { useState } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { usePromptStore } from '@/store/usePromptStore';
 import { useUserStore } from '@/store/useUserStore';
-import { exportPack, exportAllPacks, clearUnlikedPosts } from '@/utils/storage';
+import { clearUnlikedPosts } from '@/utils/storage';
 import { fetchLikedPosts, unlikePost } from '@/api/grokApi';
 import { Button } from '../inputs/Button';
 import { Toggle } from '../inputs/Toggle';
 import { Dropdown } from '../inputs/Dropdown';
 import { Icon } from '../common/Icon';
-import { PackSelectModal } from '../modals/PackSelectModal';
-import { ImportPackModal } from '../modals/ImportPackModal';
 import { PurgeModal } from '../modals/PurgeModal';
+import { PacksManagementModal } from '../modals/PacksManagementModal';
 import {
-  mdiDownload,
-  mdiUpload,
-  mdiContentCopy,
   mdiPalette,
   mdiResize,
   mdiTranslate,
   mdiDownloadCircle,
   mdiDatabase,
-  mdiSwapHorizontal,
   mdiKeyboard,
   mdiEyeOff,
   mdiDeleteForever,
   mdiVolumeHigh,
-  mdiAlertCircleOutline
+  mdiAlertCircleOutline,
+  mdiPackageVariant
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -46,127 +42,15 @@ import {
 
 export const SettingsView: React.FC = () => {
   const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableSound, setConfirmCopyFrom, getThemeColors } = useSettingsStore();
-  const { importPack, currentPack, packs, clearAllPacks } = usePromptStore();
+  const { clearAllPacks } = usePromptStore();
   const { userId } = useUserStore();
   const { t, locale, setLocale } = useTranslation();
   const colors = getThemeColors();
 
-  const [importMode, setImportMode] = useState<'add' | 'replace'>('add');
-  const [statusMessage, setStatusMessage] = useState<string>('');
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isPurgeModalOpen, setIsPurgeModalOpen] = useState(false);
+  const [isPacksModalOpen, setIsPacksModalOpen] = useState(false);
   const [purgeClickCount, setPurgeClickCount] = useState(0);
   const [isPurgeButtonHovered, setIsPurgeButtonHovered] = useState(false);
-
-  const handleExportClick = () => {
-    setIsExportModalOpen(true);
-  };
-
-  const handleExportPack = (packNames: string[]) => {
-    if (packNames.length === 0) {
-      return;
-    }
-
-    if (packNames.length === 1) {
-      // Export single pack
-      const packName = packNames[0];
-      const prompts = packs[packName] || [];
-      exportPack(packName, prompts);
-      setStatusMessage(`Pack "${packName}" exported successfully!`);
-    } else {
-      // Export multiple packs
-      const selectedPacks = Object.fromEntries(
-        packNames.map(name => [name, packs[name] || []])
-      );
-      exportAllPacks(selectedPacks);
-      setStatusMessage(`${packNames.length} packs exported successfully!`);
-    }
-    setTimeout(() => setStatusMessage(''), 3000);
-    setIsExportModalOpen(false);
-  };
-
-  const handleCopyGrokPrompt = async () => {
-    const grokPrompt = `You are a SFW video prompt pack generator for a Chrome extension. Your task is to create a JSON file containing safe, creative, and professional video generation prompts organized in a pack.
-
-**OUTPUT FORMAT (STRICT):**
-\`\`\`json
-{
-  "version": "1.0",
-  "exportDate": "${new Date().toISOString()}",
-  "packName": "Pack Name Here",
-  "prompts": [
-    { "text": "Detailed SFW video generation prompt", "rating": 4 },
-    { "text": "Another creative SFW prompt", "rating": 5 }
-  ]
-}
-\`\`\`
-
-**FIELD REQUIREMENTS:**
-- \`version\`: Must be exactly "1.0"
-- \`exportDate\`: ISO 8601 timestamp (use current date/time)
-- \`packName\`: Creative pack name matching the theme
-- \`prompts\`: Array of 10-15 prompt objects
-- Each prompt object:
-  - \`text\`: Detailed, creative SFW video generation prompt (include camera angles, lighting, movement, style, mood, setting)
-  - \`rating\`: Integer 0-5 (0=unrated, 1-2=basic, 3=good, 4=great, 5=exceptional)
-
-**CONTENT GUIDELINES (IMPORTANT - SFW ONLY):**
-- ALL prompts must be Safe For Work (SFW)
-- NO adult content, violence, gore, or disturbing imagery
-- Focus on: nature, landscapes, cityscapes, abstract art, technology, food, architecture, animals, space, weather, emotions (positive), everyday life, sports, travel, culture
-- Keep content appropriate for all audiences
-- Emphasize beauty, creativity, and artistic expression
-
-**PROMPT QUALITY GUIDELINES:**
-- Be specific and descriptive (mention camera movements, lighting conditions, time of day, weather, mood)
-- Include cinematic details (focal length, framing, speed, effects)
-- Vary complexity and style across prompts
-- Mix different types (establishing shots, close-ups, actions, abstract, landscapes)
-- Distribute ratings realistically (not all 5s, show variety)
-
-**EXAMPLE SFW PACKS:**
-Cinematic Landscapes, Abstract Art, Nature & Wildlife, Sci-Fi Technology, Urban Architecture, Serene Underwater, Cosmic Space, Seasonal Weather, Food & Cuisine, Cultural Celebrations, Sports Action, Minimalist Design, Retro Aesthetic, Emotional Moments, Travel Destinations
-
-**RESPONSE RULE:**
-Return ONLY the valid JSON. No explanations, no markdown, no code blocks. Just the raw JSON object.
-
----
-
-What type of SFW video prompt pack would you like me to create? (Describe the theme, style, or mood you want)`;
-
-    try {
-      await navigator.clipboard.writeText(grokPrompt);
-      setStatusMessage('Grok prompt copied to clipboard!');
-      setTimeout(() => setStatusMessage(''), 3000);
-    } catch (_error) {
-      setStatusMessage('Failed to copy prompt');
-      setTimeout(() => setStatusMessage(''), 3000);
-    }
-  };
-
-  const handleImportClick = () => {
-    setIsImportModalOpen(true);
-  };
-
-  const handleImport = async (file: File) => {
-    const result = await importPack(file, importMode);
-
-    if (result.success) {
-      if (result.importedCount && result.importedCount > 1) {
-        // Multi-pack import
-        setStatusMessage(`${result.importedCount} packs imported successfully (${importMode} mode)!`);
-      } else if (result.packName) {
-        // Single pack import
-        setStatusMessage(`Pack "${result.packName}" imported successfully (${importMode} mode)!`);
-      } else {
-        setStatusMessage(`Import successful (${importMode} mode)!`);
-      }
-      setTimeout(() => setStatusMessage(''), 3000);
-    } else {
-      throw new Error(result.error || 'Unknown error');
-    }
-  };
 
   const handlePurgeClick = () => {
     const newCount = purgeClickCount + 1;
@@ -197,13 +81,8 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
           }
         }
       }
-
-      setStatusMessage('All data purged successfully!');
-      setTimeout(() => setStatusMessage(''), 3000);
     } catch (error) {
       console.error('Purge failed:', error);
-      setStatusMessage('Purge failed. Check console for details.');
-      setTimeout(() => setStatusMessage(''), 3000);
     }
   };
 
@@ -214,6 +93,181 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
         scrollbarGutter: 'stable',
       }}
     >
+      {/* Packs + Prompts Panel */}
+      <div
+        className="rounded-xl p-4 backdrop-blur-md border"
+        style={{
+          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
+          borderColor: `${colors.BORDER}50`,
+          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
+        }}
+      >
+        {/* Panel Header */}
+        <div
+          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
+          style={{
+            color: colors.TEXT_SECONDARY,
+            borderColor: `${colors.BORDER}40`,
+          }}
+        >
+          Packs + Prompts
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <Button
+            onClick={() => setIsPacksModalOpen(true)}
+            icon={mdiPackageVariant}
+            className="w-full"
+            tooltip="Manage packs: import/export, rename, organize prompts with drag & drop"
+          >
+            Open Packs Management
+          </Button>
+
+          {/* Remember Post State Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-id="app-tooltip"
+            data-tooltip-content="Remember which prompt pack was used for each post, automatically switching packs when navigating between posts"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="remember-post-state-toggle"
+            >
+              <Icon path={mdiDatabase} size={0.7} color={colors.TEXT_PRIMARY} />
+              {t('settings.rememberPostState')}
+            </label>
+            <Toggle
+              id="remember-post-state-toggle"
+              checked={rememberPostState}
+              onChange={(checked) => {
+                setRememberPostState(checked);
+                trackRememberPostStateToggled(checked);
+              }}
+            />
+          </div>
+
+          {/* Simple Shortcut Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-id="app-tooltip"
+            data-tooltip-content="Use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter to apply prompt"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="simple-shortcut-toggle"
+            >
+              <Icon path={mdiKeyboard} size={0.7} color={colors.TEXT_PRIMARY} />
+              {t('settings.simpleShortcut')}
+            </label>
+            <Toggle
+              id="simple-shortcut-toggle"
+              checked={simpleShortcut}
+              onChange={(checked) => {
+                setSimpleShortcut(checked);
+                trackSimpleShortcutToggled(checked);
+              }}
+            />
+          </div>
+
+          {/* Confirm Copy From Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-id="app-tooltip"
+            data-tooltip-content="Show confirmation dialog when copying from page would replace existing prompt text"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="confirm-copy-from-toggle"
+            >
+              <Icon path={mdiAlertCircleOutline} size={0.7} color={colors.TEXT_PRIMARY} />
+              Confirm Copy From
+            </label>
+            <Toggle
+              id="confirm-copy-from-toggle"
+              checked={confirmCopyFrom}
+              onChange={(checked) => {
+                setConfirmCopyFrom(checked);
+                trackConfirmCopyFromToggled(checked);
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Behavior Panel */}
+      <div
+        className="rounded-xl p-4 backdrop-blur-md border"
+        style={{
+          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
+          borderColor: `${colors.BORDER}50`,
+          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
+        }}
+      >
+        {/* Panel Header */}
+        <div
+          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
+          style={{
+            color: colors.TEXT_SECONDARY,
+            borderColor: `${colors.BORDER}40`,
+          }}
+        >
+          Behavior
+        </div>
+
+        <div className="flex flex-col gap-3">
+          {/* Auto Download Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-id="app-tooltip"
+            data-tooltip-content="Automatically download media files when video generation completes"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="auto-download-toggle"
+            >
+              <Icon path={mdiDownloadCircle} size={0.7} color={colors.TEXT_PRIMARY} />
+              {t('settings.autoDownload')}
+            </label>
+            <Toggle
+              id="auto-download-toggle"
+              checked={autoDownload}
+              onChange={(checked) => {
+                setAutoDownload(checked);
+                trackAutoDownloadToggled(checked);
+              }}
+            />
+          </div>
+
+          {/* Enable Sound Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-id="app-tooltip"
+            data-tooltip-content="Enable sound effects for UI interactions"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="enable-sound-toggle"
+            >
+              <Icon path={mdiVolumeHigh} size={0.7} color={colors.TEXT_PRIMARY} />
+              {t('settings.enableSound')}
+            </label>
+            <Toggle
+              id="enable-sound-toggle"
+              checked={enableSound}
+              onChange={(checked) => {
+                setEnableSound(checked);
+                trackSoundToggled(checked);
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Appearance Panel */}
       <div
         className="rounded-xl p-4 backdrop-blur-md border"
@@ -313,101 +367,6 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
               className="w-full"
             />
           </div>
-        </div>
-      </div>
-
-      {/* Behavior Panel */}
-      <div
-        className="rounded-xl p-4 backdrop-blur-md border"
-        style={{
-          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
-          borderColor: `${colors.BORDER}50`,
-          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
-        }}
-      >
-        {/* Panel Header */}
-        <div
-          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
-          style={{
-            color: colors.TEXT_SECONDARY,
-            borderColor: `${colors.BORDER}40`,
-          }}
-        >
-          Behavior
-        </div>
-
-        <div className="flex flex-col gap-3">
-          {/* Auto Download Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-id="app-tooltip"
-            data-tooltip-content="Automatically download media files when video generation completes"
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="auto-download-toggle"
-            >
-              <Icon path={mdiDownloadCircle} size={0.7} color={colors.TEXT_PRIMARY} />
-              {t('settings.autoDownload')}
-            </label>
-            <Toggle
-              id="auto-download-toggle"
-              checked={autoDownload}
-              onChange={(checked) => {
-                setAutoDownload(checked);
-                trackAutoDownloadToggled(checked);
-              }}
-            />
-          </div>
-
-          {/* Remember Post State Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-id="app-tooltip"
-            data-tooltip-content="Remember which prompt pack was used for each post, automatically switching packs when navigating between posts"
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="remember-post-state-toggle"
-            >
-              <Icon path={mdiDatabase} size={0.7} color={colors.TEXT_PRIMARY} />
-              {t('settings.rememberPostState')}
-            </label>
-            <Toggle
-              id="remember-post-state-toggle"
-              checked={rememberPostState}
-              onChange={(checked) => {
-                setRememberPostState(checked);
-                trackRememberPostStateToggled(checked);
-              }}
-            />
-          </div>
-
-          {/* Simple Shortcut Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-id="app-tooltip"
-            data-tooltip-content="Use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter to apply prompt"
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="simple-shortcut-toggle"
-            >
-              <Icon path={mdiKeyboard} size={0.7} color={colors.TEXT_PRIMARY} />
-              {t('settings.simpleShortcut')}
-            </label>
-            <Toggle
-              id="simple-shortcut-toggle"
-              checked={simpleShortcut}
-              onChange={(checked) => {
-                setSimpleShortcut(checked);
-                trackSimpleShortcutToggled(checked);
-              }}
-            />
-          </div>
 
           {/* Hide Unsave Setting */}
           <div
@@ -432,193 +391,21 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
               }}
             />
           </div>
-
-          {/* Enable Sound Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-id="app-tooltip"
-            data-tooltip-content="Enable sound effects for UI interactions"
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="enable-sound-toggle"
-            >
-              <Icon path={mdiVolumeHigh} size={0.7} color={colors.TEXT_PRIMARY} />
-              {t('settings.enableSound')}
-            </label>
-            <Toggle
-              id="enable-sound-toggle"
-              checked={enableSound}
-              onChange={(checked) => {
-                setEnableSound(checked);
-                trackSoundToggled(checked);
-              }}
-            />
-          </div>
-
-          {/* Confirm Copy From Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-id="app-tooltip"
-            data-tooltip-content="Show confirmation dialog when copying from page would replace existing prompt text"
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="confirm-copy-from-toggle"
-            >
-              <Icon path={mdiAlertCircleOutline} size={0.7} color={colors.TEXT_PRIMARY} />
-              Confirm Copy From
-            </label>
-            <Toggle
-              id="confirm-copy-from-toggle"
-              checked={confirmCopyFrom}
-              onChange={(checked) => {
-                setConfirmCopyFrom(checked);
-                trackConfirmCopyFromToggled(checked);
-              }}
-            />
-          </div>
         </div>
       </div>
-
-      {/* Data Management Panel */}
-      <div
-        className="rounded-xl p-4 backdrop-blur-md border"
-        style={{
-          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
-          borderColor: `${colors.BORDER}50`,
-          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
-        }}
-      >
-        {/* Panel Header */}
-        <div
-          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
-          style={{
-            color: colors.TEXT_SECONDARY,
-            borderColor: `${colors.BORDER}40`,
-          }}
-        >
-          Data Management
-        </div>
-
-        <div className="flex flex-col gap-3">
-          {/* Import Mode Selection */}
-          <div className="flex flex-col gap-2">
-            <label
-              className="text-xs flex items-center gap-1.5"
-              style={{ color: colors.TEXT_SECONDARY }}
-            >
-              <Icon path={mdiSwapHorizontal} size={0.6} color={colors.TEXT_SECONDARY} />
-              {t('settings.importMode')}
-            </label>
-            <div className="flex gap-2">
-              <label
-                className="flex items-center gap-2 cursor-pointer text-sm"
-                style={{ color: colors.TEXT_PRIMARY }}
-              >
-                <input
-                  type="radio"
-                  name="import-mode"
-                  value="add"
-                  checked={importMode === 'add'}
-                  onChange={(e) => setImportMode(e.target.value as 'add')}
-                  className="cursor-pointer"
-                  style={{ accentColor: colors.SUCCESS }}
-                />
-                {t('settings.importModeAdd')}
-              </label>
-              <label
-                className="flex items-center gap-2 cursor-pointer text-sm"
-                style={{ color: colors.TEXT_PRIMARY }}
-              >
-                <input
-                  type="radio"
-                  name="import-mode"
-                  value="replace"
-                  checked={importMode === 'replace'}
-                  onChange={(e) => setImportMode(e.target.value as 'replace')}
-                  className="cursor-pointer"
-                  style={{ accentColor: colors.SUCCESS }}
-                />
-                {t('settings.importModeReplace')}
-              </label>
-            </div>
-          </div>
-
-          {/* Export/Import Buttons */}
-          <div className="flex gap-2 items-center">
-            <Button
-              onClick={handleExportClick}
-              icon={mdiDownload}
-              className="flex-1"
-              tooltip={`Export pack to JSON
-For backup or sharing`}
-            >
-              {t('common.export')}
-            </Button>
-            <Button
-              onClick={handleCopyGrokPrompt}
-              variant="icon"
-              icon={mdiContentCopy}
-              tooltip={`Copy Grok system prompt
-Paste → describe pack theme
-Grok generates JSON (10-15 prompts)
-Includes: format, quality rules, ratings`}
-            />
-            <Button
-              onClick={handleImportClick}
-              icon={mdiUpload}
-              className="flex-1"
-              tooltip={`Import pack from JSON
-Mode: ${importMode}
-${importMode === 'add' ? 'Add: Creates new (fails if exists)' : 'Replace: Overwrites or creates new'}`}
-            >
-              {t('common.import')}
-            </Button>
-          </div>
-
-          {/* Status Message */}
-          {statusMessage && (
-            <div
-              className="text-xs text-center p-2 rounded-lg"
-              style={{
-                backgroundColor: colors.BACKGROUND_MEDIUM,
-                color: statusMessage.includes('failed') ? colors.TEXT_SECONDARY : colors.SUCCESS,
-                border: `1px solid ${colors.BORDER}`,
-              }}
-            >
-              {statusMessage}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Pack Select Modal */}
-      <PackSelectModal
-        isOpen={isExportModalOpen}
-        packs={Object.keys(packs)}
-        currentPack={currentPack}
-        onClose={() => setIsExportModalOpen(false)}
-        onSelectPack={handleExportPack}
-        getThemeColors={getThemeColors}
-      />
-
-      {/* Import Pack Modal */}
-      <ImportPackModal
-        isOpen={isImportModalOpen}
-        importMode={importMode}
-        onClose={() => setIsImportModalOpen(false)}
-        onImport={handleImport}
-        getThemeColors={getThemeColors}
-      />
 
       {/* Purge Modal */}
       <PurgeModal
         isOpen={isPurgeModalOpen}
         onClose={() => setIsPurgeModalOpen(false)}
         onConfirm={handlePurgeConfirm}
+        getThemeColors={getThemeColors}
+      />
+
+      {/* Packs Management Modal */}
+      <PacksManagementModal
+        isOpen={isPacksModalOpen}
+        onClose={() => setIsPacksModalOpen(false)}
         getThemeColors={getThemeColors}
       />
 
