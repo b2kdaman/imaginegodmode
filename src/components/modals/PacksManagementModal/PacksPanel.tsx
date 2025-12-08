@@ -101,6 +101,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
     const nextPack = remainingPacks.length > 0 ? remainingPacks[0] : 'Default';
     setSelectedPackName(nextPack);
 
+    deselectAllPacks();
     setStatusMessage(`${packsToDelete.length} pack${packsToDelete.length !== 1 ? 's' : ''} deleted`);
     setIsDeleteConfirmOpen(false);
   };

@@ -60,6 +60,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
 
     const indices = Array.from(selectedPromptIndices).sort((a, b) => b - a);
     deletePromptsByIndices(packName, indices);
+    deselectAllPrompts();
     setStatusMessage(`${indices.length} prompt${indices.length !== 1 ? 's' : ''} deleted`);
   };
 
