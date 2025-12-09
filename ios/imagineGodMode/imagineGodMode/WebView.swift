@@ -214,7 +214,7 @@ struct WebViewContainer: View {
     @State private var canGoForward = false
     @State private var webView: WKWebView?
 
-    let grokURL = URL(string: "https://grok.com")!
+    let grokURL = URL(string: "https://grok.com/imagine")!
 
     var body: some View {
         VStack(spacing: 0) {
