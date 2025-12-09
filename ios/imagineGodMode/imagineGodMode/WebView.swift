@@ -102,14 +102,9 @@ struct GrokWebView: PlatformViewRepresentable {
     // MARK: - Script Injection
 
     private func injectScripts(into userContentController: WKUserContentController) {
-        // 0. Inject test alert to verify JavaScript execution
-        let testScript = WKUserScript(
-            source: "alert('🔥 WebView JavaScript is working!'); console.log('Test script executed');",
-            injectionTime: .atDocumentEnd,
-            forMainFrameOnly: false
-        )
-        userContentController.addUserScript(testScript)
-        print("[WebView] Injected test script")
+        // Note: WKUserScript injection doesn't work due to CSP
+        // Scripts are now injected via evaluateJavaScript in didFinish navigation
+        // Keeping this method for potential future use
 
         // 1. Inject Chrome Storage Polyfill first
         if let polyfillScript = loadScript(named: "chromeStoragePolyfill") {
@@ -245,16 +240,8 @@ struct GrokWebView: PlatformViewRepresentable {
         }
 
         private func injectScriptsAfterLoad(_ webView: WKWebView) {
-            // Test if JavaScript execution works
-            webView.evaluateJavaScript("alert('🚀 JavaScript execution works!'); console.log('Test successful');") { result, error in
-                if let error = error {
-                    print("[WebView] JavaScript execution error: \(error)")
-                } else {
-                    print("[WebView] JavaScript execution successful!")
-                    // If test works, inject the actual scripts
-                    self.loadAndInjectScripts(webView)
-                }
-            }
+            // Inject scripts directly without test alert
+            self.loadAndInjectScripts(webView)
         }
 
         private func loadAndInjectScripts(_ webView: WKWebView) {
@@ -326,11 +313,9 @@ struct GrokWebView: PlatformViewRepresentable {
                     contentScriptElement.src = contentURL;
                     contentScriptElement.onload = function() {
                         console.log('[ImagineGodMode] Content script loaded successfully!');
-                        alert('✅ Extension loaded! Check for UI in bottom-right corner.');
                     };
                     contentScriptElement.onerror = function(e) {
                         console.error('[ImagineGodMode] Content script load error:', e);
-                        alert('❌ Content script failed to load');
                     };
                     document.head.appendChild(contentScriptElement);
                     console.log('[ImagineGodMode] Content script injected');

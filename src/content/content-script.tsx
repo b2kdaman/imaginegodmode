@@ -8,10 +8,6 @@ import { App } from '../App';
 import { VERSION } from '../utils/constants';
 import '../index.css';
 
-// DEBUG: Immediate alert to confirm script is loaded
-console.log('🔥 ImagineGodMode content-script.tsx loaded at top level!');
-alert('🔥 ImagineGodMode script file loaded!\nThis confirms the script is being executed.');
-
 // Wait for document to be ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
@@ -20,8 +16,6 @@ if (document.readyState === 'loading') {
 }
 
 function init() {
-  // DEBUG: Alert to confirm script loaded
-  alert(`🚀 ImagineGodMode v${VERSION} loaded!\nContent script is running.`);
 
   // Cool initialization tag
   console.log(
