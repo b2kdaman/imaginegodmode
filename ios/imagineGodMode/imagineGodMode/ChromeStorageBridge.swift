@@ -52,15 +52,21 @@ class ChromeStorageBridge: NSObject, WKScriptMessageHandler {
 
         if let keys = keys {
             // Get specific keys
+            print("[ChromeStorageBridge] Getting \(keys.count) specific key(s): \(keys)")
             for key in keys {
                 if let value = getData(forKey: key) {
                     result[key] = value
+                    print("[ChromeStorageBridge] Found key: \(key)")
+                } else {
+                    print("[ChromeStorageBridge] Key not found: \(key)")
                 }
             }
         } else {
             // Get all keys with our prefix
             let allKeys = userDefaults.dictionaryRepresentation().keys
-            for key in allKeys where key.hasPrefix(storagePrefix) {
+            let storageKeys = allKeys.filter { $0.hasPrefix(storagePrefix) }
+            print("[ChromeStorageBridge] Getting all keys, found \(storageKeys.count) storage keys")
+            for key in storageKeys {
                 let cleanKey = String(key.dropFirst(storagePrefix.count))
                 if let value = getData(forKey: cleanKey) {
                     result[cleanKey] = value
@@ -68,6 +74,7 @@ class ChromeStorageBridge: NSObject, WKScriptMessageHandler {
             }
         }
 
+        print("[ChromeStorageBridge] Returning \(result.count) key(s)")
         sendResponse(id: id, success: true, data: result)
     }
 
@@ -77,11 +84,14 @@ class ChromeStorageBridge: NSObject, WKScriptMessageHandler {
             return
         }
 
+        print("[ChromeStorageBridge] Setting \(data.count) key(s)")
         for (key, value) in data {
             setData(value, forKey: key)
+            print("[ChromeStorageBridge] Saved key: \(key)")
         }
 
         userDefaults.synchronize()
+        print("[ChromeStorageBridge] UserDefaults synchronized")
         sendResponse(id: id, success: true)
     }
 
