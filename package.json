@@ -19,7 +19,12 @@
     "lint:eslint:fix": "eslint . --ext .ts,.tsx --fix",
     "lint:types": "tsc --noEmit --strict",
     "generate-icons": "node scripts/generate-icons.js",
-    "process-bg": "node scripts/process-background.js"
+    "process-bg": "node scripts/process-background.js",
+    "ios:build": "./scripts/build-ios.sh",
+    "ios:open": "open ios/imagineGodMode/imagineGodMode.xcodeproj",
+    "ios:deploy": "npm run ios:build && npm run ios:open",
+    "ios:simulator": "xcodebuild -project ios/imagineGodMode/imagineGodMode.xcodeproj -scheme imagineGodMode -destination 'platform=iOS Simulator,name=iPhone 15' build",
+    "ios:clean": "xcodebuild -project ios/imagineGodMode/imagineGodMode.xcodeproj -scheme imagineGodMode clean"
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",

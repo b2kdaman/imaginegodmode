@@ -678,6 +678,15 @@ npm run process-bg      # Process background images with theme-specific color ti
 
 ### iOS Commands
 ```bash
+npm run ios:build       # Build extension assets and copy to iOS app
+npm run ios:open        # Open Xcode project
+npm run ios:deploy      # Build + open Xcode (recommended workflow)
+npm run ios:simulator   # Build and run in iPhone 15 simulator
+npm run ios:clean       # Clean Xcode build artifacts
+```
+
+Or use the shell script directly:
+```bash
 ./scripts/build-ios.sh  # Build extension assets and copy to iOS app
 ```
 

@@ -22,6 +22,11 @@ iOS wrapper app for ImagineGodMode extension that loads grok.com in a WKWebView 
 From the project root, run:
 
 ```bash
+npm run ios:build
+```
+
+Or use the shell script directly:
+```bash
 ./scripts/build-ios.sh
 ```
 
@@ -40,7 +45,17 @@ This will:
 ### 2. Open in Xcode
 
 ```bash
+npm run ios:open
+```
+
+Or manually:
+```bash
 open ios/imagineGodMode/imagineGodMode.xcodeproj
+```
+
+**Quick deploy** (build + open):
+```bash
+npm run ios:deploy
 ```
 
 ### 3. Add Extension Files to Project
@@ -256,12 +271,19 @@ Flow:
 Whenever you modify the extension code (src/), rebuild for iOS:
 
 ```bash
-./scripts/build-ios.sh
+npm run ios:build
 ```
 
 Then in Xcode:
-1. Clean build folder (⌘+Shift+K)
+1. Clean build folder (⌘+Shift+K) or run `npm run ios:clean`
 2. Build and run (⌘+R)
+
+**Testing in Simulator:**
+```bash
+npm run ios:simulator
+```
+
+This will build and run the app in iPhone 15 simulator automatically.
 
 ## Development Tips
 
