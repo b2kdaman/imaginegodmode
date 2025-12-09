@@ -102,6 +102,15 @@ struct GrokWebView: PlatformViewRepresentable {
     // MARK: - Script Injection
 
     private func injectScripts(into userContentController: WKUserContentController) {
+        // 0. Inject test alert to verify JavaScript execution
+        let testScript = WKUserScript(
+            source: "alert('🔥 WebView JavaScript is working!'); console.log('Test script executed');",
+            injectionTime: .atDocumentEnd,
+            forMainFrameOnly: false
+        )
+        userContentController.addUserScript(testScript)
+        print("[WebView] Injected test script")
+
         // 1. Inject Chrome Storage Polyfill first
         if let polyfillScript = loadScript(named: "chromeStoragePolyfill") {
             let script = WKUserScript(
