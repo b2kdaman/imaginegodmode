@@ -47,6 +47,10 @@ struct GrokWebView: PlatformViewRepresentable {
     private func makeWebView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
 
+        // Disable autoplay for videos
+        config.allowsInlineMediaPlayback = true
+        config.mediaTypesRequiringUserActionForPlayback = .all
+
         // Configure user content controller
         let userContentController = WKUserContentController()
 
