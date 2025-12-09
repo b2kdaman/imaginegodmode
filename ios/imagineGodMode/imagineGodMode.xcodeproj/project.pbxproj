@@ -29,9 +29,26 @@
 		A34C16042EE8538B0067260F /* imagineGodModeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = imagineGodModeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A34C16422EE8749C0067260F /* Exceptions for "imagineGodMode" folder in "imagineGodModeUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				extension/chromeStoragePolyfill.js,
+				"extension/content-script.css",
+				"extension/content-script.js",
+				extension/helpers.js,
+				extension/themes.json,
+			);
+			target = A34C16032EE8538B0067260F /* imagineGodModeUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A34C15ED2EE8538A0067260F /* imagineGodMode */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A34C16422EE8749C0067260F /* Exceptions for "imagineGodMode" folder in "imagineGodModeUITests" target */,
+			);
 			path = imagineGodMode;
 			sourceTree = "<group>";
 		};
@@ -170,6 +187,9 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
+				KnownAssetTags = (
+					New,
+				);
 				LastSwiftUpdateCheck = 2610;
 				LastUpgradeCheck = 2610;
 				TargetAttributes = {
@@ -302,7 +322,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
+				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -363,7 +383,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
+				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -581,7 +601,7 @@
 				A34C160D2EE8538B0067260F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		A34C160E2EE8538B0067260F /* Build configuration list for PBXNativeTarget "imagineGodMode" */ = {
 			isa = XCConfigurationList;
@@ -590,7 +610,7 @@
 				A34C16102EE8538B0067260F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		A34C16112EE8538B0067260F /* Build configuration list for PBXNativeTarget "imagineGodModeTests" */ = {
 			isa = XCConfigurationList;
@@ -599,7 +619,7 @@
 				A34C16132EE8538B0067260F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		A34C16142EE8538B0067260F /* Build configuration list for PBXNativeTarget "imagineGodModeUITests" */ = {
 			isa = XCConfigurationList;
@@ -608,7 +628,7 @@
 				A34C16162EE8538B0067260F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

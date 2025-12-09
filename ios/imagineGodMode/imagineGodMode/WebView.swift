@@ -242,7 +242,8 @@ struct WebViewContainer: View {
                 canGoBack: $canGoBack,
                 canGoForward: $canGoForward
             )
-            .edgesIgnoringSafeArea(.all)
+            .padding(.top, 50)
+            .edgesIgnoringSafeArea(.bottom)
 
             // Toolbar
             HStack(spacing: 20) {
