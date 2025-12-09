@@ -290,7 +290,6 @@ struct GrokWebView: PlatformViewRepresentable {
                         -webkit-appearance: none;
                         appearance: none;
                         outline: none !important;
-                        border: none;
                     }
                     *:focus {
                         outline: none !important;
@@ -303,6 +302,18 @@ struct GrokWebView: PlatformViewRepresentable {
                     div, span, button, input, textarea, select {
                         outline: none !important;
                         -webkit-tap-highlight-color: transparent !important;
+                    }
+                    /* Remove white borders from containers in iOS */
+                    #imaginegodmode-root * {
+                        border-color: transparent !important;
+                    }
+                    /* Only keep intentional borders (shadows, focus states) */
+                    #imaginegodmode-root .border,
+                    #imaginegodmode-root .border-t,
+                    #imaginegodmode-root .border-b,
+                    #imaginegodmode-root .border-l,
+                    #imaginegodmode-root .border-r {
+                        border-color: transparent !important;
                     }
                 `;
                 document.head.appendChild(wkWebViewFixes);
