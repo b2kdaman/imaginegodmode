@@ -1,6 +1,9 @@
-# ImagineGodMode Chrome Extension
+# ImagineGodMode
 
-A Chrome extension for Grok media management built with React, TypeScript, and Tailwind CSS.
+A multi-platform application for Grok media management built with React, TypeScript, and Tailwind CSS.
+
+- **Chrome Extension**: Full-featured extension for Chrome/Edge browsers with all features
+- **iOS App**: Native iOS wrapper using WKWebView with extension functionality
 
 ## Features
 
@@ -162,7 +165,7 @@ The extension features a modern, scalable modal architecture:
 
 ## Installation
 
-### Development Mode
+### Chrome Extension (Development Mode)
 
 1. **Install dependencies**:
    ```bash
@@ -185,6 +188,26 @@ The extension features a modern, scalable modal architecture:
    npm run dev
    ```
    This will watch for changes and rebuild automatically.
+
+### iOS App
+
+For iOS app setup instructions, see [ios/README.md](ios/README.md).
+
+**Quick start**:
+```bash
+# Build extension assets for iOS
+./scripts/build-ios.sh
+
+# Open in Xcode
+open ios/imagineGodMode/imagineGodMode.xcodeproj
+```
+
+**Features**:
+- Full extension functionality in native iOS app
+- WKWebView-based wrapper loading grok.com
+- Chrome Storage bridge using UserDefaults
+- Photo library download support
+- Back/forward navigation and refresh controls
 
 ### Usage
 
@@ -303,8 +326,21 @@ grkgoondl/
 │   ├── utils/            # Utility functions and helpers
 │   ├── App.tsx           # Main app component
 │   └── index.css         # Global styles (Tailwind)
+├── ios/                  # iOS app implementation
+│   ├── README.md         # iOS-specific documentation
+│   ├── XCODE_SETUP.md    # Xcode setup instructions
+│   └── imagineGodMode/   # Xcode project
+│       └── imagineGodMode/
+│           ├── WebView.swift              # WKWebView container
+│           ├── ChromeStorageBridge.swift  # Chrome API bridge
+│           ├── DownloadManager.swift      # Photo library integration
+│           ├── StorageManager.swift       # App lifecycle handling
+│           ├── ContentView.swift          # Main view
+│           ├── imagineGodModeApp.swift   # App entry point
+│           └── extension/                 # Built extension assets
 ├── public/               # Static assets (icons, themes.json)
 ├── scripts/              # Build scripts
+│   └── build-ios.sh      # iOS build script
 ├── dist/                 # Build output (load this in Chrome)
 ├── archive/              # Archived Tampermonkey userscript
 ├── manifest.json         # Extension manifest
@@ -628,6 +664,7 @@ See `public/THEMES_README.md` for detailed theme customization guide.
 
 ## Commands
 
+### Extension Commands
 ```bash
 npm install             # Install dependencies
 npm run build           # Build extension for production
@@ -637,6 +674,11 @@ npm run dev             # Development mode with hot reload
 npm run type-check      # TypeScript type checking
 npm run generate-icons  # Regenerate extension icons
 npm run process-bg      # Process background images with theme-specific color tints
+```
+
+### iOS Commands
+```bash
+./scripts/build-ios.sh  # Build extension assets and copy to iOS app
 ```
 
 ## Future Enhancements
