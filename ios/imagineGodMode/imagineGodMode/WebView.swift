@@ -277,7 +277,38 @@ struct GrokWebView: PlatformViewRepresentable {
                 document.head.appendChild(polyfillScript);
                 console.log('[ImagineGodMode] Polyfill injected');
 
-                // Inject CSS
+                // Inject CSS fixes for WKWebView first
+                var wkWebViewFixes = document.createElement('style');
+                wkWebViewFixes.type = 'text/css';
+                wkWebViewFixes.innerHTML = `
+                    /* WKWebView CSS fixes */
+                    * {
+                        -webkit-tap-highlight-color: transparent;
+                        -webkit-touch-callout: none;
+                    }
+                    button, input, select, textarea {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        outline: none !important;
+                        border: none;
+                    }
+                    *:focus {
+                        outline: none !important;
+                    }
+                    /* Remove any default webkit outlines */
+                    *::-webkit-input-placeholder {
+                        outline: none !important;
+                    }
+                    /* Fix for group components outline */
+                    div, span, button, input, textarea, select {
+                        outline: none !important;
+                        -webkit-tap-highlight-color: transparent !important;
+                    }
+                `;
+                document.head.appendChild(wkWebViewFixes);
+                console.log('[ImagineGodMode] WKWebView CSS fixes injected');
+
+                // Inject main CSS
                 var cssCode = decodeBase64('\(cssBase64)');
                 var style = document.createElement('style');
                 style.type = 'text/css';
