@@ -15,6 +15,7 @@ import { useShiftSelection } from '@/hooks/useShiftSelection';
 import { trackBulkSelectAll, trackBulkDeselectAll, trackBulkOperationConfirmed } from '@/utils/analytics';
 import { mdiAlertCircle } from '@mdi/js';
 import type { GridSelectionModalProps, GridItem } from '../types/modal.types';
+import { useTranslation } from '@/contexts/I18nContext';
 
 /**
  * Grid selection modal base component
@@ -49,6 +50,7 @@ export function GridSelectionModal<T extends GridItem>({
   onImageClick,
 }: GridSelectionModalProps<T>) {
   const colors = getThemeColors();
+  const { t } = useTranslation();
   const {
     selectedIds,
     toggleSelection,
@@ -148,7 +150,7 @@ export function GridSelectionModal<T extends GridItem>({
           <ProgressBar
             processedCount={processedCount}
             totalCount={totalCount}
-            label="Processing"
+            label={t('common.processing')}
             backgroundColor={colors.BACKGROUND_MEDIUM}
             progressColor={colors.DANGER}
             textColor={colors.TEXT_SECONDARY}

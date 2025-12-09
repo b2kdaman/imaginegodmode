@@ -20,7 +20,12 @@
     "upscale": "Upscale",
     "paste": "Paste",
     "current": "Current",
-    "version": "Version"
+    "version": "Version",
+    "confirm": "Confirm",
+    "close": "Close",
+    "processing": "Processing",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All"
   },
   "panel": {
     "collapseTooltip": "Collapse panel",
@@ -144,6 +149,34 @@
       "title": "Delete Pack",
       "message": "Are you sure you want to delete \"{{packName}}\"?"
     },
+    "confirmDeletion": {
+      "title": "Confirm Deletion",
+      "message": "Are you sure you want to permanently delete {{count}} post{{plural}}? This action cannot be undone."
+    },
+    "delete": {
+      "title": "Delete Posts ({{total}} total)",
+      "actionText": "Delete",
+      "warningMessage": "Warning: Deleting posts is permanent and cannot be undone!"
+    },
+    "unlike": {
+      "title": "Select Posts to Unlike ({{selected}}/{{total}})",
+      "actionText": "Unlike {{count}} Post{{plural}}"
+    },
+    "upscale": {
+      "title": "Select Posts to Upscale ({{selected}}/{{total}})",
+      "actionText": "Upscale {{count}} Post{{plural}}"
+    },
+    "like": {
+      "title": "Select Posts to Like ({{selected}}/{{total}})",
+      "actionText": "Like {{count}} Post{{plural}}"
+    },
+    "unlikedArchive": {
+      "title": "Unliked Posts Archive ({{total}} total)",
+      "actionText": "Re-like {{count}} Post{{plural}}",
+      "selectPrompt": "Select posts to re-like",
+      "noPostsMessage": "No unliked posts in archive",
+      "relikingPosts": "Re-liking posts"
+    },
     "importPack": {
       "title": "Import Pack",
       "selectFile": "Select File",
@@ -151,7 +184,8 @@
       "invalidJson": "Invalid JSON",
       "importing": "Importing...",
       "success": "Imported successfully",
-      "error": "Import failed"
+      "error": "Import failed",
+      "pasteJsonPlaceholder": "Paste JSON here or click buttons above..."
     },
     "selectPack": {
       "title": "Select Packs to Export",

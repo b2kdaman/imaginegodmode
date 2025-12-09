@@ -12,6 +12,7 @@ import { Icon } from '../common/Icon';
 import { LikedPost, ThemeColors } from '@/types';
 import { GridSelectionModal } from './shared/GridSelectionModal';
 import { ConfirmModal } from './ConfirmModal';
+import { useTranslation } from '@/contexts/I18nContext';
 
 interface DeleteModalProps {
   isOpen: boolean;
@@ -35,6 +36,7 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
   totalCount = 0,
 }) => {
   const colors = getThemeColors();
+  const { t } = useTranslation();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
 
@@ -62,16 +64,16 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
       <GridSelectionModal
         isOpen={isOpen}
         posts={safePosts}
-        title={`Delete Posts (${safePosts.length} total)`}
+        title={t('modals.delete.title', { total: safePosts.length })}
         onClose={onClose}
         onConfirm={handleDeleteClick}
         getThemeColors={getThemeColors}
         isProcessing={isProcessing}
         processedCount={processedCount}
         totalCount={totalCount}
-        actionText="Delete"
+        actionText={t('modals.delete.actionText')}
         actionVariant="danger"
-        warningMessage="Warning: Deleting posts is permanent and cannot be undone!"
+        warningMessage={t('modals.delete.warningMessage')}
         getBorderColor={(isSelected) => (isSelected ? colors.DANGER : colors.BORDER)}
         renderOverlay={(_post, isSelected) => (
           <>
@@ -97,10 +99,13 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
       {/* Confirmation Dialog */}
       <ConfirmModal
         isOpen={showConfirmDialog}
-        title="Confirm Deletion"
-        message={`Are you sure you want to permanently delete ${selectedPostIds.length} post${selectedPostIds.length !== 1 ? 's' : ''}? This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t('modals.confirmDeletion.title')}
+        message={t('modals.confirmDeletion.message', {
+          count: selectedPostIds.length,
+          plural: selectedPostIds.length !== 1 ? 's' : ''
+        })}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
         variant="danger"
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}

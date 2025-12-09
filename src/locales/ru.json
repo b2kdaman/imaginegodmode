@@ -20,7 +20,12 @@
     "upscale": "Улучшить",
     "paste": "Вставить",
     "current": "Текущий",
-    "version": "Версия"
+    "version": "Версия",
+    "confirm": "Подтвердить",
+    "close": "Закрыть",
+    "processing": "Обработка",
+    "selectAll": "Выбрать Все",
+    "deselectAll": "Снять Выбор"
   },
   "panel": {
     "collapseTooltip": "Свернуть панель",
@@ -144,6 +149,34 @@
       "title": "Удалить пак",
       "message": "Вы уверены, что хотите удалить \"{{packName}}\"?"
     },
+    "confirmDeletion": {
+      "title": "Подтвердить Удаление",
+      "message": "Вы уверены, что хотите навсегда удалить {{count}} пост{{plural}}? Это действие нельзя отменить."
+    },
+    "delete": {
+      "title": "Удалить Посты (всего {{total}})",
+      "actionText": "Удалить",
+      "warningMessage": "Внимание: Удаление постов необратимо!"
+    },
+    "unlike": {
+      "title": "Выбрать Посты для Отмены Лайка ({{selected}}/{{total}})",
+      "actionText": "Убрать Лайк с {{count}} Пост{{plural}}"
+    },
+    "upscale": {
+      "title": "Выбрать Посты для Улучшения ({{selected}}/{{total}})",
+      "actionText": "Улучшить {{count}} Пост{{plural}}"
+    },
+    "like": {
+      "title": "Выбрать Посты для Лайка ({{selected}}/{{total}})",
+      "actionText": "Лайк {{count}} Пост{{plural}}"
+    },
+    "unlikedArchive": {
+      "title": "Архив Постов без Лайка (всего {{total}})",
+      "actionText": "Поставить Лайк {{count}} Пост{{plural}}",
+      "selectPrompt": "Выбрать посты для лайка",
+      "noPostsMessage": "В архиве нет постов без лайка",
+      "relikingPosts": "Ставим лайки на посты"
+    },
     "importPack": {
       "title": "Импорт пака",
       "selectFile": "Выбрать файл",
@@ -151,7 +184,8 @@
       "invalidJson": "Невалидный JSON",
       "importing": "Импорт...",
       "success": "Успешно импортировано",
-      "error": "Ошибка импорта"
+      "error": "Ошибка импорта",
+      "pasteJsonPlaceholder": "Вставьте JSON здесь или нажмите кнопки выше..."
     },
     "selectPack": {
       "title": "Выбрать паки для экспорта",

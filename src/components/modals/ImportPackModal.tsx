@@ -278,7 +278,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
             onClick={() => fileInputRef.current?.click()}
             icon={mdiUpload}
             className="flex-1"
-            tooltip="Select JSON file"
+            tooltip="Select JSON or PAK file"
           >
             {t('modals.importPack.selectFile')}
           </Button>
@@ -299,7 +299,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
             ref={textareaRef}
             value={jsonInput}
             onChange={(e) => handleTextChange(e.target.value)}
-            placeholder="Paste JSON here or click buttons above..."
+            placeholder={t('modals.importPack.pasteJsonPlaceholder')}
             className="w-full h-32 px-3 py-2 rounded-lg text-xs font-mono resize-none"
             style={{
               backgroundColor: colors.BACKGROUND_MEDIUM,

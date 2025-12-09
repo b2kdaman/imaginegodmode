@@ -14,6 +14,7 @@ import { ProgressBar } from './shared/ProgressBar';
 import { SelectionControls } from './shared/SelectionControls';
 import { PostGrid, PostGridItem } from './shared/PostGrid';
 import { useShiftSelection } from '@/hooks/useShiftSelection';
+import { useTranslation } from '@/contexts/I18nContext';
 
 interface UnlikedArchiveModalProps {
   isOpen: boolean;
@@ -39,6 +40,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
   totalCount = 0,
 }) => {
   const colors = getThemeColors();
+  const { t } = useTranslation();
   const [importError, setImportError] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -181,10 +183,13 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
     videoCount: post.childPostCount,
   }));
 
-  const title = `Unliked Posts Archive (${posts.length} total)`;
+  const title = t('modals.unlikedArchive.title', { total: posts.length });
   const relikeButtonText = selectedIds.size > 0
-    ? `Re-like ${selectedIds.size} Post${selectedIds.size !== 1 ? 's' : ''}`
-    : 'Select posts to re-like';
+    ? t('modals.unlikedArchive.actionText', {
+        count: selectedIds.size,
+        plural: selectedIds.size !== 1 ? 's' : ''
+      })
+    : t('modals.unlikedArchive.selectPrompt');
 
   return (
     <BaseModal
@@ -209,7 +214,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
               disabled={isProcessing || posts.length === 0}
               icon={mdiDownload}
             >
-              Export
+              {t('common.export')}
             </Button>
             {onImport && (
               <Button
@@ -218,7 +223,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
                 disabled={isProcessing}
                 icon={mdiUpload}
               >
-                Import
+                {t('common.import')}
               </Button>
             )}
           </div>
@@ -230,7 +235,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
               icon={isProcessing ? mdiLoading : undefined}
               iconClassName={isProcessing ? "animate-spin" : ""}
             >
-              {isProcessing ? 'Processing' : 'Close'}
+              {isProcessing ? t('common.processing') : t('common.close')}
             </Button>
             {!isProcessing && (
               <Button
@@ -275,7 +280,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
           <ProgressBar
             processedCount={processedCount}
             totalCount={totalCount}
-            label="Re-liking posts"
+            label={t('modals.unlikedArchive.relikingPosts')}
             backgroundColor={colors.BACKGROUND_MEDIUM}
             progressColor={colors.SUCCESS}
             textColor={colors.TEXT_SECONDARY}
@@ -296,7 +301,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
             className="flex items-center justify-center h-full text-sm"
             style={{ color: colors.TEXT_SECONDARY }}
           >
-            No unliked posts in archive
+            {t('modals.unlikedArchive.noPostsMessage')}
           </div>
         ) : (
           <PostGrid

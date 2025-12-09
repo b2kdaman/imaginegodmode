@@ -13,6 +13,7 @@ import { ProgressBar } from './shared/ProgressBar';
 import { SelectionControls } from './shared/SelectionControls';
 import { PostGrid, PostGridItem } from './shared/PostGrid';
 import { useShiftSelection } from '@/hooks/useShiftSelection';
+import { useTranslation } from '@/contexts/I18nContext';
 
 interface UpscaleAllModalProps {
   isOpen: boolean;
@@ -38,6 +39,7 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
   totalCount = 0,
 }) => {
   const colors = getThemeColors();
+  const { t } = useTranslation();
   const {
     selectedIds,
     toggleSelection,
@@ -80,12 +82,12 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
   }));
 
   const title = mode === 'upscale'
-    ? `Select Posts to Upscale (${selectedIds.size}/${safePosts.length})`
-    : `Select Posts to Like (${selectedIds.size}/${safePosts.length})`;
+    ? t('modals.upscale.title', { selected: selectedIds.size, total: safePosts.length })
+    : t('modals.like.title', { selected: selectedIds.size, total: safePosts.length });
 
   const confirmButtonText = mode === 'upscale'
-    ? `Upscale ${selectedIds.size} Post${selectedIds.size !== 1 ? 's' : ''}`
-    : `Like ${selectedIds.size} Post${selectedIds.size !== 1 ? 's' : ''}`;
+    ? t('modals.upscale.actionText', { count: selectedIds.size, plural: selectedIds.size !== 1 ? 's' : '' })
+    : t('modals.like.actionText', { count: selectedIds.size, plural: selectedIds.size !== 1 ? 's' : '' });
 
   return (
     <BaseModal
@@ -110,7 +112,7 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
             icon={isProcessing ? mdiLoading : undefined}
             iconClassName={isProcessing ? "animate-spin" : ""}
           >
-            {isProcessing ? 'Processing' : 'Cancel'}
+            {isProcessing ? t('common.processing') : t('common.cancel')}
           </Button>
           {!isProcessing && (
             <Button
@@ -130,7 +132,7 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
           <ProgressBar
             processedCount={processedCount}
             totalCount={totalCount}
-            label="Processing"
+            label={t('common.processing')}
             backgroundColor={colors.BACKGROUND_MEDIUM}
             progressColor={colors.SUCCESS}
             textColor={colors.TEXT_SECONDARY}

@@ -20,7 +20,12 @@
     "upscale": "Mejorar",
     "paste": "Pegar",
     "current": "Actual",
-    "version": "Versión"
+    "version": "Versión",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "processing": "Procesando",
+    "selectAll": "Seleccionar Todo",
+    "deselectAll": "Deseleccionar Todo"
   },
   "panel": {
     "collapseTooltip": "Contraer panel",
@@ -144,6 +149,34 @@
       "title": "Eliminar Paquete",
       "message": "¿Estás seguro de que deseas eliminar \"{{packName}}\"?"
     },
+    "confirmDeletion": {
+      "title": "Confirmar Eliminación",
+      "message": "¿Estás seguro de que deseas eliminar permanentemente {{count}} publicación{{plural}}? Esta acción no se puede deshacer."
+    },
+    "delete": {
+      "title": "Eliminar Publicaciones ({{total}} en total)",
+      "actionText": "Eliminar",
+      "warningMessage": "Advertencia: ¡Eliminar publicaciones es permanente y no se puede deshacer!"
+    },
+    "unlike": {
+      "title": "Seleccionar Publicaciones para Quitar Me Gusta ({{selected}}/{{total}})",
+      "actionText": "Quitar Me Gusta a {{count}} Publicación{{plural}}"
+    },
+    "upscale": {
+      "title": "Seleccionar Publicaciones para Mejorar ({{selected}}/{{total}})",
+      "actionText": "Mejorar {{count}} Publicación{{plural}}"
+    },
+    "like": {
+      "title": "Seleccionar Publicaciones para Me Gusta ({{selected}}/{{total}})",
+      "actionText": "Me Gusta a {{count}} Publicación{{plural}}"
+    },
+    "unlikedArchive": {
+      "title": "Archivo de Publicaciones Sin Me Gusta ({{total}} en total)",
+      "actionText": "Dar Me Gusta a {{count}} Publicación{{plural}}",
+      "selectPrompt": "Seleccionar publicaciones para dar me gusta",
+      "noPostsMessage": "No hay publicaciones sin me gusta en el archivo",
+      "relikingPosts": "Dando me gusta a publicaciones"
+    },
     "importPack": {
       "title": "Importar Paquete",
       "selectFile": "Seleccionar Archivo",
@@ -151,7 +184,8 @@
       "invalidJson": "JSON Inválido",
       "importing": "Importando...",
       "success": "Importado exitosamente",
-      "error": "Error al importar"
+      "error": "Error al importar",
+      "pasteJsonPlaceholder": "Pega JSON aquí o haz clic en los botones de arriba..."
     },
     "selectPack": {
       "title": "Seleccionar Paquetes para Exportar",

@@ -13,6 +13,7 @@ import { ProgressBar } from './shared/ProgressBar';
 import { SelectionControls } from './shared/SelectionControls';
 import { PostGrid, PostGridItem } from './shared/PostGrid';
 import { useShiftSelection } from '@/hooks/useShiftSelection';
+import { useTranslation } from '@/contexts/I18nContext';
 
 interface UnlikeModalProps {
   isOpen: boolean;
@@ -36,6 +37,7 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
   totalCount = 0,
 }) => {
   const colors = getThemeColors();
+  const { t } = useTranslation();
   const {
     selectedIds,
     toggleSelection,
@@ -77,8 +79,14 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
     videoCount: post.childPosts?.filter(cp => cp.mediaType === 'video').length || 0,
   }));
 
-  const title = `Select Posts to Unlike (${selectedIds.size}/${safePosts.length})`;
-  const confirmButtonText = `Unlike ${selectedIds.size} Post${selectedIds.size !== 1 ? 's' : ''}`;
+  const title = t('modals.unlike.title', {
+    selected: selectedIds.size,
+    total: safePosts.length
+  });
+  const confirmButtonText = t('modals.unlike.actionText', {
+    count: selectedIds.size,
+    plural: selectedIds.size !== 1 ? 's' : ''
+  });
 
   return (
     <BaseModal
@@ -103,7 +111,7 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
             icon={isProcessing ? mdiLoading : undefined}
             iconClassName={isProcessing ? "animate-spin" : ""}
           >
-            {isProcessing ? 'Processing' : 'Cancel'}
+            {isProcessing ? t('common.processing') : t('common.cancel')}
           </Button>
           {!isProcessing && (
             <Button
@@ -123,7 +131,7 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
           <ProgressBar
             processedCount={processedCount}
             totalCount={totalCount}
-            label="Processing"
+            label={t('common.processing')}
             backgroundColor={colors.BACKGROUND_MEDIUM}
             progressColor={colors.DANGER}
             textColor={colors.TEXT_SECONDARY}
