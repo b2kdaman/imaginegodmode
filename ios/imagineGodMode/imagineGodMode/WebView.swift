@@ -58,15 +58,18 @@ struct GrokWebView: PlatformViewRepresentable {
         let webView = WKWebView(frame: .zero, configuration: config)
         let storageBridge = ChromeStorageBridge(webView: webView)
         let downloadManager = DownloadManager(webView: webView)
+        let fileImportHandler = FileImportHandler(webView: webView)
 
         // Add message handlers
         userContentController.add(storageBridge, name: "chromeStorage")
         userContentController.add(downloadManager, name: "chromeDownloads")
+        userContentController.add(fileImportHandler, name: "fileImport")
         config.userContentController = userContentController
 
         // Store managers in coordinator so they don't get deallocated
         context.coordinator.storageBridge = storageBridge
         context.coordinator.downloadManager = downloadManager
+        context.coordinator.fileImportHandler = fileImportHandler
 
         // Inject scripts
         injectScripts(into: userContentController)
@@ -221,6 +224,7 @@ struct GrokWebView: PlatformViewRepresentable {
         var parent: GrokWebView
         var storageBridge: ChromeStorageBridge?
         var downloadManager: DownloadManager?
+        var fileImportHandler: FileImportHandler?
 
         init(_ parent: GrokWebView) {
             self.parent = parent
@@ -388,9 +392,11 @@ struct GrokWebView: PlatformViewRepresentable {
 // MARK: - WebView Container with Controls
 
 struct WebViewContainer: View {
+    @Binding var fileToImport: URL?
     @State private var canGoBack = false
     @State private var canGoForward = false
     @State private var webView: WKWebView?
+    @State private var fileImportHandler: FileImportHandler?
 
     let grokURL = URL(string: "https://grok.com/imagine")!
 
@@ -453,6 +459,22 @@ struct WebViewContainer: View {
             // Handle background
         }
         #endif
+        .onChange(of: fileToImport) { newFileURL in
+            if let fileURL = newFileURL, let webView = getWebView() {
+                // Initialize file import handler if not already done
+                if fileImportHandler == nil {
+                    fileImportHandler = FileImportHandler(webView: webView)
+                }
+
+                // Import the file
+                fileImportHandler?.importFile(from: fileURL)
+
+                // Clear the file URL after importing
+                DispatchQueue.main.async {
+                    self.fileToImport = nil
+                }
+            }
+        }
     }
 
     private func goBack() {

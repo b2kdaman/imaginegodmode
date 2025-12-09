@@ -428,7 +428,44 @@
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDocumentTypes = (
+					{
+						CFBundleTypeName = "JSON Document";
+						CFBundleTypeRole = Viewer;
+						LSHandlerRank = Owner;
+						LSItemContentTypes = (
+							"public.json",
+						);
+					},
+					{
+						CFBundleTypeName = "PAK Document";
+						CFBundleTypeRole = Viewer;
+						LSHandlerRank = Owner;
+						LSItemContentTypes = (
+							"com.imaginegodmode.pak",
+						);
+					},
+				);
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
+				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
+				INFOPLIST_KEY_UTImportedTypeDeclarations = (
+					{
+						UTTypeConformsTo = (
+							"public.data",
+							"public.content",
+						);
+						UTTypeDescription = "ImagineGodMode Pack File";
+						UTTypeIdentifier = "com.imaginegodmode.pak";
+						UTTypeTagSpecification = {
+							"public.filename-extension" = (
+								pak,
+							);
+							"public.mime-type" = (
+								"application/x-pak",
+							);
+						};
+					},
+				);
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -486,7 +523,44 @@
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDocumentTypes = (
+					{
+						CFBundleTypeName = "JSON Document";
+						CFBundleTypeRole = Viewer;
+						LSHandlerRank = Owner;
+						LSItemContentTypes = (
+							"public.json",
+						);
+					},
+					{
+						CFBundleTypeName = "PAK Document";
+						CFBundleTypeRole = Viewer;
+						LSHandlerRank = Owner;
+						LSItemContentTypes = (
+							"com.imaginegodmode.pak",
+						);
+					},
+				);
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
+				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
+				INFOPLIST_KEY_UTImportedTypeDeclarations = (
+					{
+						UTTypeConformsTo = (
+							"public.data",
+							"public.content",
+						);
+						UTTypeDescription = "ImagineGodMode Pack File";
+						UTTypeIdentifier = "com.imaginegodmode.pak";
+						UTTypeTagSpecification = {
+							"public.filename-extension" = (
+								pak,
+							);
+							"public.mime-type" = (
+								"application/x-pak",
+							);
+						};
+					},
+				);
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

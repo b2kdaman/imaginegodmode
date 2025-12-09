@@ -16,6 +16,7 @@ import { Tabs } from './inputs/Tabs';
 import { PanelControls } from './common/PanelControls';
 import { useUrlVisibility } from '@/hooks/useUrlVisibility';
 import { useTranslation } from '@/contexts/I18nContext';
+import { isMobileDevice } from '@/utils/deviceDetection';
 import { mdiTrayFull } from '@mdi/js';
 
 type ViewType = 'prompt' | 'ops' | 'settings' | 'help' | 'queue';
@@ -105,11 +106,14 @@ export const MainPanel: React.FC = () => {
     },
   ];
 
+  // Determine bottom position based on device type
+  const bottomPosition = isMobileDevice() ? UI_POSITION.BOTTOM_MOBILE : UI_POSITION.BOTTOM;
+
   return (
     <div
       className="fixed flex flex-col transition-transform duration-200"
       style={{
-        bottom: UI_POSITION.BOTTOM,
+        bottom: bottomPosition,
         right: UI_POSITION.RIGHT,
         transform: `scale(${scale})`,
         transformOrigin: 'bottom right',

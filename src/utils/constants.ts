@@ -8,6 +8,7 @@ export const VERSION = __APP_VERSION__;
 // UI Layout & Positioning
 export const UI_POSITION = {
   BOTTOM: '72px',
+  BOTTOM_MOBILE: '16px',  // Lower offset for mobile devices
   RIGHT: '24px',
   Z_INDEX: '99999',
 } as const;

@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Binding var fileToImport: URL?
+
     var body: some View {
-        WebViewContainer()
+        WebViewContainer(fileToImport: $fileToImport)
             .edgesIgnoringSafeArea(.all)
     }
 }

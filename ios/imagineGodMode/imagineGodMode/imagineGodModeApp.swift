@@ -9,9 +9,19 @@ import SwiftUI
 
 @main
 struct imagineGodModeApp: App {
+    @State private var fileToImport: URL?
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(fileToImport: $fileToImport)
+                .onOpenURL { url in
+                    handleFileImport(url: url)
+                }
         }
+    }
+
+    private func handleFileImport(url: URL) {
+        print("[App] Received file to import: \(url)")
+        fileToImport = url
     }
 }
