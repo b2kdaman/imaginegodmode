@@ -7,9 +7,12 @@
 //
 
 import Foundation
-import Photos
 import WebKit
+
+#if os(iOS)
+import Photos
 import UIKit
+#endif
 
 /// Manages file downloads and saves them to the Photos library
 class DownloadManager: NSObject {
@@ -79,6 +82,7 @@ class DownloadManager: NSObject {
     // MARK: - Photo Library
 
     private func checkPhotoLibraryPermission(completion: @escaping (Bool) -> Void) {
+        #if os(iOS)
         let status = PHPhotoLibrary.authorizationStatus(for: .addOnly)
 
         switch status {
@@ -95,9 +99,14 @@ class DownloadManager: NSObject {
         @unknown default:
             completion(false)
         }
+        #else
+        // Photo library not supported on non-iOS platforms
+        completion(false)
+        #endif
     }
 
     private func saveToPhotoLibrary(fileURL: URL, completion: @escaping (Bool, String?) -> Void) {
+        #if os(iOS)
         // Determine media type
         let isVideo = fileURL.pathExtension.lowercased() == "mp4" ||
                       fileURL.pathExtension.lowercased() == "mov" ||
@@ -124,6 +133,26 @@ class DownloadManager: NSObject {
                 try? FileManager.default.removeItem(at: fileURL)
             }
         }
+        #else
+        // On non-iOS platforms, save to Downloads folder
+        let downloadsURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
+        if let downloadsURL = downloadsURL {
+            let destinationURL = downloadsURL.appendingPathComponent(fileURL.lastPathComponent)
+            do {
+                if FileManager.default.fileExists(atPath: destinationURL.path) {
+                    try FileManager.default.removeItem(at: destinationURL)
+                }
+                try FileManager.default.moveItem(at: fileURL, to: destinationURL)
+                print("[DownloadManager] Saved to Downloads: \(destinationURL.path)")
+                completion(true, nil)
+            } catch {
+                print("[DownloadManager] Failed to save to Downloads: \(error.localizedDescription)")
+                completion(false, error.localizedDescription)
+            }
+        } else {
+            completion(false, "Downloads folder not found")
+        }
+        #endif
     }
 
     // MARK: - Response Helpers

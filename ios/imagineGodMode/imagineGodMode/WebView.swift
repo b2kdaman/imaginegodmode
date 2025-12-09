@@ -9,7 +9,15 @@
 import SwiftUI
 import WebKit
 
-struct GrokWebView: UIViewRepresentable {
+#if os(iOS)
+import UIKit
+typealias PlatformViewRepresentable = UIViewRepresentable
+#elseif os(macOS)
+import AppKit
+typealias PlatformViewRepresentable = NSViewRepresentable
+#endif
+
+struct GrokWebView: PlatformViewRepresentable {
     let url: URL
     @Binding var canGoBack: Bool
     @Binding var canGoForward: Bool
@@ -18,7 +26,25 @@ struct GrokWebView: UIViewRepresentable {
         Coordinator(self)
     }
 
+    #if os(iOS)
     func makeUIView(context: Context) -> WKWebView {
+        return makeWebView(context: context)
+    }
+
+    func updateUIView(_ webView: WKWebView, context: Context) {
+        updateWebView(webView)
+    }
+    #elseif os(macOS)
+    func makeNSView(context: Context) -> WKWebView {
+        return makeWebView(context: context)
+    }
+
+    func updateNSView(_ webView: WKWebView, context: Context) {
+        updateWebView(webView)
+    }
+    #endif
+
+    private func makeWebView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
 
         // Configure user content controller
@@ -47,7 +73,10 @@ struct GrokWebView: UIViewRepresentable {
         // Configure webView
         webView.navigationDelegate = context.coordinator
         webView.allowsBackForwardNavigationGestures = true
+
+        #if os(iOS)
         webView.scrollView.contentInsetAdjustmentBehavior = .never
+        #endif
 
         // Set custom user agent
         webView.customUserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 ImagineGodMode/2.11.0"
@@ -58,7 +87,7 @@ struct GrokWebView: UIViewRepresentable {
         return webView
     }
 
-    func updateUIView(_ webView: WKWebView, context: Context) {
+    private func updateWebView(_ webView: WKWebView) {
         // Update navigation state
         DispatchQueue.main.async {
             canGoBack = webView.canGoBack
@@ -222,6 +251,7 @@ struct WebViewContainer: View {
                 }
             }
             .padding()
+            #if os(iOS)
             .background(Color(UIColor.systemBackground))
             .overlay(
                 Rectangle()
@@ -229,10 +259,21 @@ struct WebViewContainer: View {
                     .foregroundColor(Color(UIColor.separator)),
                 alignment: .top
             )
+            #elseif os(macOS)
+            .background(Color(NSColor.windowBackgroundColor))
+            .overlay(
+                Rectangle()
+                    .frame(height: 0.5)
+                    .foregroundColor(Color(NSColor.separatorColor)),
+                alignment: .top
+            )
+            #endif
         }
+        #if os(iOS)
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)) { _ in
             // Handle background
         }
+        #endif
     }
 
     private func goBack() {
@@ -254,6 +295,7 @@ struct WebViewContainer: View {
     }
 
     private func getWebView() -> WKWebView? {
+        #if os(iOS)
         // Helper to get the actual WKWebView instance
         // This is a workaround since we can't directly access it from UIViewRepresentable
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -263,8 +305,20 @@ struct WebViewContainer: View {
         }
 
         return findWKWebView(in: rootView)
+        #elseif os(macOS)
+        // For macOS, we need a different approach
+        guard let window = NSApplication.shared.windows.first,
+              let contentView = window.contentView else {
+            return nil
+        }
+
+        return findWKWebView(in: contentView)
+        #else
+        return nil
+        #endif
     }
 
+    #if os(iOS)
     private func findWKWebView(in view: UIView) -> WKWebView? {
         if let webView = view as? WKWebView {
             return webView
@@ -278,4 +332,19 @@ struct WebViewContainer: View {
 
         return nil
     }
+    #elseif os(macOS)
+    private func findWKWebView(in view: NSView) -> WKWebView? {
+        if let webView = view as? WKWebView {
+            return webView
+        }
+
+        for subview in view.subviews {
+            if let found = findWKWebView(in: subview) {
+                return found
+            }
+        }
+
+        return nil
+    }
+    #endif
 }
