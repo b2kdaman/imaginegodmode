@@ -267,48 +267,51 @@ struct GrokWebView: PlatformViewRepresentable {
                 return
             }
 
-            // Inject polyfill
-            webView.evaluateJavaScript(polyfill) { _, error in
-                if let error = error {
-                    print("[WebView] Polyfill injection error: \(error)")
-                } else {
-                    print("[WebView] Polyfill injected successfully")
-                }
-            }
-
-            // Inject helpers
-            webView.evaluateJavaScript(helpers) { _, error in
-                if let error = error {
-                    print("[WebView] Helpers injection error: \(error)")
-                } else {
-                    print("[WebView] Helpers injected successfully")
-                }
-            }
-
-            // Inject CSS
-            let cssInjection = """
+            // Create script element approach - better for ES modules
+            let scriptInjection = """
             (function() {
+                // Inject polyfill
+                var polyfillScript = document.createElement('script');
+                polyfillScript.textContent = `\(polyfill.replacingOccurrences(of: "`", with: "\\`").replacingOccurrences(of: "\\", with: "\\\\"))`;
+                document.head.appendChild(polyfillScript);
+                console.log('[ImagineGodMode] Polyfill injected');
+
+                // Inject helpers as module
+                var helpersBlob = new Blob([`\(helpers.replacingOccurrences(of: "`", with: "\\`").replacingOccurrences(of: "\\", with: "\\\\"))`], { type: 'application/javascript' });
+                var helpersURL = URL.createObjectURL(helpersBlob);
+                var helpersScript = document.createElement('script');
+                helpersScript.type = 'module';
+                helpersScript.src = helpersURL;
+                document.head.appendChild(helpersScript);
+                console.log('[ImagineGodMode] Helpers injected');
+
+                // Inject CSS
                 var style = document.createElement('style');
                 style.type = 'text/css';
                 style.innerHTML = `\(css.replacingOccurrences(of: "`", with: "\\`").replacingOccurrences(of: "\\", with: "\\\\"))`;
                 document.head.appendChild(style);
                 console.log('[ImagineGodMode] CSS injected');
+
+                // Inject content script as module
+                setTimeout(function() {
+                    var contentBlob = new Blob([`\(contentScript.replacingOccurrences(of: "`", with: "\\`").replacingOccurrences(of: "\\", with: "\\\\"))`], { type: 'application/javascript' });
+                    var contentURL = URL.createObjectURL(contentBlob);
+                    var contentScriptElement = document.createElement('script');
+                    contentScriptElement.type = 'module';
+                    contentScriptElement.src = contentURL;
+                    document.head.appendChild(contentScriptElement);
+                    console.log('[ImagineGodMode] Content script injected');
+
+                    alert('✅ All scripts injected as modules!');
+                }, 100);
             })();
             """
-            webView.evaluateJavaScript(cssInjection) { _, error in
-                if let error = error {
-                    print("[WebView] CSS injection error: \(error)")
-                } else {
-                    print("[WebView] CSS injected successfully")
-                }
-            }
 
-            // Inject content script
-            webView.evaluateJavaScript(contentScript) { _, error in
+            webView.evaluateJavaScript(scriptInjection) { _, error in
                 if let error = error {
-                    print("[WebView] Content script injection error: \(error)")
+                    print("[WebView] Script injection error: \(error)")
                 } else {
-                    print("[WebView] Content script injected successfully")
+                    print("[WebView] All scripts injected successfully as modules")
                 }
             }
         }
