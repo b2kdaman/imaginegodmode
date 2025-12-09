@@ -162,39 +162,53 @@ struct GrokWebView: PlatformViewRepresentable {
     // MARK: - Resource Loading
 
     private func loadScript(named name: String) -> String? {
-        // DEBUG: List all bundle resources
+        // Try loading from root of bundle first (files added directly)
+        if let path = Bundle.main.path(forResource: name, ofType: "js"),
+           let content = try? String(contentsOfFile: path, encoding: .utf8) {
+            print("[WebView] Successfully loaded script from bundle root: \(name).js")
+            return content
+        }
+
+        // Try loading from extension directory
+        if let path = Bundle.main.path(forResource: name, ofType: "js", inDirectory: "extension"),
+           let content = try? String(contentsOfFile: path, encoding: .utf8) {
+            print("[WebView] Successfully loaded script from extension directory: \(name).js")
+            return content
+        }
+
+        // DEBUG: List all JS files in bundle
         if let resourcePath = Bundle.main.resourcePath {
             print("[WebView] Bundle resource path: \(resourcePath)")
-            if let extensionPath = Bundle.main.path(forResource: nil, ofType: nil, inDirectory: "extension") {
-                print("[WebView] Extension directory found at: \(extensionPath)")
-                do {
-                    let files = try FileManager.default.contentsOfDirectory(atPath: extensionPath)
-                    print("[WebView] Files in extension directory: \(files)")
-                } catch {
-                    print("[WebView] Error listing extension directory: \(error)")
-                }
-            } else {
-                print("[WebView] Extension directory NOT found in bundle")
+            do {
+                let allFiles = try FileManager.default.contentsOfDirectory(atPath: resourcePath)
+                let jsFiles = allFiles.filter { $0.hasSuffix(".js") }
+                print("[WebView] JS files in bundle: \(jsFiles)")
+            } catch {
+                print("[WebView] Error listing bundle: \(error)")
             }
         }
 
-        guard let path = Bundle.main.path(forResource: name, ofType: "js", inDirectory: "extension"),
-              let content = try? String(contentsOfFile: path, encoding: .utf8) else {
-            print("[WebView] Failed to load script: \(name).js")
-            print("[WebView] Attempted path lookup for: \(name).js in extension directory")
-            return nil
-        }
-        print("[WebView] Successfully loaded script: \(name).js from \(path)")
-        return content
+        print("[WebView] Failed to load script: \(name).js")
+        return nil
     }
 
     private func loadCSS(named name: String) -> String? {
-        guard let path = Bundle.main.path(forResource: name, ofType: "css", inDirectory: "extension"),
-              let content = try? String(contentsOfFile: path, encoding: .utf8) else {
-            print("[WebView] Failed to load CSS: \(name).css")
-            return nil
+        // Try loading from root of bundle first
+        if let path = Bundle.main.path(forResource: name, ofType: "css"),
+           let content = try? String(contentsOfFile: path, encoding: .utf8) {
+            print("[WebView] Successfully loaded CSS from bundle root: \(name).css")
+            return content
         }
-        return content
+
+        // Try loading from extension directory
+        if let path = Bundle.main.path(forResource: name, ofType: "css", inDirectory: "extension"),
+           let content = try? String(contentsOfFile: path, encoding: .utf8) {
+            print("[WebView] Successfully loaded CSS from extension directory: \(name).css")
+            return content
+        }
+
+        print("[WebView] Failed to load CSS: \(name).css")
+        return nil
     }
 
     // MARK: - Coordinator
