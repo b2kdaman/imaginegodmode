@@ -273,7 +273,7 @@ struct GrokWebView: PlatformViewRepresentable {
             let contentScriptBase64 = contentScript.data(using: .utf8)?.base64EncodedString() ?? ""
             let cssBase64 = css.data(using: .utf8)?.base64EncodedString() ?? ""
 
-            // Inject using base64 decoded scripts
+            // Inject using base64 decoded scripts with import map
             let scriptInjection = """
             (function() {
                 // Decode base64
@@ -298,28 +298,42 @@ struct GrokWebView: PlatformViewRepresentable {
                 document.head.appendChild(style);
                 console.log('[ImagineGodMode] CSS injected');
 
-                // Inject helpers as module using Blob
+                // Create blob URL for helpers first
                 var helpersCode = decodeBase64('\(helpersBase64)');
                 var helpersBlob = new Blob([helpersCode], { type: 'application/javascript' });
                 var helpersURL = URL.createObjectURL(helpersBlob);
+                console.log('[ImagineGodMode] Helpers blob URL created:', helpersURL);
+
+                // Replace import statement in content script to use the blob URL
+                var contentCode = decodeBase64('\(contentScriptBase64)');
+                // Replace the relative import with our blob URL
+                contentCode = contentCode.replace(/from"\\.\\/helpers-[^"]+\\.js"/, 'from"' + helpersURL + '"');
+                console.log('[ImagineGodMode] Content script import replaced');
+
+                // Inject helpers module
                 var helpersScript = document.createElement('script');
                 helpersScript.type = 'module';
                 helpersScript.src = helpersURL;
                 document.head.appendChild(helpersScript);
-                console.log('[ImagineGodMode] Helpers injected as module');
+                console.log('[ImagineGodMode] Helpers module injected');
 
                 // Wait a bit then inject content script
                 setTimeout(function() {
-                    var contentCode = decodeBase64('\(contentScriptBase64)');
                     var contentBlob = new Blob([contentCode], { type: 'application/javascript' });
                     var contentURL = URL.createObjectURL(contentBlob);
                     var contentScriptElement = document.createElement('script');
                     contentScriptElement.type = 'module';
                     contentScriptElement.src = contentURL;
+                    contentScriptElement.onload = function() {
+                        console.log('[ImagineGodMode] Content script loaded successfully!');
+                        alert('✅ Extension loaded! Check for UI in bottom-right corner.');
+                    };
+                    contentScriptElement.onerror = function(e) {
+                        console.error('[ImagineGodMode] Content script load error:', e);
+                        alert('❌ Content script failed to load');
+                    };
                     document.head.appendChild(contentScriptElement);
-                    console.log('[ImagineGodMode] Content script injected as module');
-
-                    alert('✅ All scripts injected successfully!');
+                    console.log('[ImagineGodMode] Content script injected');
                 }, 200);
             })();
             """
