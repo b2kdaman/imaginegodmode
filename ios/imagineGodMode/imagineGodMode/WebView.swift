@@ -267,43 +267,60 @@ struct GrokWebView: PlatformViewRepresentable {
                 return
             }
 
-            // Create script element approach - better for ES modules
+            // Encode scripts as base64 to avoid escaping issues
+            let polyfillBase64 = polyfill.data(using: .utf8)?.base64EncodedString() ?? ""
+            let helpersBase64 = helpers.data(using: .utf8)?.base64EncodedString() ?? ""
+            let contentScriptBase64 = contentScript.data(using: .utf8)?.base64EncodedString() ?? ""
+            let cssBase64 = css.data(using: .utf8)?.base64EncodedString() ?? ""
+
+            // Inject using base64 decoded scripts
             let scriptInjection = """
             (function() {
+                // Decode base64
+                function decodeBase64(base64) {
+                    return decodeURIComponent(atob(base64).split('').map(function(c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+                }
+
                 // Inject polyfill
+                var polyfillCode = decodeBase64('\(polyfillBase64)');
                 var polyfillScript = document.createElement('script');
-                polyfillScript.textContent = `\(polyfill.replacingOccurrences(of: "`", with: "\\`").replacingOccurrences(of: "\\", with: "\\\\"))`;
+                polyfillScript.textContent = polyfillCode;
                 document.head.appendChild(polyfillScript);
                 console.log('[ImagineGodMode] Polyfill injected');
 
-                // Inject helpers as module
-                var helpersBlob = new Blob([`\(helpers.replacingOccurrences(of: "`", with: "\\`").replacingOccurrences(of: "\\", with: "\\\\"))`], { type: 'application/javascript' });
+                // Inject CSS
+                var cssCode = decodeBase64('\(cssBase64)');
+                var style = document.createElement('style');
+                style.type = 'text/css';
+                style.innerHTML = cssCode;
+                document.head.appendChild(style);
+                console.log('[ImagineGodMode] CSS injected');
+
+                // Inject helpers as module using Blob
+                var helpersCode = decodeBase64('\(helpersBase64)');
+                var helpersBlob = new Blob([helpersCode], { type: 'application/javascript' });
                 var helpersURL = URL.createObjectURL(helpersBlob);
                 var helpersScript = document.createElement('script');
                 helpersScript.type = 'module';
                 helpersScript.src = helpersURL;
                 document.head.appendChild(helpersScript);
-                console.log('[ImagineGodMode] Helpers injected');
+                console.log('[ImagineGodMode] Helpers injected as module');
 
-                // Inject CSS
-                var style = document.createElement('style');
-                style.type = 'text/css';
-                style.innerHTML = `\(css.replacingOccurrences(of: "`", with: "\\`").replacingOccurrences(of: "\\", with: "\\\\"))`;
-                document.head.appendChild(style);
-                console.log('[ImagineGodMode] CSS injected');
-
-                // Inject content script as module
+                // Wait a bit then inject content script
                 setTimeout(function() {
-                    var contentBlob = new Blob([`\(contentScript.replacingOccurrences(of: "`", with: "\\`").replacingOccurrences(of: "\\", with: "\\\\"))`], { type: 'application/javascript' });
+                    var contentCode = decodeBase64('\(contentScriptBase64)');
+                    var contentBlob = new Blob([contentCode], { type: 'application/javascript' });
                     var contentURL = URL.createObjectURL(contentBlob);
                     var contentScriptElement = document.createElement('script');
                     contentScriptElement.type = 'module';
                     contentScriptElement.src = contentURL;
                     document.head.appendChild(contentScriptElement);
-                    console.log('[ImagineGodMode] Content script injected');
+                    console.log('[ImagineGodMode] Content script injected as module');
 
-                    alert('✅ All scripts injected as modules!');
-                }, 100);
+                    alert('✅ All scripts injected successfully!');
+                }, 200);
             })();
             """
 
@@ -311,7 +328,7 @@ struct GrokWebView: PlatformViewRepresentable {
                 if let error = error {
                     print("[WebView] Script injection error: \(error)")
                 } else {
-                    print("[WebView] All scripts injected successfully as modules")
+                    print("[WebView] Scripts injected successfully")
                 }
             }
         }
