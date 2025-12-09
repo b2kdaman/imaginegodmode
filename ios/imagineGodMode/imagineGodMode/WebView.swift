@@ -239,6 +239,78 @@ struct GrokWebView: PlatformViewRepresentable {
             }
 
             print("[WebView] Finished loading: \(webView.url?.absoluteString ?? "unknown")")
+
+            // Try injecting scripts after page load using evaluateJavaScript
+            self.injectScriptsAfterLoad(webView)
+        }
+
+        private func injectScriptsAfterLoad(_ webView: WKWebView) {
+            // Test if JavaScript execution works
+            webView.evaluateJavaScript("alert('🚀 JavaScript execution works!'); console.log('Test successful');") { result, error in
+                if let error = error {
+                    print("[WebView] JavaScript execution error: \(error)")
+                } else {
+                    print("[WebView] JavaScript execution successful!")
+                    // If test works, inject the actual scripts
+                    self.loadAndInjectScripts(webView)
+                }
+            }
+        }
+
+        private func loadAndInjectScripts(_ webView: WKWebView) {
+            // Load script files
+            guard let polyfill = self.parent.loadScript(named: "chromeStoragePolyfill"),
+                  let helpers = self.parent.loadScript(named: "helpers"),
+                  let contentScript = self.parent.loadScript(named: "content-script"),
+                  let css = self.parent.loadCSS(named: "content-script") else {
+                print("[WebView] Failed to load one or more scripts")
+                return
+            }
+
+            // Inject polyfill
+            webView.evaluateJavaScript(polyfill) { _, error in
+                if let error = error {
+                    print("[WebView] Polyfill injection error: \(error)")
+                } else {
+                    print("[WebView] Polyfill injected successfully")
+                }
+            }
+
+            // Inject helpers
+            webView.evaluateJavaScript(helpers) { _, error in
+                if let error = error {
+                    print("[WebView] Helpers injection error: \(error)")
+                } else {
+                    print("[WebView] Helpers injected successfully")
+                }
+            }
+
+            // Inject CSS
+            let cssInjection = """
+            (function() {
+                var style = document.createElement('style');
+                style.type = 'text/css';
+                style.innerHTML = `\(css.replacingOccurrences(of: "`", with: "\\`").replacingOccurrences(of: "\\", with: "\\\\"))`;
+                document.head.appendChild(style);
+                console.log('[ImagineGodMode] CSS injected');
+            })();
+            """
+            webView.evaluateJavaScript(cssInjection) { _, error in
+                if let error = error {
+                    print("[WebView] CSS injection error: \(error)")
+                } else {
+                    print("[WebView] CSS injected successfully")
+                }
+            }
+
+            // Inject content script
+            webView.evaluateJavaScript(contentScript) { _, error in
+                if let error = error {
+                    print("[WebView] Content script injection error: \(error)")
+                } else {
+                    print("[WebView] Content script injected successfully")
+                }
+            }
         }
 
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
