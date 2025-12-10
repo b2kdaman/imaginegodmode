@@ -113,6 +113,7 @@ export const API_ENDPOINTS = {
   POST_UNLIKE: '/rest/media/post/unlike',
   POST_DELETE: '/rest/media/post/delete',
   VIDEO_UPSCALE: '/rest/media/video/upscale',
+  VIDEO_GENERATE: '/rest/app-chat/conversations/new',
 } as const;
 
 // Media Types

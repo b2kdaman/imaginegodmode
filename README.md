@@ -131,6 +131,17 @@ A multi-platform application for Grok media management built with React, TypeScr
   - Configurable animation duration, intensity, and effects
   - Theme-aware glow colors matching UI theme
   - Scale animation disabled on buttons for cleaner interactions
+- **The Pit (Video Generation)**: Automated video generation with batch processing
+  - Select source post from liked posts with image preview
+  - Navigate through liked posts with prev/next controls
+  - Manual prompt mode or pack-based prompt selection
+  - Configurable number of generation attempts (1-10 tries)
+  - Stop on first success toggle for early termination
+  - Real-time progress tracking (succeeded/failed counts)
+  - Automatic moderation detection treats moderated videos as failures
+  - Staggered API calls with 1-2 second delays to avoid rate limiting
+  - Sequential mode (stop on first success) or parallel mode (all at once)
+  - Loads all liked posts automatically for easy post selection
 - **Spin Feature**: Batch process list items (from userscript version)
 
 ## Technology Stack
@@ -298,8 +309,30 @@ open ios/imagineGodMode/imagineGodMode.xcodeproj
    - Queue controls: Resume/Pause processing, Clear completed, Clear all
    - Icon-only tab with badge showing active queue count
    - Empty state message when queue is empty
-10. **Video Controls**: Use the play/pause button or press Space to control video playback
-11. **Fullscreen**: Click the fullscreen button or press F to enter fullscreen mode
+10. **The Pit View**: Automated video generation from images
+   - **Post Selection**: Navigate through liked posts with image preview
+     - Automatically loads all liked posts on view open
+     - Prev/Next buttons to browse through posts
+     - Shows current post index and total count
+     - Thumbnail preview with loading state
+   - **Prompt Configuration**:
+     - Manual mode: Free-form text input for custom prompts
+     - Pack mode: Select from existing prompt packs and navigate prompts
+     - Pack dropdown with all available prompt packs
+     - Prompt navigation with prev/next controls
+   - **Generation Settings**:
+     - Tries: Configure number of generation attempts (1-10)
+     - Stop on First Success: Toggle to stop after first successful generation
+   - **Churning (Batch Generation)**:
+     - Click "Churn" button to start batch video generation
+     - Real-time progress display showing current attempt number
+     - Live success/failure counters with color coding (green/red)
+     - Sequential mode (with stop on first success): Runs attempts one at a time, stops on success
+     - Parallel mode (without stop on first success): Staggers all requests with 1-2 second delays
+     - Automatic moderation detection: Moderated videos counted as failures
+     - Progress persists during generation for monitoring
+11. **Video Controls**: Use the play/pause button or press Space to control video playback
+12. **Fullscreen**: Click the fullscreen button or press F to enter fullscreen mode
 
 ## Project Structure
 
@@ -360,6 +393,7 @@ grkgoondl/
 - **useUpscaleQueueStore**: Global upscale queue with batch processing (15 at a time), auto-download, and localStorage persistence
 - **usePostsStore**: Manages fetched posts list and navigation helpers for "Make + Next" workflow
 - **useUserStore**: Manages user ID from API with localStorage persistence and automatic initialization
+- **usePitStore**: Manages The Pit state (selected post, manual mode, prompt, pack selection, tries, stop-on-first-success)
 
 ### Contexts
 
@@ -391,6 +425,7 @@ grkgoondl/
 - **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut, hide-unsave, enable-sound, confirm-copy-from preferences, data management with import/export, and purge all data functionality
 - **HelpView**: Help and documentation interface
 - **QueueView**: Dedicated upscale queue management with progress tracking, stats, queue list, and controls
+- **PitView**: Automated video generation interface with post selection, prompt configuration, generation settings, real-time progress tracking, and moderation detection
 
 **Modals** (src/components/modals/)
 - **BaseModal**: Reusable modal foundation with animations, high z-index, portal rendering, and flexible configuration

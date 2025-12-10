@@ -71,7 +71,7 @@ export interface PostData {
   };
 }
 
-export type ViewMode = 'prompt' | 'ops' | 'settings' | 'help' | 'queue';
+export type ViewMode = 'prompt' | 'ops' | 'settings' | 'help' | 'queue' | 'pit';
 
 export type QueueItemStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
@@ -116,4 +116,14 @@ export interface LikedPost {
 
 export interface LikedPostsResponse {
   posts: LikedPost[];
+}
+
+export interface PitState {
+  selectedPostId: string | null;
+  manualMode: boolean;
+  manualPrompt: string;
+  selectedPack: string;
+  selectedPromptIndex: number;
+  tries: number;
+  stopOnFirstSuccess: boolean;
 }

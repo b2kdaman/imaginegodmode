@@ -11,15 +11,16 @@ import { OpsView } from './views/OpsView';
 import { SettingsView } from './views/SettingsView';
 import { HelpView } from './views/HelpView';
 import { QueueView } from './views/QueueView';
+import { PitView } from './views/PitView';
 import { UI_POSITION, Z_INDEX } from '@/utils/constants';
 import { Tabs } from './inputs/Tabs';
 import { PanelControls } from './common/PanelControls';
 import { useUrlVisibility } from '@/hooks/useUrlVisibility';
 import { useTranslation } from '@/contexts/I18nContext';
 import { isMobileDevice } from '@/utils/deviceDetection';
-import { mdiTrayFull, mdiTextBox, mdiCheckboxMultipleMarkedOutline, mdiCog, mdiHelpCircle } from '@mdi/js';
+import { mdiTrayFull, mdiTextBox, mdiCheckboxMultipleMarkedOutline, mdiCog, mdiHelpCircle, mdiFire } from '@mdi/js';
 
-type ViewType = 'prompt' | 'ops' | 'settings' | 'help' | 'queue';
+type ViewType = 'prompt' | 'ops' | 'settings' | 'help' | 'queue' | 'pit';
 
 const VIEW_COMPONENTS: Record<ViewType, React.FC> = {
   prompt: PromptView,
@@ -27,6 +28,7 @@ const VIEW_COMPONENTS: Record<ViewType, React.FC> = {
   settings: SettingsView,
   help: HelpView,
   queue: QueueView,
+  pit: PitView,
 };
 
 export const MainPanel: React.FC = () => {
@@ -115,6 +117,12 @@ export const MainPanel: React.FC = () => {
       icon: mdiHelpCircle,
       iconOnly: true,
       tooltip: t('tabs.help')
+    },
+    {
+      id: 'pit',
+      icon: mdiFire,
+      iconOnly: true,
+      tooltip: 'The Pit'
     },
     // Queue tab - icon only with badge
     {

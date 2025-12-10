@@ -245,3 +245,117 @@ export const upscaleVideo = async (videoId: string): Promise<SimpleApiResponse> 
   console.log('[ImagineGodMode] Upscale response for', videoId, json);
   return json;
 };
+
+/**
+ * Generate video from image with prompt
+ * @param parentPostId - Parent post ID (image to animate)
+ * @param prompt - Text prompt for video generation
+ * @param aspectRatio - Aspect ratio (default: "1:1")
+ * @param videoLength - Video length in seconds (default: 6)
+ * @returns Generation response
+ */
+export const generateVideo = async (
+  parentPostId: string,
+  prompt: string,
+  aspectRatio: string = '1:1',
+  videoLength: number = 6
+): Promise<SimpleApiResponse> => {
+  console.log('[ImagineGodMode API] Generating video:', {
+    parentPostId,
+    prompt,
+    aspectRatio,
+    videoLength,
+  });
+
+  const imageUrl = `https://imagine-public.x.ai/imagine-public/share-images/${parentPostId}.png`;
+  const fullPrompt = `${imageUrl}  ${prompt}`;
+
+  const res = await fetch(API_ENDPOINTS.VIDEO_GENERATE, {
+    method: 'POST',
+    headers: {
+      accept: '*/*',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      temporary: true,
+      modelName: 'grok-3',
+      message: fullPrompt,
+      toolOverrides: {
+        videoGen: true,
+      },
+      responseMetadata: {
+        experiments: [],
+        modelConfigOverride: {
+          modelMap: {
+            videoGenModelConfig: {
+              parentPostId,
+              aspectRatio,
+              videoLength,
+            },
+          },
+        },
+      },
+    }),
+    credentials: 'include',
+  });
+
+  console.log('[ImagineGodMode API] Video generation response status:', res.status, res.statusText);
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error('[ImagineGodMode API] Video generation error:', text);
+    throw new Error(`HTTP ${res.status}: ${text}`);
+  }
+
+  // Parse streaming response
+  const text = await res.text();
+  console.log('[ImagineGodMode API] Video generation raw response:', text);
+
+  // Split concatenated JSON objects (they come as }{}{})
+  // Add commas between objects and wrap in array brackets
+  const jsonArrayText = `[${text.replace(/\}\{/g, '},{')}]`;
+
+  let streamObjects: any[] = [];
+  try {
+    streamObjects = JSON.parse(jsonArrayText);
+  } catch (error) {
+    console.error('[ImagineGodMode API] Failed to parse streaming response:', error);
+    // If parsing fails, try to parse as single object
+    try {
+      streamObjects = [JSON.parse(text)];
+    } catch {
+      throw new Error('Failed to parse video generation response');
+    }
+  }
+
+  // Check for moderation flag in streaming responses
+  let wasModerated = false;
+  let videoId: string | undefined;
+  let finalProgress = 0;
+
+  for (const obj of streamObjects) {
+    const streamingResponse = obj?.result?.response?.streamingVideoGenerationResponse;
+    if (streamingResponse) {
+      videoId = streamingResponse.videoId;
+      finalProgress = streamingResponse.progress;
+
+      // Check if video was moderated at ANY progress step
+      if (streamingResponse.moderated === true) {
+        wasModerated = true;
+        console.log('[ImagineGodMode API] Video was moderated at progress', streamingResponse.progress + '%:', videoId);
+      }
+    }
+  }
+
+  if (wasModerated) {
+    throw new Error(`Video generation was moderated/rejected (videoId: ${videoId})`);
+  }
+
+  console.log('[ImagineGodMode API] Video generation success:', {
+    videoId,
+    finalProgress,
+    moderated: wasModerated,
+  });
+
+  return { success: true };
+};
