@@ -83,6 +83,11 @@ struct GrokWebView: PlatformViewRepresentable {
 
         #if os(iOS)
         webView.scrollView.contentInsetAdjustmentBehavior = .never
+
+        // Disable zoom
+        webView.scrollView.minimumZoomScale = 1.0
+        webView.scrollView.maximumZoomScale = 1.0
+        webView.scrollView.bouncesZoom = false
         #endif
 
         // Set custom user agent
@@ -274,6 +279,18 @@ struct GrokWebView: PlatformViewRepresentable {
                     }).join(''));
                 }
 
+                // Inject viewport meta tag to disable zoom
+                var existingViewport = document.querySelector('meta[name="viewport"]');
+                if (existingViewport) {
+                    existingViewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                } else {
+                    var viewport = document.createElement('meta');
+                    viewport.name = 'viewport';
+                    viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+                    document.head.appendChild(viewport);
+                }
+                console.log('[ImagineGodMode] Viewport meta tag configured');
+
                 // Inject polyfill
                 var polyfillCode = decodeBase64('\(polyfillBase64)');
                 var polyfillScript = document.createElement('script');
@@ -289,7 +306,14 @@ struct GrokWebView: PlatformViewRepresentable {
                     * {
                         -webkit-tap-highlight-color: transparent;
                         -webkit-touch-callout: none;
+                        -webkit-text-size-adjust: 100%;
                     }
+
+                    /* Prevent zoom on input focus by ensuring minimum font size */
+                    input, select, textarea {
+                        font-size: 16px !important;
+                    }
+
                     button, input, select, textarea {
                         -webkit-appearance: none;
                         appearance: none;

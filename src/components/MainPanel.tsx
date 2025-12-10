@@ -17,7 +17,7 @@ import { PanelControls } from './common/PanelControls';
 import { useUrlVisibility } from '@/hooks/useUrlVisibility';
 import { useTranslation } from '@/contexts/I18nContext';
 import { isMobileDevice } from '@/utils/deviceDetection';
-import { mdiTrayFull } from '@mdi/js';
+import { mdiTrayFull, mdiTextBox, mdiCheckboxMultipleMarkedOutline, mdiCog, mdiHelpCircle } from '@mdi/js';
 
 type ViewType = 'prompt' | 'ops' | 'settings' | 'help' | 'queue';
 
@@ -92,11 +92,31 @@ export const MainPanel: React.FC = () => {
   const PreviousViewComponent = VIEW_COMPONENTS[previousView] || PromptView;
 
   const tabs = [
-    { id: 'prompt', label: t('tabs.prompt') },
-    { id: 'ops', label: t('tabs.ops') },
-    { id: 'settings', label: t('tabs.settings') },
-    { id: 'help', label: t('tabs.help') },
-    // Queue tab - icon only with badge, always visible
+    {
+      id: 'prompt',
+      icon: mdiTextBox,
+      iconOnly: true,
+      tooltip: t('tabs.prompt')
+    },
+    {
+      id: 'ops',
+      icon: mdiCheckboxMultipleMarkedOutline,
+      iconOnly: true,
+      tooltip: t('tabs.ops')
+    },
+    {
+      id: 'settings',
+      icon: mdiCog,
+      iconOnly: true,
+      tooltip: t('tabs.settings')
+    },
+    {
+      id: 'help',
+      icon: mdiHelpCircle,
+      iconOnly: true,
+      tooltip: t('tabs.help')
+    },
+    // Queue tab - icon only with badge
     {
       id: 'queue',
       icon: mdiTrayFull,

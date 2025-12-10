@@ -42,7 +42,7 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, direction
             <button
               key={tab.id}
               onClick={() => onChange(tab.id)}
-              className={`px-4 py-2 text-xs transition-all duration-300 relative overflow-hidden ${
+              className={`flex-1 px-4 py-2 text-xs transition-all duration-300 relative overflow-hidden flex items-center justify-center ${
                 isUp ? 'rounded-b-lg' : 'rounded-t-lg'
               }`}
               style={{
