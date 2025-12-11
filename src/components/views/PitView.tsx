@@ -73,6 +73,9 @@ export const PitView: React.FC = () => {
   const [succeededCount, setSucceededCount] = useState(0);
   const [failedCount, setFailedCount] = useState(0);
 
+  // Error state
+  const [errorMessage, setErrorMessage] = useState('');
+
   // Fetch post data (similar to OpsView)
   const handleFetchPost = useCallback(async () => {
     const currentPostId = getPostIdFromUrl();
@@ -186,10 +189,11 @@ export const PitView: React.FC = () => {
     }
 
     setIsChurning(true);
-    // Reset progress counters
+    // Reset progress counters and error message
     setCurrentAttempt(0);
     setSucceededCount(0);
     setFailedCount(0);
+    setErrorMessage('');
 
     try {
       console.log('[PitView] Churning videos:', {
@@ -202,67 +206,43 @@ export const PitView: React.FC = () => {
       let succeeded = 0;
       let failed = 0;
 
-      if (stopOnFirstSuccess) {
-        // Sequential execution with early stopping
-        for (let i = 0; i < tries; i++) {
-          // Add delay between requests (1-2 seconds), except for first request
-          if (i > 0) {
-            const delayMs = 1000 + Math.random() * 1000; // Random delay between 1-2 seconds
-            console.log(`[PitView] Waiting ${Math.round(delayMs)}ms before next request...`);
-            await delay(delayMs);
-          }
+      // Always execute sequentially to avoid parallel API calls
+      for (let i = 0; i < tries; i++) {
+        // Add delay between requests (1-2 seconds), except for first request
+        if (i > 0) {
+          const delayMs = 1000 + Math.random() * 1000; // Random delay between 1-2 seconds
+          console.log(`[PitView] Waiting ${Math.round(delayMs)}ms before next request...`);
+          await delay(delayMs);
+        }
 
-          setCurrentAttempt(i + 1);
+        setCurrentAttempt(i + 1);
 
-          try {
-            console.log(`[PitView] Sending request ${i + 1}/${tries}`);
-            const result = await generateVideo(selectedPostId, prompt);
-            console.log(`[PitView] Request ${i + 1}/${tries} completed:`, result);
+        try {
+          console.log(`[PitView] Sending request ${i + 1}/${tries}`);
+          const result = await generateVideo(selectedPostId, prompt);
+          console.log(`[PitView] Request ${i + 1}/${tries} completed:`, result);
 
-            succeeded++;
-            setSucceededCount(succeeded);
+          succeeded++;
+          setSucceededCount(succeeded);
 
-            // Stop on first success
+          // Stop on first success if enabled
+          if (stopOnFirstSuccess) {
             console.log('[PitView] Success achieved, stopping early');
             break;
-          } catch (error) {
-            console.error(`[PitView] Request ${i + 1}/${tries} failed:`, error);
-            failed++;
-            setFailedCount(failed);
+          }
+        } catch (error) {
+          console.error(`[PitView] Request ${i + 1}/${tries} failed:`, error);
+          failed++;
+          setFailedCount(failed);
+
+          // Check if this is a 403 error - if so, stop immediately
+          const errorMsg = error instanceof Error ? error.message : String(error);
+          if (errorMsg.includes('403')) {
+            console.error('[PitView] Received 403 error - stopping churn process');
+            setErrorMessage('403 Forbidden - Authentication required. Please refresh the page.');
+            break;
           }
         }
-      } else {
-        // Parallel execution - stagger requests with delays
-        const requests = Array.from({ length: tries }, async (_, index) => {
-          // Stagger requests with 1-2 second delays between starts
-          if (index > 0) {
-            const delayMs = 1000 + Math.random() * 1000; // Random delay between 1-2 seconds
-            await delay(delayMs);
-          }
-
-          try {
-            console.log(`[PitView] Sending request ${index + 1}/${tries}`);
-            const result = await generateVideo(selectedPostId, prompt);
-            console.log(`[PitView] Request ${index + 1}/${tries} completed:`, result);
-
-            // Update progress
-            setCurrentAttempt(prev => prev + 1);
-            setSucceededCount(prev => prev + 1);
-
-            return { success: true, index: index + 1, result };
-          } catch (error) {
-            console.error(`[PitView] Request ${index + 1}/${tries} failed:`, error);
-
-            // Update progress
-            setCurrentAttempt(prev => prev + 1);
-            setFailedCount(prev => prev + 1);
-
-            return { success: false, index: index + 1, error };
-          }
-        });
-
-        // Wait for all requests to complete
-        await Promise.all(requests);
       }
 
       console.log('[PitView] Churn completed:', {
@@ -555,13 +535,29 @@ export const PitView: React.FC = () => {
         </div>
       )}
 
+      {/* Error Message */}
+      {errorMessage && (
+        <div
+          className="px-3 py-2 rounded-lg text-sm mb-3 backdrop-blur-xl"
+          style={{
+            backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
+            color: '#ff4444',
+            border: `1px solid #ff4444`,
+            WebkitBackdropFilter: 'blur(12px)',
+            backdropFilter: 'blur(12px)',
+          }}
+        >
+          {errorMessage}
+        </div>
+      )}
+
       {/* Churn Button */}
       <Button
         onClick={handleChurn}
         icon={isChurning ? mdiLoading : mdiFire}
         className="w-full !bg-white !text-black hover:!bg-white/90"
-        disabled={isChurning || (manualMode ? !manualPrompt.trim() : !currentPackPrompt)}
-        tooltip={isChurning ? 'Churning...' : 'Churn'}
+        disabled={true}
+        tooltip="Under construction"
       >
         {isChurning ? (
           <div className="flex items-center gap-2">
@@ -574,6 +570,11 @@ export const PitView: React.FC = () => {
           'Churn'
         )}
       </Button>
+
+      {/* Under construction message */}
+      <div className="text-xs text-center mt-2" style={{ color: colors.TEXT_SECONDARY }}>
+        Under construction
+      </div>
     </div>
   );
 };

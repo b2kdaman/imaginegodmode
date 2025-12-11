@@ -131,7 +131,7 @@ A multi-platform application for Grok media management built with React, TypeScr
   - Configurable animation duration, intensity, and effects
   - Theme-aware glow colors matching UI theme
   - Scale animation disabled on buttons for cleaner interactions
-- **The Pit (Video Generation)**: Automated video generation with batch processing
+- **The Pit (Video Generation)**: Automated video generation with batch processing **(Under Construction)**
   - Select source post from liked posts with image preview
   - Navigate through liked posts with prev/next controls
   - Manual prompt mode or pack-based prompt selection
@@ -139,8 +139,11 @@ A multi-platform application for Grok media management built with React, TypeScr
   - Stop on first success toggle for early termination
   - Real-time progress tracking (succeeded/failed counts)
   - Automatic moderation detection treats moderated videos as failures
+  - Sequential execution - waits for each video to complete before starting next
+  - Streaming progress monitoring - tracks generation progress to 100%
   - Staggered API calls with 1-2 second delays to avoid rate limiting
-  - Sequential mode (stop on first success) or parallel mode (all at once)
+  - 403 error detection with immediate stop and user notification
+  - Dynamic request headers (unique UUID and Statsig IDs per request)
   - Loads all liked posts automatically for easy post selection
 - **Spin Feature**: Batch process list items (from userscript version)
 
@@ -309,7 +312,7 @@ open ios/imagineGodMode/imagineGodMode.xcodeproj
    - Queue controls: Resume/Pause processing, Clear completed, Clear all
    - Icon-only tab with badge showing active queue count
    - Empty state message when queue is empty
-10. **The Pit View**: Automated video generation from images
+10. **The Pit View**: Automated video generation from images **(Under Construction)**
    - **Post Selection**: Navigate through liked posts with image preview
      - Automatically loads all liked posts on view open
      - Prev/Next buttons to browse through posts
@@ -323,14 +326,15 @@ open ios/imagineGodMode/imagineGodMode.xcodeproj
    - **Generation Settings**:
      - Tries: Configure number of generation attempts (1-10)
      - Stop on First Success: Toggle to stop after first successful generation
-   - **Churning (Batch Generation)**:
-     - Click "Churn" button to start batch video generation
+   - **Churning (Batch Generation)** - Currently disabled during development:
+     - Sequential execution ensures videos generate one at a time
+     - Streaming response reader waits for 100% completion before proceeding
      - Real-time progress display showing current attempt number
      - Live success/failure counters with color coding (green/red)
-     - Sequential mode (with stop on first success): Runs attempts one at a time, stops on success
-     - Parallel mode (without stop on first success): Staggers all requests with 1-2 second delays
      - Automatic moderation detection: Moderated videos counted as failures
-     - Progress persists during generation for monitoring
+     - 403 error handling with immediate stop and error message display
+     - Dynamic request headers generated per request for API compliance
+     - 1-2 second delays between requests to prevent rate limiting
 11. **Video Controls**: Use the play/pause button or press Space to control video playback
 12. **Fullscreen**: Click the fullscreen button or press F to enter fullscreen mode
 
@@ -672,6 +676,13 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - Glow effects on button and dropdown hovers
   - Progress bar animations with smooth loading indicators
   - Configurable animation hooks for reusability
+- **The Pit Improvements**: Enhanced video generation API reliability
+  - Sequential execution prevents parallel API calls
+  - Streaming response reader monitors progress to 100% completion
+  - UUID v4 generation for `x-xai-request-id` header (unique per request)
+  - Base64-like random string generation for `x-statsig-id` header (88 chars)
+  - 403 error detection stops churning immediately with user-friendly error display
+  - Removed debug console.log statements from PostsStore for cleaner logs
 
 ## Theme Customization
 

@@ -6,6 +6,30 @@ import { API_ENDPOINTS } from '@/utils/constants';
 import { PostData, LikedPostsResponse } from '@/types';
 
 /**
+ * Generate a UUID v4 in the format: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+ */
+const generateUUID = (): string => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+};
+
+/**
+ * Generate a random base64-like string for statsig ID (88 characters)
+ * Format: base64 characters including +, /, and alphanumeric
+ */
+const generateStatsigId = (): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  let result = '';
+  for (let i = 0; i < 88; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};
+
+/**
  * Default limit for fetching posts from the API
  */
 export const DEFAULT_POST_FETCH_LIMIT = 100;
@@ -270,11 +294,17 @@ export const generateVideo = async (
   const imageUrl = `https://imagine-public.x.ai/imagine-public/share-images/${parentPostId}.png`;
   const fullPrompt = `${imageUrl}  ${prompt}`;
 
+  // Generate new IDs for each request
+  const requestId = generateUUID();
+  const statsigId = generateStatsigId();
+
   const res = await fetch(API_ENDPOINTS.VIDEO_GENERATE, {
     method: 'POST',
     headers: {
       accept: '*/*',
       'content-type': 'application/json',
+      'x-statsig-id': statsigId,
+      'x-xai-request-id': requestId,
     },
     body: JSON.stringify({
       temporary: true,
@@ -307,44 +337,90 @@ export const generateVideo = async (
     throw new Error(`HTTP ${res.status}: ${text}`);
   }
 
-  // Parse streaming response
-  const text = await res.text();
-  console.log('[ImagineGodMode API] Video generation raw response:', text);
-
-  // Split concatenated JSON objects (they come as }{}{})
-  // Add commas between objects and wrap in array brackets
-  const jsonArrayText = `[${text.replace(/\}\{/g, '},{')}]`;
-
-  let streamObjects: any[] = [];
-  try {
-    streamObjects = JSON.parse(jsonArrayText);
-  } catch (error) {
-    console.error('[ImagineGodMode API] Failed to parse streaming response:', error);
-    // If parsing fails, try to parse as single object
-    try {
-      streamObjects = [JSON.parse(text)];
-    } catch {
-      throw new Error('Failed to parse video generation response');
-    }
+  // The response is a streaming response - we need to read it as a stream
+  const reader = res.body?.getReader();
+  if (!reader) {
+    throw new Error('Failed to get response body reader');
   }
 
-  // Check for moderation flag in streaming responses
+  const decoder = new TextDecoder();
   let wasModerated = false;
   let videoId: string | undefined;
   let finalProgress = 0;
+  let accumulatedText = '';
 
-  for (const obj of streamObjects) {
-    const streamingResponse = obj?.result?.response?.streamingVideoGenerationResponse;
-    if (streamingResponse) {
-      videoId = streamingResponse.videoId;
-      finalProgress = streamingResponse.progress;
+  try {
+    // Read the stream until completion or progress reaches 100%
+    while (true) {
+      const { done, value } = await reader.read();
 
-      // Check if video was moderated at ANY progress step
-      if (streamingResponse.moderated === true) {
-        wasModerated = true;
-        console.log('[ImagineGodMode API] Video was moderated at progress', streamingResponse.progress + '%:', videoId);
+      if (done) {
+        console.log('[ImagineGodMode API] Stream completed');
+        break;
+      }
+
+      // Decode the chunk
+      const chunk = decoder.decode(value, { stream: true });
+      accumulatedText += chunk;
+
+      // Try to parse any complete JSON objects in the accumulated text
+      // Split by }{ pattern to handle concatenated JSON objects
+      const jsonArrayText = `[${accumulatedText.replace(/\}\{/g, '},{')}]`;
+
+      let streamObjects: Array<{
+        result?: {
+          response?: {
+            streamingVideoGenerationResponse?: {
+              videoId: string;
+              progress: number;
+              moderated?: boolean;
+            };
+          };
+        };
+      }> = [];
+      try {
+        streamObjects = JSON.parse(jsonArrayText);
+      } catch (_error) {
+        // Not enough data yet to parse complete JSON, continue reading
+        continue;
+      }
+
+      // Process all available stream objects
+      for (const obj of streamObjects) {
+        const streamingResponse = obj?.result?.response?.streamingVideoGenerationResponse;
+        if (streamingResponse) {
+          videoId = streamingResponse.videoId;
+          const progress = streamingResponse.progress;
+
+          console.log('[ImagineGodMode API] Video generation progress:', progress + '%', 'videoId:', videoId);
+
+          // Check if video was moderated at ANY progress step
+          if (streamingResponse.moderated === true) {
+            wasModerated = true;
+            console.log('[ImagineGodMode API] Video was moderated at progress', progress + '%:', videoId);
+          }
+
+          // Update final progress
+          if (progress > finalProgress) {
+            finalProgress = progress;
+          }
+
+          // If we reached 100% or were moderated, we can stop
+          if (progress >= 100 || wasModerated) {
+            console.log('[ImagineGodMode API] Stopping stream read - progress:', progress + '%, moderated:', wasModerated);
+            reader.cancel();
+            break;
+          }
+        }
+      }
+
+      // If we detected moderation or completion, break out of the read loop
+      if (wasModerated || finalProgress >= 100) {
+        break;
       }
     }
+  } finally {
+    reader.releaseLock();
   }
 
   if (wasModerated) {
