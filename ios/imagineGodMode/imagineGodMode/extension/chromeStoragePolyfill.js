@@ -360,5 +360,13 @@
     }
   };
 
-  console.log('[ChromePolyfill] Chrome Storage & Downloads polyfill loaded for iOS');
+  // Verify the API is accessible
+  if (typeof window.chrome !== 'undefined' && window.chrome.storage) {
+    console.log('[ChromePolyfill] ✓ Chrome Storage & Downloads polyfill loaded for iOS');
+    console.log('[ChromePolyfill] ✓ chrome.storage.local available');
+    console.log('[ChromePolyfill] ✓ chrome.storage.onChanged available');
+    console.log('[ChromePolyfill] ✓ chrome.runtime.id:', window.chrome.runtime.id);
+  } else {
+    console.error('[ChromePolyfill] ✗ Failed to create chrome.storage API');
+  }
 })();

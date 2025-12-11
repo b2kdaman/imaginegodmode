@@ -47,6 +47,9 @@ struct GrokWebView: PlatformViewRepresentable {
     private func makeWebView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
 
+        // Configure persistent data store for localStorage and cookies
+        config.websiteDataStore = WKWebsiteDataStore.default()
+
         // Disable autoplay for videos
         config.allowsInlineMediaPlayback = true
         config.mediaTypesRequiringUserActionForPlayback = .all
