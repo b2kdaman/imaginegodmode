@@ -36,3 +36,10 @@ build
 package-lock.json
 .claude/settings.local.json
 package-lock.json
+
+# Xcode
+*.xcuserstate
+*.xcuserdatad
+xcuserdata/
+DerivedData/
+*.xcworkspace/xcuserdata/
