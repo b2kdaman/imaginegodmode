@@ -85,6 +85,11 @@ A multi-platform application for Grok media management built with React, TypeScr
   - Visual progress updates with smooth animations
   - Automatic redirect to /favorites after bulk operations
   - Local storage of unliked posts with minimal metadata (ID, prompt, thumbnail, timestamp)
+- **Post Navigation**: Quick navigation between posts in your favorites list
+  - Previous/Next buttons in Prompt view for seamless browsing
+  - Automatically loads liked posts on mount for instant navigation
+  - Buttons disabled when no previous/next post available
+  - Uses posts from favorites or fetched posts from bulk operations
 - **Make + Next**: Workflow automation for batch processing posts
   - Applies current prompt, clicks Make button, and automatically navigates to next post
   - Full-width button in Prompt view for easy access

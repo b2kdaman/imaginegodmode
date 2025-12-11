@@ -422,7 +422,7 @@ struct WebViewContainer: View {
     @State private var webView: WKWebView?
     @State private var fileImportHandler: FileImportHandler?
 
-    let grokURL = URL(string: "https://grok.com/imagine")!
+    let grokURL = URL(string: "https://grok.com/imagine/favorites")!
 
     var body: some View {
         VStack(spacing: 0) {

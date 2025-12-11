@@ -21,6 +21,8 @@ import {
   mdiArrowUp,
   mdiContentCopy,
   mdiSkipNext,
+  mdiChevronDoubleRight,
+  mdiChevronDoubleLeft,
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -35,8 +37,9 @@ import {
 import { getPrefix, setPrefix } from '@/utils/storage';
 import { getPostIdFromUrl } from '@/utils/helpers';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
+import { useLikedPostsLoader } from '@/hooks/useLikedPostsLoader';
 import { NoPostMessage } from '../common/NoPostMessage';
-import { applyPromptAndMake, applyPromptMakeAndNext } from '@/utils/promptActions';
+import { applyPromptAndMake, applyPromptMakeAndNext, navigateToPost } from '@/utils/promptActions';
 
 export const PromptView: React.FC = () => {
   const {
@@ -54,7 +57,7 @@ export const PromptView: React.FC = () => {
     savePostState,
   } = usePromptStore();
   const { getThemeColors, rememberPostState, confirmCopyFrom } = useSettingsStore();
-  const { getNextPostId, setCurrentPostId } = usePostsStore();
+  const { getNextPostId, getPrevPostId, setCurrentPostId, setPosts } = usePostsStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
 
@@ -64,6 +67,9 @@ export const PromptView: React.FC = () => {
   const [prefix, setLocalPrefix] = useState<string>('');
   const [postId, setPostId] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  // Load liked posts hook
+  const { loadLikedPosts } = useLikedPostsLoader(() => {});
 
   // Load prefix and post state from storage when component mounts or URL changes
   const loadPostData = useCallback(async () => {
@@ -89,7 +95,10 @@ export const PromptView: React.FC = () => {
   // Load post data on mount
   useEffect(() => {
     loadPostData();
-  }, [loadPostData]);
+    // Load liked posts on mount to populate posts store for navigation
+    loadLikedPosts().then((posts) => setPosts(posts));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Reload post data when URL changes (navigating to different post)
   useUrlWatcher(loadPostData);
@@ -188,6 +197,30 @@ export const PromptView: React.FC = () => {
 
     // Apply prompt, make video, and navigate to next post
     applyPromptMakeAndNext(currentPrompt.text, prefix, nextPostId);
+  };
+
+  const handlePrevClick = () => {
+    const prevPostId = getPrevPostId();
+
+    if (!prevPostId) {
+      // No previous post available
+      return;
+    }
+
+    // Navigate to previous post using soft navigation
+    navigateToPost(prevPostId);
+  };
+
+  const handleNextClick = () => {
+    const nextPostId = getNextPostId();
+
+    if (!nextPostId) {
+      // No next post available
+      return;
+    }
+
+    // Navigate to next post using soft navigation
+    navigateToPost(nextPostId);
   };
 
   // Check if both prompt and prefix are empty
@@ -348,13 +381,30 @@ export const PromptView: React.FC = () => {
           </Button>
         </div>
 
-        {/* Action buttons row 3 - Make + Next */}
-        <div className="flex gap-2">
+        {/* Action buttons row 3 - Post navigation and Make + Next */}
+        <div className="grid grid-cols-3 gap-2">
+          <div className="col-span-1 flex justify-between">
+            <Button
+              variant="icon"
+              icon={mdiChevronDoubleLeft}
+              onClick={handlePrevClick}
+              disabled={!getPrevPostId()}
+              tooltip="Navigate to previous post"
+            />
+            <Button
+              variant="icon"
+              icon={mdiChevronDoubleRight}
+              onClick={handleNextClick}
+              disabled={!getNextPostId()}
+              tooltip="Navigate to next post"
+            />
+          </div>
+
           <Button
             onClick={handleMakeAndNextClick}
             icon={mdiSkipNext}
             iconColor={UI_COLORS.BLACK}
-            className="w-full !bg-white !text-black hover:!bg-white/90"
+            className="col-span-2 !bg-white !text-black hover:!bg-white/90"
             disabled={!getNextPostId() || isPromptAndPrefixEmpty}
             tooltip="Make video and navigate to next post"
           >
