@@ -41,8 +41,28 @@
     };
   }
 
-  // Mock chrome.storage.local API
+  // Mock chrome.storage.onChanged API
+  const storageChangeListeners = [];
+
   window.chrome.storage = {
+    onChanged: {
+      addListener: function(callback) {
+        if (typeof callback === 'function') {
+          storageChangeListeners.push(callback);
+          console.log('[ChromePolyfill] Storage change listener added. Total listeners:', storageChangeListeners.length);
+        }
+      },
+      removeListener: function(callback) {
+        const index = storageChangeListeners.indexOf(callback);
+        if (index > -1) {
+          storageChangeListeners.splice(index, 1);
+          console.log('[ChromePolyfill] Storage change listener removed. Total listeners:', storageChangeListeners.length);
+        }
+      },
+      hasListener: function(callback) {
+        return storageChangeListeners.indexOf(callback) > -1;
+      }
+    },
     local: {
       /**
        * Get items from storage
@@ -98,11 +118,18 @@
       set: function(items, callback) {
         const requestId = generateId();
 
-        // Store callback
+        // Store callback and items for change notification
         if (callback) {
           pendingCallbacks.set(requestId, {
             type: 'set',
-            callback
+            callback,
+            items: items
+          });
+        } else {
+          // Store items even without callback for change notification
+          pendingCallbacks.set(requestId, {
+            type: 'set',
+            items: items
           });
         }
 
@@ -246,30 +273,64 @@
       return;
     }
 
-    const { type, callback, defaultValues } = pendingCallbacks.get(id);
+    const pendingRequest = pendingCallbacks.get(id);
+    const { type, callback, defaultValues, items } = pendingRequest;
     pendingCallbacks.delete(id);
-
-    if (!callback) return;
 
     switch (type) {
       case 'get':
-        if (success) {
-          // Merge with default values if provided
-          const result = defaultValues ? { ...defaultValues, ...data } : data;
-          callback(result);
-        } else {
-          console.error('[ChromePolyfill] Storage get failed:', error);
-          callback(defaultValues || {});
+        if (callback) {
+          if (success) {
+            // Merge with default values if provided
+            const result = defaultValues ? { ...defaultValues, ...data } : data;
+            callback(result);
+          } else {
+            console.error('[ChromePolyfill] Storage get failed:', error);
+            callback(defaultValues || {});
+          }
         }
         break;
 
       case 'set':
+        if (success && items) {
+          // Notify storage change listeners
+          const changes = {};
+          for (const key in items) {
+            changes[key] = {
+              newValue: items[key],
+              oldValue: undefined // We don't track old values in this implementation
+            };
+          }
+
+          // Trigger listeners asynchronously
+          setTimeout(() => {
+            storageChangeListeners.forEach(listener => {
+              try {
+                listener(changes, 'local');
+              } catch (e) {
+                console.error('[ChromePolyfill] Error in storage change listener:', e);
+              }
+            });
+          }, 0);
+        }
+
+        if (!success) {
+          console.error(`[ChromePolyfill] Storage ${type} failed:`, error);
+        }
+
+        if (callback) {
+          callback();
+        }
+        break;
+
       case 'remove':
       case 'clear':
         if (!success) {
           console.error(`[ChromePolyfill] Storage ${type} failed:`, error);
         }
-        callback();
+        if (callback) {
+          callback();
+        }
         break;
 
       default:
