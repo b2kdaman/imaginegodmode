@@ -96,6 +96,11 @@ A multi-platform application for Grok media management built with React, TypeScr
   - Disabled when no next post available
   - Uses fetched posts from "Upscale All Liked" or "Show Unliked"
   - 1-second delay between Make and navigation for proper execution
+  - **Auto Mode**: Toggle button to automatically repeat Make + Next workflow
+    - Icon button with visual active state (slate background, dark icon)
+    - Random 1-1.5 second delay between iterations
+    - Automatically stops when reaching the end of the post list
+    - Toggle off anytime to stop automation
 - **Video Progress Tracking**: Real-time progress bar and button glow during video generation
 - **HD Status Indicator**: Green check icon appears when all videos are HD quality
 - **Video Controls**: Play/pause button with synchronized state tracking

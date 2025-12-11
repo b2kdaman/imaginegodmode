@@ -23,6 +23,7 @@ import {
   mdiSkipNext,
   mdiChevronDoubleRight,
   mdiChevronDoubleLeft,
+  mdiAutorenew,
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -67,6 +68,7 @@ export const PromptView: React.FC = () => {
   const [prefix, setLocalPrefix] = useState<string>('');
   const [postId, setPostId] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [autoNavigate, setAutoNavigate] = useState(false);
 
   // Load liked posts hook
   const { loadLikedPosts } = useLikedPostsLoader(() => {});
@@ -188,6 +190,7 @@ export const PromptView: React.FC = () => {
 
     if (!nextPostId) {
       // No next post available
+      setAutoNavigate(false); // Stop auto-navigation if no next post
       return;
     }
 
@@ -197,6 +200,17 @@ export const PromptView: React.FC = () => {
 
     // Apply prompt, make video, and navigate to next post
     applyPromptMakeAndNext(currentPrompt.text, prefix, nextPostId);
+
+    // If auto-navigate is enabled, schedule the next iteration
+    if (autoNavigate) {
+      const delay = 1000 + Math.random() * 500; // Random delay between 1-1.5s
+      setTimeout(() => {
+        // Re-check if auto-navigate is still enabled and next post exists
+        if (autoNavigate && getNextPostId()) {
+          handleMakeAndNextClick();
+        }
+      }, delay);
+    }
   };
 
   const handlePrevClick = () => {
@@ -400,16 +414,26 @@ export const PromptView: React.FC = () => {
             />
           </div>
 
-          <Button
-            onClick={handleMakeAndNextClick}
-            icon={mdiSkipNext}
-            iconColor={UI_COLORS.BLACK}
-            className="col-span-2 !bg-white !text-black hover:!bg-white/90"
-            disabled={!getNextPostId() || isPromptAndPrefixEmpty}
-            tooltip="Make video and navigate to next post"
-          >
-            Make + Next
-          </Button>
+          <div className="col-span-2 flex gap-2">
+            <Button
+              onClick={handleMakeAndNextClick}
+              icon={mdiSkipNext}
+              iconColor={UI_COLORS.BLACK}
+              className="flex-1 !bg-white !text-black hover:!bg-white/90"
+              disabled={!getNextPostId() || isPromptAndPrefixEmpty}
+              tooltip="Make video and navigate to next post"
+            >
+              Make + Next
+            </Button>
+            <Button
+              variant="icon"
+              icon={mdiAutorenew}
+              onClick={() => setAutoNavigate(!autoNavigate)}
+              tooltip="Auto: Automatically repeat Make + Next with 1-1.5s delay"
+              className={autoNavigate ? '!bg-slate-400 !border-slate-400' : ''}
+              iconColor={autoNavigate ? UI_COLORS.BLACK : undefined}
+            />
+          </div>
         </div>
       </div>
 
