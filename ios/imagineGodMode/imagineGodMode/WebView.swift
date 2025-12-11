@@ -54,6 +54,11 @@ struct GrokWebView: PlatformViewRepresentable {
         config.allowsInlineMediaPlayback = true
         config.mediaTypesRequiringUserActionForPlayback = .all
 
+        // Enable JavaScript console logging to Xcode
+        let preferences = WKPreferences()
+        preferences.javaScriptEnabled = true
+        config.preferences = preferences
+
         // Configure user content controller
         let userContentController = WKUserContentController()
 
@@ -67,6 +72,58 @@ struct GrokWebView: PlatformViewRepresentable {
         userContentController.add(storageBridge, name: "chromeStorage")
         userContentController.add(downloadManager, name: "chromeDownloads")
         userContentController.add(fileImportHandler, name: "fileImport")
+
+        // Add console log interceptor
+        let consoleLogScript = """
+        (function() {
+            const originalLog = console.log;
+            const originalError = console.error;
+            const originalWarn = console.warn;
+
+            console.log = function(...args) {
+                originalLog.apply(console, args);
+                try {
+                    window.webkit.messageHandlers.consoleLog?.postMessage({
+                        level: 'log',
+                        message: args.map(String).join(' ')
+                    });
+                } catch(e) {}
+            };
+
+            console.error = function(...args) {
+                originalError.apply(console, args);
+                try {
+                    window.webkit.messageHandlers.consoleLog?.postMessage({
+                        level: 'error',
+                        message: args.map(String).join(' ')
+                    });
+                } catch(e) {}
+            };
+
+            console.warn = function(...args) {
+                originalWarn.apply(console, args);
+                try {
+                    window.webkit.messageHandlers.consoleLog?.postMessage({
+                        level: 'warn',
+                        message: args.map(String).join(' ')
+                    });
+                } catch(e) {}
+            };
+        })();
+        """
+
+        let consoleScript = WKUserScript(
+            source: consoleLogScript,
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: false
+        )
+        userContentController.addUserScript(consoleScript)
+
+        // Create console log handler
+        let consoleHandler = ConsoleLogHandler()
+        userContentController.add(consoleHandler, name: "consoleLog")
+        context.coordinator.consoleHandler = consoleHandler
+
         config.userContentController = userContentController
 
         // Store managers in coordinator so they don't get deallocated
@@ -226,6 +283,30 @@ struct GrokWebView: PlatformViewRepresentable {
         return nil
     }
 
+    // MARK: - Console Log Handler
+
+    class ConsoleLogHandler: NSObject, WKScriptMessageHandler {
+        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            guard let body = message.body as? [String: Any],
+                  let level = body["level"] as? String,
+                  let msg = body["message"] as? String else {
+                return
+            }
+
+            let prefix: String
+            switch level {
+            case "error":
+                prefix = "❌ [JS Error]"
+            case "warn":
+                prefix = "⚠️ [JS Warn]"
+            default:
+                prefix = "📱 [JS Log]"
+            }
+
+            print("\(prefix) \(msg)")
+        }
+    }
+
     // MARK: - Coordinator
 
     class Coordinator: NSObject, WKNavigationDelegate {
@@ -233,6 +314,7 @@ struct GrokWebView: PlatformViewRepresentable {
         var storageBridge: ChromeStorageBridge?
         var downloadManager: DownloadManager?
         var fileImportHandler: FileImportHandler?
+        var consoleHandler: ConsoleLogHandler?
 
         init(_ parent: GrokWebView) {
             self.parent = parent
@@ -245,10 +327,18 @@ struct GrokWebView: PlatformViewRepresentable {
                 self.parent.canGoForward = webView.canGoForward
             }
 
-            print("[WebView] Finished loading: \(webView.url?.absoluteString ?? "unknown")")
+            print("[WebView] ✓ Finished loading: \(webView.url?.absoluteString ?? "unknown")")
 
-            // Try injecting scripts after page load using evaluateJavaScript
-            self.injectScriptsAfterLoad(webView)
+            // Test basic JavaScript execution first
+            webView.evaluateJavaScript("console.log('[WebView] ✓ JavaScript execution works!'); 'test';") { result, error in
+                if let error = error {
+                    print("[WebView] ✗ JavaScript test FAILED: \(error)")
+                } else {
+                    print("[WebView] ✓ JavaScript test passed, result: \(String(describing: result))")
+                    // JavaScript works, now inject scripts
+                    self.injectScriptsAfterLoad(webView)
+                }
+            }
         }
 
         private func injectScriptsAfterLoad(_ webView: WKWebView) {
