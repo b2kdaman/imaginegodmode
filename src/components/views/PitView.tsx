@@ -278,10 +278,9 @@ export const PitView: React.FC = () => {
 
         {/* Image Preview */}
         <div
-          className="w-1/2 rounded-lg overflow-hidden relative"
+          className="w-1/2 rounded-lg overflow-hidden relative flex items-center justify-center bg-white/20"
           style={{
             height: '120px',
-            backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
             border: `1px solid ${colors.BORDER}`,
           }}
         >
@@ -311,7 +310,7 @@ export const PitView: React.FC = () => {
               <img
                 src={getImageUrl()}
                 alt="Post preview"
-                className="w-full h-full object-cover"
+                className="max-w-full max-h-full object-contain"
                 onLoad={() => setImageLoading(false)}
                 onError={() => setImageLoading(false)}
                 style={{ display: imageLoading ? 'none' : 'block' }}
