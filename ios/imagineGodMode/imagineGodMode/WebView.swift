@@ -517,57 +517,13 @@ struct WebViewContainer: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // WebView
+            // WebView (full screen, no browser controls)
             GrokWebView(
                 url: grokURL,
                 canGoBack: $canGoBack,
                 canGoForward: $canGoForward
             )
-            .padding(.top, 50)
-            .edgesIgnoringSafeArea(.bottom)
-
-            // Toolbar
-            HStack(spacing: 20) {
-                Button(action: goBack) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 20, weight: .medium))
-                        .foregroundColor(canGoBack ? .blue : .gray)
-                }
-                .disabled(!canGoBack)
-
-                Button(action: goForward) {
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 20, weight: .medium))
-                        .foregroundColor(canGoForward ? .blue : .gray)
-                }
-                .disabled(!canGoForward)
-
-                Spacer()
-
-                Button(action: reload) {
-                    Image(systemName: "arrow.clockwise")
-                        .font(.system(size: 20, weight: .medium))
-                        .foregroundColor(.blue)
-                }
-            }
-            .padding()
-            #if os(iOS)
-            .background(Color(UIColor.systemBackground))
-            .overlay(
-                Rectangle()
-                    .frame(height: 0.5)
-                    .foregroundColor(Color(UIColor.separator)),
-                alignment: .top
-            )
-            #elseif os(macOS)
-            .background(Color(NSColor.windowBackgroundColor))
-            .overlay(
-                Rectangle()
-                    .frame(height: 0.5)
-                    .foregroundColor(Color(NSColor.separatorColor)),
-                alignment: .top
-            )
-            #endif
+            .edgesIgnoringSafeArea(.all)
         }
         #if os(iOS)
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)) { _ in
