@@ -523,7 +523,8 @@ struct WebViewContainer: View {
                 canGoBack: $canGoBack,
                 canGoForward: $canGoForward
             )
-            .edgesIgnoringSafeArea(.all)
+            .padding(.top, 50)
+            .edgesIgnoringSafeArea(.bottom)
         }
         #if os(iOS)
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)) { _ in
