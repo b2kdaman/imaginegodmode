@@ -12,10 +12,17 @@ import WebKit
 struct imagineGodModeApp: App {
     @State private var fileToImport: URL?
 
+    // Keep a reference to prevent processes from shutting down
+    private static let webKitPreloader: WKWebView = {
+        let config = WKWebViewConfiguration()
+        config.defaultWebpagePreferences.allowsContentJavaScript = true
+        return WKWebView(frame: .zero, configuration: config)
+    }()
+
     init() {
-        // Preload WebKit processes to reduce initial launch time
-        // This warms up the Networking, GPU, and WebContent processes
-        _ = WKWebView()
+        // Trigger WebKit process initialization
+        // The static property keeps processes alive
+        _ = Self.webKitPreloader
     }
 
     var body: some Scene {
