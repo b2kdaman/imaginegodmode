@@ -54,10 +54,8 @@ struct GrokWebView: PlatformViewRepresentable {
         config.allowsInlineMediaPlayback = true
         config.mediaTypesRequiringUserActionForPlayback = .all
 
-        // Enable JavaScript console logging to Xcode
-        let preferences = WKPreferences()
-        preferences.javaScriptEnabled = true
-        config.preferences = preferences
+        // Enable JavaScript (using modern API for iOS 14+)
+        config.defaultWebpagePreferences.allowsContentJavaScript = true
 
         // Configure user content controller
         let userContentController = WKUserContentController()
@@ -576,7 +574,7 @@ struct WebViewContainer: View {
             // Handle background
         }
         #endif
-        .onChange(of: fileToImport) { newFileURL in
+        .onChange(of: fileToImport) { oldValue, newFileURL in
             if let fileURL = newFileURL, let webView = getWebView() {
                 // Initialize file import handler if not already done
                 if fileImportHandler == nil {
