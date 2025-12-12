@@ -36,9 +36,6 @@ class FileImportHandler: NSObject, WKScriptMessageHandler {
         do {
             // Read file data
             let data = try Data(contentsOf: url)
-
-            // Convert to base64 for transfer to JavaScript
-            let base64String = data.base64EncodedString()
             let fileName = url.lastPathComponent
             let fileExtension = url.pathExtension.lowercased()
 
@@ -49,41 +46,53 @@ class FileImportHandler: NSObject, WKScriptMessageHandler {
                 return
             }
 
-            // Create JavaScript to handle the import
+            // Convert to base64 for transfer to JavaScript
+            let base64String = data.base64EncodedString()
+
+            // Escape single quotes in base64 string for JavaScript
+            let escapedBase64 = base64String.replacingOccurrences(of: "'", with: "\\'")
+
+            // Create JavaScript to simulate file input selection
             let script = """
             (function() {
                 try {
-                    // Decode base64 to get the file content
-                    const base64 = '\(base64String)';
+                    console.log('[FileImportHandler] Starting file import for: \(fileName)');
+
+                    // Decode base64 to create a Blob
+                    const base64 = '\(escapedBase64)';
                     const binaryString = atob(base64);
                     const bytes = new Uint8Array(binaryString.length);
                     for (let i = 0; i < binaryString.length; i++) {
                         bytes[i] = binaryString.charCodeAt(i);
                     }
-                    const text = new TextDecoder().decode(bytes);
 
-                    // Parse JSON
-                    const jsonData = JSON.parse(text);
+                    // Create a File object from the bytes
+                    const blob = new Blob([bytes], { type: 'application/octet-stream' });
+                    const file = new File([blob], '\(fileName)', { type: 'application/octet-stream' });
 
-                    // Trigger the import in the extension
-                    // This will call the ImportPackModal's handleFileContent or handleTextChange
-                    if (window.triggerPackImport) {
-                        window.triggerPackImport(text);
-                        console.log('[FileImportHandler] File imported: \(fileName)');
+                    // Find the hidden file input in ImportPackModal
+                    const fileInput = document.querySelector('input[type="file"][accept*=".pak"]');
+
+                    if (fileInput) {
+                        // Create a DataTransfer to hold the file
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+
+                        // Assign files to input and trigger change event
+                        fileInput.files = dataTransfer.files;
+
+                        // Dispatch change event to trigger handleFileSelect
+                        const event = new Event('change', { bubbles: true });
+                        fileInput.dispatchEvent(event);
+
+                        console.log('[FileImportHandler] File injected into input and change event dispatched');
                     } else {
-                        // Fallback: dispatch a custom event that the extension can listen to
-                        const event = new CustomEvent('ios-file-import', {
-                            detail: {
-                                fileName: '\(fileName)',
-                                content: text,
-                                data: jsonData
-                            }
-                        });
-                        document.dispatchEvent(event);
-                        console.log('[FileImportHandler] Dispatched ios-file-import event');
+                        console.error('[FileImportHandler] File input not found. Make sure Import modal is open.');
+                        alert('Please open the Import dialog first (click Import button in the extension)');
                     }
                 } catch (error) {
                     console.error('[FileImportHandler] Error importing file:', error);
+                    alert('Error importing file: ' + error.message);
                 }
             })();
             """
@@ -92,7 +101,7 @@ class FileImportHandler: NSObject, WKScriptMessageHandler {
                 if let error = error {
                     print("[FileImportHandler] JavaScript error: \(error)")
                 } else {
-                    print("[FileImportHandler] File \(fileName) successfully passed to WebView")
+                    print("[FileImportHandler] File \(fileName) successfully injected into file input")
                 }
             }
 
