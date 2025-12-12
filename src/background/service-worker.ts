@@ -56,9 +56,12 @@ async function handleDownloadMedia(urls: string[]): Promise<MessageResponse> {
       const url = urls[i];
       const filename = extractFilename(url, i);
 
+      // Add &dl=1 parameter to download URL
+      const downloadUrl = url.includes('?') ? `${url}&dl=1` : `${url}?dl=1`;
+
       // Download using browser API
       const downloadId = await browserAPI.downloads.download({
-        url,
+        url: downloadUrl,
         filename,
         saveAs: false,
       });
