@@ -106,9 +106,9 @@ export const Toggle: React.FC<ToggleProps> = ({
 
           {/* Toggle knob */}
           <div
-            className="absolute top-[2px] left-[2px] w-5 h-5 rounded-full bg-white z-10"
+            className="absolute top-[1px] left-[1px] w-5 h-5 rounded-full bg-white z-10"
             style={{
-              transform: checked ? 'translateX(24px)' : 'translateX(0)',
+              transform: checked ? 'translateX(26px)' : 'translateX(0)',
               transition: 'transform 0.2s ease',
             }}
           />
