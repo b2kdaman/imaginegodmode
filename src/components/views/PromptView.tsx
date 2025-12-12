@@ -175,7 +175,7 @@ export const PromptView: React.FC = () => {
   // Helper function to construct full prompt text with global addon
   const getFullPromptText = (promptText: string): string => {
     if (globalPromptAddonEnabled && globalPromptAddon.trim()) {
-      return `${promptText} ${globalPromptAddon.trim()}`;
+      return `${promptText}, ${globalPromptAddon.trim()}`;
     }
     return promptText;
   };
@@ -183,8 +183,8 @@ export const PromptView: React.FC = () => {
   // Helper function to strip global addon from text
   const stripGlobalAddon = (text: string): string => {
     if (globalPromptAddonEnabled && globalPromptAddon.trim()) {
-      const addonText = globalPromptAddon.trim();
-      // Check if text ends with the addon
+      const addonText = `, ${globalPromptAddon.trim()}`;
+      // Check if text ends with the addon (including comma)
       if (text.endsWith(addonText)) {
         return text.slice(0, -addonText.length).trim();
       }
