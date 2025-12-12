@@ -197,47 +197,45 @@ export const SettingsView: React.FC = () => {
           </div>
 
           {/* Global Prompt Addon Setting */}
-          <div className="flex flex-col gap-2">
-            <div
-              className="flex items-center justify-between gap-2 cursor-help"
-              data-tooltip-id="app-tooltip"
-              data-tooltip-content="Add custom text that will be automatically appended to every prompt when pressing Make or Make+Next"
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-id="app-tooltip"
+            data-tooltip-content="Add custom text that will be automatically appended to every prompt when pressing Make or Make+Next"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="global-prompt-addon-toggle"
             >
-              <label
-                className="text-sm cursor-pointer flex items-center gap-1.5"
-                style={{ color: colors.TEXT_PRIMARY }}
-                htmlFor="global-prompt-addon-toggle"
-              >
-                <Icon path={mdiTextBoxPlus} size={0.7} color={colors.TEXT_PRIMARY} />
-                {t('settings.globalPromptAddon')}
-              </label>
-              <Toggle
-                id="global-prompt-addon-toggle"
-                checked={globalPromptAddonEnabled}
-                onChange={(checked) => {
-                  setGlobalPromptAddonEnabled(checked);
-                }}
-              />
-            </div>
-
-            {/* Global Prompt Addon Textarea */}
-            {globalPromptAddonEnabled && (
-              <textarea
-                value={globalPromptAddon}
-                onChange={(e) => setGlobalPromptAddon(e.target.value)}
-                placeholder={t('settings.globalPromptAddonPlaceholder')}
-                className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar backdrop-blur-xl"
-                rows={3}
-                style={{
-                  backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
-                  color: colors.TEXT_PRIMARY,
-                  border: `1px solid ${colors.BORDER}`,
-                  WebkitBackdropFilter: 'blur(12px)',
-                  backdropFilter: 'blur(12px)',
-                }}
-              />
-            )}
+              <Icon path={mdiTextBoxPlus} size={0.7} color={colors.TEXT_PRIMARY} />
+              {t('settings.globalPromptAddon')}
+            </label>
+            <Toggle
+              id="global-prompt-addon-toggle"
+              checked={globalPromptAddonEnabled}
+              onChange={(checked) => {
+                setGlobalPromptAddonEnabled(checked);
+              }}
+            />
           </div>
+
+          {/* Global Prompt Addon Textarea */}
+          {globalPromptAddonEnabled && (
+            <textarea
+              value={globalPromptAddon}
+              onChange={(e) => setGlobalPromptAddon(e.target.value)}
+              placeholder={t('settings.globalPromptAddonPlaceholder')}
+              className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar backdrop-blur-xl"
+              rows={3}
+              style={{
+                backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
+                color: colors.TEXT_PRIMARY,
+                border: `1px solid ${colors.BORDER}`,
+                WebkitBackdropFilter: 'blur(12px)',
+                backdropFilter: 'blur(12px)',
+              }}
+            />
+          )}
         </div>
       </div>
 
