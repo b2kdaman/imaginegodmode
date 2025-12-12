@@ -62,7 +62,11 @@ A multi-platform application for Grok media management built with React, TypeScr
   - **Visual Validation**: Real-time JSON validation with format detection and pack counts
   - **Theme-Aware UI**: Export button with accent color hover states
   - **Merge or Replace Modes**: Import new packs or overwrite existing ones
-- **Media Downloading**: Download images and videos from Grok posts (disabled until all videos are HD)
+- **Download Queue**: Global queue system for batch processing downloads
+  - Sequential download processing with delays between each file
+  - Persists across post navigation
+  - Auto-starts processing when items are added
+  - Real-time status tracking for each download (pending/downloading/completed/failed)
 - **Auto Download**: Optional setting to automatically download all media after upscaling completes
 - **Video Upscaling**: Parallel upscale requests with staggered start times for optimal performance
 - **Upscale Queue**: Global queue system for batch processing videos across posts
@@ -250,7 +254,7 @@ open ios/imagineGodMode/imagineGodMode.xcodeproj
    - **Make + Next**: Automatically apply prompt, make video, and navigate to next post (requires fetched posts)
 6. **Ops View**: Automatically fetches post data when opened
    - Primary action: Upscale videos (parallel processing with staggered starts)
-   - Secondary action: Download media (enabled only when all videos are HD)
+   - Secondary action: Download media - adds items to download queue for batch processing
    - Real-time status updates and progress tracking
    - Green check icon appears when all videos are HD quality
    - **Upscale All Liked**: Bulk upscale videos from multiple liked posts
@@ -405,6 +409,7 @@ grkgoondl/
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
 - **useSettingsStore**: Manages theme, size, auto-download, remember-post-state, simple-shortcut, hide-unsave, enable-sound, and confirm-copy-from preferences with localStorage persistence
 - **useUpscaleQueueStore**: Global upscale queue with batch processing (15 at a time), auto-download, and localStorage persistence
+- **useDownloadQueueStore**: Global download queue with sequential processing, auto-start, and localStorage persistence
 - **usePostsStore**: Manages fetched posts list and navigation helpers for "Make + Next" workflow
 - **useUserStore**: Manages user ID from API with localStorage persistence and automatic initialization
 - **usePitStore**: Manages The Pit state (selected post, manual mode, prompt, pack selection, tries, stop-on-first-success)
@@ -584,6 +589,8 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - Video progress polling every 500ms with auto-removal on completion
 - Console initialization tag with styled branding using theme colors
 - API architecture refactored: content script handles authenticated calls, background worker handles downloads
+- Message passing includes retry mechanism (3 attempts) to handle service worker wake-up delays
+- Download queue system processes files sequentially with configurable delays between downloads
 - Settings persist in localStorage for instant theme/size/language/auto-download/remember-post-state/simple-shortcut/hide-unsave/enable-sound/confirm-copy-from application on load
 - **Hide Unsave Feature**: Dynamic CSS injection to hide Unsave button when enabled
   - Uses `useEffect` hook to inject/remove style element

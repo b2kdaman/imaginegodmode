@@ -6,10 +6,11 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useMediaStore } from '@/store/useMediaStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useUpscaleQueueStore } from '@/store/useUpscaleQueueStore';
+import { useDownloadQueueStore } from '@/store/useDownloadQueueStore';
 import { usePostsStore } from '@/store/usePostsStore';
 import { useUserStore } from '@/store/useUserStore';
 import { getPostIdFromUrl } from '@/utils/helpers';
-import { fetchPost, downloadMedia } from '@/utils/messaging';
+import { fetchPost } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
 import { fetchPostData } from '@/api/grokApi';
 import { Button } from '../inputs/Button';
@@ -41,6 +42,7 @@ export const OpsView: React.FC = () => {
   } = useMediaStore();
   const { getThemeColors } = useSettingsStore();
   const { addToQueue, isProcessing: isQueueProcessing } = useUpscaleQueueStore();
+  const { addToQueue: addToDownloadQueue } = useDownloadQueueStore();
   const { setPosts, setCurrentPostId, ensureCurrentPostInList } = usePostsStore();
   const { userId } = useUserStore();
   const colors = getThemeColors();
@@ -127,19 +129,36 @@ export const OpsView: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Download media
-  const handleDownload = async () => {
-    setStatusText(STATUS_MESSAGES.DOWNLOADING);
-    const urlStrings = urls.map((m) => m.url);
-    const response = await downloadMedia(urlStrings);
-
-    if (response.success && response.data && typeof response.data === 'object' && 'count' in response.data) {
-      const count = (response.data as { count: number }).count;
-      setStatusText(STATUS_MESSAGES.DOWNLOADED(count));
-      trackMediaDownloaded(count, 'mixed');
-    } else {
-      setStatusText(STATUS_MESSAGES.DOWNLOAD_FAILED);
+  // Download media - add to queue
+  const handleDownload = () => {
+    if (urls.length === 0) {
+      setStatusText('No media to download');
+      return;
     }
+
+    if (!postId) {
+      setStatusText('No post ID found');
+      return;
+    }
+
+    // Extract filename from URL for each item
+    const downloadItems = urls.map((item) => {
+      const urlParts = item.url.split('/');
+      const filenameWithQuery = urlParts[urlParts.length - 1];
+      const filename = filenameWithQuery.split('?')[0] || `media_${Date.now()}`;
+      return {
+        url: item.url,
+        filename,
+      };
+    });
+
+    // Add to download queue - it will auto-start processing
+    addToDownloadQueue(postId, downloadItems);
+    setStatusText(`Added ${urls.length} item${urls.length === 1 ? '' : 's'} to download queue`);
+    trackMediaDownloaded(urls.length, 'mixed');
+
+    // Clear local media URLs since they're now in queue
+    setMediaUrls([]);
   };
 
   // Add videos to upscale queue
