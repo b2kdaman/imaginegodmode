@@ -13,9 +13,17 @@ import { trackKeyboardShortcut, trackVideoFullscreen, trackVideoPlayPause } from
 
 export const useKeyboardShortcuts = () => {
   const { getCurrentPrompt } = usePromptStore();
-  const { simpleShortcut } = useSettingsStore();
+  const { simpleShortcut, globalPromptAddonEnabled, globalPromptAddon } = useSettingsStore();
 
   useEffect(() => {
+    // Helper function to apply global addon to prompt text
+    const getFullPromptText = (promptText: string): string => {
+      if (globalPromptAddonEnabled && globalPromptAddon.trim()) {
+        return `${promptText}, ${globalPromptAddon.trim()}`;
+      }
+      return promptText;
+    };
+
     const handleKeyDown = (e: KeyboardEvent) => {
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
       const modifierKey = isMac ? e.metaKey : e.ctrlKey;
@@ -105,15 +113,18 @@ export const useKeyboardShortcuts = () => {
         const currentPrompt = getCurrentPrompt();
 
         if (currentPrompt) {
+          // Apply global addon to prompt text
+          const fullPromptText = getFullPromptText(currentPrompt.text);
+
           // Get the prefix for the current post and apply prompt
           const postId = getPostIdFromUrl();
           if (postId) {
             getPrefix(postId).then((prefix) => {
-              applyPromptAndMake(currentPrompt.text, prefix, 100);
+              applyPromptAndMake(fullPromptText, prefix, 100);
             });
           } else {
             // No post ID, apply without prefix
-            applyPromptAndMake(currentPrompt.text, '', 100);
+            applyPromptAndMake(fullPromptText, '', 100);
           }
         }
       }
@@ -124,5 +135,5 @@ export const useKeyboardShortcuts = () => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [getCurrentPrompt, simpleShortcut]);
+  }, [getCurrentPrompt, simpleShortcut, globalPromptAddonEnabled, globalPromptAddon]);
 };
