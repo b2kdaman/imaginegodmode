@@ -205,9 +205,13 @@ export const PromptView: React.FC = () => {
     if (autoNavigate) {
       const delay = 1000 + Math.random() * 500; // Random delay between 1-1.5s
       setTimeout(() => {
+        const hasNextPost = getNextPostId();
         // Re-check if auto-navigate is still enabled and next post exists
-        if (autoNavigate && getNextPostId()) {
+        if (autoNavigate && hasNextPost) {
           handleMakeAndNextClick();
+        } else if (!hasNextPost) {
+          // Turn off auto-navigate when reaching the final post
+          setAutoNavigate(false);
         }
       }, delay);
     }
