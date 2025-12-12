@@ -8,6 +8,12 @@
 
 import SwiftUI
 import WebKit
+import UniformTypeIdentifiers
+
+// Custom UTType for .pak files
+extension UTType {
+    static let pak = UTType(filenameExtension: "pak") ?? .data
+}
 
 #if os(iOS)
 import UIKit
@@ -512,19 +518,51 @@ struct WebViewContainer: View {
     @State private var canGoForward = false
     @State private var webView: WKWebView?
     @State private var fileImportHandler: FileImportHandler?
+    @State private var showFilePicker = false
 
     let grokURL = URL(string: "https://grok.com/imagine/favorites")!
 
     var body: some View {
-        VStack(spacing: 0) {
-            // WebView (full screen, no browser controls)
-            GrokWebView(
-                url: grokURL,
-                canGoBack: $canGoBack,
-                canGoForward: $canGoForward
-            )
-            .padding(.top, 50)
-            .edgesIgnoringSafeArea(.bottom)
+        ZStack(alignment: .topTrailing) {
+            VStack(spacing: 0) {
+                // WebView (full screen, no browser controls)
+                GrokWebView(
+                    url: grokURL,
+                    canGoBack: $canGoBack,
+                    canGoForward: $canGoForward
+                )
+                .padding(.top, 50)
+                .edgesIgnoringSafeArea(.bottom)
+            }
+
+            // Floating import button
+            Button(action: {
+                showFilePicker = true
+            }) {
+                Image(systemName: "square.and.arrow.down")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(width: 44, height: 44)
+                    .background(Color.blue)
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+            }
+            .padding(.top, 60)
+            .padding(.trailing, 16)
+        }
+        .fileImporter(
+            isPresented: $showFilePicker,
+            allowedContentTypes: [.json, .pak],
+            allowsMultipleSelection: false
+        ) { result in
+            switch result {
+            case .success(let urls):
+                if let url = urls.first {
+                    fileToImport = url
+                }
+            case .failure(let error):
+                print("[WebView] File picker error: \(error)")
+            }
         }
         #if os(iOS)
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)) { _ in
