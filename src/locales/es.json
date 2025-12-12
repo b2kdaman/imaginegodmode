@@ -51,6 +51,8 @@
     "simpleShortcut": "Atajo Simple",
     "hideUnsave": "Ocultar Desguardar",
     "enableSound": "Activar Sonido",
+    "globalPromptAddon": "Complemento de Prompt Global",
+    "globalPromptAddonPlaceholder": "Ingresa texto para agregar a todos los prompts...",
     "dataManagement": "Gestión de Datos",
     "importMode": "Modo de Importación de Pack",
     "importModeAdd": "Agregar",

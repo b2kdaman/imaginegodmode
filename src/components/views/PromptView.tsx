@@ -57,7 +57,7 @@ export const PromptView: React.FC = () => {
     loadPostState,
     savePostState,
   } = usePromptStore();
-  const { getThemeColors, rememberPostState, confirmCopyFrom } = useSettingsStore();
+  const { getThemeColors, rememberPostState, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon } = useSettingsStore();
   const { getNextPostId, getPrevPostId, setCurrentPostId, setPosts } = usePostsStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
@@ -151,8 +151,9 @@ export const PromptView: React.FC = () => {
       return;
     }
 
-    // If empty or confirmation disabled, copy directly
-    updatePromptText(textarea.value);
+    // If empty or confirmation disabled, copy directly (strip addon if present)
+    const strippedText = stripGlobalAddon(textarea.value);
+    updatePromptText(strippedText);
     trackPromptEdited();
     trackPromptCopiedFromPage();
   };
@@ -163,10 +164,32 @@ export const PromptView: React.FC = () => {
       return;
     }
 
-    updatePromptText(textarea.value);
+    // Strip addon if present before saving
+    const strippedText = stripGlobalAddon(textarea.value);
+    updatePromptText(strippedText);
     trackPromptEdited();
     trackPromptCopiedFromPage();
     setShowConfirmModal(false);
+  };
+
+  // Helper function to construct full prompt text with global addon
+  const getFullPromptText = (promptText: string): string => {
+    if (globalPromptAddonEnabled && globalPromptAddon.trim()) {
+      return `${promptText} ${globalPromptAddon.trim()}`;
+    }
+    return promptText;
+  };
+
+  // Helper function to strip global addon from text
+  const stripGlobalAddon = (text: string): string => {
+    if (globalPromptAddonEnabled && globalPromptAddon.trim()) {
+      const addonText = globalPromptAddon.trim();
+      // Check if text ends with the addon
+      if (text.endsWith(addonText)) {
+        return text.slice(0, -addonText.length).trim();
+      }
+    }
+    return text;
   };
 
   const handlePlayClick = () => {
@@ -177,8 +200,9 @@ export const PromptView: React.FC = () => {
     // Track video make action
     trackVideoMakeClicked();
 
-    // Apply prompt with prefix and click Make button
-    applyPromptAndMake(currentPrompt.text, prefix);
+    // Apply prompt with prefix, global addon, and click Make button
+    const fullPromptText = getFullPromptText(currentPrompt.text);
+    applyPromptAndMake(fullPromptText, prefix);
   };
 
   const handleMakeAndNextClick = () => {
@@ -198,8 +222,9 @@ export const PromptView: React.FC = () => {
     trackVideoMakeClicked();
     trackMakeAndNextClicked();
 
-    // Apply prompt, make video, and navigate to next post
-    applyPromptMakeAndNext(currentPrompt.text, prefix, nextPostId);
+    // Apply prompt with global addon, make video, and navigate to next post
+    const fullPromptText = getFullPromptText(currentPrompt.text);
+    applyPromptMakeAndNext(fullPromptText, prefix, nextPostId);
 
     // If auto-navigate is enabled, schedule the next iteration
     if (autoNavigate) {

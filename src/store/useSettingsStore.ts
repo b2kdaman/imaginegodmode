@@ -17,6 +17,8 @@ interface SettingsState {
   hideUnsave: boolean;
   enableSound: boolean;
   confirmCopyFrom: boolean;
+  globalPromptAddonEnabled: boolean;
+  globalPromptAddon: string;
   themes: Record<string, ThemeColors>;
   loadThemes: () => Promise<void>;
   setTheme: (theme: Theme) => void;
@@ -27,6 +29,8 @@ interface SettingsState {
   setHideUnsave: (hideUnsave: boolean) => void;
   setEnableSound: (enableSound: boolean) => void;
   setConfirmCopyFrom: (confirmCopyFrom: boolean) => void;
+  setGlobalPromptAddonEnabled: (enabled: boolean) => void;
+  setGlobalPromptAddon: (addon: string) => void;
   getThemeColors: () => ThemeColors;
   getScale: () => number;
 }
@@ -42,7 +46,7 @@ const SIZE_SCALE_MAP: Record<Size, number> = {
 };
 
 // Load settings from localStorage
-const loadSettings = (): { theme: Theme; size: Size; autoDownload: boolean; rememberPostState: boolean; simpleShortcut: boolean; hideUnsave: boolean; enableSound: boolean; confirmCopyFrom: boolean } => {
+const loadSettings = (): { theme: Theme; size: Size; autoDownload: boolean; rememberPostState: boolean; simpleShortcut: boolean; hideUnsave: boolean; enableSound: boolean; confirmCopyFrom: boolean; globalPromptAddonEnabled: boolean; globalPromptAddon: string } => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
@@ -58,18 +62,20 @@ const loadSettings = (): { theme: Theme; size: Size; autoDownload: boolean; reme
         hideUnsave: typeof parsed.hideUnsave === 'boolean' ? parsed.hideUnsave : false,
         enableSound: typeof parsed.enableSound === 'boolean' ? parsed.enableSound : true,
         confirmCopyFrom: typeof parsed.confirmCopyFrom === 'boolean' ? parsed.confirmCopyFrom : true,
+        globalPromptAddonEnabled: typeof parsed.globalPromptAddonEnabled === 'boolean' ? parsed.globalPromptAddonEnabled : false,
+        globalPromptAddon: typeof parsed.globalPromptAddon === 'string' ? parsed.globalPromptAddon : '',
       };
     }
   } catch (error) {
     console.error('[Settings] Failed to load from localStorage:', error);
   }
-  return { theme: 'dark', size: 'medium', autoDownload: false, rememberPostState: true, simpleShortcut: false, hideUnsave: false, enableSound: true, confirmCopyFrom: true };
+  return { theme: 'dark', size: 'medium', autoDownload: false, rememberPostState: true, simpleShortcut: false, hideUnsave: false, enableSound: true, confirmCopyFrom: true, globalPromptAddonEnabled: false, globalPromptAddon: '' };
 };
 
 // Save settings to localStorage
-const saveSettings = (theme: Theme, size: Size, autoDownload: boolean, rememberPostState: boolean, simpleShortcut: boolean, hideUnsave: boolean, enableSound: boolean, confirmCopyFrom: boolean) => {
+const saveSettings = (theme: Theme, size: Size, autoDownload: boolean, rememberPostState: boolean, simpleShortcut: boolean, hideUnsave: boolean, enableSound: boolean, confirmCopyFrom: boolean, globalPromptAddonEnabled: boolean, globalPromptAddon: string) => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon }));
   } catch (error) {
     console.error('[Settings] Failed to save to localStorage:', error);
   }
@@ -85,51 +91,63 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   },
 
   setTheme: (theme: Theme) => {
-    const { size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom } = get();
-    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom);
+    const { size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon);
     set({ theme });
   },
 
   setSize: (size: Size) => {
-    const { theme, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom } = get();
-    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom);
+    const { theme, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon);
     set({ size });
   },
 
   setAutoDownload: (autoDownload: boolean) => {
-    const { theme, size, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom } = get();
-    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom);
+    const { theme, size, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon);
     set({ autoDownload });
   },
 
   setRememberPostState: (rememberPostState: boolean) => {
-    const { theme, size, autoDownload, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom } = get();
-    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom);
+    const { theme, size, autoDownload, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon);
     set({ rememberPostState });
   },
 
   setSimpleShortcut: (simpleShortcut: boolean) => {
-    const { theme, size, autoDownload, rememberPostState, hideUnsave, enableSound, confirmCopyFrom } = get();
-    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom);
+    const { theme, size, autoDownload, rememberPostState, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon);
     set({ simpleShortcut });
   },
 
   setHideUnsave: (hideUnsave: boolean) => {
-    const { theme, size, autoDownload, rememberPostState, simpleShortcut, enableSound, confirmCopyFrom } = get();
-    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom);
+    const { theme, size, autoDownload, rememberPostState, simpleShortcut, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon);
     set({ hideUnsave });
   },
 
   setEnableSound: (enableSound: boolean) => {
-    const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, confirmCopyFrom } = get();
-    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom);
+    const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon);
     set({ enableSound });
   },
 
   setConfirmCopyFrom: (confirmCopyFrom: boolean) => {
-    const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound } = get();
-    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom);
+    const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, globalPromptAddonEnabled, globalPromptAddon } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon);
     set({ confirmCopyFrom });
+  },
+
+  setGlobalPromptAddonEnabled: (globalPromptAddonEnabled: boolean) => {
+    const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddon } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon);
+    set({ globalPromptAddonEnabled });
+  },
+
+  setGlobalPromptAddon: (globalPromptAddon: string) => {
+    const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled } = get();
+    saveSettings(theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon);
+    set({ globalPromptAddon });
   },
 
   getThemeColors: () => {

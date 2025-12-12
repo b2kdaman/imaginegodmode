@@ -51,6 +51,8 @@
     "simpleShortcut": "Простое сочетание клавиш",
     "hideUnsave": "Скрыть кнопку Unsave",
     "enableSound": "Включить звук",
+    "globalPromptAddon": "Глобальное дополнение к промпту",
+    "globalPromptAddonPlaceholder": "Введите текст для добавления ко всем промптам...",
     "dataManagement": "Управление данными",
     "importMode": "Режим импорта пака",
     "importModeAdd": "Добавить",

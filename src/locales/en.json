@@ -51,6 +51,8 @@
     "simpleShortcut": "Simple Shortcut",
     "hideUnsave": "Hide Unsave",
     "enableSound": "Enable Sound",
+    "globalPromptAddon": "Global Prompt Addon",
+    "globalPromptAddonPlaceholder": "Enter text to append to all prompts...",
     "dataManagement": "Data Management",
     "importMode": "Pack Import Mode",
     "importModeAdd": "Add",
