@@ -15,6 +15,7 @@ import { PitView } from './views/PitView';
 import { UI_POSITION, Z_INDEX } from '@/utils/constants';
 import { Tabs } from './inputs/Tabs';
 import { PanelControls } from './common/PanelControls';
+import { VersionBadge } from './common/VersionBadge';
 import { useUrlVisibility } from '@/hooks/useUrlVisibility';
 import { useTranslation } from '@/contexts/I18nContext';
 import { isMobileDevice } from '@/utils/deviceDetection';
@@ -150,6 +151,9 @@ export const MainPanel: React.FC = () => {
     >
       {/* Main container */}
       <div className="flex flex-col items-end gap-2">
+        {/* Version badge above controls */}
+        <VersionBadge />
+
         {/* Panel controls */}
         <PanelControls />
 
