@@ -6,10 +6,17 @@
 //
 
 import SwiftUI
+import WebKit
 
 @main
 struct imagineGodModeApp: App {
     @State private var fileToImport: URL?
+
+    init() {
+        // Preload WebKit processes to reduce initial launch time
+        // This warms up the Networking, GPU, and WebContent processes
+        _ = WKWebView()
+    }
 
     var body: some Scene {
         WindowGroup {
