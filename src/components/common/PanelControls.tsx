@@ -219,8 +219,8 @@ export const PanelControls: React.FC = () => {
         </>
       )}
 
-      {/* Queue button with badge - show when expanded or when there are items in queue */}
-      {(isExpanded || queueCount > 0) && (
+      {/* Queue button with badge - only show when there are items in queue */}
+      {queueCount > 0 && (
         <div className="relative">
           <Button
             variant="icon"
@@ -229,18 +229,16 @@ export const PanelControls: React.FC = () => {
             className="shadow-lg"
             tooltip={t('tabs.queueTooltip')}
           />
-          {queueCount > 0 && (
-            <div
-              className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[10px] font-bold shadow-lg"
-              style={{
-                backgroundColor: getThemeColors().SUCCESS,
-                color: '#fff',
-                padding: '0 4px',
-              }}
-            >
-              {queueCount}
-            </div>
-          )}
+          <div
+            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[10px] font-bold shadow-lg"
+            style={{
+              backgroundColor: getThemeColors().SUCCESS,
+              color: '#fff',
+              padding: '0 4px',
+            }}
+          >
+            {queueCount}
+          </div>
         </div>
       )}
 
