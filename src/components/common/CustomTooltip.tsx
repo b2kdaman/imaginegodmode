@@ -35,7 +35,7 @@ export const CustomTooltip: React.FC = () => {
       const target = currentTargetRef.current;
       const targetRect = target.getBoundingClientRect();
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
-      const offset = 10; // Distance from target element
+      const offset = 4; // Distance from target element
       const arrowSize = 6; // Half of arrow size
 
       // Calculate vertical position (always at top)
