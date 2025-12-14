@@ -21,6 +21,57 @@ export const CustomTooltip: React.FC = () => {
   const tooltipRef = useRef<HTMLDivElement>(null);
   const currentTargetRef = useRef<HTMLElement | null>(null);
 
+  // Calculate position when tooltip becomes visible or content changes
+  useEffect(() => {
+    if (!isVisible || !currentTargetRef.current || !tooltipRef.current) {
+      return;
+    }
+
+    const calculatePosition = () => {
+      if (!currentTargetRef.current || !tooltipRef.current) {
+        return;
+      }
+
+      const target = currentTargetRef.current;
+      const targetRect = target.getBoundingClientRect();
+      const tooltipRect = tooltipRef.current.getBoundingClientRect();
+      const offset = 10; // Distance from target element
+      const arrowSize = 6; // Half of arrow size
+
+      // Calculate vertical position (always at top)
+      const top = targetRect.top - tooltipRect.height - offset - arrowSize;
+
+      // Calculate horizontal position
+      // Center tooltip on target element
+      let left = targetRect.left + (targetRect.width / 2) - (tooltipRect.width / 2);
+
+      // Arrow position relative to tooltip (centered on target)
+      const targetCenter = targetRect.left + (targetRect.width / 2);
+      let arrowLeft = targetCenter - left - arrowSize;
+
+      // Adjust if tooltip goes off-screen horizontally
+      const viewportPadding = 10;
+      if (left < viewportPadding) {
+        // Too far left - shift right
+        const shift = viewportPadding - left;
+        left += shift;
+        arrowLeft -= shift; // Arrow moves left relative to tooltip
+      } else if (left + tooltipRect.width > window.innerWidth - viewportPadding) {
+        // Too far right - shift left
+        const shift = (left + tooltipRect.width) - (window.innerWidth - viewportPadding);
+        left -= shift;
+        arrowLeft += shift; // Arrow moves right relative to tooltip
+      }
+
+      setPosition({ top, left, arrowLeft });
+    };
+
+    // Wait for tooltip to render, then calculate position
+    requestAnimationFrame(() => {
+      requestAnimationFrame(calculatePosition);
+    });
+  }, [isVisible, content]);
+
   useEffect(() => {
     const handleMouseEnter = (e: MouseEvent) => {
       const target = e.currentTarget as HTMLElement;
@@ -33,45 +84,6 @@ export const CustomTooltip: React.FC = () => {
       currentTargetRef.current = target;
       setContent(tooltipContent);
       setIsVisible(true);
-
-      // Calculate position after tooltip is rendered
-      requestAnimationFrame(() => {
-        if (!tooltipRef.current) {
-          return;
-        }
-
-        const targetRect = target.getBoundingClientRect();
-        const tooltipRect = tooltipRef.current.getBoundingClientRect();
-        const offset = 10; // Distance from target element
-        const arrowSize = 6; // Half of arrow size
-
-        // Calculate vertical position (always at top)
-        const top = targetRect.top - tooltipRect.height - offset - arrowSize;
-
-        // Calculate horizontal position
-        // Center tooltip on target element
-        let left = targetRect.left + (targetRect.width / 2) - (tooltipRect.width / 2);
-
-        // Arrow position relative to tooltip (centered on target)
-        const targetCenter = targetRect.left + (targetRect.width / 2);
-        let arrowLeft = targetCenter - left - arrowSize;
-
-        // Adjust if tooltip goes off-screen horizontally
-        const viewportPadding = 10;
-        if (left < viewportPadding) {
-          // Too far left - shift right
-          const shift = viewportPadding - left;
-          left += shift;
-          arrowLeft -= shift; // Arrow moves left relative to tooltip
-        } else if (left + tooltipRect.width > window.innerWidth - viewportPadding) {
-          // Too far right - shift left
-          const shift = (left + tooltipRect.width) - (window.innerWidth - viewportPadding);
-          left -= shift;
-          arrowLeft += shift; // Arrow moves right relative to tooltip
-        }
-
-        setPosition({ top, left, arrowLeft });
-      });
     };
 
     const handleMouseLeave = () => {
