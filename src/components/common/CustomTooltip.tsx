@@ -21,9 +21,9 @@ export const CustomTooltip: React.FC = () => {
   const tooltipRef = useRef<HTMLDivElement>(null);
   const currentTargetRef = useRef<HTMLElement | null>(null);
 
-  // Calculate position when tooltip becomes visible or content changes
+  // Calculate position when tooltip becomes visible
   useEffect(() => {
-    if (!isVisible || !currentTargetRef.current || !tooltipRef.current) {
+    if (!isVisible || !currentTargetRef.current) {
       return;
     }
 
@@ -67,10 +67,15 @@ export const CustomTooltip: React.FC = () => {
     };
 
     // Wait for tooltip to render, then calculate position
-    requestAnimationFrame(() => {
-      requestAnimationFrame(calculatePosition);
-    });
-  }, [isVisible, content]);
+    // Use setTimeout to ensure tooltip is fully painted
+    const timeoutId = setTimeout(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(calculatePosition);
+      });
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
+  }, [isVisible]);
 
   useEffect(() => {
     const handleMouseEnter = (e: MouseEvent) => {
@@ -89,6 +94,7 @@ export const CustomTooltip: React.FC = () => {
     const handleMouseLeave = () => {
       setIsVisible(false);
       currentTargetRef.current = null;
+      setPosition({ top: 0, left: 0, arrowLeft: 0 }); // Reset position
     };
 
     // Find all elements with data-tooltip-content attribute
@@ -133,7 +139,7 @@ export const CustomTooltip: React.FC = () => {
         left: `${position.left}px`,
         zIndex: Z_INDEX.MODAL_TOOLTIP,
         opacity: position.top === 0 ? 0 : 1, // Hide until positioned
-        transition: 'opacity 0.15s ease-in-out',
+        transition: 'opacity 0.1s ease-in-out',
       }}
     >
       <div
