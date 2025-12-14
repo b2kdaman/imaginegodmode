@@ -17,7 +17,8 @@ A multi-platform application for Grok media management built with React, TypeScr
   - **Long Press Navigation**: Hold prev/next prompt buttons for fast navigation with accelerating speed
     - Starts slow (200ms intervals), speeds up to 50ms over 2 seconds
     - Touch and mouse support for all devices
-    - Automatically stops at list boundaries
+    - Automatically stops at list boundaries (no looping)
+  - **Non-Looping Navigation**: Prev/next buttons stop at first/last prompt instead of wrapping around
 - **Per-Post State**: Each post remembers its own selected pack, prompt, and prefix independently (optional, controlled via Settings)
 - **Prompt Prefix**: Per-post prefix text that automatically prepends to prompts when making videos (stored separately for each post)
 - **Star Ratings**: Rate your prompts with 1-5 stars (Material Design Icons)

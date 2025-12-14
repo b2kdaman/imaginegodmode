@@ -380,10 +380,10 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     const { currentIndex } = get();
     const count = get().getCurrentPromptCount();
 
-    // Don't navigate if no prompts
-    if (count === 0) {return;}
+    // Don't navigate if no prompts or already at the end
+    if (count === 0 || currentIndex >= count - 1) {return;}
 
-    const newIndex = currentIndex < count - 1 ? currentIndex + 1 : 0;
+    const newIndex = currentIndex + 1;
     set({ currentIndex: newIndex });
     get().saveToStorage();
   },
@@ -392,10 +392,10 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     const { currentIndex } = get();
     const count = get().getCurrentPromptCount();
 
-    // Don't navigate if no prompts
-    if (count === 0) {return;}
+    // Don't navigate if no prompts or already at the start
+    if (count === 0 || currentIndex <= 0) {return;}
 
-    const newIndex = currentIndex > 0 ? currentIndex - 1 : count - 1;
+    const newIndex = currentIndex - 1;
     set({ currentIndex: newIndex });
     get().saveToStorage();
   },
