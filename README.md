@@ -77,6 +77,9 @@ A multi-platform application for Grok media management built with React, TypeScr
   - Full queue management interface with progress tracking, stats, and controls
 - **Bulk Operations**: Batch process multiple posts with visual selection interface
   - **Upscale All Liked**: Select from liked posts to upscale videos in bulk
+    - Accessible from panel controls or Ops view
+    - Dedicated hook (useUpscaleAll) for modal and operation management
+    - Processes posts and adds videos to global upscale queue
   - **Unlike Multiple Posts**: Manage liked posts with bulk unlike functionality
   - **Delete Multiple Posts**: Permanently delete multiple posts with confirmation dialog
   - **Unliked Archive**: View and re-like previously unliked posts from local storage archive (per-user with automatic migration)
@@ -134,6 +137,14 @@ A multi-platform application for Grok media management built with React, TypeScr
 - **Extension Context Validation**: Graceful handling of extension reloads with proper error suppression
 - **Persistent View State**: Remembers last opened tab (Prompt/Ops/Settings/Help) across sessions
 - **Modern UI**: Bottom-placed tabs with icon-only queue tab, pill-shaped buttons, Material Design Icons, dynamic theming, glassmorphism design with frosted glass effects
+- **Enhanced Panel Controls**: Collapsed panel shows quick-access buttons for common actions
+  - Previous/Next post navigation (dynamic based on available posts)
+  - Make video button (only when on a post with a prompt)
+  - Make + Next button (combines make and navigate actions)
+  - Auto mode toggle (for automated Make + Next workflow)
+  - Upscale All button (opens bulk upscale modal)
+  - Queue indicator with badge (shows active queue count, opens queue view)
+  - All buttons intelligently show/hide based on context (post availability, queue state, panel expansion)
 - **Glassmorphism Design**: Semi-transparent UI elements with backdrop blur creating modern frosted glass aesthetic
   - Main panel and buttons: 67% opacity + 12px blur
   - All modals: 67% opacity + 16px blur
@@ -433,6 +444,11 @@ grkgoondl/
 - **useBulkDelete**: Custom hook for bulk deleting posts with progress tracking and confirmation
 - **useLikedPostsLoader**: Hook for loading and managing liked posts with loading state
 - **useShiftSelection**: Reusable hook for shift-click multi-selection behavior across bulk operation modals
+- **useUpscaleAll**: Hook for managing upscale all modal and bulk upscale operations
+  - Modal state management (open/close)
+  - Loads liked posts for selection
+  - Processes selected posts and adds videos to upscale queue
+  - Analytics tracking for modal events
 - **useGlowAnimation**: Universal glow animation hook for button hover effects with configurable settings
 - **useMultiGlowAnimation**: Multi-item glow animation hook for tabs, dropdowns, and lists with individual tracking
 
