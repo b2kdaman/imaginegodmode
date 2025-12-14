@@ -54,48 +54,6 @@ export const App: React.FC = () => {
     };
   }, [hideUnsave]);
 
-  // Apply custom tooltip positioning styles to keep tooltips at top with proper horizontal adjustment
-  useEffect(() => {
-    const styleId = 'tooltip-positioning-style';
-    let styleElement = document.getElementById(styleId) as HTMLStyleElement;
-
-    if (!styleElement) {
-      styleElement = document.createElement('style');
-      styleElement.id = styleId;
-      document.head.appendChild(styleElement);
-    }
-
-    styleElement.textContent = `
-      /* Ensure tooltips always stay at the top and handle horizontal overflow gracefully */
-      .react-tooltip[data-tooltip-place="top"] {
-        /* Prevent tooltip from flipping to bottom */
-        max-width: 20rem !important;
-      }
-
-      /* Allow tooltip content to adjust horizontally while arrow stays centered on trigger element */
-      .react-tooltip {
-        /* The tooltip will shift horizontally when near screen edges */
-        /* This is handled by floating-ui's shift middleware automatically */
-        /* We just ensure the tooltip doesn't get clipped */
-        white-space: normal;
-        word-wrap: break-word;
-      }
-
-      /* The arrow position is calculated by floating-ui to stay centered on the trigger element */
-      /* Even when the tooltip shifts horizontally, the arrow will remain properly positioned */
-      .react-tooltip-arrow {
-        /* Arrow positioning is dynamically calculated */
-        /* No additional styles needed - floating-ui handles this */
-      }
-    `;
-
-    return () => {
-      const el = document.getElementById(styleId);
-      if (el) {
-        el.remove();
-      }
-    };
-  }, []);
 
   // Set up keyboard shortcuts
   useKeyboardShortcuts();
@@ -115,8 +73,7 @@ export const App: React.FC = () => {
         style={{ zIndex: Z_INDEX.MODAL_TOOLTIP }}
         place="top"
         offset={10}
-        positionStrategy="fixed"
-        float={false}
+        noArrow={false}
       />
     </I18nProvider>
   );
