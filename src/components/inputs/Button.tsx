@@ -27,6 +27,8 @@ export const Button: React.FC<ButtonProps> = ({
   children,
   disabled,
   style,
+  onMouseEnter: customOnMouseEnter,
+  onMouseLeave: customOnMouseLeave,
   ...props
 }) => {
   const { getThemeColors } = useSettingsStore();
@@ -66,11 +68,13 @@ export const Button: React.FC<ButtonProps> = ({
           if (!disabled && !className.includes('!bg-white')) {
             handleMouseEnter(e);
           }
+          customOnMouseEnter?.(e);
         }}
         onMouseLeave={(e) => {
           if (!disabled && !className.includes('!bg-white')) {
             handleMouseLeave(e);
           }
+          customOnMouseLeave?.(e);
         }}
         {...props}
       >

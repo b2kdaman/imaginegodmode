@@ -14,6 +14,10 @@ A multi-platform application for Grok media management built with React, TypeScr
   - Video player control tracking (play/pause, fullscreen via button or keyboard)
   - Keyboard shortcut usage tracking (F, Space, Ctrl+Enter combinations)
 - **Prompt Management**: Save, organize, and manage prompts with packs
+  - **Long Press Navigation**: Hold prev/next prompt buttons for fast navigation with accelerating speed
+    - Starts slow (200ms intervals), speeds up to 50ms over 2 seconds
+    - Touch and mouse support for all devices
+    - Automatically stops at list boundaries
 - **Per-Post State**: Each post remembers its own selected pack, prompt, and prefix independently (optional, controlled via Settings)
 - **Prompt Prefix**: Per-post prefix text that automatically prepends to prompts when making videos (stored separately for each post)
 - **Star Ratings**: Rate your prompts with 1-5 stars (Material Design Icons)

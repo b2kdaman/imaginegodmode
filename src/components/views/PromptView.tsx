@@ -70,8 +70,96 @@ export const PromptView: React.FC = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [autoNavigate, setAutoNavigate] = useState(false);
 
+  // Long press state for prompt navigation
+  const longPressTimerRef = React.useRef<number | null>(null);
+  const longPressIntervalRef = React.useRef<number | null>(null);
+  const longPressStartTimeRef = React.useRef<number>(0);
+  const isLongPressingRef = React.useRef<boolean>(false);
+
   // Load liked posts hook
   const { loadLikedPosts } = useLikedPostsLoader(() => {});
+
+  // Long press cleanup function
+  const stopLongPress = useCallback(() => {
+    if (longPressTimerRef.current) {
+      window.clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+    if (longPressIntervalRef.current) {
+      window.clearTimeout(longPressIntervalRef.current);
+      longPressIntervalRef.current = null;
+    }
+    isLongPressingRef.current = false;
+  }, []);
+
+  // Long press handlers for prompt navigation
+  const startLongPress = useCallback((direction: 'prev' | 'next') => {
+    // Clear any existing timers
+    if (longPressTimerRef.current) {
+      window.clearTimeout(longPressTimerRef.current);
+    }
+    if (longPressIntervalRef.current) {
+      window.clearTimeout(longPressIntervalRef.current);
+    }
+
+    isLongPressingRef.current = false;
+    longPressStartTimeRef.current = Date.now();
+
+    // Start long press after 300ms hold
+    longPressTimerRef.current = window.setTimeout(() => {
+      isLongPressingRef.current = true;
+      longPressStartTimeRef.current = Date.now();
+
+      // Calculate interval based on hold duration (starts at 200ms, accelerates to 50ms)
+      const navigate = () => {
+        const holdDuration = Date.now() - longPressStartTimeRef.current;
+
+        // Navigate
+        if (direction === 'prev') {
+          if (currentIndex > 0) {
+            prevPrompt();
+            trackPromptNavigated('prev');
+          } else {
+            stopLongPress();
+            return;
+          }
+        } else {
+          if (currentIndex < promptCount - 1) {
+            nextPrompt();
+            trackPromptNavigated('next');
+          } else {
+            stopLongPress();
+            return;
+          }
+        }
+
+        // Accelerate: start slow (200ms), speed up to 50ms over 2 seconds
+        let interval = 200;
+        if (holdDuration > 2000) {
+          interval = 50; // Max speed after 2s
+        } else if (holdDuration > 1000) {
+          interval = 100; // Medium speed after 1s
+        } else if (holdDuration > 500) {
+          interval = 150; // Slightly faster after 500ms
+        }
+
+        // Clear previous interval and set new one with updated speed
+        if (longPressIntervalRef.current) {
+          window.clearTimeout(longPressIntervalRef.current);
+        }
+        longPressIntervalRef.current = window.setTimeout(navigate, interval);
+      };
+
+      navigate(); // Start the navigation loop
+    }, 300);
+  }, [currentIndex, promptCount, prevPrompt, nextPrompt, stopLongPress]);
+
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return () => {
+      stopLongPress();
+    };
+  }, [stopLongPress]);
 
   // Load prefix and post state from storage when component mounts or URL changes
   const loadPostData = useCallback(async () => {
@@ -332,11 +420,18 @@ export const PromptView: React.FC = () => {
               variant="icon"
               icon={mdiChevronLeft}
               onClick={() => {
-                prevPrompt();
-                trackPromptNavigated('prev');
+                if (!isLongPressingRef.current) {
+                  prevPrompt();
+                  trackPromptNavigated('prev');
+                }
               }}
+              onMouseDown={() => startLongPress('prev')}
+              onMouseUp={stopLongPress}
+              onMouseLeave={stopLongPress}
+              onTouchStart={() => startLongPress('prev')}
+              onTouchEnd={stopLongPress}
               disabled={currentIndex === 0}
-              tooltip="Previous prompt (Left arrow)"
+              tooltip="Previous prompt (Left arrow, hold for fast navigation)"
             />
 
             <span className="text-sm" style={{ color: colors.TEXT_SECONDARY }}>
@@ -347,11 +442,18 @@ export const PromptView: React.FC = () => {
               variant="icon"
               icon={mdiChevronRight}
               onClick={() => {
-                nextPrompt();
-                trackPromptNavigated('next');
+                if (!isLongPressingRef.current) {
+                  nextPrompt();
+                  trackPromptNavigated('next');
+                }
               }}
+              onMouseDown={() => startLongPress('next')}
+              onMouseUp={stopLongPress}
+              onMouseLeave={stopLongPress}
+              onTouchStart={() => startLongPress('next')}
+              onTouchEnd={stopLongPress}
               disabled={currentIndex >= promptCount - 1}
-              tooltip="Next prompt (Right arrow)"
+              tooltip="Next prompt (Right arrow, hold for fast navigation)"
             />
           </div>
         </div>
