@@ -142,6 +142,10 @@ A multi-platform application for Grok media management built with React, TypeScr
 - **Extension Context Validation**: Graceful handling of extension reloads with proper error suppression
 - **Persistent View State**: Remembers last opened tab (Prompt/Ops/Settings/Help) across sessions
 - **Modern UI**: Bottom-placed tabs with icon-only queue tab, pill-shaped buttons, Material Design Icons, dynamic theming, glassmorphism design with frosted glass effects
+  - **Smart Tooltip Positioning**: Tooltips always appear at the top with automatic horizontal adjustment
+    - Prevents tooltips from being cut off at screen edges
+    - Arrow remains centered on the trigger element
+    - Uses fixed positioning strategy for consistent placement
 - **Enhanced Panel Controls**: Collapsed panel shows quick-access buttons for common actions
   - Previous/Next post navigation (dynamic based on available posts)
   - Make video button (only when on a post with a prompt)
