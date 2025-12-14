@@ -127,7 +127,6 @@ export const SettingsView: React.FC = () => {
           {/* Remember Post State Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-id="app-tooltip"
             data-tooltip-content="Remember which prompt pack was used for each post, automatically switching packs when navigating between posts"
           >
             <label
@@ -151,7 +150,6 @@ export const SettingsView: React.FC = () => {
           {/* Simple Shortcut Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-id="app-tooltip"
             data-tooltip-content="Use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter to apply prompt"
           >
             <label
@@ -175,7 +173,6 @@ export const SettingsView: React.FC = () => {
           {/* Confirm Copy From Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-id="app-tooltip"
             data-tooltip-content="Show confirmation dialog when copying from page would replace existing prompt text"
           >
             <label
@@ -199,7 +196,6 @@ export const SettingsView: React.FC = () => {
           {/* Global Prompt Addon Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-id="app-tooltip"
             data-tooltip-content="Add custom text that will be automatically appended to every prompt when pressing Make or Make+Next"
           >
             <label
@@ -263,7 +259,6 @@ export const SettingsView: React.FC = () => {
           {/* Auto Download Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-id="app-tooltip"
             data-tooltip-content="Automatically download media files when video generation completes"
           >
             <label
@@ -287,7 +282,6 @@ export const SettingsView: React.FC = () => {
           {/* Enable Sound Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-id="app-tooltip"
             data-tooltip-content="Enable sound effects for UI interactions"
           >
             <label
@@ -413,7 +407,6 @@ export const SettingsView: React.FC = () => {
           {/* Hide Unsave Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-id="app-tooltip"
             data-tooltip-content="Hide the Unsave button from the page"
           >
             <label

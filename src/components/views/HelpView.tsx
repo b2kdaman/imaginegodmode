@@ -72,7 +72,6 @@ export const HelpView: React.FC = () => {
                 <span style={{ color: colors.TEXT_SECONDARY, marginTop: '2px' }}>•</span>
                 <span
                   className="flex items-center gap-1 group cursor-help flex-1"
-                  data-tooltip-id="app-tooltip"
                   data-tooltip-content={feature.tooltip}
                 >
                   <span>{feature.text}</span>

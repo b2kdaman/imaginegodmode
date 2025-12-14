@@ -3,7 +3,6 @@
  */
 
 import React, { useEffect } from 'react';
-import { Tooltip } from 'react-tooltip';
 import { MainPanel } from './components/MainPanel';
 import { usePromptStore } from './store/usePromptStore';
 import { useSettingsStore } from './store/useSettingsStore';
@@ -13,7 +12,7 @@ import { useArrowKeyNavigation } from './hooks/useArrowKeyNavigation';
 import { useVideoProgress } from './hooks/useVideoProgress';
 import { I18nProvider } from './contexts/I18nContext';
 import { initAnalytics } from './utils/analytics';
-import { Z_INDEX } from './utils/constants';
+import { CustomTooltip } from './components/common/CustomTooltip';
 
 export const App: React.FC = () => {
   const { loadFromStorage } = usePromptStore();
@@ -67,14 +66,7 @@ export const App: React.FC = () => {
   return (
     <I18nProvider>
       <MainPanel />
-      <Tooltip
-        id="app-tooltip"
-        className="!text-xs !max-w-[20rem]"
-        style={{ zIndex: Z_INDEX.MODAL_TOOLTIP }}
-        place="top"
-        offset={10}
-        noArrow={false}
-      />
+      <CustomTooltip />
     </I18nProvider>
   );
 };

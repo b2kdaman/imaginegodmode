@@ -63,7 +63,6 @@ export const UpscaleQueueIndicator: React.FC = () => {
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
         }}
-        data-tooltip-id="app-tooltip"
         data-tooltip-content={`Upscale Queue: ${processingCount + pendingCount} pending`}
         onMouseEnter={(e) => {
           e.currentTarget.style.backgroundColor = `${colors.BACKGROUND_LIGHT}aa`;

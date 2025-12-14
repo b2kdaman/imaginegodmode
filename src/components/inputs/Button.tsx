@@ -62,7 +62,6 @@ export const Button: React.FC<ButtonProps> = ({
         className={`${baseStyles} ${variantStyles[variant]} ${className}`}
         disabled={disabled}
         style={buttonStyle}
-        data-tooltip-id={tooltip ? 'app-tooltip' : undefined}
         data-tooltip-content={tooltip}
         onMouseEnter={(e) => {
           if (!disabled && !className.includes('!bg-white')) {
