@@ -10,7 +10,7 @@ import { Dropdown } from '@/components/inputs/Dropdown';
 import { PromptListItem } from './PromptListItem';
 import { usePromptStore } from '@/store/usePromptStore';
 import { usePacksManagementStore } from './usePacksManagementStore';
-import { mdiPackageVariant, mdiCheckboxMultipleMarked, mdiSelectAll, mdiSelectOff, mdiDelete, mdiSwapHorizontal, mdiPlus } from '@mdi/js';
+import { mdiPackageVariant, mdiCheckboxMultipleMarked, mdiSelectAll, mdiSelectOff, mdiDelete, mdiSwapHorizontal, mdiPlus, mdiMagnify, mdiClose } from '@mdi/js';
 import type { PromptsPanelProps } from './types';
 
 export const PromptsPanel: React.FC<PromptsPanelProps> = ({
@@ -33,9 +33,18 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
 
   const [targetPackForMove, setTargetPackForMove] = useState<string>('');
   const [emptyPackText, setEmptyPackText] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isSearchActive, setIsSearchActive] = useState<boolean>(false);
 
   const packName = selectedPackName || '';
   const prompts = packs[packName] || [];
+
+  // Filter prompts based on search query
+  const filteredPrompts = searchQuery.trim()
+    ? prompts.filter(prompt =>
+        prompt.text.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : prompts;
 
   const allPackNames = Object.keys(packs).filter(p => p !== packName);
 
@@ -106,6 +115,13 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
     }
   };
 
+  const handleToggleSearch = () => {
+    setIsSearchActive(!isSearchActive);
+    if (isSearchActive) {
+      setSearchQuery(''); // Clear search when closing
+    }
+  };
+
   return (
     <div
       className="flex flex-col transition-opacity duration-200"
@@ -121,24 +137,34 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
         className="pl-3 pr-4 border-b flex items-center justify-between gap-2"
         style={{ borderColor: colors.BORDER, height: '50px' }}
       >
-        <h3
-          className="text-sm font-semibold truncate"
-          style={{ color: colors.TEXT_PRIMARY }}
-        >
-          {packName} ({prompts.length} prompt{prompts.length !== 1 ? 's' : ''})
+        <h3 className="text-base font-semibold truncate flex items-baseline gap-1">
+          <span style={{ color: colors.TEXT_PRIMARY }}>{packName}</span>
+          <span className="text-xs font-normal" style={{ color: colors.TEXT_SECONDARY }}>
+            ({filteredPrompts.length}{searchQuery.trim() ? `/${prompts.length}` : ''} prompt{prompts.length !== 1 ? 's' : ''})
+          </span>
           {isSelectionMode && selectedPromptIndices.size > 0 && (
-            <span style={{ color: colors.SUCCESS }}> - {selectedPromptIndices.size} selected</span>
+            <span className="text-xs font-normal" style={{ color: colors.SUCCESS }}> - {selectedPromptIndices.size} selected</span>
           )}
         </h3>
         <div className="flex gap-1">
           {!isSelectionMode && (
-            <Button
-              icon={mdiPlus}
-              iconSize={0.6}
-              variant="icon"
-              onClick={handleAddPrompt}
-              tooltip="Add new prompt"
-            />
+            <>
+              <Button
+                icon={mdiPlus}
+                iconSize={0.6}
+                variant="icon"
+                onClick={handleAddPrompt}
+                tooltip="Add new prompt"
+              />
+              <Button
+                icon={isSearchActive ? mdiClose : mdiMagnify}
+                iconSize={0.6}
+                variant="icon"
+                onClick={handleToggleSearch}
+                tooltip={isSearchActive ? 'Close search' : 'Search prompts'}
+                style={isSearchActive ? { backgroundColor: `${colors.SUCCESS}40` } : undefined}
+              />
+            </>
           )}
           <Button
             icon={mdiCheckboxMultipleMarked}
@@ -150,6 +176,28 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
           />
         </div>
       </div>
+
+      {/* Search Input */}
+      {isSearchActive && (
+        <div
+          className="px-3 py-2 border-b"
+          style={{ borderColor: colors.BORDER, backgroundColor: `${colors.BACKGROUND_MEDIUM}80` }}
+        >
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search prompts..."
+            className="w-full px-3 py-2 rounded text-sm"
+            style={{
+              backgroundColor: colors.BACKGROUND_MEDIUM,
+              color: colors.TEXT_PRIMARY,
+              border: `1px solid ${colors.BORDER}`,
+            }}
+            autoFocus
+          />
+        </div>
+      )}
 
       {/* Selection Mode Controls */}
       {isSelectionMode && (
@@ -222,20 +270,32 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
               }}
             />
           </div>
+        ) : filteredPrompts.length === 0 ? (
+          <div
+            className="flex flex-col items-center justify-center py-12 px-4"
+            style={{ color: colors.TEXT_SECONDARY }}
+          >
+            <Icon path={mdiMagnify} size={2} color={colors.TEXT_SECONDARY} />
+            <p className="mt-2 text-sm">No prompts match your search</p>
+          </div>
         ) : (
-          prompts.map((prompt, index) => (
-            <PromptListItem
-              key={index}
-              prompt={prompt}
-              index={index}
-              packName={packName}
-              isDraggable={true}
-              onDragStart={setDraggedPromptIndex}
-              onDragEnd={() => setDraggedPromptIndex(null)}
-              onPromptMove={onReorderPrompts}
-              getThemeColors={getThemeColors}
-            />
-          ))
+          filteredPrompts.map((prompt, _index) => {
+            // Find the original index in the full prompts array for proper functionality
+            const originalIndex = prompts.findIndex(p => p === prompt);
+            return (
+              <PromptListItem
+                key={originalIndex}
+                prompt={prompt}
+                index={originalIndex}
+                packName={packName}
+                isDraggable={!searchQuery.trim()}
+                onDragStart={setDraggedPromptIndex}
+                onDragEnd={() => setDraggedPromptIndex(null)}
+                onPromptMove={onReorderPrompts}
+                getThemeColors={getThemeColors}
+              />
+            );
+          })
         )}
       </div>
     </div>

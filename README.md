@@ -14,6 +14,10 @@ A multi-platform application for Grok media management built with React, TypeScr
   - Video player control tracking (play/pause, fullscreen via button or keyboard)
   - Keyboard shortcut usage tracking (F, Space, Ctrl+Enter combinations)
 - **Prompt Management**: Save, organize, and manage prompts with packs
+  - **Duplicate Button**: One-click prompt duplication in Prompt view (replaces Remove button)
+    - Creates exact copy of current prompt including text and star rating
+    - Automatically navigates to the newly created prompt
+    - Always available (no restrictions)
   - **Long Press Navigation**: Hold prev/next prompt buttons for fast navigation with accelerating speed
     - Starts slow (200ms intervals), speeds up to 50ms over 2 seconds
     - Touch and mouse support for all devices
@@ -35,6 +39,17 @@ A multi-platform application for Grok media management built with React, TypeScr
     - Add new prompts directly to current pack
     - Duplicate prompts with single click
     - Delete prompts without "last prompt" restriction
+  - **Quick Prompt Search**: Filter prompts within current pack
+    - Toggle search with magnifying glass icon next to add button
+    - Real-time case-insensitive text filtering
+    - Shows filtered count (e.g., "5/20 prompts" when searching)
+    - Auto-focus on search input when opened
+    - Disables drag-and-drop during search for clarity
+    - Empty state message when no matches found
+  - **Enhanced Pack Header**: Improved typography and visual hierarchy
+    - Larger pack name (text-base) for better readability
+    - Dimmed grey prompt count (text-xs) to reduce visual clutter
+    - Selection count in green when in selection mode
   - **Individual Deletion**: Delete single prompts or packs with confirmation modals
   - **Selection Mode for Prompts**: Toggle selection mode to select multiple prompts with checkboxes
     - Click anywhere on prompt to select/deselect
@@ -104,12 +119,13 @@ A multi-platform application for Grok media management built with React, TypeScr
   - Uses posts from favorites or fetched posts from bulk operations
 - **Make + Next**: Workflow automation for batch processing posts
   - Applies current prompt, clicks Make button, and automatically navigates to next post
-  - Full-width button in Prompt view for easy access
+  - Unified split-button design (80% Make+Next, 20% Auto toggle)
   - Disabled when no next post available
   - Uses fetched posts from "Upscale All Liked" or "Show Unliked"
   - 1-second delay between Make and navigation for proper execution
-  - **Auto Mode**: Toggle button to automatically repeat Make + Next workflow
-    - Icon button with visual active state (slate background, dark icon)
+  - **Auto Mode**: Integrated toggle for automatically repeating Make + Next workflow
+    - Seamless button split design with shared border (no gap between buttons)
+    - Visual active state (slate background, dark icon)
     - Random 1-1.5 second delay between iterations
     - Automatically stops when reaching the end of the post list
     - Toggle off anytime to stop automation

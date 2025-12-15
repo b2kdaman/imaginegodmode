@@ -15,7 +15,7 @@ import {
   mdiChevronLeft,
   mdiChevronRight,
   mdiPlus,
-  mdiMinus,
+  mdiContentDuplicate,
   mdiPlay,
   mdiArrowDown,
   mdiArrowUp,
@@ -53,7 +53,6 @@ export const PromptView: React.FC = () => {
     nextPrompt,
     prevPrompt,
     addPrompt,
-    removePrompt,
     loadPostState,
     savePostState,
   } = usePromptStore();
@@ -258,6 +257,22 @@ export const PromptView: React.FC = () => {
     trackPromptEdited();
     trackPromptCopiedFromPage();
     setShowConfirmModal(false);
+  };
+
+  const handleDuplicate = () => {
+    if (!currentPrompt) {
+      return;
+    }
+
+    const textToDuplicate = currentPrompt.text;
+    const ratingToDuplicate = currentPrompt.rating;
+
+    // Add new prompt (this will move to the new prompt)
+    addPrompt();
+
+    // Update the new prompt with the duplicated values
+    updatePromptText(textToDuplicate);
+    updatePromptRating(ratingToDuplicate);
   };
 
   // Helper function to construct full prompt text with global addon
@@ -505,13 +520,12 @@ export const PromptView: React.FC = () => {
           </Button>
 
           <Button
-            onClick={removePrompt}
-            icon={mdiMinus}
-            disabled={promptCount <= 1}
+            onClick={handleDuplicate}
+            icon={mdiContentDuplicate}
             className="flex-1"
-            tooltip={t('prompt.removeTooltip')}
+            tooltip="Duplicate current prompt"
           >
-            {t('common.remove')}
+            Duplicate
           </Button>
 
           <Button
@@ -545,12 +559,13 @@ export const PromptView: React.FC = () => {
             />
           </div>
 
-          <div className="col-span-2 flex gap-2">
+          <div className="col-span-2 flex">
             <Button
               onClick={handleMakeAndNextClick}
               icon={mdiSkipNext}
               iconColor={UI_COLORS.BLACK}
-              className="flex-1 !bg-white !text-black hover:!bg-white/90"
+              className="!bg-white !text-black hover:!bg-white/90 !rounded-r-none"
+              style={{ width: '80%' }}
               disabled={!getNextPostId() || isPromptAndPrefixEmpty}
               tooltip="Make video and navigate to next post"
             >
@@ -561,7 +576,8 @@ export const PromptView: React.FC = () => {
               icon={mdiAutorenew}
               onClick={() => setAutoNavigate(!autoNavigate)}
               tooltip="Auto: Automatically repeat Make + Next with 1-1.5s delay"
-              className={autoNavigate ? '!bg-slate-400 !border-slate-400' : ''}
+              className={autoNavigate ? '!bg-slate-400 !border-slate-400 !rounded-l-none !border-l-0' : '!rounded-l-none !border-l-0'}
+              style={{ width: '20%' }}
               iconColor={autoNavigate ? UI_COLORS.BLACK : undefined}
             />
           </div>
