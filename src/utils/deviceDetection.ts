@@ -3,11 +3,18 @@
  */
 
 /**
+ * Detects if the current device is iOS
+ */
+export const isIOSDevice = (): boolean => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent);
+};
+
+/**
  * Detects if the current device is mobile (iOS, Android, or mobile user agent)
  */
 export const isMobileDevice = (): boolean => {
   // Check for iOS
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isIOS = isIOSDevice();
 
   // Check for Android
   const isAndroid = /Android/.test(navigator.userAgent);

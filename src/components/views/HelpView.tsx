@@ -6,13 +6,15 @@ import React from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useTranslation } from '@/contexts/I18nContext';
 import { VERSION } from '@/utils/constants';
-import { mdiInformationOutline } from '@mdi/js';
+import { mdiInformationOutline, mdiLogin } from '@mdi/js';
 import { Icon } from '../common/Icon';
+import { isIOSDevice } from '@/utils/deviceDetection';
 
 export const HelpView: React.FC = () => {
   const { getThemeColors } = useSettingsStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
+  const isIOS = isIOSDevice();
 
   const features = [
     { text: 'Firefox and Chrome cross-browser support', tooltip: t('help.tooltips.crossBrowser') },
@@ -287,6 +289,27 @@ export const HelpView: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* iOS Sign-in Link */}
+      {isIOS && (
+        <div
+          className="rounded-xl p-4 backdrop-blur-md border"
+          style={{
+            background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
+            borderColor: `${colors.BORDER}50`,
+            boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
+          }}
+        >
+          <a
+            href="https://accounts.x.ai/sign-in?redirect=grok-com"
+            className="flex items-center gap-2 text-xs hover:opacity-80 transition-opacity"
+            style={{ color: colors.TEXT_PRIMARY }}
+          >
+            <Icon path={mdiLogin} size={0.6} color={colors.TEXT_PRIMARY} />
+            <span>Sign in to X.ai</span>
+          </a>
+        </div>
+      )}
     </div>
   );
 };

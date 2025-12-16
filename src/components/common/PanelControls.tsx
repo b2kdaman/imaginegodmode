@@ -141,6 +141,16 @@ export const PanelControls: React.FC = () => {
   const hasNextPost = !!getNextPostId();
   const hasPrevPost = !!getPrevPostId();
 
+  // Get prompt text for tooltips (truncate if too long)
+  const getPromptForTooltip = () => {
+    const fullText = getFullPromptText(currentPrompt?.text || '');
+    const maxLength = 100;
+    if (fullText.length > maxLength) {
+      return fullText.substring(0, maxLength) + '...';
+    }
+    return fullText;
+  };
+
   // Calculate queue count
   const queueCount = queue.filter((item) => item.status === 'pending' || item.status === 'processing').length;
 
@@ -186,7 +196,7 @@ export const PanelControls: React.FC = () => {
               icon={mdiPlay}
               iconColor={UI_COLORS.BLACK}
               className="shadow-lg !bg-white !text-black hover:!bg-white/90"
-              tooltip="Make video"
+              tooltip={`Make: ${getPromptForTooltip()}`}
             />
           )}
           {hasNextPost && !isPromptEmpty && (
@@ -196,7 +206,7 @@ export const PanelControls: React.FC = () => {
               icon={mdiSkipNext}
               iconColor={UI_COLORS.BLACK}
               className="shadow-lg !bg-white !text-black hover:!bg-white/90"
-              tooltip="Make video and navigate to next post"
+              tooltip={`Make + Next: ${getPromptForTooltip()}`}
             />
           )}
           {currentPostId && (

@@ -12,6 +12,10 @@ import WebKit
 struct imagineGodModeApp: App {
     @State private var fileToImport: URL?
 
+    #if os(iOS)
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    #endif
+
     // Keep a reference to prevent processes from shutting down
     private static let webKitPreloader: WKWebView = {
         let config = WKWebViewConfiguration()
@@ -39,3 +43,21 @@ struct imagineGodModeApp: App {
         fileToImport = url
     }
 }
+
+#if os(iOS)
+import UIKit
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    // Prevent universal links from opening externally
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        // Block universal links - don't let them open external apps/Safari
+        if userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+           let url = userActivity.webpageURL {
+            print("[AppDelegate] Blocked universal link: \(url.absoluteString)")
+            // Return false to prevent the system from opening it externally
+            return false
+        }
+        return true
+    }
+}
+#endif

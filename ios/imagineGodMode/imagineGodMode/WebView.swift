@@ -56,12 +56,19 @@ struct GrokWebView: PlatformViewRepresentable {
         // Configure persistent data store for localStorage and cookies
         config.websiteDataStore = WKWebsiteDataStore.default()
 
-        // Disable autoplay for videos
+        // Enable inline media playback and disable autoplay for videos
         config.allowsInlineMediaPlayback = true
         config.mediaTypesRequiringUserActionForPlayback = .all
 
         // Enable JavaScript (using modern API for iOS 14+)
         config.defaultWebpagePreferences.allowsContentJavaScript = true
+
+        // Prevent external navigation - keep everything in the WebView
+        #if os(iOS)
+        if #available(iOS 14.0, *) {
+            config.defaultWebpagePreferences.preferredContentMode = .mobile
+        }
+        #endif
 
         // Configure user content controller
         let userContentController = WKUserContentController()
@@ -77,7 +84,7 @@ struct GrokWebView: PlatformViewRepresentable {
         userContentController.add(downloadManager, name: "chromeDownloads")
         userContentController.add(fileImportHandler, name: "fileImport")
 
-        // Add console log interceptor
+        // Add console log interceptor and link handler
         let consoleLogScript = """
         (function() {
             const originalLog = console.log;
@@ -113,6 +120,29 @@ struct GrokWebView: PlatformViewRepresentable {
                     });
                 } catch(e) {}
             };
+
+            // Force all links to open in same window
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('a');
+                if (link && link.href) {
+                    // Remove target attribute to prevent new window
+                    if (link.target === '_blank') {
+                        console.log('[iOS WebView] Intercepted target=_blank link: ' + link.href);
+                        e.preventDefault();
+                        window.location.href = link.href;
+                    }
+                }
+            }, true);
+
+            // Override window.open to navigate in same window
+            const originalOpen = window.open;
+            window.open = function(url, target, features) {
+                console.log('[iOS WebView] Intercepted window.open: ' + url);
+                if (url) {
+                    window.location.href = url;
+                }
+                return null;
+            };
         })();
         """
 
@@ -143,6 +173,7 @@ struct GrokWebView: PlatformViewRepresentable {
 
         // Configure webView
         webView.navigationDelegate = context.coordinator
+        webView.uiDelegate = context.coordinator
         webView.allowsBackForwardNavigationGestures = true
 
         #if os(iOS)
@@ -313,7 +344,7 @@ struct GrokWebView: PlatformViewRepresentable {
 
     // MARK: - Coordinator
 
-    class Coordinator: NSObject, WKNavigationDelegate {
+    class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
         var parent: GrokWebView
         var storageBridge: ChromeStorageBridge?
         var downloadManager: DownloadManager?
@@ -504,8 +535,42 @@ struct GrokWebView: PlatformViewRepresentable {
         }
 
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-            // Allow all navigation
+            // Force all navigation to stay within the WebView
+            // This prevents any external browser launches and keeps everything internal
+            guard let url = navigationAction.request.url else {
+                decisionHandler(.cancel)
+                return
+            }
+
+            print("[WebView] Navigation requested: \(url.absoluteString)")
+            print("[WebView] Navigation type: \(navigationAction.navigationType.rawValue)")
+            print("[WebView] Target frame main: \(navigationAction.targetFrame?.isMainFrame ?? false)")
+            print("[WebView] Source frame main: \(navigationAction.sourceFrame.isMainFrame)")
+
+            // Handle navigation based on target frame
+            if navigationAction.targetFrame == nil {
+                // Link wants to open in new window/tab - load it in current WebView instead
+                print("[WebView] Redirecting new window request to current WebView")
+                webView.load(navigationAction.request)
+                decisionHandler(.cancel)
+                return
+            }
+
+            // Allow all navigation within the WebView
+            // This includes all http/https URLs, preventing Safari from opening
             decisionHandler(.allow)
+        }
+
+        // MARK: - WKUIDelegate (Handle new window requests)
+
+        func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+            // Handle links with target="_blank" or window.open()
+            // Instead of opening a new window, navigate in the current WebView
+            if let url = navigationAction.request.url {
+                print("[WebView] Intercepting new window request, loading in same WebView: \(url.absoluteString)")
+                webView.load(URLRequest(url: url))
+            }
+            return nil
         }
     }
 }
