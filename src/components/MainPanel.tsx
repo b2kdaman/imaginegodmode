@@ -34,7 +34,7 @@ const VIEW_COMPONENTS: Record<ViewType, React.FC> = {
 
 export const MainPanel: React.FC = () => {
   const { isExpanded, currentView, setCurrentView } = useUIStore();
-  const { getThemeColors, getScale } = useSettingsStore();
+  const { getThemeColors, getScale, enableThePit } = useSettingsStore();
   const { queue } = useUpscaleQueueStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
@@ -94,7 +94,7 @@ export const MainPanel: React.FC = () => {
   const CurrentView = VIEW_COMPONENTS[currentView as ViewType] || PromptView;
   const PreviousViewComponent = VIEW_COMPONENTS[previousView] || PromptView;
 
-  const tabs = [
+  const allTabs = [
     {
       id: 'prompt',
       icon: mdiTextBox,
@@ -113,6 +113,14 @@ export const MainPanel: React.FC = () => {
       iconOnly: true,
       tooltip: t('tabs.settings')
     },
+    // Queue tab - icon only with badge
+    {
+      id: 'queue',
+      icon: mdiTrayFull,
+      badge: queueCount,
+      iconOnly: true,
+      tooltip: t('tabs.queueTooltip'),
+    },
     {
       id: 'help',
       icon: mdiHelpCircle,
@@ -125,15 +133,15 @@ export const MainPanel: React.FC = () => {
       iconOnly: true,
       tooltip: 'The Pit'
     },
-    // Queue tab - icon only with badge
-    {
-      id: 'queue',
-      icon: mdiTrayFull,
-      badge: queueCount,
-      iconOnly: true,
-      tooltip: t('tabs.queueTooltip'),
-    },
   ];
+
+  // Filter tabs based on settings
+  const tabs = allTabs.filter(tab => {
+    if (tab.id === 'pit') {
+      return enableThePit;
+    }
+    return true;
+  });
 
   // Determine bottom position based on device type
   const bottomPosition = isMobileDevice() ? UI_POSITION.BOTTOM_MOBILE : UI_POSITION.BOTTOM;

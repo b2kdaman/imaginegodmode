@@ -22,6 +22,7 @@ import {
   mdiDatabase,
   mdiKeyboard,
   mdiEyeOff,
+  mdiFlare,
   mdiDeleteForever,
   mdiVolumeHigh,
   mdiAlertCircleOutline,
@@ -42,7 +43,7 @@ import {
 } from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableSound, setConfirmCopyFrom, setGlobalPromptAddonEnabled, setGlobalPromptAddon, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setGlobalPromptAddonEnabled, setGlobalPromptAddon, getThemeColors } = useSettingsStore();
   const { clearAllPacks } = usePromptStore();
   const { userId } = useUserStore();
   const { t, locale, setLocale } = useTranslation();
@@ -423,6 +424,28 @@ export const SettingsView: React.FC = () => {
               onChange={(checked) => {
                 setHideUnsave(checked);
                 trackHideUnsaveToggled(checked);
+              }}
+            />
+          </div>
+
+          {/* Enable The Pit Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-content="Show The Pit tab for accessing deleted posts"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="enable-pit-toggle"
+            >
+              <Icon path={mdiFlare} size={0.7} color={colors.TEXT_PRIMARY} />
+              Enable The Pit
+            </label>
+            <Toggle
+              id="enable-pit-toggle"
+              checked={enableThePit}
+              onChange={(checked) => {
+                setEnableThePit(checked);
               }}
             />
           </div>

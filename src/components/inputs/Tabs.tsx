@@ -33,7 +33,7 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, direction
     <>
       <style>{glowStyles}</style>
       <div
-        className={`flex gap-1 ${isUp ? 'border-t mt-4' : 'border-b mb-4'}`}
+        className={`flex gap-2 ${isUp ? 'border-t mt-4' : 'border-b mb-4'}`}
         style={{ borderColor: `${colors.BORDER}` }}
       >
         {tabs.map((tab) => {

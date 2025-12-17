@@ -143,6 +143,7 @@ A multi-platform application for Grok media management built with React, TypeScr
 - **Visual Settings**: Settings labels enhanced with Material Design Icons for better UX
 - **Simple Shortcut Setting**: Optional setting to use `Ctrl/Cmd + Enter` instead of `Ctrl/Cmd + Shift + Enter` for applying prompts
 - **Hide Unsave Button**: Optional setting to hide the "Unsave" button from the Grok page interface (off by default)
+- **Enable The Pit**: Optional setting to show/hide The Pit tab for accessing experimental video generation features (off by default)
 - **Sound Effects Control**: Optional setting to enable/disable UI sound effects (on by default) - controls cyberpunk-style audio feedback for purge modal interactions
 - **Confirm Copy From**: Optional setting to show confirmation dialog when copying from page would replace existing prompt text (on by default)
 - **Keyboard Shortcuts**:
@@ -333,6 +334,7 @@ open ios/imagineGodMode/imagineGodMode.xcodeproj
    - Toggle Remember Pack Per Post to control per-post state persistence (enabled by default)
    - Toggle Simple Shortcut to use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter for applying prompts
    - Toggle Hide Unsave to hide the "Unsave" button from the page (off by default)
+   - Toggle Enable The Pit to show/hide The Pit tab for experimental video generation (off by default)
    - Toggle Enable Sound to control UI sound effects (on by default) - affects purge modal audio feedback
    - Toggle Confirm Copy From to show confirmation when replacing existing prompt text (on by default)
    - All settings labels include visual icons for easy identification
@@ -445,7 +447,7 @@ grkgoondl/
 - **usePromptStore**: Manages prompts, packs, ratings, and import/export operations
 - **useMediaStore**: Handles media URLs, upscaling, and status
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
-- **useSettingsStore**: Manages theme, size, auto-download, remember-post-state, simple-shortcut, hide-unsave, enable-sound, and confirm-copy-from preferences with localStorage persistence
+- **useSettingsStore**: Manages theme, size, auto-download, remember-post-state, simple-shortcut, hide-unsave, enable-the-pit, enable-sound, and confirm-copy-from preferences with localStorage persistence
 - **useUpscaleQueueStore**: Global upscale queue with batch processing (15 at a time), auto-download, and localStorage persistence
 - **useDownloadQueueStore**: Global download queue with sequential processing, auto-start, and localStorage persistence
 - **usePostsStore**: Manages fetched posts list and navigation helpers for "Make + Next" workflow
@@ -634,7 +636,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - API architecture refactored: content script handles authenticated calls, background worker handles downloads
 - Message passing includes retry mechanism (3 attempts) to handle service worker wake-up delays
 - Download queue system processes files sequentially with configurable delays between downloads
-- Settings persist in localStorage for instant theme/size/language/auto-download/remember-post-state/simple-shortcut/hide-unsave/enable-sound/confirm-copy-from application on load
+- Settings persist in localStorage for instant theme/size/language/auto-download/remember-post-state/simple-shortcut/hide-unsave/enable-the-pit/enable-sound/confirm-copy-from application on load
 - **Hide Unsave Feature**: Dynamic CSS injection to hide Unsave button when enabled
   - Uses `useEffect` hook to inject/remove style element
   - CSS selector targets `button[aria-label="Unsave"]`
