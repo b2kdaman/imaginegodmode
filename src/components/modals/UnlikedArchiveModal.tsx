@@ -4,13 +4,12 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '../inputs/Button';
-import { mdiHeart, mdiLoading, mdiDownload, mdiUpload } from '@mdi/js';
+import { mdiHeart, mdiDownload, mdiUpload } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { UnlikedPost } from '@/utils/storage';
 import { ThemeColors } from '@/types';
 import { trackBulkSelectAll, trackBulkDeselectAll, trackBulkOperationConfirmed } from '@/utils/analytics';
 import { BaseModal } from './BaseModal';
-import { ProgressBar } from './shared/ProgressBar';
 import { SelectionControls } from './shared/SelectionControls';
 import { PostGrid, PostGridItem } from './shared/PostGrid';
 import { useShiftSelection } from '@/hooks/useShiftSelection';
@@ -23,9 +22,6 @@ interface UnlikedArchiveModalProps {
   onRelike: (selectedPostIds: string[]) => void;
   onImport?: (posts: UnlikedPost[]) => void;
   getThemeColors: () => ThemeColors;
-  isProcessing?: boolean;
-  processedCount?: number;
-  totalCount?: number;
 }
 
 export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
@@ -35,9 +31,6 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
   onRelike,
   onImport,
   getThemeColors,
-  isProcessing = false,
-  processedCount = 0,
-  totalCount = 0,
 }) => {
   const colors = getThemeColors();
   const { t } = useTranslation();
@@ -55,12 +48,12 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
     clearSelection,
   } = useShiftSelection(sortedPosts);
 
-  // Clear selection when modal closes after processing completes
+  // Clear selection when modal closes
   useEffect(() => {
-    if (!isOpen && !isProcessing) {
+    if (!isOpen) {
       clearSelection();
     }
-  }, [isOpen, isProcessing, clearSelection]);
+  }, [isOpen, clearSelection]);
 
   const handleSelectAll = () => {
     selectAllIds();
@@ -203,15 +196,15 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
       maxHeight="800px"
       padding="p-6"
       overlayOpacity={0.7}
-      closeOnOverlayClick={!isProcessing}
-      disableClose={isProcessing}
+      closeOnOverlayClick={true}
+      disableClose={false}
       footer={
         <div className="flex gap-2 justify-between">
           <div className="flex gap-2">
             <Button
               onClick={handleExport}
               className="text-xs"
-              disabled={isProcessing || posts.length === 0}
+              disabled={posts.length === 0}
               icon={mdiDownload}
             >
               {t('common.export')}
@@ -220,7 +213,6 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
               <Button
                 onClick={handleImportClick}
                 className="text-xs"
-                disabled={isProcessing}
                 icon={mdiUpload}
               >
                 {t('common.import')}
@@ -231,22 +223,17 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
             <Button
               onClick={onClose}
               className="text-xs"
-              disabled={isProcessing}
-              icon={isProcessing ? mdiLoading : undefined}
-              iconClassName={isProcessing ? "animate-spin" : ""}
             >
-              {isProcessing ? t('common.processing') : t('common.close')}
+              {t('common.close')}
             </Button>
-            {!isProcessing && (
-              <Button
-                onClick={handleRelike}
-                className="text-xs"
-                disabled={selectedIds.size === 0}
-                icon={mdiHeart}
-              >
-                {relikeButtonText}
-              </Button>
-            )}
+            <Button
+              onClick={handleRelike}
+              className="text-xs"
+              disabled={selectedIds.size === 0}
+              icon={mdiHeart}
+            >
+              {relikeButtonText}
+            </Button>
           </div>
         </div>
       }
@@ -275,25 +262,11 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
           </div>
         )}
 
-        {/* Progress Bar */}
-        {isProcessing && (
-          <ProgressBar
-            processedCount={processedCount}
-            totalCount={totalCount}
-            label={t('modals.unlikedArchive.relikingPosts')}
-            backgroundColor={colors.BACKGROUND_MEDIUM}
-            progressColor={colors.SUCCESS}
-            textColor={colors.TEXT_SECONDARY}
-          />
-        )}
-
         {/* Selection Controls */}
-        {!isProcessing && (
-          <SelectionControls
-            onSelectAll={handleSelectAll}
-            onDeselectAll={handleDeselectAll}
-          />
-        )}
+        <SelectionControls
+          onSelectAll={handleSelectAll}
+          onDeselectAll={handleDeselectAll}
+        />
 
         {/* Posts Grid */}
         {sortedPosts.length === 0 ? (
@@ -307,7 +280,7 @@ export const UnlikedArchiveModal: React.FC<UnlikedArchiveModalProps> = ({
           <PostGrid
             posts={gridItems}
             selectedIds={selectedIds}
-            isProcessing={isProcessing}
+            isProcessing={false}
             onItemClick={toggleSelection}
             getBorderColor={(isSelected) => isSelected ? colors.SUCCESS : colors.BORDER}
             colors={colors}

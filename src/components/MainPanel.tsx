@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { useUIStore } from '@/store/useUIStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
-import { useUpscaleQueueStore } from '@/store/useUpscaleQueueStore';
+import { useJobQueueStore } from '@/store/useJobQueueStore';
 import { PromptView } from './views/PromptView';
 import { OpsView } from './views/OpsView';
 import { SettingsView } from './views/SettingsView';
@@ -35,14 +35,14 @@ const VIEW_COMPONENTS: Record<ViewType, React.FC> = {
 export const MainPanel: React.FC = () => {
   const { isExpanded, currentView, setCurrentView } = useUIStore();
   const { getThemeColors, getScale, enableThePit } = useSettingsStore();
-  const { queue } = useUpscaleQueueStore();
+  const { jobs } = useJobQueueStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
   const scale = getScale();
   const isVisible = useUrlVisibility('/imagine');
 
-  // Calculate queue count
-  const queueCount = queue.filter((item) => item.status === 'pending' || item.status === 'processing').length;
+  // Calculate active jobs count (pending + processing)
+  const activeJobsCount = jobs.filter((job) => job.status === 'pending' || job.status === 'processing').length;
 
   // Animation state
   const [shouldRender, setShouldRender] = useState(isExpanded);
@@ -54,35 +54,47 @@ export const MainPanel: React.FC = () => {
   useEffect(() => {
     if (isExpanded) {
       // Start with element rendered but in collapsed state
-      setShouldRender(true);
+      // Use setTimeout to avoid synchronous setState in effect
+      const renderTimer = setTimeout(() => {
+        setShouldRender(true);
 
-      // Trigger animation on next frame
-      requestAnimationFrame(() => {
+        // Trigger animation on next frame
         requestAnimationFrame(() => {
-          setIsAnimatingIn(true);
+          requestAnimationFrame(() => {
+            setIsAnimatingIn(true);
+          });
         });
-      });
+      }, 0);
+      return () => clearTimeout(renderTimer);
     } else {
       // Collapse animation
-      setIsAnimatingIn(false);
+      // Use setTimeout to avoid synchronous setState in effect
+      const collapseTimer = setTimeout(() => {
+        setIsAnimatingIn(false);
 
-      // Delay unmounting until animation completes
-      const timer = setTimeout(() => {
-        setShouldRender(false);
-      }, 300); // Match transition duration
-      return () => clearTimeout(timer);
+        // Delay unmounting until animation completes
+        const timer = setTimeout(() => {
+          setShouldRender(false);
+        }, 300); // Match transition duration
+        return () => clearTimeout(timer);
+      }, 0);
+      return () => clearTimeout(collapseTimer);
     }
   }, [isExpanded]);
 
   // Handle tab switch animation
   useEffect(() => {
     if (previousView !== currentView) {
-      setIsTransitioning(true);
-      const timer = setTimeout(() => {
-        setPreviousView(currentView as ViewType);
-        setIsTransitioning(false);
-      }, 200); // Animation duration
-      return () => clearTimeout(timer);
+      // Use setTimeout to avoid synchronous setState in effect
+      const transitionTimer = setTimeout(() => {
+        setIsTransitioning(true);
+        const timer = setTimeout(() => {
+          setPreviousView(currentView as ViewType);
+          setIsTransitioning(false);
+        }, 200); // Animation duration
+        return () => clearTimeout(timer);
+      }, 0);
+      return () => clearTimeout(transitionTimer);
     }
   }, [currentView, previousView]);
 
@@ -117,7 +129,7 @@ export const MainPanel: React.FC = () => {
     {
       id: 'queue',
       icon: mdiTrayFull,
-      badge: queueCount,
+      badge: activeJobsCount,
       iconOnly: true,
       tooltip: t('tabs.queueTooltip'),
     },

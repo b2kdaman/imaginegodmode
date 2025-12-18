@@ -177,7 +177,11 @@ export const PanelControls: React.FC = () => {
           icon={mdiDatabase}
           className={`shadow-lg ${rememberPostState ? '!bg-slate-400 !border-slate-400' : ''}`}
           iconColor={rememberPostState ? UI_COLORS.BLACK : undefined}
-          tooltip="Remember Pack Per Post: Save and restore selected pack for each post"
+          tooltip={
+            rememberPostState
+              ? "Remember Pack Per Post: ON - Each post remembers its pack"
+              : "Remember Pack Per Post: OFF - Click to enable"
+          }
         />
       )}
 

@@ -61,33 +61,43 @@ export const useModalAnimation = (
   useEffect(() => {
     if (isOpen) {
       // Opening: render immediately and trigger enter animation
-      setShouldRender(true);
+      // Use setTimeout to avoid synchronous setState in effect
+      const renderTimer = setTimeout(() => {
+        setShouldRender(true);
 
-      // Slight delay before starting animation (allows browser to render)
-      requestAnimationFrame(() => {
-        setIsEntering(true);
-      });
+        // Slight delay before starting animation (allows browser to render)
+        requestAnimationFrame(() => {
+          setIsEntering(true);
+        });
 
-      // End enter animation
-      const enterTimer = setTimeout(() => {
-        setIsEntering(false);
-        onAnimationComplete?.();
-      }, duration);
+        // End enter animation
+        const enterTimer = setTimeout(() => {
+          setIsEntering(false);
+          onAnimationComplete?.();
+        }, duration);
 
-      return () => clearTimeout(enterTimer);
+        return () => clearTimeout(enterTimer);
+      }, 0);
+
+      return () => clearTimeout(renderTimer);
     } else if (shouldRender) {
       // Closing: trigger exit animation, then unmount
-      setIsEntering(false);
-      setIsExiting(true);
+      // Use setTimeout to avoid synchronous setState in effect
+      const closeTimer = setTimeout(() => {
+        setIsEntering(false);
+        setIsExiting(true);
 
-      // Wait for exit animation, then unmount
-      const exitTimer = setTimeout(() => {
-        setIsExiting(false);
-        setShouldRender(false);
-        onAnimationComplete?.();
-      }, duration);
+        // Wait for exit animation, then unmount
+        const exitTimer = setTimeout(() => {
+          setIsExiting(false);
+          setShouldRender(false);
+          onAnimationComplete?.();
+        }, duration);
 
-      return () => clearTimeout(exitTimer);
+        return () => clearTimeout(exitTimer);
+      }, 0);
+
+      return () => clearTimeout(closeTimer);
     }
   }, [isOpen, shouldRender, duration, onAnimationComplete]);
 

@@ -9,6 +9,7 @@ import { Icon } from '../common/Icon';
 import { BaseModal } from './BaseModal';
 import { useTranslation } from '@/contexts/I18nContext';
 import { playCorrectKeySound, playWrongKeySound, playSuccessChord } from '@/utils/audio';
+import { useJobQueueStore } from '@/store/useJobQueueStore';
 import {
   ArrowKey,
   ARROW_LABELS,
@@ -47,11 +48,12 @@ interface PurgeItem {
 export const PurgeModal: React.FC<PurgeModalProps> = ({
   isOpen,
   onClose,
-  onConfirm,
+  onConfirm: _onConfirm,
   getThemeColors,
 }) => {
   const colors = getThemeColors();
   const { t } = useTranslation();
+  const { addJob } = useJobQueueStore();
   const [arrowSequence, setArrowSequence] = useState<ArrowKey[]>([]);
   const [userInput, setUserInput] = useState<ArrowKey[]>([]);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -193,14 +195,14 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
   const handlePurge = async () => {
     setIsPurging(true);
 
-    // Simulate purging each item with delays
+    // Simulate purging each item with delays for visual feedback
     for (let i = 0; i < purgeItems.length; i++) {
       // Mark current item as in progress
       setPurgeItems(prev => prev.map((item, idx) =>
         idx === i ? { ...item, status: PurgeItemStatus.IN_PROGRESS } : item
       ));
 
-      // Simulate deletion delay (you would call actual deletion logic here)
+      // Simulate deletion delay for visual feedback
       await new Promise(resolve => setTimeout(resolve, 800));
 
       // Mark current item as completed
@@ -209,11 +211,39 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
       ));
     }
 
-    // Wait 2 seconds to show completion status
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Wait 1 second to show completion status
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Actually purge the data
-    onConfirm();
+    // Create 3 separate purge jobs in the queue
+    addJob({
+      type: 'purge-liked',
+      totalItems: 1,
+      data: {
+        type: 'purge-liked',
+        category: 'liked-posts',
+      },
+    });
+
+    addJob({
+      type: 'purge-archive',
+      totalItems: 1,
+      data: {
+        type: 'purge-archive',
+        category: 'unliked-archive',
+      },
+    });
+
+    addJob({
+      type: 'purge-packs',
+      totalItems: 1,
+      data: {
+        type: 'purge-packs',
+        category: 'prompt-packs',
+      },
+    });
+
+    // Note: onConfirm is no longer called here as purging happens in the queue
+    // The actual purge logic is now in the job queue processor
     onClose();
   };
 

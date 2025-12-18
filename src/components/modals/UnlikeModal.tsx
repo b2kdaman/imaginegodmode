@@ -4,12 +4,11 @@
 
 import React, { useEffect } from 'react';
 import { Button } from '../inputs/Button';
-import { mdiHeartBroken, mdiHeart, mdiLoading } from '@mdi/js';
+import { mdiHeartBroken, mdiHeart } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { LikedPost, ThemeColors } from '@/types';
 import { trackBulkSelectAll, trackBulkDeselectAll, trackBulkOperationConfirmed } from '@/utils/analytics';
 import { BaseModal } from './BaseModal';
-import { ProgressBar } from './shared/ProgressBar';
 import { SelectionControls } from './shared/SelectionControls';
 import { PostGrid, PostGridItem } from './shared/PostGrid';
 import { useShiftSelection } from '@/hooks/useShiftSelection';
@@ -21,9 +20,6 @@ interface UnlikeModalProps {
   onClose: () => void;
   onConfirm: (selectedPostIds: string[]) => void;
   getThemeColors: () => ThemeColors;
-  isProcessing?: boolean;
-  processedCount?: number;
-  totalCount?: number;
 }
 
 export const UnlikeModal: React.FC<UnlikeModalProps> = ({
@@ -32,9 +28,6 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
   onClose,
   onConfirm,
   getThemeColors,
-  isProcessing = false,
-  processedCount = 0,
-  totalCount = 0,
 }) => {
   const colors = getThemeColors();
   const { t } = useTranslation();
@@ -46,12 +39,12 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
     clearSelection,
   } = useShiftSelection(posts);
 
-  // Deselect all posts by default when modal opens (but not during processing)
+  // Deselect all posts by default when modal opens
   useEffect(() => {
-    if (isOpen && !isProcessing) {
+    if (isOpen) {
       clearSelection();
     }
-  }, [isOpen, isProcessing, clearSelection]);
+  }, [isOpen, clearSelection]);
 
   const handleSelectAll = () => {
     selectAllIds();
@@ -100,68 +93,48 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
       maxHeight="800px"
       padding="p-6"
       overlayOpacity={0.7}
-      closeOnOverlayClick={!isProcessing}
-      disableClose={isProcessing}
+      closeOnOverlayClick={true}
+      disableClose={false}
       footer={
         <div className="flex gap-2 justify-end">
           <Button
             onClick={onClose}
             className="text-xs"
-            disabled={isProcessing}
-            icon={isProcessing ? mdiLoading : undefined}
-            iconClassName={isProcessing ? "animate-spin" : ""}
           >
-            {isProcessing ? t('common.processing') : t('common.cancel')}
+            {t('common.cancel')}
           </Button>
-          {!isProcessing && (
-            <Button
-              onClick={handleConfirm}
-              className="text-xs"
-              disabled={selectedIds.size === 0}
-            >
-              {confirmButtonText}
-            </Button>
-          )}
+          <Button
+            onClick={handleConfirm}
+            className="text-xs"
+            disabled={selectedIds.size === 0}
+          >
+            {confirmButtonText}
+          </Button>
         </div>
       }
     >
       <>
-        {/* Progress Bar */}
-        {isProcessing && (
-          <ProgressBar
-            processedCount={processedCount}
-            totalCount={totalCount}
-            label={t('common.processing')}
-            backgroundColor={colors.BACKGROUND_MEDIUM}
-            progressColor={colors.DANGER}
-            textColor={colors.TEXT_SECONDARY}
-          />
-        )}
-
         {/* Selection Controls */}
-        {!isProcessing && (
-          <SelectionControls
-            onSelectAll={handleSelectAll}
-            onDeselectAll={handleDeselectAll}
-          />
-        )}
+        <SelectionControls
+          onSelectAll={handleSelectAll}
+          onDeselectAll={handleDeselectAll}
+        />
 
         {/* Posts Grid */}
         <PostGrid
           posts={gridItems}
           selectedIds={selectedIds}
-          isProcessing={isProcessing}
+          isProcessing={false}
           onItemClick={toggleSelection}
           getBorderColor={(isSelected) => isSelected ? colors.DANGER : colors.BORDER}
           colors={colors}
           renderOverlay={(post, isSelected) => (
             <button
               onClick={(e) => toggleSelection(post.id, e)}
-              disabled={isProcessing}
               className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full p-2"
               style={{
                 backgroundColor: isSelected ? colors.DANGER : colors.SUCCESS,
-                cursor: isProcessing ? 'not-allowed' : 'pointer',
+                cursor: 'pointer',
               }}
             >
               <Icon

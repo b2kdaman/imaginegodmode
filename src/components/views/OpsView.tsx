@@ -5,20 +5,16 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useMediaStore } from '@/store/useMediaStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
-import { useUpscaleQueueStore } from '@/store/useUpscaleQueueStore';
-import { useDownloadQueueStore } from '@/store/useDownloadQueueStore';
+import { useJobQueueStore } from '@/store/useJobQueueStore';
 import { usePostsStore } from '@/store/usePostsStore';
 import { useUserStore } from '@/store/useUserStore';
 import { getPostIdFromUrl } from '@/utils/helpers';
 import { fetchPost } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
-import { fetchPostData } from '@/api/grokApi';
 import { Button } from '../inputs/Button';
 import { Icon } from '../common/Icon';
 import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle, mdiFormatListBulletedSquare, mdiHeartBroken, mdiArchive, mdiLoading /*, mdiDelete */ } from '@mdi/js';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
-import { useBulkUnlike } from '@/hooks/useBulkUnlike';
-import { useBulkRelike } from '@/hooks/useBulkRelike';
 // import { useBulkDelete } from '@/hooks/useBulkDelete';
 import { useLikedPostsLoader } from '@/hooks/useLikedPostsLoader';
 import { trackMediaDownloaded, trackModalOpened, trackModalClosed } from '@/utils/analytics';
@@ -41,8 +37,7 @@ export const OpsView: React.FC = () => {
     setStatusText,
   } = useMediaStore();
   const { getThemeColors, listLimit } = useSettingsStore();
-  const { addToQueue, isProcessing: isQueueProcessing } = useUpscaleQueueStore();
-  const { addToQueue: addToDownloadQueue } = useDownloadQueueStore();
+  const { addJob, isProcessing: isQueueProcessing } = useJobQueueStore();
   const { setPosts, setCurrentPostId, ensureCurrentPostInList } = usePostsStore();
   const { userId } = useUserStore();
   const colors = getThemeColors();
@@ -61,19 +56,8 @@ export const OpsView: React.FC = () => {
     loadLikedPosts,
   } = useLikedPostsLoader(setStatusText);
 
-  const {
-    isProcessing: isProcessingUnlikes,
-    processedCount: processedUnlikesCount,
-    totalCount: totalUnlikesCount,
-    processBulkUnlike,
-  } = useBulkUnlike(setStatusText);
-
-  const {
-    isProcessing: isProcessingRelikes,
-    processedCount: processedRelikesCount,
-    totalCount: totalRelikesCount,
-    processBulkRelike,
-  } = useBulkRelike(setStatusText);
+  // Note: useBulkUnlike and useBulkRelike are no longer needed
+  // Unlike/Relike operations now use the job queue system
 
   // const {
   //   isProcessing: isProcessingDeletes,
@@ -141,7 +125,7 @@ export const OpsView: React.FC = () => {
     }
   }, [listLimit, lastListLimit, loadLikedPosts, setPosts]);
 
-  // Download media - add to queue
+  // Download media - create download job
   const handleDownload = () => {
     if (urls.length === 0) {
       setStatusText('No media to download');
@@ -164,16 +148,24 @@ export const OpsView: React.FC = () => {
       };
     });
 
-    // Add to download queue - it will auto-start processing
-    addToDownloadQueue(postId, downloadItems);
-    setStatusText(`Added ${urls.length} item${urls.length === 1 ? '' : 's'} to download queue`);
+    // Create download job - will auto-start processing
+    addJob({
+      type: 'download',
+      totalItems: downloadItems.length,
+      data: {
+        type: 'download',
+        postIds: [postId],
+        items: downloadItems,
+      },
+    });
+    setStatusText(`Added download job: ${urls.length} file${urls.length === 1 ? '' : 's'}`);
     trackMediaDownloaded(urls.length, 'mixed');
 
     // Clear local media URLs since they're now in queue
     setMediaUrls([]);
   };
 
-  // Add videos to upscale queue
+  // Add videos to upscale job
   const handleUpscale = () => {
     if (videoIdsToUpscale.length === 0) {
       setStatusText(STATUS_MESSAGES.NO_VIDEOS);
@@ -185,11 +177,19 @@ export const OpsView: React.FC = () => {
       return;
     }
 
-    // Add to global queue - it will auto-start processing
-    addToQueue(postId, videoIdsToUpscale);
-    setStatusText(STATUS_MESSAGES.ADDED_TO_QUEUE(videoIdsToUpscale.length));
+    // Create upscale job - will auto-start processing
+    addJob({
+      type: 'upscale',
+      totalItems: videoIdsToUpscale.length,
+      data: {
+        type: 'upscale',
+        postIds: [postId],
+        videoIds: videoIdsToUpscale,
+      },
+    });
+    setStatusText(`Added upscale job: ${videoIdsToUpscale.length} video${videoIdsToUpscale.length === 1 ? '' : 's'}`);
 
-    // Clear local upscale list since they're now in queue
+    // Clear local upscale list since they're now in job
     setVideoIdsToUpscale([]);
   };
 
@@ -203,35 +203,21 @@ export const OpsView: React.FC = () => {
     }
   };
 
-  // Handle bulk upscale from modal
+  // Handle bulk upscale from modal - creates processing job
   const handleBulkUpscale = async (selectedPostIds: string[]) => {
     setIsUpscaleAllModalOpen(false);
-    setStatusText(STATUS_MESSAGES.PROCESSING_POSTS(selectedPostIds.length));
 
-    let totalVideosAdded = 0;
+    // Create processing job that will fetch posts and create upscale job
+    addJob({
+      type: 'process-for-upscale',
+      totalItems: selectedPostIds.length,
+      data: {
+        type: 'process-for-upscale',
+        postIds: selectedPostIds,
+      },
+    });
 
-    // Process each selected post
-    for (const postId of selectedPostIds) {
-      try {
-        // Fetch full post data
-        const postData = await fetchPostData(postId);
-
-        if (postData?.post) {
-          // Process post data to extract video IDs that need upscaling
-          const processed = processPostData(postData);
-
-          if (processed.videosToUpscale.length > 0) {
-            // Add videos to queue
-            addToQueue(postId, processed.videosToUpscale);
-            totalVideosAdded += processed.videosToUpscale.length;
-          }
-        }
-      } catch (error) {
-        console.error(`${LOG_PREFIX} Failed to process post ${postId}:`, error);
-      }
-    }
-
-    setStatusText(STATUS_MESSAGES.ADDED_VIDEOS_TO_QUEUE(totalVideosAdded, selectedPostIds.length));
+    setStatusText(`Added processing job: ${selectedPostIds.length} post${selectedPostIds.length === 1 ? '' : 's'}`);
   };
 
   // Handle unlike button click
@@ -244,10 +230,25 @@ export const OpsView: React.FC = () => {
     }
   };
 
-  // Handle bulk unlike from modal
+  // Handle bulk unlike from modal - creates an unlike job
   const handleBulkUnlike = async (selectedPostIds: string[]) => {
     setIsUnlikeModalOpen(false);
-    await processBulkUnlike(selectedPostIds, likedPosts);
+
+    // Get the full post data for the selected posts
+    const selectedPosts = likedPosts.filter((post) => selectedPostIds.includes(post.id));
+
+    // Create unlike job
+    addJob({
+      type: 'unlike',
+      totalItems: selectedPostIds.length,
+      data: {
+        type: 'unlike',
+        postIds: selectedPostIds,
+        posts: selectedPosts,
+      },
+    });
+
+    setStatusText(`Added unlike job: ${selectedPostIds.length} post${selectedPostIds.length === 1 ? '' : 's'}`);
   };
 
   // Handle archive button click
@@ -258,10 +259,21 @@ export const OpsView: React.FC = () => {
     trackModalOpened('unliked_archive');
   };
 
-  // Handle re-like from archive
+  // Handle re-like from archive - creates a relike job
   const handleRelikeFromArchive = async (postIds: string[]) => {
     setIsArchiveModalOpen(false);
-    await processBulkRelike(postIds);
+
+    // Create relike job
+    addJob({
+      type: 'relike',
+      totalItems: postIds.length,
+      data: {
+        type: 'relike',
+        postIds,
+      },
+    });
+
+    setStatusText(`Added relike job: ${postIds.length} post${postIds.length === 1 ? '' : 's'}`);
   };
 
   // Handle import archive
@@ -442,16 +454,11 @@ export const OpsView: React.FC = () => {
         isOpen={isUnlikeModalOpen}
         posts={likedPosts}
         onClose={() => {
-          if (!isProcessingUnlikes) {
-            setIsUnlikeModalOpen(false);
-            trackModalClosed('unlike_posts');
-          }
+          setIsUnlikeModalOpen(false);
+          trackModalClosed('unlike_posts');
         }}
         onConfirm={handleBulkUnlike}
         getThemeColors={getThemeColors}
-        isProcessing={isProcessingUnlikes}
-        processedCount={processedUnlikesCount}
-        totalCount={totalUnlikesCount}
       />
 
       {/* Unliked Archive Modal */}
@@ -459,17 +466,12 @@ export const OpsView: React.FC = () => {
         isOpen={isArchiveModalOpen}
         posts={unlikedPosts}
         onClose={() => {
-          if (!isProcessingRelikes) {
-            setIsArchiveModalOpen(false);
-            trackModalClosed('unliked_archive');
-          }
+          setIsArchiveModalOpen(false);
+          trackModalClosed('unliked_archive');
         }}
         onRelike={handleRelikeFromArchive}
         onImport={handleImportArchive}
         getThemeColors={getThemeColors}
-        isProcessing={isProcessingRelikes}
-        processedCount={processedRelikesCount}
-        totalCount={totalRelikesCount}
       />
 
       {/* Delete Modal - HIDDEN FOR NOW */}

@@ -38,9 +38,18 @@ export const PackSelectModal: React.FC<PackSelectModalProps> = ({
   // Reset selection when modal opens
   useEffect(() => {
     if (isOpen && !lastOpenState) {
-      setSelectedPacks(new Set());
+      // Use setTimeout to avoid synchronous setState in effect
+      const resetTimer = setTimeout(() => {
+        setSelectedPacks(new Set());
+        setLastOpenState(isOpen);
+      }, 0);
+      return () => clearTimeout(resetTimer);
     }
-    setLastOpenState(isOpen);
+    // Use setTimeout to avoid synchronous setState in effect
+    const updateTimer = setTimeout(() => {
+      setLastOpenState(isOpen);
+    }, 0);
+    return () => clearTimeout(updateTimer);
   }, [isOpen, lastOpenState]);
 
   const togglePack = (packName: string) => {

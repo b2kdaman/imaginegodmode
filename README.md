@@ -82,39 +82,46 @@ A multi-platform application for Grok media management built with React, TypeScr
   - **Visual Validation**: Real-time JSON validation with format detection and pack counts
   - **Theme-Aware UI**: Export button with accent color hover states
   - **Merge or Replace Modes**: Import new packs or overwrite existing ones
-- **Download Queue**: Global queue system for batch processing downloads
-  - Sequential download processing with delays between each file
-  - Persists across post navigation
-  - Auto-starts processing when items are added
-  - Real-time status tracking for each download (pending/downloading/completed/failed)
+- **Unified Job Queue System**: Centralized queue for all batch operations
+  - Single queue manages upscale, download, unlike, relike, and purge operations as jobs
+  - Sequential job processing with real-time progress tracking for each job
+  - Persists across post navigation and browser restarts
+  - Floating job queue indicator button with expandable panel showing live progress
+  - Auto-starts processing when new jobs are added
+  - Pause/Resume controls for queue processing
+  - Clear completed jobs or clear all jobs functionality
+  - Visual progress bars, status icons, and statistics (pending/processing/completed/failed counts)
+  - Jobs show detailed progress (processed items / total items, percentage)
+  - Supports concurrent batch operations without conflicts
 - **Auto Download**: Optional setting to automatically download all media after upscaling completes
 - **List Limit**: Configurable limit for fetching liked posts (100, 200, 500, or 1000)
   - Default: 100 posts (recommended to avoid potential bans)
   - Warning displayed when using limits different from 100
   - Automatically refetches data when limit changes across all views
 - **Video Upscaling**: Parallel upscale requests with staggered start times for optimal performance
-- **Upscale Queue**: Global queue system for batch processing videos across posts
-  - Processes 15 videos at a time per batch
-  - Auto-downloads completed batch before starting next
-  - Persists across post navigation
-  - Dedicated Queue View tab with icon-only badge showing pending/processing count
-  - Full queue management interface with progress tracking, stats, and controls
+  - Upscale jobs process 15 videos at a time per batch
+  - Auto-downloads completed batch before starting next (if Auto Download enabled)
 - **Bulk Operations**: Batch process multiple posts with visual selection interface
   - **Upscale All Liked**: Select from liked posts to upscale videos in bulk
     - Accessible from panel controls or Ops view
     - Dedicated hook (useUpscaleAll) for modal and operation management
-    - Processes posts and adds videos to global upscale queue
+    - Creates process-for-upscale job to analyze posts and extract videos
+    - Automatically creates upscale job after processing completes
   - **Unlike Multiple Posts**: Manage liked posts with bulk unlike functionality
+    - Creates unlike jobs in the unified queue for batch processing
+    - No progress bar in modal - track progress via job queue indicator
+    - Automatic redirect to /favorites after job completion
   - **Delete Multiple Posts**: Permanently delete multiple posts with confirmation dialog
   - **Unliked Archive**: View and re-like previously unliked posts from local storage archive (per-user with automatic migration)
+    - Creates relike jobs in the unified queue for batch processing
+    - No progress bar in modal - track progress via job queue indicator
   - Large modal interface (90vw × 85vh) with 5-column grid layout
   - Heart/broken heart indicators for intuitive like/unlike selection
   - Click anywhere on item to toggle selection (no navigation)
   - Shift-click for batch selection/deselection (standard multi-select behavior)
   - Reusable shared components for consistent UX across all bulk operation modals
-  - Real-time progress bar with 0.5-1 second delays between API calls
-  - Visual progress updates with smooth animations
-  - Automatic redirect to /favorites after bulk operations
+  - All bulk operations now use the unified job queue system for better reliability
+  - Real-time progress tracking via floating job queue indicator
   - Local storage of unliked posts with minimal metadata (ID, prompt, thumbnail, timestamp)
 - **Post Navigation**: Quick navigation between posts in your favorites list
   - Previous/Next buttons in Prompt view for seamless browsing
@@ -175,7 +182,8 @@ A multi-platform application for Grok media management built with React, TypeScr
   - Make + Next button (combines make and navigate actions)
   - Auto mode toggle (for automated Make + Next workflow)
   - Upscale All button (opens bulk upscale modal)
-  - Queue indicator with badge (shows active queue count, opens queue view)
+  - Remember Pack Per Post toggle (visual indicator for per-post state persistence)
+  - Floating job queue indicator positioned above other controls (shows active job count)
   - All buttons intelligently show/hide based on context (post availability, queue state, panel expansion)
 - **Glassmorphism Design**: Semi-transparent UI elements with backdrop blur creating modern frosted glass aesthetic
   - Main panel and buttons: 67% opacity + 12px blur
@@ -297,8 +305,8 @@ open ios/imagineGodMode/imagineGodMode.xcodeproj
    - **Make + Next**: Automatically apply prompt, make video, and navigate to next post (requires fetched posts)
 6. **Ops View**: Automatically fetches post data when opened
    - Primary action: Upscale videos (parallel processing with staggered starts)
-   - Secondary action: Download media - adds items to download queue for batch processing
-   - Real-time status updates and progress tracking
+   - Secondary action: Download media - creates download jobs in queue for batch processing
+   - Real-time status updates and progress tracking via job queue indicator
    - Green check icon appears when all videos are HD quality
    - **Upscale All Liked**: Bulk upscale videos from multiple liked posts
      - Opens large modal (90vw × 85vh) with 5-column image grid
@@ -306,16 +314,15 @@ open ios/imagineGodMode/imagineGodMode.xcodeproj
      - Centered checkbox indicator for clear visual feedback
      - Click anywhere on item to toggle (no navigation on click)
      - Shift-click for batch selection/deselection
-     - Processes selected posts and adds videos to upscale queue
+     - Creates process-for-upscale job followed by upscale job in queue
    - **Unlike Multiple Posts**: Manage liked posts with bulk unlike
      - Opens large modal with 5-column grid of liked posts
      - Centered heart/broken heart indicators for intuitive selection
      - Click anywhere on item to toggle (no navigation on click)
      - Shift-click for batch selection/deselection
-     - Real-time progress bar during bulk unlike operation
-     - Automatic redirect to /favorites after completion
+     - Creates unlike job in queue for batch processing
+     - Automatic redirect to /favorites after job completion
      - Automatically saves unliked posts to archive
-     - 0.5-1 second delays between API calls for faster processing
    - **Delete Multiple Posts**: Permanently delete posts with safety confirmation
      - Opens large modal with 5-column grid layout
      - Centered delete icon indicator when selected
@@ -323,10 +330,10 @@ open ios/imagineGodMode/imagineGodMode.xcodeproj
      - Shift-click for batch selection/deselection
      - Warning banner: "Deleting posts is permanent and cannot be undone!"
      - Two-step confirmation: select posts → confirm deletion dialog
-     - Real-time progress tracking during deletion
    - **Unliked Archive**: Browse and restore previously unliked posts
      - Opens archive modal showing all unliked posts with timestamps
      - Re-like multiple posts at once to restore them to favorites
+     - Creates relike job in queue for batch processing
      - Automatically removes from archive after successful re-like
      - Local storage with minimal data (no network required to browse)
 7. **Settings View**: Customize your experience
@@ -353,13 +360,11 @@ open ios/imagineGodMode/imagineGodMode.xcodeproj
      - Import modes: Add (create new) or Replace (overwrite existing)
      - Copy Grok prompt: System prompt for generating custom packs via AI
    - **Purge All Data**: Nuclear option to reset all data (5-click activation with arrow key challenge)
-     - Unlikes all liked posts
-     - Clears unliked archive
-     - Deletes all prompt packs
+     - Creates 3 separate purge jobs in the unified queue (liked posts, archive, packs)
      - Interactive arrow key sequence for safety with timed countdown
-     - Real-time progress tracking for each purge step (pending → in progress → completed)
-     - Visual status indicators with color-coded icons and animations
-     - 2-second completion display before final confirmation
+     - Visual feedback during arrow key challenge with status indicators
+     - Jobs are queued and processed sequentially via job queue system
+     - Track purge progress via floating job queue indicator
      - Cyberpunk-themed UI with animations and sound effects
 8. **Help View**: Comprehensive feature documentation
    - Complete list of all extension features with descriptions
@@ -367,13 +372,19 @@ open ios/imagineGodMode/imagineGodMode.xcodeproj
    - Keyboard shortcuts reference with visual key indicators
    - About section with version and credits
    - Multi-language support for all help content
-9. **Queue View**: Dedicated upscale queue management interface
-   - Real-time progress tracking for current batch
-   - Queue statistics (pending, processing, completed, failed counts)
-   - Visual queue list showing up to 20 items with status indicators
-   - Queue controls: Resume/Pause processing, Clear completed, Clear all
-   - Icon-only tab with badge showing active queue count
-   - Empty state message when queue is empty
+9. **Job Queue**: Unified job queue system for all batch operations
+   - Floating job queue indicator button positioned above panel controls
+   - Badge shows count of active jobs (pending + processing)
+   - Pulsing animation when jobs are processing
+   - Click to expand/collapse detailed queue panel
+   - Expandable panel shows:
+     - Current job progress bar with percentage and item counts
+     - Statistics (pending, processing, completed, failed job counts)
+     - List of up to 10 jobs with type icons and status indicators
+     - Queue controls: Pause/Resume processing, Clear completed, Clear all
+   - Supports all operation types: upscale, download, unlike, relike, purge
+   - Real-time progress updates with smooth animations
+   - Jobs persist across browser sessions
 10. **The Pit View**: Automated video generation from images **(Under Construction)**
    - **Post Selection**: Navigate through liked posts with image preview
      - Automatically loads all liked posts on view open
@@ -456,8 +467,17 @@ grkgoondl/
 - **useMediaStore**: Handles media URLs, upscaling, and status
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
 - **useSettingsStore**: Manages theme, size, auto-download, list-limit, remember-post-state, simple-shortcut, hide-unsave, enable-the-pit, enable-sound, and confirm-copy-from preferences with localStorage persistence
-- **useUpscaleQueueStore**: Global upscale queue with batch processing (15 at a time), auto-download, and localStorage persistence
-- **useDownloadQueueStore**: Global download queue with sequential processing, auto-start, and localStorage persistence
+- **useJobQueueStore**: Unified job queue managing all batch operations (upscale, download, unlike, relike, purge)
+  - Single queue for all job types with sequential processing
+  - Real-time progress tracking per job (processed items, percentage)
+  - Job states: pending → processing → completed/failed
+  - Auto-starts processing when jobs are added
+  - Pause/Resume controls for queue processing
+  - Persists to localStorage (excludes processing jobs)
+  - Batch upscaling: 15 videos at a time with auto-download support
+  - Sequential downloads with configurable delays
+  - Unlike/Relike with archive integration and auto-refresh
+  - Purge operations for liked posts, archive, and packs
 - **usePostsStore**: Manages fetched posts list and navigation helpers for "Make + Next" workflow
 - **useUserStore**: Manages user ID from API with localStorage persistence and automatic initialization
 - **usePitStore**: Manages The Pit state (selected post, manual mode, prompt, pack selection, tries, stop-on-first-success)
@@ -476,15 +496,12 @@ grkgoondl/
 - **useUrlWatcher**: Monitors URL changes, resets state, and triggers data refetch callback
 - **useArrowKeyNavigation**: Arrow key navigation for video controls
 - **useVideoProgress**: Real-time video generation progress tracking with polling
-- **useBulkUnlike**: Custom hook for bulk unliking posts with progress tracking and archive saving
-- **useBulkRelike**: Custom hook for bulk re-liking posts from archive with progress tracking
-- **useBulkDelete**: Custom hook for bulk deleting posts with progress tracking and confirmation
 - **useLikedPostsLoader**: Hook for loading and managing liked posts with loading state and configurable list limit from settings
 - **useShiftSelection**: Reusable hook for shift-click multi-selection behavior across bulk operation modals
 - **useUpscaleAll**: Hook for managing upscale all modal and bulk upscale operations
   - Modal state management (open/close)
   - Loads liked posts for selection
-  - Processes selected posts and adds videos to upscale queue
+  - Creates process-for-upscale job followed by upscale job in unified queue
   - Analytics tracking for modal events
 - **useGlowAnimation**: Universal glow animation hook for button hover effects with configurable settings
 - **useMultiGlowAnimation**: Multi-item glow animation hook for tabs, dropdowns, and lists with individual tracking
@@ -493,19 +510,19 @@ grkgoondl/
 
 **Views** (src/components/views/)
 - **PromptView**: Prompt management interface with "Make + Next" workflow button
-- **OpsView**: Media controls with queue-based upscaling, HD-gated downloads, bulk operations (Upscale All Liked, Unlike Multiple Posts, Delete Multiple Posts)
+- **OpsView**: Media controls with job queue-based upscaling, downloads, bulk operations (Upscale All Liked, Unlike Multiple Posts, Delete Multiple Posts)
 - **SettingsView**: Theme, size, language, auto-download, list-limit, remember-post-state, simple-shortcut, hide-unsave, enable-sound, confirm-copy-from preferences, data management with import/export, and purge all data functionality
 - **HelpView**: Help and documentation interface
-- **QueueView**: Dedicated upscale queue management with progress tracking, stats, queue list, and controls
+- **QueueView**: Legacy view - functionality replaced by JobQueueIndicator floating component
 - **PitView**: Automated video generation interface with post selection, prompt configuration, generation settings, real-time progress tracking, and moderation detection
 
 **Modals** (src/components/modals/)
 - **BaseModal**: Reusable modal foundation with animations, high z-index, portal rendering, and flexible configuration
-- **UpscaleAllModal**: Large modal (90vw × 85vh) with 5-column grid for bulk upscaling videos from liked posts
-- **UnlikeModal**: Large modal with 5-column grid, heart/broken heart indicators, and bulk unlike functionality with auto-redirect and archive saving
+- **UpscaleAllModal**: Large modal (90vw × 85vh) with 5-column grid for bulk upscaling videos from liked posts (creates job queue jobs)
+- **UnlikeModal**: Large modal with 5-column grid, heart/broken heart indicators, bulk unlike (creates job queue jobs, no progress bar)
 - **DeleteModal**: Confirmation modal for bulk deleting posts with nested confirmation dialog for extra safety
-- **UnlikedArchiveModal**: Archive browser for viewing and re-liking previously unliked posts with timestamps and progress tracking
-- **PurgeModal**: Interactive modal with random arrow key sequence challenge, cyberpunk UI, animations, and Web Audio API sound effects
+- **UnlikedArchiveModal**: Archive browser for viewing and re-liking previously unliked posts (creates job queue jobs, no progress bar)
+- **PurgeModal**: Interactive modal with random arrow key sequence challenge, creates 3 purge jobs in queue (liked/archive/packs)
 - **SearchModal**: Type-ahead search modal for finding prompts across all packs
 - **PackSelectModal**: Modal for selecting which pack to export
 - **ImportPackModal**: Modal for importing packs via paste or file upload with validation
@@ -513,11 +530,12 @@ grkgoondl/
 - **ConfirmModal**: Generic confirmation modal with variant support (danger/warning/info) for reusable confirmation dialogs
 
 **Shared Modal Components** (src/components/modals/shared/)
-- **ProgressBar**: Reusable progress bar component for bulk operations with animated loading indicator
 - **SelectionControls**: Reusable select/deselect all buttons for consistent bulk selection UX
 - **PostGrid**: Reusable grid component for displaying posts with selection state, hover effects, video count badges, and customizable overlays
 
 All modals extend BaseModal for consistent animations, behavior, and appearance.
+
+Note: ProgressBar component removed as progress tracking is now handled by the floating JobQueueIndicator.
 
 **Buttons** (src/components/buttons/)
 - **PauseButton**: Play/pause control with synchronized video state tracking
@@ -539,7 +557,11 @@ All modals extend BaseModal for consistent animations, behavior, and appearance.
 **Common** (src/components/common/)
 - **Icon**: Material Design Icons wrapper
 - **NoPostMessage**: Reusable component displayed when no post ID is found in URL
-- **UpscaleQueueIndicator**: Minimal queue status button with expandable panel showing progress, stats, and queue items
+- **JobQueueIndicator**: Floating queue status indicator with expandable panel
+  - Shows badge with active job count (pending + processing)
+  - Pulsing animation when jobs are processing
+  - Expandable panel with current job progress, statistics, job list, and controls
+  - Supports all job types with appropriate icons and labels
 
 **Root** (src/components/)
 - **MainPanel**: Floating panel container with pause, fullscreen, collapse buttons, version badge, smooth expand/collapse animations, and tab transition effects
@@ -661,12 +683,18 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - Fallback mechanism for missing keys
   - All UI elements fully translated (buttons, labels, tooltips, modals)
 - **Visual Enhancement**: Settings labels enhanced with Material Design Icons (palette, resize, translate, download, database, swap)
-- **Upscale Queue System**: Global queue processes videos in batches of 15
-  - Batch processing with staggered delays to avoid rate limiting
-  - Auto-downloads completed batch (max 15 files) before starting next
-  - Queue persists to localStorage across navigation
-  - Visual indicator with pulsing badge when processing
-  - Expandable panel with progress bar, stats, and queue management
+- **Unified Job Queue System**: Centralized queue for all batch operations
+  - Single queue handles upscale, download, unlike, relike, and purge jobs
+  - Sequential job processing with real-time progress tracking
+  - Auto-starts processing when jobs are added
+  - Persists to localStorage across sessions (excludes processing state)
+  - Floating indicator button with pulsing badge showing active job count
+  - Expandable panel with current job progress, statistics, job list, and controls
+  - Upscale jobs process videos in batches of 15 with staggered delays
+  - Auto-download support: creates download job after upscale completes
+  - Unlike/Relike jobs integrate with archive and auto-refresh browser
+  - Purge jobs handle data cleanup operations
+  - Pause/Resume controls and job clearing (completed or all)
 - **Download Protection**: Download button disabled until all videos are HD quality
 - **Auto Download**: Queue automatically downloads each completed batch of upscaled videos
 - **Remember Pack Per Post**: Optional toggle (enabled by default) to save/restore selected pack and prompt index per post
@@ -736,10 +764,10 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - **Component Refactoring**: Modular architecture for bulk operation modals
   - Shared components eliminate code duplication across UnlikeModal, UnlikedArchiveModal, and UpscaleAllModal
   - PostGrid component handles all grid rendering logic with customizable overlays and badges
-  - ProgressBar component provides consistent progress tracking UI
   - SelectionControls component standardizes select/deselect all buttons
   - useShiftSelection hook encapsulates shift-click selection logic
-  - Reduced ~400+ lines of duplicate code with reusable abstractions
+  - Unified job queue system eliminates need for individual progress tracking components
+  - Reduced code duplication and improved reliability through centralized job processing
 - **Animation System**: Smooth transitions and effects throughout the UI
   - Panel expand/collapse with scale and fade animations
   - Tab switching with slide transitions
@@ -753,6 +781,15 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - Base64-like random string generation for `x-statsig-id` header (88 chars)
   - 403 error detection stops churning immediately with user-friendly error display
   - Removed debug console.log statements from PostsStore for cleaner logs
+- **Queue System Refactor**: Unified job queue architecture (December 2024)
+  - Replaced separate upscale and download queue stores with single useJobQueueStore
+  - All batch operations (upscale, download, unlike, relike, purge) now use unified job system
+  - Better error handling: likePost/unlikePost return error objects instead of throwing
+  - Removed useBulkUnlike and useBulkRelike hooks - logic moved to job queue processors
+  - Modals simplified: no more progress bars or processing states - use job queue indicator
+  - Fixed React strict mode warnings: wrapped setState calls in setTimeout to avoid synchronous updates in effects
+  - JobQueueIndicator floating component replaces QueueView tab and panel controls queue button
+  - Improved reliability with centralized job processing and better state management
 
 ## Theme Customization
 

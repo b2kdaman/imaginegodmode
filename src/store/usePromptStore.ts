@@ -467,7 +467,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
     // Don't allow deleting if it's the only prompt - replace with empty instead
     if (prompts.length <= 1) {
-      const updates: any = {
+      const updates: Partial<Pick<PromptStore, 'packs' | 'currentIndex'>> = {
         packs: {
           ...packs,
           [packName]: [{ text: '', rating: 0 }],
@@ -487,7 +487,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     const newPrompts = prompts.filter((_, i) => i !== index);
 
     // If deleting from current pack, reset to first prompt
-    const updates: any = {
+    const updates: Partial<Pick<PromptStore, 'packs' | 'currentIndex'>> = {
       packs: {
         ...packs,
         [packName]: newPrompts,
@@ -519,7 +519,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     const finalPrompts = newPrompts.length === 0 ? [{ text: '', rating: 0 }] : newPrompts;
 
     // If deleting from current pack, reset to first prompt
-    const updates: any = {
+    const updates: Partial<Pick<PromptStore, 'packs' | 'currentIndex'>> = {
       packs: {
         ...packs,
         [packName]: finalPrompts,

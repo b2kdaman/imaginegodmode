@@ -167,25 +167,31 @@ export const fetchUnlikedPosts = async (limit: number = DEFAULT_POST_FETCH_LIMIT
 export const likePost = async (postId: string): Promise<SimpleApiResponse> => {
   console.log('[ImagineGodMode API] Liking post:', postId);
 
-  const res = await fetch(API_ENDPOINTS.POST_LIKE, {
-    method: 'POST',
-    headers: {
-      accept: '*/*',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({ id: postId }),
-    credentials: 'include',
-  });
+  try {
+    const res = await fetch(API_ENDPOINTS.POST_LIKE, {
+      method: 'POST',
+      headers: {
+        accept: '*/*',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({ id: postId }),
+      credentials: 'include',
+    });
 
-  if (!res.ok) {
-    const text = await res.text();
-    console.error('[ImagineGodMode API] Like error:', text);
-    throw new Error(`HTTP ${res.status}: ${text}`);
+    if (!res.ok) {
+      const text = await res.text();
+      console.error('[ImagineGodMode API] Like error:', text);
+      return { success: false, error: `HTTP ${res.status}: ${text}` };
+    }
+
+    const data = await res.json().catch(() => ({}));
+    console.log('[ImagineGodMode API] Like success:', data);
+    return { success: true };
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[ImagineGodMode API] Like exception:', errorMsg);
+    return { success: false, error: errorMsg };
   }
-
-  const data = await res.json().catch(() => ({}));
-  console.log('[ImagineGodMode API] Like success:', data);
-  return data;
 };
 
 /**
@@ -196,25 +202,31 @@ export const likePost = async (postId: string): Promise<SimpleApiResponse> => {
 export const unlikePost = async (postId: string): Promise<SimpleApiResponse> => {
   console.log('[ImagineGodMode API] Unliking post:', postId);
 
-  const res = await fetch(API_ENDPOINTS.POST_UNLIKE, {
-    method: 'POST',
-    headers: {
-      accept: '*/*',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({ id: postId }),
-    credentials: 'include',
-  });
+  try {
+    const res = await fetch(API_ENDPOINTS.POST_UNLIKE, {
+      method: 'POST',
+      headers: {
+        accept: '*/*',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({ id: postId }),
+      credentials: 'include',
+    });
 
-  if (!res.ok) {
-    const text = await res.text();
-    console.error('[ImagineGodMode API] Unlike error:', text);
-    throw new Error(`HTTP ${res.status}: ${text}`);
+    if (!res.ok) {
+      const text = await res.text();
+      console.error('[ImagineGodMode API] Unlike error:', text);
+      return { success: false, error: `HTTP ${res.status}: ${text}` };
+    }
+
+    const data = await res.json().catch(() => ({}));
+    console.log('[ImagineGodMode API] Unlike success:', data);
+    return { success: true };
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[ImagineGodMode API] Unlike exception:', errorMsg);
+    return { success: false, error: errorMsg };
   }
-
-  const data = await res.json().catch(() => ({}));
-  console.log('[ImagineGodMode API] Unlike success:', data);
-  return data;
 };
 
 /**

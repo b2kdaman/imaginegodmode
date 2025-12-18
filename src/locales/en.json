@@ -5,7 +5,7 @@
     "settings": "Settings",
     "help": "Help",
     "queue": "Queue",
-    "queueTooltip": "Upscale Queue"
+    "queueTooltip": "Job Queue"
   },
   "common": {
     "cancel": "Cancel",

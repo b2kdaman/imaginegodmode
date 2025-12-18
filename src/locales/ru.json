@@ -5,7 +5,7 @@
     "settings": "Настройки",
     "help": "Помощь",
     "queue": "Очередь",
-    "queueTooltip": "Очередь Масштабирования"
+    "queueTooltip": "Очередь Задач"
   },
   "common": {
     "cancel": "Отмена",

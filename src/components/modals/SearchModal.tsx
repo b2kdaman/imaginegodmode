@@ -48,8 +48,11 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   // Perform search whenever query changes
   useEffect(() => {
     if (!searchQuery.trim()) {
-      setResults([]);
-      return;
+      // Use setTimeout to avoid synchronous setState in effect
+      const clearTimer = setTimeout(() => {
+        setResults([]);
+      }, 0);
+      return () => clearTimeout(clearTimer);
     }
 
     const query = searchQuery.toLowerCase();
@@ -69,12 +72,17 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       });
     });
 
-    setResults(searchResults);
+    // Use setTimeout to avoid synchronous setState in effect
+    const updateTimer = setTimeout(() => {
+      setResults(searchResults);
+    }, 0);
 
     // Track search with query length and result count
     if (searchQuery.trim()) {
       trackPromptSearched(searchQuery.length, searchResults.length);
     }
+
+    return () => clearTimeout(updateTimer);
   }, [searchQuery, packs]);
 
   const handleSelectResult = (result: SearchResult) => {

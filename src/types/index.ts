@@ -127,3 +127,70 @@ export interface PitState {
   tries: number;
   stopOnFirstSuccess: boolean;
 }
+
+// Job Queue System Types
+export type JobType =
+  | 'process-for-upscale'
+  | 'upscale'
+  | 'download'
+  | 'unlike'
+  | 'relike'
+  | 'purge-liked'
+  | 'purge-archive'
+  | 'purge-packs';
+
+export type JobStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
+export interface Job {
+  id: string;
+  type: JobType;
+  status: JobStatus;
+  progress: number; // 0-100
+  totalItems: number;
+  processedItems: number;
+  createdAt: number;
+  error?: string;
+  data: JobData;
+}
+
+export type JobData =
+  | ProcessForUpscaleJobData
+  | UpscaleJobData
+  | DownloadJobData
+  | UnlikeJobData
+  | RelikeJobData
+  | PurgeJobData;
+
+export interface ProcessForUpscaleJobData {
+  type: 'process-for-upscale';
+  postIds: string[];
+}
+
+export interface UpscaleJobData {
+  type: 'upscale';
+  postIds: string[];
+  videoIds: string[];
+  hdUrlMap?: Record<string, string>; // videoId -> hdUrl mapping
+}
+
+export interface DownloadJobData {
+  type: 'download';
+  postIds: string[];
+  items: Array<{ url: string; filename: string; status?: 'pending' | 'completed' | 'failed' }>;
+}
+
+export interface UnlikeJobData {
+  type: 'unlike';
+  postIds: string[];
+  posts: LikedPost[];
+}
+
+export interface RelikeJobData {
+  type: 'relike';
+  postIds: string[];
+}
+
+export interface PurgeJobData {
+  type: 'purge-liked' | 'purge-archive' | 'purge-packs';
+  category: 'liked-posts' | 'unliked-archive' | 'prompt-packs';
+}

@@ -5,7 +5,7 @@
     "settings": "Ajustes",
     "help": "Ayuda",
     "queue": "Cola",
-    "queueTooltip": "Cola de Ampliación"
+    "queueTooltip": "Cola de Trabajos"
   },
   "common": {
     "cancel": "Cancelar",
