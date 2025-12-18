@@ -4,7 +4,8 @@
 
 import { useState } from 'react';
 import { LikedPost } from '@/types';
-import { fetchLikedPosts, DEFAULT_POST_FETCH_LIMIT } from '@/api/grokApi';
+import { fetchLikedPosts } from '@/api/grokApi';
+import { useSettingsStore } from '@/store/useSettingsStore';
 import { LOG_PREFIX, STATUS_MESSAGES } from '@/constants/opsView';
 
 export interface UseLikedPostsLoaderReturn {
@@ -18,11 +19,12 @@ export const useLikedPostsLoader = (
 ): UseLikedPostsLoaderReturn => {
   const [likedPosts, setLikedPosts] = useState<LikedPost[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { listLimit } = useSettingsStore();
 
   const loadLikedPosts = async (): Promise<LikedPost[]> => {
     setIsLoading(true);
     try {
-      const response = await fetchLikedPosts(DEFAULT_POST_FETCH_LIMIT);
+      const response = await fetchLikedPosts(listLimit);
       const posts = response.posts || [];
       setLikedPosts(posts);
       return posts;

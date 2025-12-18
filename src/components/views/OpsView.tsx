@@ -40,7 +40,7 @@ export const OpsView: React.FC = () => {
     setHdVideoCount,
     setStatusText,
   } = useMediaStore();
-  const { getThemeColors } = useSettingsStore();
+  const { getThemeColors, listLimit } = useSettingsStore();
   const { addToQueue, isProcessing: isQueueProcessing } = useUpscaleQueueStore();
   const { addToQueue: addToDownloadQueue } = useDownloadQueueStore();
   const { setPosts, setCurrentPostId, ensureCurrentPostInList } = usePostsStore();
@@ -121,6 +121,9 @@ export const OpsView: React.FC = () => {
   // Watch for URL changes and refetch data
   useUrlWatcher(handleFetchPost);
 
+  // Track list limit changes to refetch data
+  const [lastListLimit, setLastListLimit] = useState(listLimit);
+
   // Auto-fetch on mount
   useEffect(() => {
     handleFetchPost();
@@ -128,6 +131,15 @@ export const OpsView: React.FC = () => {
     loadLikedPosts().then((posts) => setPosts(posts));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Refetch when list limit changes and view becomes active
+  useEffect(() => {
+    if (lastListLimit !== listLimit) {
+      setLastListLimit(listLimit);
+      // Refetch liked posts with new limit
+      loadLikedPosts().then((posts) => setPosts(posts));
+    }
+  }, [listLimit, lastListLimit, loadLikedPosts, setPosts]);
 
   // Download media - add to queue
   const handleDownload = () => {

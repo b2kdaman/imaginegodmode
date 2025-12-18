@@ -45,7 +45,7 @@ export const PitView: React.FC = () => {
 
   const { posts, setPosts, setCurrentPostId, ensureCurrentPostInList } = usePostsStore();
   const { packOrder, packs } = usePromptStore();
-  const { getThemeColors } = useSettingsStore();
+  const { getThemeColors, listLimit } = useSettingsStore();
   const { setMediaUrls, setVideoIdsToUpscale, setHdVideoCount } = useMediaStore();
   const colors = getThemeColors();
 
@@ -105,6 +105,9 @@ export const PitView: React.FC = () => {
   // Watch for URL changes and refetch data
   useUrlWatcher(handleFetchPost);
 
+  // Track list limit changes to refetch data
+  const [lastListLimit, setLastListLimit] = useState(listLimit);
+
   // Auto-fetch on mount
   useEffect(() => {
     handleFetchPost();
@@ -112,6 +115,15 @@ export const PitView: React.FC = () => {
     loadLikedPosts().then((posts) => setPosts(posts));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Refetch when list limit changes and view becomes active
+  useEffect(() => {
+    if (lastListLimit !== listLimit) {
+      setLastListLimit(listLimit);
+      // Refetch liked posts with new limit
+      loadLikedPosts().then((posts) => setPosts(posts));
+    }
+  }, [listLimit, lastListLimit, loadLikedPosts, setPosts]);
 
   // Initialize selected post when posts are available
   useEffect(() => {

@@ -56,7 +56,7 @@ export const PromptView: React.FC = () => {
     loadPostState,
     savePostState,
   } = usePromptStore();
-  const { getThemeColors, rememberPostState, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon } = useSettingsStore();
+  const { getThemeColors, rememberPostState, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, listLimit } = useSettingsStore();
   const { getNextPostId, getPrevPostId, setCurrentPostId, setPosts } = usePostsStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
@@ -181,6 +181,9 @@ export const PromptView: React.FC = () => {
     }
   }, [loadPostState, rememberPostState, setCurrentPostId]);
 
+  // Track list limit changes to refetch data
+  const [lastListLimit, setLastListLimit] = useState(listLimit);
+
   // Load post data on mount
   useEffect(() => {
     loadPostData();
@@ -188,6 +191,15 @@ export const PromptView: React.FC = () => {
     loadLikedPosts().then((posts) => setPosts(posts));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Refetch when list limit changes and view becomes active
+  useEffect(() => {
+    if (lastListLimit !== listLimit) {
+      setLastListLimit(listLimit);
+      // Refetch liked posts with new limit
+      loadLikedPosts().then((posts) => setPosts(posts));
+    }
+  }, [listLimit, lastListLimit, loadLikedPosts, setPosts]);
 
   // Reload post data when URL changes (navigating to different post)
   useUrlWatcher(loadPostData);

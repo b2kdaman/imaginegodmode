@@ -88,6 +88,10 @@ A multi-platform application for Grok media management built with React, TypeScr
   - Auto-starts processing when items are added
   - Real-time status tracking for each download (pending/downloading/completed/failed)
 - **Auto Download**: Optional setting to automatically download all media after upscaling completes
+- **List Limit**: Configurable limit for fetching liked posts (100, 200, 500, or 1000)
+  - Default: 100 posts (recommended to avoid potential bans)
+  - Warning displayed when using limits different from 100
+  - Automatically refetches data when limit changes across all views
 - **Video Upscaling**: Parallel upscale requests with staggered start times for optimal performance
 - **Upscale Queue**: Global queue system for batch processing videos across posts
   - Processes 15 videos at a time per batch
@@ -331,11 +335,15 @@ open ios/imagineGodMode/imagineGodMode.xcodeproj
    - Adjust UI size: Tiny to Large
    - Select language: English, Spanish (Español), or Russian (Русский)
    - Enable Auto Download to automatically download media after upscaling
+   - Enable Sound to control UI sound effects (on by default) - affects purge modal audio feedback
+   - Configure List Limit to control how many liked posts to fetch (100/200/500/1000)
+     - Default is 100 (recommended)
+     - Warning: Using limits different from 100 might lead to a ban
+     - Automatically refetches data when changed
    - Toggle Remember Pack Per Post to control per-post state persistence (enabled by default)
    - Toggle Simple Shortcut to use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter for applying prompts
    - Toggle Hide Unsave to hide the "Unsave" button from the page (off by default)
    - Toggle Enable The Pit to show/hide The Pit tab for experimental video generation (off by default)
-   - Toggle Enable Sound to control UI sound effects (on by default) - affects purge modal audio feedback
    - Toggle Confirm Copy From to show confirmation when replacing existing prompt text (on by default)
    - All settings labels include visual icons for easy identification
    - **Tooltips**: Hover over any setting row for detailed explanations
@@ -447,7 +455,7 @@ grkgoondl/
 - **usePromptStore**: Manages prompts, packs, ratings, and import/export operations
 - **useMediaStore**: Handles media URLs, upscaling, and status
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
-- **useSettingsStore**: Manages theme, size, auto-download, remember-post-state, simple-shortcut, hide-unsave, enable-the-pit, enable-sound, and confirm-copy-from preferences with localStorage persistence
+- **useSettingsStore**: Manages theme, size, auto-download, list-limit, remember-post-state, simple-shortcut, hide-unsave, enable-the-pit, enable-sound, and confirm-copy-from preferences with localStorage persistence
 - **useUpscaleQueueStore**: Global upscale queue with batch processing (15 at a time), auto-download, and localStorage persistence
 - **useDownloadQueueStore**: Global download queue with sequential processing, auto-start, and localStorage persistence
 - **usePostsStore**: Manages fetched posts list and navigation helpers for "Make + Next" workflow
@@ -471,7 +479,7 @@ grkgoondl/
 - **useBulkUnlike**: Custom hook for bulk unliking posts with progress tracking and archive saving
 - **useBulkRelike**: Custom hook for bulk re-liking posts from archive with progress tracking
 - **useBulkDelete**: Custom hook for bulk deleting posts with progress tracking and confirmation
-- **useLikedPostsLoader**: Hook for loading and managing liked posts with loading state
+- **useLikedPostsLoader**: Hook for loading and managing liked posts with loading state and configurable list limit from settings
 - **useShiftSelection**: Reusable hook for shift-click multi-selection behavior across bulk operation modals
 - **useUpscaleAll**: Hook for managing upscale all modal and bulk upscale operations
   - Modal state management (open/close)
@@ -486,7 +494,7 @@ grkgoondl/
 **Views** (src/components/views/)
 - **PromptView**: Prompt management interface with "Make + Next" workflow button
 - **OpsView**: Media controls with queue-based upscaling, HD-gated downloads, bulk operations (Upscale All Liked, Unlike Multiple Posts, Delete Multiple Posts)
-- **SettingsView**: Theme, size, language, auto-download, remember-post-state, simple-shortcut, hide-unsave, enable-sound, confirm-copy-from preferences, data management with import/export, and purge all data functionality
+- **SettingsView**: Theme, size, language, auto-download, list-limit, remember-post-state, simple-shortcut, hide-unsave, enable-sound, confirm-copy-from preferences, data management with import/export, and purge all data functionality
 - **HelpView**: Help and documentation interface
 - **QueueView**: Dedicated upscale queue management with progress tracking, stats, queue list, and controls
 - **PitView**: Automated video generation interface with post selection, prompt configuration, generation settings, real-time progress tracking, and moderation detection
@@ -636,7 +644,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - API architecture refactored: content script handles authenticated calls, background worker handles downloads
 - Message passing includes retry mechanism (3 attempts) to handle service worker wake-up delays
 - Download queue system processes files sequentially with configurable delays between downloads
-- Settings persist in localStorage for instant theme/size/language/auto-download/remember-post-state/simple-shortcut/hide-unsave/enable-the-pit/enable-sound/confirm-copy-from application on load
+- Settings persist in localStorage for instant theme/size/language/auto-download/list-limit/remember-post-state/simple-shortcut/hide-unsave/enable-the-pit/enable-sound/confirm-copy-from application on load
 - **Hide Unsave Feature**: Dynamic CSS injection to hide Unsave button when enabled
   - Uses `useEffect` hook to inject/remove style element
   - CSS selector targets `button[aria-label="Unsave"]`

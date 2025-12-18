@@ -27,7 +27,8 @@ import {
   mdiVolumeHigh,
   mdiAlertCircleOutline,
   mdiPackageVariant,
-  mdiTextBoxPlus
+  mdiTextBoxPlus,
+  mdiFormatListNumbered
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -43,7 +44,7 @@ import {
 } from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setGlobalPromptAddonEnabled, setGlobalPromptAddon, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, listLimit, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setGlobalPromptAddonEnabled, setGlobalPromptAddon, setListLimit, getThemeColors } = useSettingsStore();
   const { clearAllPacks } = usePromptStore();
   const { userId } = useUserStore();
   const { t, locale, setLocale } = useTranslation();
@@ -301,6 +302,45 @@ export const SettingsView: React.FC = () => {
                 trackSoundToggled(checked);
               }}
             />
+          </div>
+
+          {/* List Limit Setting */}
+          <div className="flex flex-col gap-2">
+            <label
+              className="text-xs flex items-center gap-1.5"
+              style={{ color: colors.TEXT_SECONDARY }}
+            >
+              <Icon path={mdiFormatListNumbered} size={0.6} color={colors.TEXT_SECONDARY} />
+              List Limit
+            </label>
+            <Dropdown
+              value={listLimit.toString()}
+              onChange={(value) => {
+                setListLimit(parseInt(value) as 100 | 200 | 500 | 1000);
+              }}
+              options={[
+                { value: '100', label: '100' },
+                { value: '200', label: '200' },
+                { value: '500', label: '500' },
+                { value: '1000', label: '1000' },
+              ]}
+              className="w-full"
+            />
+            {listLimit !== 100 && (
+              <div
+                className="text-xs px-2 py-1.5 rounded flex items-center gap-1.5"
+                style={{
+                  backgroundColor: '#dc262620',
+                  color: '#ef4444',
+                  border: '1px solid #ef444440',
+                }}
+              >
+                <div className="flex-shrink-0">
+                  <Icon path={mdiAlertCircleOutline} size={0.75} color="#ef4444" />
+                </div>
+                Warning: Using limits different from 100 might lead to a ban
+              </div>
+            )}
           </div>
         </div>
       </div>
