@@ -18,7 +18,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
   getThemeColors,
 }) => {
   const colors = getThemeColors();
-  const { packs, deletePromptsByIndices, movePromptToPack, addPromptToPack } = usePromptStore();
+  const { packs, packOrder, deletePromptsByIndices, movePromptToPack, addPromptToPack } = usePromptStore();
   const {
     selectedPackName,
     isPackDragging,
@@ -46,7 +46,9 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
       )
     : prompts;
 
-  const allPackNames = Object.keys(packs).filter(p => p !== packName);
+  // Use pack order to match the list order in PacksPanel
+  const orderedPackNames = packOrder || Object.keys(packs);
+  const allPackNames = orderedPackNames.filter(p => p !== packName);
 
   const handleToggleSelectionMode = () => {
     setIsSelectionMode(!isSelectionMode);
@@ -223,9 +225,10 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
           {allPackNames.length > 0 && (
             <>
               <Dropdown
-                options={[{ value: '', label: 'Move to...' }, ...allPackNames.map(p => ({ value: p, label: p }))]}
+                options={allPackNames.map(p => ({ value: p, label: p }))}
                 value={targetPackForMove}
                 onChange={setTargetPackForMove}
+                placeholder="Move to..."
               />
               <Button
                 icon={mdiSwapHorizontal}

@@ -21,7 +21,8 @@ import {
   mdiChevronDoubleLeft,
   mdiChevronDoubleRight,
   mdiFormatListBulletedSquare,
-  mdiTrayFull
+  mdiTrayFull,
+  mdiDatabase
 } from '@mdi/js';
 import { applyPromptAndMake, applyPromptMakeAndNext, navigateToPost } from '@/utils/promptActions';
 import { getPrefix } from '@/utils/storage';
@@ -35,7 +36,7 @@ import { fetchLikedPosts } from '@/api/grokApi';
 export const PanelControls: React.FC = () => {
   const { isExpanded, toggleExpanded, setCurrentView, setExpanded } = useUIStore();
   const { t } = useTranslation();
-  const { globalPromptAddonEnabled, globalPromptAddon, getThemeColors } = useSettingsStore();
+  const { globalPromptAddonEnabled, globalPromptAddon, rememberPostState, setRememberPostState, getThemeColors } = useSettingsStore();
   const { getCurrentPrompt } = usePromptStore();
   const { getNextPostId, getPrevPostId, setCurrentPostId: setStoreCurrentPostId, setPosts, posts } = usePostsStore();
   const { queue } = useUpscaleQueueStore();
@@ -167,6 +168,18 @@ export const PanelControls: React.FC = () => {
       <div className="flex items-center gap-2">
         <PauseButton />
         <FullscreenButton />
+
+      {/* Remember Pack Per Post button - only show when panel is expanded */}
+      {isExpanded && (
+        <Button
+          variant="icon"
+          onClick={() => setRememberPostState(!rememberPostState)}
+          icon={mdiDatabase}
+          className={`shadow-lg ${rememberPostState ? '!bg-slate-400 !border-slate-400' : ''}`}
+          iconColor={rememberPostState ? UI_COLORS.BLACK : undefined}
+          tooltip="Remember Pack Per Post: Save and restore selected pack for each post"
+        />
+      )}
 
       {/* Shortcut buttons - only show when panel is collapsed */}
       {!isExpanded && (

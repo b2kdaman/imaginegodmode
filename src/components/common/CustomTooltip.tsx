@@ -7,6 +7,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Z_INDEX } from '@/utils/constants';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 interface TooltipPosition {
   top: number;
@@ -15,6 +16,7 @@ interface TooltipPosition {
 }
 
 export const CustomTooltip: React.FC = () => {
+  const { getScale } = useSettingsStore();
   const [isVisible, setIsVisible] = useState(false);
   const [content, setContent] = useState('');
   const [position, setPosition] = useState<TooltipPosition>({ top: 0, left: 0, arrowLeft: 0 });
@@ -130,6 +132,10 @@ export const CustomTooltip: React.FC = () => {
     return null;
   }
 
+  const scale = getScale();
+  const baseFontSize = 0.75; // text-xs = 0.75rem (12px)
+  const scaledFontSize = baseFontSize * scale;
+
   return createPortal(
     <div
       ref={tooltipRef}
@@ -143,10 +149,11 @@ export const CustomTooltip: React.FC = () => {
       }}
     >
       <div
-        className="relative px-3 py-2 text-xs max-w-[20rem] rounded-lg shadow-lg"
+        className="relative px-3 py-2 max-w-[20rem] rounded-lg shadow-lg"
         style={{
           backgroundColor: 'rgba(0, 0, 0, 0.9)',
           color: 'white',
+          fontSize: `${scaledFontSize}rem`,
         }}
       >
         {content}

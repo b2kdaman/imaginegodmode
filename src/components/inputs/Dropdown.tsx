@@ -21,6 +21,7 @@ interface DropdownProps {
   options: DropdownOption[];
   disabled?: boolean;
   className?: string;
+  placeholder?: string;
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({
@@ -29,9 +30,13 @@ export const Dropdown: React.FC<DropdownProps> = ({
   options,
   disabled = false,
   className = '',
+  placeholder = '',
 }) => {
-  const { getThemeColors } = useSettingsStore();
+  const { getThemeColors, getScale } = useSettingsStore();
   const colors = getThemeColors();
+  const scale = getScale();
+  const baseFontSize = 0.875; // text-sm = 0.875rem (14px)
+  const scaledFontSize = baseFontSize * scale;
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -72,7 +77,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
   // Get selected option label
   const selectedOption = options.find(opt => opt.value === value);
-  const selectedLabel = selectedOption?.label || '';
+  const selectedLabel = selectedOption?.label || placeholder;
 
   // Update dropdown position when opened
   useEffect(() => {
@@ -218,11 +223,12 @@ export const Dropdown: React.FC<DropdownProps> = ({
                 key={option.value}
                 type="button"
                 onClick={() => handleSelect(option.value)}
-                className="w-full px-3 py-2 text-sm text-left cursor-pointer transition-all duration-300 relative overflow-hidden"
+                className="w-full px-3 py-2 text-left cursor-pointer transition-all duration-300 relative overflow-hidden"
                 style={{
                   backgroundColor: isSelected ? colors.BACKGROUND_LIGHT : colors.BACKGROUND_MEDIUM,
                   color: isSelected ? colors.TEXT_HOVER || colors.TEXT_PRIMARY : colors.TEXT_PRIMARY,
                   border: 'none',
+                  fontSize: `${scaledFontSize}rem`,
                 }}
                 onMouseEnter={(e) => {
                   optionsGlow.handleMouseEnter(
