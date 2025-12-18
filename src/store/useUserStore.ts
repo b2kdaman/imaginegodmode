@@ -3,10 +3,14 @@
  */
 
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { fetchLikedPosts } from '@/api/grokApi';
 
 interface UserState {
+  // Persisted state
   userId: string | null;
+
+  // Non-persisted state
   isLoading: boolean;
   error: string | null;
 
@@ -16,67 +20,45 @@ interface UserState {
   clearUserId: () => void;
 }
 
-const STORAGE_KEY = 'imaginegodmode-user-id';
+export const useUserStore = create<UserState>()(
+  persist(
+    (set) => ({
+      // Default state
+      userId: null,
+      isLoading: false,
+      error: null,
 
-// Load userId from localStorage
-const loadUserIdFromStorage = (): string | null => {
-  try {
-    return localStorage.getItem(STORAGE_KEY);
-  } catch (error) {
-    console.error('[UserStore] Failed to load userId from localStorage:', error);
-    return null;
-  }
-};
+      // Actions
+      loadUserId: async () => {
+        set({ isLoading: true, error: null });
 
-// Save userId to localStorage
-const saveUserIdToStorage = (userId: string) => {
-  try {
-    localStorage.setItem(STORAGE_KEY, userId);
-  } catch (error) {
-    console.error('[UserStore] Failed to save userId to localStorage:', error);
-  }
-};
+        try {
+          // Try to fetch from API
+          const response = await fetchLikedPosts(1);
+          if (response.posts && response.posts.length > 0) {
+            const userId = response.posts[0].userId;
+            set({ userId, isLoading: false });
+            console.log('[UserStore] Loaded userId from API:', userId);
+          } else {
+            set({ error: 'No posts found', isLoading: false });
+            console.warn('[UserStore] No posts found to extract userId');
+          }
+        } catch (error) {
+          console.error('[UserStore] Failed to load userId from API:', error);
+          set({
+            error: error instanceof Error ? error.message : 'Failed to load user ID',
+            isLoading: false
+          });
+        }
+      },
 
-export const useUserStore = create<UserState>((set) => ({
-  userId: loadUserIdFromStorage(),
-  isLoading: false,
-  error: null,
+      setUserId: (userId: string) => set({ userId }),
 
-  loadUserId: async () => {
-    set({ isLoading: true, error: null });
-
-    try {
-      // Try to fetch from API
-      const response = await fetchLikedPosts(1);
-      if (response.posts && response.posts.length > 0) {
-        const userId = response.posts[0].userId;
-        saveUserIdToStorage(userId);
-        set({ userId, isLoading: false });
-        console.log('[UserStore] Loaded userId from API:', userId);
-      } else {
-        set({ error: 'No posts found', isLoading: false });
-        console.warn('[UserStore] No posts found to extract userId');
-      }
-    } catch (error) {
-      console.error('[UserStore] Failed to load userId from API:', error);
-      set({
-        error: error instanceof Error ? error.message : 'Failed to load user ID',
-        isLoading: false
-      });
+      clearUserId: () => set({ userId: null }),
+    }),
+    {
+      name: 'imaginegodmode-user-id',
+      partialize: (state) => ({ userId: state.userId }),
     }
-  },
-
-  setUserId: (userId: string) => {
-    saveUserIdToStorage(userId);
-    set({ userId });
-  },
-
-  clearUserId: () => {
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch (error) {
-      console.error('[UserStore] Failed to clear userId from localStorage:', error);
-    }
-    set({ userId: null });
-  },
-}));
+  )
+);
