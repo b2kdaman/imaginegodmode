@@ -7,6 +7,18 @@ import { fetchPostData, upscaleVideo } from '@/api/grokApi';
 import { browserAPI } from './browserAPI';
 
 /**
+ * Check if the extension context is still valid
+ */
+const isExtensionContextValid = (): boolean => {
+  try {
+    // Try to access browserAPI.runtime.id - if it throws, context is invalidated
+    return !!chrome?.runtime?.id;
+  } catch {
+    return false;
+  }
+};
+
+/**
  * Send message to background service worker with retry mechanism
  */
 export const sendMessageToBackground = async <T = unknown>(
@@ -14,6 +26,15 @@ export const sendMessageToBackground = async <T = unknown>(
   retries = 3,
   delay = 100
 ): Promise<MessageResponse<T>> => {
+  // Check if extension context is valid before attempting to send message
+  if (!isExtensionContextValid()) {
+    console.warn('[ImagineGodMode] Extension context invalidated - cannot send message');
+    return {
+      success: false,
+      error: 'Extension was reloaded or updated. Please refresh the page to continue.',
+    };
+  }
+
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
       const response = await browserAPI.runtime.sendMessage(payload);
@@ -21,6 +42,15 @@ export const sendMessageToBackground = async <T = unknown>(
     } catch (error) {
       const isLastAttempt = attempt === retries - 1;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+      // Check for extension context invalidation
+      if (errorMessage.includes('Extension context invalidated')) {
+        console.warn('[ImagineGodMode] Extension context invalidated during message send');
+        return {
+          success: false,
+          error: 'Extension was reloaded or updated. Please refresh the page to continue.',
+        };
+      }
 
       // Check if it's a "Receiving end does not exist" error (service worker inactive)
       if (errorMessage.includes('Receiving end does not exist')) {

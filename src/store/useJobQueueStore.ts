@@ -406,10 +406,24 @@ export const useJobQueueStore = create<JobQueueStore>()(
             } else {
               item.status = 'failed';
               console.error(`[JobQueue] Download failed: ${item.filename}`, response.error);
+
+              // Check if the error is due to extension context invalidation
+              if (response.error && response.error.includes('Extension was reloaded or updated')) {
+                console.warn('[JobQueue] Extension context invalidated - stopping job processing');
+                // Stop processing remaining items
+                throw new Error('Extension context invalidated. Please refresh the page to continue.');
+              }
             }
           } catch (error) {
             item.status = 'failed';
-            console.error(`[JobQueue] Download error: ${item.filename}`, error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            console.error(`[JobQueue] Download error: ${item.filename}`, errorMessage);
+
+            // If this is a context invalidation error, propagate it to stop the job
+            if (errorMessage.includes('Extension context invalidated') ||
+                errorMessage.includes('Extension was reloaded or updated')) {
+              throw error;
+            }
           }
 
           // Update progress
