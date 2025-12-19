@@ -66,20 +66,24 @@ export const LikeManagementModal: React.FC<LikeManagementModalProps> = ({
   const likedSelection = useShiftSelection(likedPosts);
   const archiveSelection = useShiftSelection(sortedArchivedPosts);
 
-  // Clear all selections when modal opens
+  // Clear all selections and errors when modal opens
   useEffect(() => {
     if (isOpen) {
       likedSelection.clearSelection();
       archiveSelection.clearSelection();
-      setImportError('');
+      if (importError) {
+        setImportError('');
+      }
     }
-  }, [isOpen, likedSelection.clearSelection, archiveSelection.clearSelection]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, importError]);
 
-  // Update active tab when initialTab changes
+  // Update active tab when modal opens or initialTab changes
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && activeTab !== initialTab) {
       setActiveTab(initialTab);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, initialTab]);
 
   // --- Liked Posts Tab Handlers ---
