@@ -24,6 +24,7 @@ interface SettingsState {
   globalPromptAddonEnabled: boolean;
   globalPromptAddon: string;
   listLimit: ListLimit;
+  collapseSections: boolean;
 
   // Non-persisted state
   themes: Record<string, ThemeColors>;
@@ -42,6 +43,7 @@ interface SettingsState {
   setGlobalPromptAddonEnabled: (enabled: boolean) => void;
   setGlobalPromptAddon: (addon: string) => void;
   setListLimit: (limit: ListLimit) => void;
+  setCollapseSections: (collapse: boolean) => void;
   getThemeColors: () => ThemeColors;
   getScale: () => number;
 }
@@ -70,6 +72,7 @@ export const useSettingsStore = create<SettingsState>()(
       globalPromptAddonEnabled: false,
       globalPromptAddon: '',
       listLimit: 100,
+      collapseSections: true,
       themes: {},
 
       // Actions
@@ -90,6 +93,7 @@ export const useSettingsStore = create<SettingsState>()(
       setGlobalPromptAddonEnabled: (globalPromptAddonEnabled: boolean) => set({ globalPromptAddonEnabled }),
       setGlobalPromptAddon: (globalPromptAddon: string) => set({ globalPromptAddon }),
       setListLimit: (listLimit: ListLimit) => set({ listLimit }),
+      setCollapseSections: (collapseSections: boolean) => set({ collapseSections }),
 
       getThemeColors: () => {
         const { theme, themes } = get();
@@ -116,6 +120,7 @@ export const useSettingsStore = create<SettingsState>()(
         globalPromptAddonEnabled: state.globalPromptAddonEnabled,
         globalPromptAddon: state.globalPromptAddon,
         listLimit: state.listLimit,
+        collapseSections: state.collapseSections,
       }),
     }
   )

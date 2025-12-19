@@ -169,6 +169,11 @@ A multi-platform application for Grok media management built with React, TypeScr
 - **Enable The Pit**: Optional setting to show/hide The Pit tab for accessing experimental video generation features (off by default)
 - **Sound Effects Control**: Optional setting to enable/disable UI sound effects (on by default) - controls cyberpunk-style audio feedback for purge modal interactions
 - **Confirm Copy From**: Optional setting to show confirmation dialog when copying from page would replace existing prompt text (on by default)
+- **Collapsible Sections**: Optional setting to enable collapsible UI sections with expand/collapse controls (on by default)
+  - When enabled: sections start collapsed with clickable headers and chevron indicators
+  - When disabled: all sections remain expanded with no collapse controls
+  - Smooth 300ms animations for expanding/collapsing with fade and height transitions
+  - Applies to Settings view panels (Packs + Prompts, Behavior, Appearance, Danger Zone) and Ops view (Bulk Actions)
 - **Keyboard Shortcuts**:
   - `Ctrl/Cmd + Shift + Enter`: Apply current prompt with prefix and click "Make a Video" (default)
   - `Ctrl/Cmd + Enter`: Apply current prompt with prefix and click "Make a Video" (when Simple Shortcut enabled)
@@ -364,6 +369,7 @@ open ios/imagineGodMode/imagineGodMode.xcodeproj
    - Toggle Hide Unsave to hide the "Unsave" button from the page (off by default)
    - Toggle Enable The Pit to show/hide The Pit tab for experimental video generation (off by default)
    - Toggle Confirm Copy From to show confirmation when replacing existing prompt text (on by default)
+   - Toggle Collapsible Sections to enable section expand/collapse controls (on by default) - affects Settings and Ops view panels
    - All settings labels include visual icons for easy identification
    - **Tooltips**: Hover over any setting row for detailed explanations
    - **Data Management**:
@@ -478,7 +484,7 @@ grkgoondl/
 - **usePromptStore**: Manages prompts, packs, ratings, and import/export operations
 - **useMediaStore**: Handles media URLs, upscaling, and status
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
-- **useSettingsStore**: Manages theme, size, auto-download, list-limit, remember-post-state, simple-shortcut, hide-unsave, enable-the-pit, enable-sound, and confirm-copy-from preferences with localStorage persistence
+- **useSettingsStore**: Manages theme, size, auto-download, list-limit, remember-post-state, simple-shortcut, hide-unsave, enable-the-pit, enable-sound, confirm-copy-from, and collapsible-sections preferences with localStorage persistence
 - **useJobQueueStore**: Unified job queue managing all batch operations (upscale, download, unlike, relike, purge)
   - Single queue for all job types with sequential processing
   - Real-time progress tracking per job (processed items, percentage)
@@ -523,7 +529,7 @@ grkgoondl/
 **Views** (src/components/views/)
 - **PromptView**: Prompt management interface with "Make + Next" workflow button
 - **OpsView**: Media controls with job queue-based upscaling, downloads, bulk operations (Upscale All Liked, Unlike Multiple Posts, Delete Multiple Posts)
-- **SettingsView**: Theme, size, language, auto-download, list-limit, remember-post-state, simple-shortcut, hide-unsave, enable-sound, confirm-copy-from preferences, data management with import/export, and purge all data functionality
+- **SettingsView**: Theme, size, language, auto-download, list-limit, remember-post-state, simple-shortcut, hide-unsave, enable-sound, confirm-copy-from, collapsible-sections preferences, data management with import/export, and purge all data functionality
 - **HelpView**: Help and documentation interface
 - **QueueView**: Legacy view - functionality replaced by JobQueueIndicator floating component
 - **PitView**: Automated video generation interface with post selection, prompt configuration, generation settings, real-time progress tracking, and moderation detection
@@ -569,6 +575,12 @@ Note: ProgressBar component removed as progress tracking is now handled by the f
 **Common** (src/components/common/)
 - **Icon**: Material Design Icons wrapper
 - **NoPostMessage**: Reusable component displayed when no post ID is found in URL
+- **CollapsibleSection**: Reusable collapsible section component with smooth animations
+  - Integrates with settings store for global collapse behavior control
+  - Smooth 300ms expand/collapse animations with fade and height transitions
+  - Conditionally clickable headers based on collapseSections setting
+  - Chevron indicators (up/down) when collapse controls enabled
+  - Dynamic height calculation for proper animation of variable content
 - **JobQueueIndicator**: Floating queue status indicator with expandable panel
   - Shows badge with active job count (pending + processing)
   - Pulsing animation when jobs are processing
@@ -678,7 +690,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - API architecture refactored: content script handles authenticated calls, background worker handles downloads
 - Message passing includes retry mechanism (3 attempts) to handle service worker wake-up delays
 - Download queue system processes files sequentially with configurable delays between downloads
-- Settings persist in localStorage for instant theme/size/language/auto-download/list-limit/remember-post-state/simple-shortcut/hide-unsave/enable-the-pit/enable-sound/confirm-copy-from application on load
+- Settings persist in localStorage for instant theme/size/language/auto-download/list-limit/remember-post-state/simple-shortcut/hide-unsave/enable-the-pit/enable-sound/confirm-copy-from/collapsible-sections application on load
 - **Hide Unsave Feature**: Dynamic CSS injection to hide Unsave button when enabled
   - Uses `useEffect` hook to inject/remove style element
   - CSS selector targets `button[aria-label="Unsave"]`

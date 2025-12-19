@@ -13,6 +13,7 @@ import { fetchPost } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
 import { Button } from '../inputs/Button';
 import { Icon } from '../common/Icon';
+import { CollapsibleSection } from '../common/CollapsibleSection';
 import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle, mdiFormatListBulletedSquare, mdiHeart, mdiLoading /*, mdiDelete */ } from '@mdi/js';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
 // import { useBulkDelete } from '@/hooks/useBulkDelete';
@@ -416,7 +417,8 @@ export const OpsView: React.FC = () => {
       )}
 
       {/* Bulk Actions Panel - Modern Glassy Design */}
-      <div
+      <CollapsibleSection
+        title="Bulk Actions"
         className="mt-4 rounded-xl p-4 backdrop-blur-md border"
         style={{
           background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -424,19 +426,8 @@ export const OpsView: React.FC = () => {
           boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
         }}
       >
-        {/* Panel Header */}
-        <div
-          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
-          style={{
-            color: colors.TEXT_SECONDARY,
-            borderColor: `${colors.BORDER}40`,
-          }}
-        >
-          Bulk Actions
-        </div>
-
         {/* Safe Actions Group */}
-        <div className="flex flex-col gap-2 mb-3">
+        <div className="flex flex-col gap-2 mb-3 mt-3">
           <Button
             onClick={handleUpscaleAllClick}
             icon={isLoadingLikedPosts ? mdiLoading : mdiFormatListBulletedSquare}
@@ -494,7 +485,7 @@ export const OpsView: React.FC = () => {
             {isLoadingLikedPosts ? 'Loading' : 'Delete Multiple Posts'}
           </Button>
         </div> */}
-      </div>
+      </CollapsibleSection>
 
       {/* Upscale All Modal */}
       <UpscaleAllModal

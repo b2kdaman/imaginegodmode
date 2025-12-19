@@ -591,6 +591,7 @@ export const PromptView: React.FC = () => {
               className={autoNavigate ? '!bg-slate-400 !border-slate-400 !rounded-l-none !border-l-0' : '!rounded-l-none !border-l-0'}
               style={{ width: '20%' }}
               iconColor={autoNavigate ? UI_COLORS.BLACK : undefined}
+              disabled={!getNextPostId() || isPromptAndPrefixEmpty}
             />
           </div>
         </div>

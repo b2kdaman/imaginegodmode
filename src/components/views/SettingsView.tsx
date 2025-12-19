@@ -12,6 +12,7 @@ import { Button } from '../inputs/Button';
 import { Toggle } from '../inputs/Toggle';
 import { Dropdown } from '../inputs/Dropdown';
 import { Icon } from '../common/Icon';
+import { CollapsibleSection } from '../common/CollapsibleSection';
 import { PurgeModal } from '../modals/PurgeModal';
 import { PacksManagementModal } from '../modals/PacksManagementModal';
 import {
@@ -44,7 +45,7 @@ import {
 } from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, listLimit, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setGlobalPromptAddonEnabled, setGlobalPromptAddon, setListLimit, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, listLimit, collapseSections, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setGlobalPromptAddonEnabled, setGlobalPromptAddon, setListLimit, setCollapseSections, getThemeColors } = useSettingsStore();
   const { clearAllPacks } = usePromptStore();
   const { userId } = useUserStore();
   const { t, locale, setLocale } = useTranslation();
@@ -97,7 +98,8 @@ export const SettingsView: React.FC = () => {
       }}
     >
       {/* Packs + Prompts Panel */}
-      <div
+      <CollapsibleSection
+        title="Packs + Prompts"
         className="rounded-xl p-4 backdrop-blur-md border"
         style={{
           background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -105,18 +107,7 @@ export const SettingsView: React.FC = () => {
           boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
         }}
       >
-        {/* Panel Header */}
-        <div
-          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
-          style={{
-            color: colors.TEXT_SECONDARY,
-            borderColor: `${colors.BORDER}40`,
-          }}
-        >
-          Packs + Prompts
-        </div>
-
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 mt-3">
           <Button
             onClick={() => setIsPacksModalOpen(true)}
             icon={mdiPackageVariant}
@@ -235,10 +226,11 @@ export const SettingsView: React.FC = () => {
             />
           )}
         </div>
-      </div>
+      </CollapsibleSection>
 
       {/* Behavior Panel */}
-      <div
+      <CollapsibleSection
+        title="Behavior"
         className="rounded-xl p-4 backdrop-blur-md border"
         style={{
           background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -246,18 +238,7 @@ export const SettingsView: React.FC = () => {
           boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
         }}
       >
-        {/* Panel Header */}
-        <div
-          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
-          style={{
-            color: colors.TEXT_SECONDARY,
-            borderColor: `${colors.BORDER}40`,
-          }}
-        >
-          Behavior
-        </div>
-
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 mt-3">
           {/* Auto Download Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
@@ -343,10 +324,11 @@ export const SettingsView: React.FC = () => {
             )}
           </div>
         </div>
-      </div>
+      </CollapsibleSection>
 
       {/* Appearance Panel */}
-      <div
+      <CollapsibleSection
+        title="Appearance"
         className="rounded-xl p-4 backdrop-blur-md border"
         style={{
           background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -354,18 +336,7 @@ export const SettingsView: React.FC = () => {
           boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
         }}
       >
-        {/* Panel Header */}
-        <div
-          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
-          style={{
-            color: colors.TEXT_SECONDARY,
-            borderColor: `${colors.BORDER}40`,
-          }}
-        >
-          Appearance
-        </div>
-
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 mt-3">
           {/* Theme Setting */}
           <div className="flex flex-col gap-2">
             <label
@@ -489,26 +460,34 @@ export const SettingsView: React.FC = () => {
               }}
             />
           </div>
+
+          {/* Collapse Sections Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-content="Enable collapsible sections - sections start collapsed and can be expanded by clicking headers. When off, all sections are always expanded"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="collapse-sections-toggle"
+            >
+              <Icon path={mdiResize} size={0.7} color={colors.TEXT_PRIMARY} />
+              Collapse Sections
+            </label>
+            <Toggle
+              id="collapse-sections-toggle"
+              checked={collapseSections}
+              onChange={(checked) => {
+                setCollapseSections(checked);
+              }}
+            />
+          </div>
         </div>
-      </div>
-
-      {/* Purge Modal */}
-      <PurgeModal
-        isOpen={isPurgeModalOpen}
-        onClose={() => setIsPurgeModalOpen(false)}
-        onConfirm={handlePurgeConfirm}
-        getThemeColors={getThemeColors}
-      />
-
-      {/* Packs Management Modal */}
-      <PacksManagementModal
-        isOpen={isPacksModalOpen}
-        onClose={() => setIsPacksModalOpen(false)}
-        getThemeColors={getThemeColors}
-      />
+      </CollapsibleSection>
 
       {/* Danger Zone Panel */}
-      <div
+      <CollapsibleSection
+        title={t('settings.purge')}
         className="rounded-xl p-4 backdrop-blur-md border"
         style={{
           background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -516,19 +495,8 @@ export const SettingsView: React.FC = () => {
           boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
         }}
       >
-        {/* Panel Header */}
-        <div
-          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
-          style={{
-            color: colors.TEXT_SECONDARY,
-            borderColor: `${colors.BORDER}40`,
-          }}
-        >
-          {t('settings.purge')}
-        </div>
-
         {/* Purge All Button */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 mt-3">
           <button
             onClick={handlePurgeClick}
             className="w-full px-3 py-2 text-xs rounded-full transition-all flex items-center justify-center gap-1"
@@ -552,7 +520,22 @@ export const SettingsView: React.FC = () => {
             {t('settings.purgeClickHint')}
           </div>
         </div>
-      </div>
+      </CollapsibleSection>
+
+      {/* Purge Modal */}
+      <PurgeModal
+        isOpen={isPurgeModalOpen}
+        onClose={() => setIsPurgeModalOpen(false)}
+        onConfirm={handlePurgeConfirm}
+        getThemeColors={getThemeColors}
+      />
+
+      {/* Packs Management Modal */}
+      <PacksManagementModal
+        isOpen={isPacksModalOpen}
+        onClose={() => setIsPacksModalOpen(false)}
+        getThemeColors={getThemeColors}
+      />
 
     </div>
   );
