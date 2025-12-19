@@ -8,6 +8,7 @@ import { useTranslation } from '@/contexts/I18nContext';
 import { VERSION } from '@/utils/constants';
 import { mdiInformationOutline, mdiLogin } from '@mdi/js';
 import { Icon } from '../common/Icon';
+import { CollapsibleSection } from '../common/CollapsibleSection';
 import { isIOSDevice } from '@/utils/deviceDetection';
 
 export const HelpView: React.FC = () => {
@@ -48,7 +49,8 @@ export const HelpView: React.FC = () => {
       }}
     >
       {/* Features Section */}
-      <div
+      <CollapsibleSection
+        title="Available Features"
         className="rounded-xl p-4 backdrop-blur-md border"
         style={{
           background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -56,18 +58,7 @@ export const HelpView: React.FC = () => {
           boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
         }}
       >
-        {/* Panel Header */}
-        <div
-          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
-          style={{
-            color: colors.TEXT_SECONDARY,
-            borderColor: `${colors.BORDER}40`,
-          }}
-        >
-          Available Features
-        </div>
-
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 mt-3">
           <ul className="space-y-1 ml-3 text-xs" style={{ color: colors.TEXT_SECONDARY }}>
             {features.map((feature, index) => (
               <li key={index} className="flex items-start gap-2">
@@ -89,10 +80,11 @@ export const HelpView: React.FC = () => {
             ))}
           </ul>
         </div>
-      </div>
+      </CollapsibleSection>
 
       {/* Keyboard Shortcuts Section */}
-      <div
+      <CollapsibleSection
+        title="Keyboard Shortcuts"
         className="rounded-xl p-4 backdrop-blur-md border"
         style={{
           background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -100,18 +92,7 @@ export const HelpView: React.FC = () => {
           boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
         }}
       >
-        {/* Panel Header */}
-        <div
-          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
-          style={{
-            color: colors.TEXT_SECONDARY,
-            borderColor: `${colors.BORDER}40`,
-          }}
-        >
-          Keyboard Shortcuts
-        </div>
-
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 mt-3">
           <div className="text-xs flex flex-col gap-2" style={{ color: colors.TEXT_SECONDARY }}>
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1">
@@ -256,10 +237,11 @@ export const HelpView: React.FC = () => {
           </div>
           </div>
         </div>
-      </div>
+      </CollapsibleSection>
 
       {/* About Section */}
-      <div
+      <CollapsibleSection
+        title="About"
         className="rounded-xl p-4 backdrop-blur-md border"
         style={{
           background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -267,18 +249,7 @@ export const HelpView: React.FC = () => {
           boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
         }}
       >
-        {/* Panel Header */}
-        <div
-          className="text-xs font-semibold uppercase tracking-wider mb-3 pb-2 border-b"
-          style={{
-            color: colors.TEXT_SECONDARY,
-            borderColor: `${colors.BORDER}40`,
-          }}
-        >
-          About
-        </div>
-
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 mt-3">
           <div className="text-xs" style={{ color: colors.TEXT_SECONDARY }}>
             <p className="mb-1">
               <strong style={{ color: colors.TEXT_PRIMARY }}>ImagineGodMode v{VERSION}</strong>
@@ -288,11 +259,12 @@ export const HelpView: React.FC = () => {
             <p className="mt-1 text-[11px]">Firefox support by wyntre</p>
           </div>
         </div>
-      </div>
+      </CollapsibleSection>
 
       {/* iOS Sign-in Link */}
       {isIOS && (
-        <div
+        <CollapsibleSection
+          title="Sign In"
           className="rounded-xl p-4 backdrop-blur-md border"
           style={{
             background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -300,15 +272,17 @@ export const HelpView: React.FC = () => {
             boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
           }}
         >
-          <a
-            href="https://accounts.x.ai/sign-in?redirect=grok-com"
-            className="flex items-center gap-2 text-xs hover:opacity-80 transition-opacity"
-            style={{ color: colors.TEXT_PRIMARY }}
-          >
-            <Icon path={mdiLogin} size={0.6} color={colors.TEXT_PRIMARY} />
-            <span>Sign in to X.ai</span>
-          </a>
-        </div>
+          <div className="mt-3">
+            <a
+              href="https://accounts.x.ai/sign-in?redirect=grok-com"
+              className="flex items-center gap-2 text-xs hover:opacity-80 transition-opacity"
+              style={{ color: colors.TEXT_PRIMARY }}
+            >
+              <Icon path={mdiLogin} size={0.6} color={colors.TEXT_PRIMARY} />
+              <span>Sign in to X.ai</span>
+            </a>
+          </div>
+        </CollapsibleSection>
       )}
     </div>
   );
