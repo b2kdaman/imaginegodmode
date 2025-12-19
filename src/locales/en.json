@@ -147,6 +147,12 @@
     "searchTooltip": "Search prompts"
   },
   "modals": {
+    "likeManagement": {
+      "tabs": {
+        "liked": "Liked Posts",
+        "archive": "Archive"
+      }
+    },
     "confirmDelete": {
       "title": "Delete Pack",
       "message": "Are you sure you want to delete \"{{packName}}\"?"
@@ -159,6 +165,11 @@
       "title": "Delete Posts ({{total}} total)",
       "actionText": "Delete",
       "warningMessage": "Warning: Deleting posts is permanent and cannot be undone!"
+    },
+    "download": {
+      "title": "Select Posts to Download ({{selected}}/{{total}})",
+      "actionText": "Download {{count}} Post{{plural}}",
+      "warningMessage": "This will download all media (images and videos) from the selected posts."
     },
     "unlike": {
       "title": "Select Posts to Unlike ({{selected}}/{{total}})",

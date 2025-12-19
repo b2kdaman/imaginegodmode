@@ -147,6 +147,12 @@
     "searchTooltip": "Поиск промптов"
   },
   "modals": {
+    "likeManagement": {
+      "tabs": {
+        "liked": "Понравившиеся Посты",
+        "archive": "Архив"
+      }
+    },
     "confirmDelete": {
       "title": "Удалить пак",
       "message": "Вы уверены, что хотите удалить \"{{packName}}\"?"
@@ -159,6 +165,11 @@
       "title": "Удалить Посты (всего {{total}})",
       "actionText": "Удалить",
       "warningMessage": "Внимание: Удаление постов необратимо!"
+    },
+    "download": {
+      "title": "Выберите Посты для Загрузки ({{selected}}/{{total}})",
+      "actionText": "Скачать {{count}} Пост{{plural}}",
+      "warningMessage": "Это скачает все медиафайлы (изображения и видео) из выбранных постов."
     },
     "unlike": {
       "title": "Выбрать Посты для Отмены Лайка ({{selected}}/{{total}})",

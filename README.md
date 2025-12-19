@@ -107,14 +107,26 @@ A multi-platform application for Grok media management built with React, TypeScr
     - Dedicated hook (useUpscaleAll) for modal and operation management
     - Creates process-for-upscale job to analyze posts and extract videos
     - Automatically creates upscale job after processing completes
-  - **Unlike Multiple Posts**: Manage liked posts with bulk unlike functionality
-    - Creates unlike jobs in the unified queue for batch processing
-    - No progress bar in modal - track progress via job queue indicator
-    - Automatic redirect to /favorites after job completion
-  - **Delete Multiple Posts**: Permanently delete multiple posts with confirmation dialog
-  - **Unliked Archive**: View and re-like previously unliked posts from local storage archive (per-user with automatic migration)
-    - Creates relike jobs in the unified queue for batch processing
-    - No progress bar in modal - track progress via job queue indicator
+  - **Download All Liked**: Bulk download all media from multiple liked posts
+    - Confirmation modal with visual post selection (all posts pre-selected)
+    - Collects all media URLs including main media and child posts (videos)
+    - Creates download job in unified queue with all collected media files
+    - Shows file count and post count in status message
+    - Supports shift-click multi-select and Select All/Deselect All controls
+  - **Manage Likes**: Unified modal with tabbed interface for like management
+    - **Liked Posts Tab**: Unlike multiple posts at once with confirmation
+      - Creates unlike jobs in the unified queue for batch processing
+      - No progress bar in modal - track progress via job queue indicator
+      - Automatic redirect to /favorites after job completion
+    - **Archive Tab**: View and re-like previously unliked posts from local storage
+      - Creates relike jobs in the unified queue for batch processing
+      - Export/Import archive functionality with JSON validation
+      - Shows unliked date badge on each archived post
+      - Per-user archive with automatic migration
+    - Tabbed navigation with badge counts for each tab
+    - Independent selection states per tab (selections persist when switching)
+    - All selections clear when modal reopens
+  - **Delete Multiple Posts**: Permanently delete multiple posts with confirmation dialog (currently hidden)
   - Large modal interface (90vw × 85vh) with 5-column grid layout
   - Heart/broken heart indicators for intuitive like/unlike selection
   - Click anywhere on item to toggle selection (no navigation)

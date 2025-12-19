@@ -147,6 +147,12 @@
     "searchTooltip": "Buscar prompts"
   },
   "modals": {
+    "likeManagement": {
+      "tabs": {
+        "liked": "Publicaciones Gustadas",
+        "archive": "Archivo"
+      }
+    },
     "confirmDelete": {
       "title": "Eliminar Paquete",
       "message": "¿Estás seguro de que deseas eliminar \"{{packName}}\"?"
@@ -159,6 +165,11 @@
       "title": "Eliminar Publicaciones ({{total}} en total)",
       "actionText": "Eliminar",
       "warningMessage": "Advertencia: ¡Eliminar publicaciones es permanente y no se puede deshacer!"
+    },
+    "download": {
+      "title": "Seleccionar Publicaciones para Descargar ({{selected}}/{{total}})",
+      "actionText": "Descargar {{count}} Publicación{{plural}}",
+      "warningMessage": "Esto descargará todos los medios (imágenes y videos) de las publicaciones seleccionadas."
     },
     "unlike": {
       "title": "Seleccionar Publicaciones para Quitar Me Gusta ({{selected}}/{{total}})",

@@ -13,14 +13,14 @@ import { fetchPost } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
 import { Button } from '../inputs/Button';
 import { Icon } from '../common/Icon';
-import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle, mdiFormatListBulletedSquare, mdiHeartBroken, mdiArchive, mdiLoading /*, mdiDelete */ } from '@mdi/js';
+import { mdiDownload, mdiImageSizeSelectLarge, mdiCheckCircle, mdiFormatListBulletedSquare, mdiHeart, mdiLoading /*, mdiDelete */ } from '@mdi/js';
 import { useUrlWatcher } from '@/hooks/useUrlWatcher';
 // import { useBulkDelete } from '@/hooks/useBulkDelete';
 import { useLikedPostsLoader } from '@/hooks/useLikedPostsLoader';
 import { trackMediaDownloaded, trackModalOpened, trackModalClosed } from '@/utils/analytics';
 import { UpscaleAllModal } from '../modals/UpscaleAllModal';
-import { UnlikeModal } from '../modals/UnlikeModal';
-import { UnlikedArchiveModal } from '../modals/UnlikedArchiveModal';
+import { LikeManagementModal } from '../modals/LikeManagementModal';
+import { DownloadAllModal } from '../modals/DownloadAllModal';
 // import { DeleteModal } from '../modals/DeleteModal';
 import { UnlikedPost, getUnlikedPosts, addUnlikedPosts } from '@/utils/storage';
 import { STATUS_MESSAGES, LOG_PREFIX } from '@/constants/opsView';
@@ -44,9 +44,9 @@ export const OpsView: React.FC = () => {
 
   const [postId, setPostId] = useState<string | null>(null);
   const [isUpscaleAllModalOpen, setIsUpscaleAllModalOpen] = useState(false);
-  const [isUnlikeModalOpen, setIsUnlikeModalOpen] = useState(false);
+  const [isDownloadAllModalOpen, setIsDownloadAllModalOpen] = useState(false);
+  const [isLikeManagementModalOpen, setIsLikeManagementModalOpen] = useState(false);
   // const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
   const [unlikedPosts, setUnlikedPosts] = useState<UnlikedPost[]>([]);
 
   // Custom hooks
@@ -220,19 +220,85 @@ export const OpsView: React.FC = () => {
     setStatusText(`Added processing job: ${selectedPostIds.length} post${selectedPostIds.length === 1 ? '' : 's'}`);
   };
 
-  // Handle unlike button click
-  const handleUnlikeClick = async () => {
+  // Fetch liked posts for Download All
+  const handleDownloadAllClick = async () => {
     const posts = await loadLikedPosts();
     setPosts(posts);
     if (posts.length > 0) {
-      setIsUnlikeModalOpen(true);
-      trackModalOpened('unlike_posts');
+      setIsDownloadAllModalOpen(true);
+      trackModalOpened('download_all');
+    }
+  };
+
+  // Handle bulk download from modal - creates download job
+  const handleBulkDownload = async (selectedPostIds: string[]) => {
+    setIsDownloadAllModalOpen(false);
+
+    // Get the selected posts
+    const selectedPosts = likedPosts.filter((post) => selectedPostIds.includes(post.id));
+
+    // Collect all media URLs from selected posts
+    const downloadItems: { url: string; filename: string }[] = [];
+
+    for (const post of selectedPosts) {
+      // Add main media
+      if (post.mediaUrl) {
+        const urlParts = post.mediaUrl.split('/');
+        const filenameWithQuery = urlParts[urlParts.length - 1];
+        const filename = filenameWithQuery.split('?')[0] || `media_${post.id}`;
+        downloadItems.push({
+          url: post.mediaUrl,
+          filename,
+        });
+      }
+
+      // Add child posts (videos)
+      if (post.childPosts && post.childPosts.length > 0) {
+        for (const childPost of post.childPosts) {
+          if (childPost.mediaUrl) {
+            const urlParts = childPost.mediaUrl.split('/');
+            const filenameWithQuery = urlParts[urlParts.length - 1];
+            const filename = filenameWithQuery.split('?')[0] || `media_${childPost.id}`;
+            downloadItems.push({
+              url: childPost.mediaUrl,
+              filename,
+            });
+          }
+        }
+      }
+    }
+
+    // Create download job
+    if (downloadItems.length > 0) {
+      addJob({
+        type: 'download',
+        totalItems: downloadItems.length,
+        data: {
+          type: 'download',
+          postIds: selectedPostIds,
+          items: downloadItems,
+        },
+      });
+      setStatusText(`Added download job: ${downloadItems.length} file${downloadItems.length === 1 ? '' : 's'} from ${selectedPostIds.length} post${selectedPostIds.length === 1 ? '' : 's'}`);
+      trackMediaDownloaded(downloadItems.length, 'mixed');
+    }
+  };
+
+  // Handle manage likes button click - opens unified modal
+  const handleManageLikesClick = async () => {
+    const liked = await loadLikedPosts();
+    const archived = await getUnlikedPosts(userId ?? undefined);
+    setPosts(liked);
+    setUnlikedPosts(archived);
+    if (liked.length > 0 || archived.length > 0) {
+      setIsLikeManagementModalOpen(true);
+      trackModalOpened('like_management');
     }
   };
 
   // Handle bulk unlike from modal - creates an unlike job
   const handleBulkUnlike = async (selectedPostIds: string[]) => {
-    setIsUnlikeModalOpen(false);
+    setIsLikeManagementModalOpen(false);
 
     // Get the full post data for the selected posts
     const selectedPosts = likedPosts.filter((post) => selectedPostIds.includes(post.id));
@@ -251,17 +317,9 @@ export const OpsView: React.FC = () => {
     setStatusText(`Added unlike job: ${selectedPostIds.length} post${selectedPostIds.length === 1 ? '' : 's'}`);
   };
 
-  // Handle archive button click
-  const handleArchiveClick = async () => {
-    const posts = await getUnlikedPosts(userId ?? undefined);
-    setUnlikedPosts(posts);
-    setIsArchiveModalOpen(true);
-    trackModalOpened('unliked_archive');
-  };
-
   // Handle re-like from archive - creates a relike job
   const handleRelikeFromArchive = async (postIds: string[]) => {
-    setIsArchiveModalOpen(false);
+    setIsLikeManagementModalOpen(false);
 
     // Create relike job
     addJob({
@@ -391,23 +449,25 @@ export const OpsView: React.FC = () => {
           </Button>
 
           <Button
-            onClick={handleUnlikeClick}
-            icon={isLoadingLikedPosts ? mdiLoading : mdiHeartBroken}
+            onClick={handleDownloadAllClick}
+            icon={isLoadingLikedPosts ? mdiLoading : mdiDownload}
             iconClassName={isLoadingLikedPosts ? "animate-spin" : ""}
             disabled={isLoadingLikedPosts}
             className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-            tooltip="Unlike multiple posts at once"
+            tooltip="Download all media from multiple liked posts"
           >
-            {isLoadingLikedPosts ? 'Loading' : 'Unlike Multiple Posts'}
+            {isLoadingLikedPosts ? 'Loading' : 'Download All Liked'}
           </Button>
 
           <Button
-            onClick={handleArchiveClick}
-            icon={mdiArchive}
+            onClick={handleManageLikesClick}
+            icon={isLoadingLikedPosts ? mdiLoading : mdiHeart}
+            iconClassName={isLoadingLikedPosts ? "animate-spin" : ""}
+            disabled={isLoadingLikedPosts}
             className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-            tooltip="View and manage unliked posts archive"
+            tooltip="Unlike posts or re-like from archive"
           >
-            Unliked Archive
+            {isLoadingLikedPosts ? 'Loading' : 'Manage Likes'}
           </Button>
         </div>
 
@@ -449,29 +509,31 @@ export const OpsView: React.FC = () => {
         getThemeColors={getThemeColors}
       />
 
-      {/* Unlike Modal */}
-      <UnlikeModal
-        isOpen={isUnlikeModalOpen}
+      {/* Download All Modal */}
+      <DownloadAllModal
+        isOpen={isDownloadAllModalOpen}
         posts={likedPosts}
         onClose={() => {
-          setIsUnlikeModalOpen(false);
-          trackModalClosed('unlike_posts');
+          setIsDownloadAllModalOpen(false);
+          trackModalClosed('download_all');
         }}
-        onConfirm={handleBulkUnlike}
+        onConfirm={handleBulkDownload}
         getThemeColors={getThemeColors}
       />
 
-      {/* Unliked Archive Modal */}
-      <UnlikedArchiveModal
-        isOpen={isArchiveModalOpen}
-        posts={unlikedPosts}
+      {/* Like Management Modal (unified Unlike + Archive) */}
+      <LikeManagementModal
+        isOpen={isLikeManagementModalOpen}
         onClose={() => {
-          setIsArchiveModalOpen(false);
-          trackModalClosed('unliked_archive');
+          setIsLikeManagementModalOpen(false);
+          trackModalClosed('like_management');
         }}
-        onRelike={handleRelikeFromArchive}
-        onImport={handleImportArchive}
         getThemeColors={getThemeColors}
+        likedPosts={likedPosts}
+        onUnlike={handleBulkUnlike}
+        archivedPosts={unlikedPosts}
+        onRelike={handleRelikeFromArchive}
+        onImportArchive={handleImportArchive}
       />
 
       {/* Delete Modal - HIDDEN FOR NOW */}

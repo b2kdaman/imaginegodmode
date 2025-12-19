@@ -1,11 +1,10 @@
 /**
- * Modal component for selecting posts to unlike
+ * Modal component for selecting posts to download all media
  */
 
 import React, { useEffect } from 'react';
 import { Button } from '../inputs/Button';
-import { mdiHeartBroken, mdiHeart } from '@mdi/js';
-import { Icon } from '../common/Icon';
+import { mdiDownload } from '@mdi/js';
 import { LikedPost, ThemeColors } from '@/types';
 import { trackBulkSelectAll, trackBulkDeselectAll, trackBulkOperationConfirmed } from '@/utils/analytics';
 import { BaseModal } from './BaseModal';
@@ -14,7 +13,7 @@ import { PostGrid, PostGridItem } from './shared/PostGrid';
 import { useShiftSelection } from '@/hooks/useShiftSelection';
 import { useTranslation } from '@/contexts/I18nContext';
 
-interface UnlikeModalProps {
+interface DownloadAllModalProps {
   isOpen: boolean;
   posts: LikedPost[];
   onClose: () => void;
@@ -22,7 +21,7 @@ interface UnlikeModalProps {
   getThemeColors: () => ThemeColors;
 }
 
-export const UnlikeModal: React.FC<UnlikeModalProps> = ({
+export const DownloadAllModal: React.FC<DownloadAllModalProps> = ({
   isOpen,
   posts,
   onClose,
@@ -36,29 +35,29 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
     toggleSelection,
     selectAll: selectAllIds,
     deselectAll: deselectAllIds,
-    clearSelection,
+    setSelectedIds,
   } = useShiftSelection(posts);
 
-  // Deselect all posts by default when modal opens
+  // Select all posts by default when modal opens
   useEffect(() => {
-    if (isOpen) {
-      clearSelection();
+    if (isOpen && posts.length > 0) {
+      setSelectedIds(new Set(posts.map((p) => p.id)));
     }
-  }, [isOpen, clearSelection]);
+  }, [isOpen, posts, setSelectedIds]);
 
   const handleSelectAll = () => {
     selectAllIds();
-    trackBulkSelectAll('unlike');
+    trackBulkSelectAll('download');
   };
 
   const handleDeselectAll = () => {
     deselectAllIds();
-    trackBulkDeselectAll('unlike');
+    trackBulkDeselectAll('download');
   };
 
   const handleConfirm = () => {
     const selectedPostIds = Array.from(selectedIds);
-    trackBulkOperationConfirmed('unlike', selectedPostIds.length);
+    trackBulkOperationConfirmed('download', selectedPostIds.length);
     onConfirm(selectedPostIds);
   };
 
@@ -72,11 +71,8 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
     videoCount: post.childPosts?.filter(cp => cp.mediaType === 'video').length || 0,
   }));
 
-  const title = t('modals.unlike.title', {
-    selected: selectedIds.size,
-    total: safePosts.length
-  });
-  const confirmButtonText = t('modals.unlike.actionText', {
+  const title = t('modals.download.title', { selected: selectedIds.size, total: safePosts.length });
+  const confirmButtonText = t('modals.download.actionText', {
     count: selectedIds.size,
     plural: selectedIds.size !== 1 ? 's' : ''
   });
@@ -107,6 +103,7 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
             onClick={handleConfirm}
             className="text-xs"
             disabled={selectedIds.size === 0}
+            icon={mdiDownload}
           >
             {confirmButtonText}
           </Button>
@@ -114,6 +111,18 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
       }
     >
       <>
+        {/* Warning Message */}
+        <div
+          className="mb-3 p-3 rounded text-xs"
+          style={{
+            backgroundColor: `${colors.BACKGROUND_MEDIUM}`,
+            color: colors.TEXT_SECONDARY,
+            border: `1px solid ${colors.BORDER}`,
+          }}
+        >
+          {t('modals.download.warningMessage')}
+        </div>
+
         {/* Selection Controls */}
         <SelectionControls
           onSelectAll={handleSelectAll}
@@ -126,24 +135,9 @@ export const UnlikeModal: React.FC<UnlikeModalProps> = ({
           selectedIds={selectedIds}
           isProcessing={false}
           onItemClick={toggleSelection}
-          getBorderColor={(isSelected) => isSelected ? colors.DANGER : colors.BORDER}
+          getBorderColor={(isSelected) => isSelected ? colors.SUCCESS : colors.BORDER}
           colors={colors}
-          renderOverlay={(post, isSelected) => (
-            <button
-              onClick={(e) => toggleSelection(post.id, e)}
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full p-2"
-              style={{
-                backgroundColor: isSelected ? colors.DANGER : colors.SUCCESS,
-                cursor: 'pointer',
-              }}
-            >
-              <Icon
-                path={isSelected ? mdiHeartBroken : mdiHeart}
-                size={1.5}
-                color='#fff'
-              />
-            </button>
-          )}
+          renderOverlay={() => null}
         />
       </>
     </BaseModal>
