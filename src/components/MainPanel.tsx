@@ -2,7 +2,7 @@
  * Main floating panel component
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useUIStore } from '@/store/useUIStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useJobQueueStore } from '@/store/useJobQueueStore';
@@ -12,7 +12,7 @@ import { SettingsView } from './views/SettingsView';
 import { HelpView } from './views/HelpView';
 import { QueueView } from './views/QueueView';
 import { PitView } from './views/PitView';
-import { UI_POSITION, Z_INDEX } from '@/utils/constants';
+import { UI_POSITION, Z_INDEX, TIMING } from '@/utils/constants';
 import { Tabs } from './inputs/Tabs';
 import { PanelControls } from './common/PanelControls';
 import { VersionBadge } from './common/VersionBadge';
@@ -97,6 +97,38 @@ export const MainPanel: React.FC = () => {
       return () => clearTimeout(transitionTimer);
     }
   }, [currentView, previousView]);
+
+  // Auto-switch view based on URL
+  const lastUrl = useRef(window.location.href);
+  useEffect(() => {
+    const checkUrlAndSwitchView = () => {
+      const currentUrl = window.location.href;
+
+      // Check if URL changed
+      if (currentUrl !== lastUrl.current) {
+        lastUrl.current = currentUrl;
+
+        // If on /favorites, switch to ops view
+        if (currentUrl.includes('/favorites') && currentView !== 'ops') {
+          setCurrentView('ops');
+        }
+        // If on a post page (/imagine/post/[id]), switch to prompt view
+        else if (currentUrl.includes('/imagine/post/') && currentView !== 'prompt') {
+          setCurrentView('prompt');
+        }
+      }
+    };
+
+    // Check on mount
+    checkUrlAndSwitchView();
+
+    // Check periodically for URL changes
+    const interval = setInterval(checkUrlAndSwitchView, TIMING.URL_WATCHER_INTERVAL);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [currentView, setCurrentView]);
 
   // Don't render if URL doesn't contain /imagine
   if (!isVisible) {
