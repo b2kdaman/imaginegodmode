@@ -78,7 +78,8 @@
     "languages": {
       "en": "English",
       "es": "Spanish",
-      "ru": "Russian"
+      "ru": "Russian",
+      "de": "German"
     }
   },
   "ops": {
@@ -136,7 +137,7 @@
       "themeCustomization": "Choose from 7 different themes to match your style",
       "uiScaling": "Scale the entire UI from 70% (Tiny) to 115% (Large)",
       "autoDownloadMedia": "Enable automatic downloads when video generation completes",
-      "multiLanguage": "Switch between English, Spanish, and Russian languages"
+      "multiLanguage": "Switch between English, Spanish, Russian, and German languages"
     }
   },
   "packManager": {

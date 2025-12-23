@@ -1,0 +1,235 @@
+{
+  "tabs": {
+    "prompt": "Prompt",
+    "ops": "Ops",
+    "settings": "Einstellungen",
+    "help": "Hilfe",
+    "queue": "Warteschlange",
+    "queueTooltip": "Auftragswarteschlange"
+  },
+  "common": {
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "import": "Importieren",
+    "export": "Exportieren",
+    "add": "Hinzufügen",
+    "remove": "Entfernen",
+    "copy": "Kopieren",
+    "make": "Erstellen",
+    "download": "Herunterladen",
+    "upscale": "Hochskalieren",
+    "paste": "Einfügen",
+    "current": "Aktuell",
+    "version": "Version",
+    "confirm": "Bestätigen",
+    "close": "Schließen",
+    "processing": "Verarbeitung",
+    "selectAll": "Alle auswählen",
+    "deselectAll": "Alle abwählen"
+  },
+  "panel": {
+    "collapseTooltip": "Panel einklappen",
+    "expandTooltip": "Panel ausklappen",
+    "authorCredit": "von b2kdaman"
+  },
+  "prompt": {
+    "placeholder": "Geben Sie Ihren Prompt ein...",
+    "toTooltip": "Aktuellen Prompt mit diesem ersetzen",
+    "fromTooltip": "Aktuellen Prompt in diesem Slot speichern",
+    "copyTooltip": "Diesen Prompt in die Zwischenablage kopieren",
+    "addTooltip": "Neuen Prompt-Slot hinzufügen",
+    "removeTooltip": "Diesen Prompt-Slot löschen",
+    "makeTooltip": "Prompt ausfüllen und Make-Button klicken",
+    "rating": "Diesen Prompt bewerten"
+  },
+  "settings": {
+    "theme": "Thema",
+    "size": "Größe",
+    "language": "Sprache",
+    "autoDownload": "Auto-Download",
+    "rememberPostState": "Pack pro Beitrag merken",
+    "simpleShortcut": "Einfache Tastenkombination",
+    "hideUnsave": "Unsave ausblenden",
+    "enableSound": "Sound aktivieren",
+    "globalPromptAddon": "Globaler Prompt-Zusatz",
+    "globalPromptAddonPlaceholder": "Text eingeben, der an alle Prompts angehängt wird...",
+    "dataManagement": "Datenverwaltung",
+    "importMode": "Pack-Importmodus",
+    "importModeAdd": "Hinzufügen",
+    "importModeReplace": "Ersetzen",
+    "purge": "Bereinigen",
+    "purgeAllData": "Alle Daten löschen",
+    "purgeClickHint": "5 Mal klicken, um die Bereinigungssequenz zu aktivieren",
+    "themes": {
+      "dark": "Dunkel",
+      "light": "Hell",
+      "dracula": "Dracula",
+      "winamp": "Winamp",
+      "limewire": "LimeWire",
+      "steam": "Steam",
+      "discord": "Discord"
+    },
+    "sizes": {
+      "tiny": "Mini (70%)",
+      "small": "Klein (85%)",
+      "medium": "Mittel (100%)",
+      "large": "Groß (115%)"
+    },
+    "languages": {
+      "en": "Englisch",
+      "es": "Spanisch",
+      "ru": "Russisch",
+      "de": "Deutsch"
+    }
+  },
+  "ops": {
+    "noPostId": "Keine Beitrags-ID in URL gefunden",
+    "fetchingPost": "Beitragsdaten werden abgerufen...",
+    "foundMedia": "{{count}} Medien gefunden ({{hdCount}} HD-Videos)",
+    "upscaling": "Hochskalierung {{current}}/{{total}}...",
+    "upscaled": "{{count}}/{{total}} hochskaliert",
+    "downloading": "Wird heruntergeladen...",
+    "downloaded": "{{count}} Dateien heruntergeladen",
+    "upscaleTooltip": "Videos auf HD-Qualität hochskalieren",
+    "downloadTooltip": "Alle Mediendateien herunterladen",
+    "ready": "Bereit",
+    "waitingForPost": "Warte auf Beitrag..."
+  },
+  "help": {
+    "availableFeatures": "Verfügbare Funktionen",
+    "keyboardShortcuts": "Tastaturkürzel",
+    "about": "Über",
+    "features": {
+      "savePrompts": "Prompts in Packs speichern und organisieren",
+      "ratePrompts": "Prompts mit Sternebewertungen bewerten",
+      "importExport": "Prompt-Packs als JSON importieren/exportieren",
+      "upscale": "Videos auf HD-Qualität hochskalieren",
+      "autoDownload": "Generierte Medien automatisch herunterladen",
+      "keyboardShortcuts": "Vollständige Tastaturkürzel-Unterstützung",
+      "themes": "Mehrere Farbthemen und UI-Größen"
+    },
+    "shortcuts": {
+      "makeVideo": "Video erstellen",
+      "copyMake": "Kopieren & Erstellen",
+      "navigatePrompts": "Prompts navigieren",
+      "togglePanel": "Panel umschalten",
+      "switchTabs": "Tabs wechseln"
+    },
+    "aboutText": "ImagineGodMode hilft Ihnen bei der Verwaltung von Videogenerierungs-Prompts mit Funktionen wie dem Speichern von Prompt-Packs, Bewertungen, Import/Export, Hochskalierung von Videos auf HD und automatischem Medien-Download.",
+    "tooltips": {
+      "crossBrowser": "Funktioniert nahtlos auf Firefox- und Chrome-Browsern",
+      "saveOrganize": "Erstellen Sie mehrere Packs, um Ihre Prompts nach Thema oder Projekt zu organisieren",
+      "packManagement": "Fügen Sie neue Packs hinzu, löschen Sie bestehende und wechseln Sie einfach zwischen ihnen",
+      "ratePrompts": "Klicken Sie auf Sterne, um Ihre Prompts von 1-5 Sternen zu bewerten und die Qualität leicht zu verfolgen",
+      "arrowKeys": "Verwenden Sie die Pfeiltasten links/rechts, um schnell durch Videos zu blättern",
+      "importExport": "Teilen Sie Packs mit anderen oder sichern Sie Ihre Prompts als JSON-Dateien",
+      "aiGenerate": "Verwenden Sie Grok AI, um ganze Prompt-Packs aus Vorlagen zu generieren",
+      "downloadMedia": "Laden Sie automatisch alle Bilder und HD-Videos von einem Beitrag herunter",
+      "parallelUpscale": "Skalieren Sie mehrere Videos gleichzeitig auf HD-Qualität hoch für schnellere Verarbeitung",
+      "bulkOperations": "Führen Sie Löschen, Hochskalieren, erneutes Liken oder Unliken auf mehreren Beiträgen gleichzeitig durch",
+      "purgeData": "Löschen Sie alle Erweiterungsdaten vollständig mit einer sicheren Bestätigungssequenz",
+      "batchSelection": "Halten Sie die Umschalttaste gedrückt und klicken Sie, um mehrere Elemente bei Massenoperationen auszuwählen",
+      "makeNext": "Wenden Sie automatisch Prompt an und navigieren Sie zum nächsten Beitrag in der Sequenz",
+      "realtimeProgress": "Sehen Sie den Live-Fortschrittsbalken während Videos generiert werden",
+      "playPause": "Steuern Sie die Videowiedergabe mit der Wiedergabe-/Pause-Taste oder der Leertaste",
+      "fullscreen": "Sehen Sie Videos im Vollbildmodus, indem Sie F drücken oder auf die Schaltfläche klicken",
+      "hideUnsave": "Entfernen Sie die Unsave-Schaltfläche aus der Benutzeroberfläche für ein saubereres Interface",
+      "themeCustomization": "Wählen Sie aus 7 verschiedenen Themen, um Ihren Stil anzupassen",
+      "uiScaling": "Skalieren Sie die gesamte Benutzeroberfläche von 70% (Mini) bis 115% (Groß)",
+      "autoDownloadMedia": "Aktivieren Sie automatische Downloads, wenn die Videogenerierung abgeschlossen ist",
+      "multiLanguage": "Wechseln Sie zwischen Englisch, Spanisch, Russisch und Deutsch"
+    }
+  },
+  "packManager": {
+    "addPackTooltip": "Neues Pack hinzufügen",
+    "deletePackTooltip": "Aktuelles Pack löschen (Doppelklick)",
+    "cannotDeleteLast": "Das letzte Pack kann nicht gelöscht werden",
+    "packNamePlaceholder": "Pack-Name...",
+    "searchTooltip": "Prompts durchsuchen"
+  },
+  "modals": {
+    "likeManagement": {
+      "tabs": {
+        "liked": "Gelikte Beiträge",
+        "archive": "Archiv"
+      }
+    },
+    "confirmDelete": {
+      "title": "Pack löschen",
+      "message": "Möchten Sie \"{{packName}}\" wirklich löschen?"
+    },
+    "confirmDeletion": {
+      "title": "Löschen bestätigen",
+      "message": "Möchten Sie wirklich {{count}} Beitrag{{plural}} dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+    },
+    "delete": {
+      "title": "Beiträge löschen ({{total}} insgesamt)",
+      "actionText": "Löschen",
+      "warningMessage": "Warnung: Das Löschen von Beiträgen ist dauerhaft und kann nicht rückgängig gemacht werden!"
+    },
+    "download": {
+      "title": "Beiträge zum Herunterladen auswählen ({{selected}}/{{total}})",
+      "actionText": "{{count}} Beitrag{{plural}} herunterladen",
+      "warningMessage": "Dies lädt alle Medien (Bilder und Videos) von den ausgewählten Beiträgen herunter."
+    },
+    "unlike": {
+      "title": "Beiträge zum Unliken auswählen ({{selected}}/{{total}})",
+      "actionText": "{{count}} Beitrag{{plural}} unliken"
+    },
+    "upscale": {
+      "title": "Beiträge zum Hochskalieren auswählen ({{selected}}/{{total}})",
+      "actionText": "{{count}} Beitrag{{plural}} hochskalieren"
+    },
+    "like": {
+      "title": "Beiträge zum Liken auswählen ({{selected}}/{{total}})",
+      "actionText": "{{count}} Beitrag{{plural}} liken"
+    },
+    "unlikedArchive": {
+      "title": "Archiv ungelikter Beiträge ({{total}} insgesamt)",
+      "actionText": "{{count}} Beitrag{{plural}} erneut liken",
+      "selectPrompt": "Beiträge zum erneuten Liken auswählen",
+      "noPostsMessage": "Keine ungelikten Beiträge im Archiv",
+      "relikingPosts": "Beiträge werden erneut geliked"
+    },
+    "importPack": {
+      "title": "Pack importieren",
+      "selectFile": "Datei auswählen",
+      "validJson": "Gültiges JSON",
+      "invalidJson": "Ungültiges JSON",
+      "importing": "Wird importiert...",
+      "success": "Erfolgreich importiert",
+      "error": "Import fehlgeschlagen",
+      "pasteJsonPlaceholder": "JSON hier einfügen oder oben auf Schaltflächen klicken..."
+    },
+    "selectPack": {
+      "title": "Packs zum Exportieren auswählen",
+      "exportAll": "Alle Packs exportieren",
+      "selectAll": "Alle auswählen",
+      "deselectAll": "Alle abwählen",
+      "selectedCount": "{{count}} Pack(s) ausgewählt"
+    },
+    "searchPrompts": {
+      "title": "Prompts durchsuchen",
+      "placeholder": "Zum Suchen eingeben...",
+      "noResults": "Keine Prompts gefunden",
+      "resultCount": "{{count}} Ergebnis(se)",
+      "promptNumber": "Prompt #{{number}}"
+    },
+    "purge": {
+      "title": "⚠️ ALLE DATEN LÖSCHEN",
+      "dangerZone": "GEFAHRENZONE",
+      "warningMessage": "Diese Aktion löscht dauerhaft:",
+      "allLikedPosts": "Alle gelikten Beiträge",
+      "allLikedPostsDesc": "Wird versuchen, alle Beiträge zu unliken",
+      "unlikedArchive": "Archiv ungelikter Beiträge",
+      "unlikedArchiveDesc": "Die gesamte Historie wird gelöscht",
+      "allPromptPacks": "Alle Prompt-Packs",
+      "allPromptPacksDesc": "Jedes Pack und jeder Prompt wird gelöscht",
+      "cannotBeUndone": "DIES KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN!",
+      "pressArrowKeys": "Drücken Sie die folgenden Pfeiltasten in der Reihenfolge:",
+      "startPressing": "Beginnen Sie mit dem Drücken der Pfeiltasten...",
+      "sequenceComplete": "✓ Sequenz abgeschlossen! Bereinigungsschaltfläche aktiviert.",
+      "purgeAllDataButton": "Alle Daten löschen"
+    }
+  }
+}

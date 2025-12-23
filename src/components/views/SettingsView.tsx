@@ -411,6 +411,7 @@ export const SettingsView: React.FC = () => {
                 { value: 'en', label: t('settings.languages.en') },
                 { value: 'es', label: t('settings.languages.es') },
                 { value: 'ru', label: t('settings.languages.ru') },
+                { value: 'de', label: t('settings.languages.de') },
               ]}
               className="w-full"
             />

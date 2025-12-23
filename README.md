@@ -157,7 +157,7 @@ A multi-platform application for Grok media management built with React, TypeScr
 - **Video Controls**: Play/pause button with synchronized state tracking
 - **Fullscreen Video Player**: Intelligent fullscreen button that detects visible video (HD or SD)
 - **Internationalization (i18n)**: Multi-language support with live language switching
-  - English, Spanish, and Russian translations
+  - English, Spanish, Russian, and German translations
   - Persistent language preference
   - All UI elements translated including tooltips, buttons, and modals
 - **Theme Customization**: Choose from 7 themes (Dark, Light, Dracula, Winamp, LimeWire, Steam, Discord) with full UI color adaptation
@@ -357,7 +357,7 @@ open ios/imagineGodMode/imagineGodMode.xcodeproj
    - Choose theme: Dark, Light, Dracula, Winamp, LimeWire, Steam, or Discord
    - Themes are configurable via `public/themes.json`
    - Adjust UI size: Tiny to Large
-   - Select language: English, Spanish (Español), or Russian (Русский)
+   - Select language: English, Spanish (Español), Russian (Русский), or German (Deutsch)
    - Enable Auto Download to automatically download media after upscaling
    - Enable Sound to control UI sound effects (on by default) - affects purge modal audio feedback
    - Configure List Limit to control how many liked posts to fetch (100/200/500/1000)
@@ -695,13 +695,13 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - Uses `useEffect` hook to inject/remove style element
   - CSS selector targets `button[aria-label="Unsave"]`
   - Cleanup on unmount and setting toggle
-- **Internationalization**: Complete i18n infrastructure with English, Spanish, and Russian translations
+- **Internationalization**: Complete i18n infrastructure with English, Spanish, Russian, and German translations
 - **Tooltip System**: Enhanced global tooltip system with consistent styling
   - Smaller text size (`text-xs`) for better readability
   - Max width of 20rem with automatic text wrapping
   - Whole-row hover areas in Settings and Help views
   - Detailed explanations for all features and settings
-  - Multi-language tooltip support across all three languages
+  - Multi-language tooltip support across all four languages
   - Live language switching without reload
   - Translation context with parameter interpolation
   - Fallback mechanism for missing keys
@@ -882,7 +882,7 @@ Or use the shell script directly:
 - [x] "Make + Next" workflow automation for batch processing posts
 - [ ] Advanced search filters (by rating, date)
 - [ ] Search keyboard shortcuts (Ctrl/Cmd+F)
-- [ ] Additional language translations (French, German, Portuguese, etc.)
+- [ ] Additional language translations (French, Portuguese, Italian, etc.)
 - [ ] Sync across devices with `chrome.storage.sync`
 - [ ] Chrome Web Store publication
 
