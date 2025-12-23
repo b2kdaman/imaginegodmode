@@ -43,17 +43,26 @@
     "rating": "Califica este prompt"
   },
   "settings": {
+    "packsAndPrompts": "Paquetes + Prompts",
+    "behavior": "Comportamiento",
+    "appearance": "Apariencia",
     "theme": "Tema",
     "size": "Tamaño",
     "language": "Idioma",
     "autoDownload": "Descarga Automática",
     "rememberPostState": "Recordar Pack Por Post",
     "simpleShortcut": "Atajo Simple",
+    "confirmCopyFrom": "Confirmar Copiar Desde",
     "hideUnsave": "Ocultar Desguardar",
     "enableSound": "Activar Sonido",
+    "enableThePit": "Activar El Pozo",
+    "collapseSections": "Contraer Secciones",
+    "listLimit": "Límite de Lista",
+    "listLimitWarning": "Advertencia: Usar límites diferentes a 100 podría llevar a un baneo",
     "globalPromptAddon": "Complemento de Prompt Global",
     "globalPromptAddonPlaceholder": "Ingresa texto para agregar a todos los prompts...",
     "navigatePostsWithArrows": "Navegar Posts con Flechas",
+    "openPacksManagement": "Abrir Gestión de Paquetes",
     "dataManagement": "Gestión de Datos",
     "importMode": "Modo de Importación de Pack",
     "importModeAdd": "Agregar",
@@ -81,6 +90,18 @@
       "es": "Español",
       "ru": "Ruso",
       "de": "Alemán"
+    },
+    "tooltips": {
+      "packsManagement": "Gestionar paquetes: importar/exportar, renombrar, organizar prompts con arrastrar y soltar",
+      "rememberPostState": "Recordar qué paquete de prompts se usó para cada publicación, cambiando automáticamente de paquete al navegar entre publicaciones",
+      "simpleShortcut": "Usar Ctrl/Cmd+Enter en lugar de Ctrl/Cmd+Shift+Enter para aplicar prompt",
+      "confirmCopyFrom": "Mostrar diálogo de confirmación cuando copiar desde la página reemplazaría el texto del prompt existente",
+      "globalPromptAddon": "Agregar texto personalizado que se agregará automáticamente a cada prompt al presionar Crear o Crear+Siguiente",
+      "autoDownload": "Descargar automáticamente archivos multimedia cuando se complete la generación de video",
+      "enableSound": "Activar efectos de sonido para interacciones de la interfaz",
+      "hideUnsave": "Ocultar el botón Desguardar de la página",
+      "enableThePit": "Mostrar la pestaña El Pozo para acceder a publicaciones eliminadas",
+      "collapseSections": "Activar secciones contraíbles - las secciones comienzan contraídas y se pueden expandir haciendo clic en los encabezados. Cuando está desactivado, todas las secciones siempre están expandidas"
     }
   },
   "ops": {

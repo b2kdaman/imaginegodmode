@@ -99,7 +99,7 @@ export const SettingsView: React.FC = () => {
     >
       {/* Packs + Prompts Panel */}
       <CollapsibleSection
-        title="Packs + Prompts"
+        title={t('settings.packsAndPrompts')}
         className="rounded-xl p-4 backdrop-blur-md border"
         style={{
           background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -112,15 +112,15 @@ export const SettingsView: React.FC = () => {
             onClick={() => setIsPacksModalOpen(true)}
             icon={mdiPackageVariant}
             className="w-full"
-            tooltip="Manage packs: import/export, rename, organize prompts with drag & drop"
+            tooltip={t('settings.tooltips.packsManagement')}
           >
-            Open Packs Management
+            {t('settings.openPacksManagement')}
           </Button>
 
           {/* Remember Post State Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content="Remember which prompt pack was used for each post, automatically switching packs when navigating between posts"
+            data-tooltip-content={t('settings.tooltips.rememberPostState')}
           >
             <label
               className="text-sm cursor-pointer flex items-center gap-1.5"
@@ -143,7 +143,7 @@ export const SettingsView: React.FC = () => {
           {/* Simple Shortcut Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content="Use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter to apply prompt"
+            data-tooltip-content={t('settings.tooltips.simpleShortcut')}
           >
             <label
               className="text-sm cursor-pointer flex items-center gap-1.5"
@@ -166,7 +166,7 @@ export const SettingsView: React.FC = () => {
           {/* Confirm Copy From Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content="Show confirmation dialog when copying from page would replace existing prompt text"
+            data-tooltip-content={t('settings.tooltips.confirmCopyFrom')}
           >
             <label
               className="text-sm cursor-pointer flex items-center gap-1.5"
@@ -174,7 +174,7 @@ export const SettingsView: React.FC = () => {
               htmlFor="confirm-copy-from-toggle"
             >
               <Icon path={mdiAlertCircleOutline} size={0.7} color={colors.TEXT_PRIMARY} />
-              Confirm Copy From
+              {t('settings.confirmCopyFrom')}
             </label>
             <Toggle
               id="confirm-copy-from-toggle"
@@ -189,7 +189,7 @@ export const SettingsView: React.FC = () => {
           {/* Global Prompt Addon Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content="Add custom text that will be automatically appended to every prompt when pressing Make or Make+Next"
+            data-tooltip-content={t('settings.tooltips.globalPromptAddon')}
           >
             <label
               className="text-sm cursor-pointer flex items-center gap-1.5"
@@ -230,7 +230,7 @@ export const SettingsView: React.FC = () => {
 
       {/* Behavior Panel */}
       <CollapsibleSection
-        title="Behavior"
+        title={t('settings.behavior')}
         className="rounded-xl p-4 backdrop-blur-md border"
         style={{
           background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -242,7 +242,7 @@ export const SettingsView: React.FC = () => {
           {/* Auto Download Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content="Automatically download media files when video generation completes"
+            data-tooltip-content={t('settings.tooltips.autoDownload')}
           >
             <label
               className="text-sm cursor-pointer flex items-center gap-1.5"
@@ -265,7 +265,7 @@ export const SettingsView: React.FC = () => {
           {/* Enable Sound Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content="Enable sound effects for UI interactions"
+            data-tooltip-content={t('settings.tooltips.enableSound')}
           >
             <label
               className="text-sm cursor-pointer flex items-center gap-1.5"
@@ -314,7 +314,7 @@ export const SettingsView: React.FC = () => {
               style={{ color: colors.TEXT_SECONDARY }}
             >
               <Icon path={mdiFormatListNumbered} size={0.6} color={colors.TEXT_SECONDARY} />
-              List Limit
+              {t('settings.listLimit')}
             </label>
             <Dropdown
               value={listLimit.toString()}
@@ -341,7 +341,7 @@ export const SettingsView: React.FC = () => {
                 <div className="flex-shrink-0">
                   <Icon path={mdiAlertCircleOutline} size={0.75} color="#ef4444" />
                 </div>
-                Warning: Using limits different from 100 might lead to a ban
+                {t('settings.listLimitWarning')}
               </div>
             )}
           </div>
@@ -350,7 +350,7 @@ export const SettingsView: React.FC = () => {
 
       {/* Appearance Panel */}
       <CollapsibleSection
-        title="Appearance"
+        title={t('settings.appearance')}
         className="rounded-xl p-4 backdrop-blur-md border"
         style={{
           background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -442,7 +442,7 @@ export const SettingsView: React.FC = () => {
           {/* Hide Unsave Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content="Hide the Unsave button from the page"
+            data-tooltip-content={t('settings.tooltips.hideUnsave')}
           >
             <label
               className="text-sm cursor-pointer flex items-center gap-1.5"
@@ -465,7 +465,7 @@ export const SettingsView: React.FC = () => {
           {/* Enable The Pit Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content="Show The Pit tab for accessing deleted posts"
+            data-tooltip-content={t('settings.tooltips.enableThePit')}
           >
             <label
               className="text-sm cursor-pointer flex items-center gap-1.5"
@@ -473,7 +473,7 @@ export const SettingsView: React.FC = () => {
               htmlFor="enable-pit-toggle"
             >
               <Icon path={mdiFlare} size={0.7} color={colors.TEXT_PRIMARY} />
-              Enable The Pit
+              {t('settings.enableThePit')}
             </label>
             <Toggle
               id="enable-pit-toggle"
@@ -487,7 +487,7 @@ export const SettingsView: React.FC = () => {
           {/* Collapse Sections Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content="Enable collapsible sections - sections start collapsed and can be expanded by clicking headers. When off, all sections are always expanded"
+            data-tooltip-content={t('settings.tooltips.collapseSections')}
           >
             <label
               className="text-sm cursor-pointer flex items-center gap-1.5"
@@ -495,7 +495,7 @@ export const SettingsView: React.FC = () => {
               htmlFor="collapse-sections-toggle"
             >
               <Icon path={mdiResize} size={0.7} color={colors.TEXT_PRIMARY} />
-              Collapse Sections
+              {t('settings.collapseSections')}
             </label>
             <Toggle
               id="collapse-sections-toggle"

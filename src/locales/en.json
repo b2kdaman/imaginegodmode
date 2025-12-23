@@ -43,17 +43,26 @@
     "rating": "Rate this prompt"
   },
   "settings": {
+    "packsAndPrompts": "Packs + Prompts",
+    "behavior": "Behavior",
+    "appearance": "Appearance",
     "theme": "Theme",
     "size": "Size",
     "language": "Language",
     "autoDownload": "Auto Download",
     "rememberPostState": "Remember Pack Per Post",
     "simpleShortcut": "Simple Shortcut",
+    "confirmCopyFrom": "Confirm Copy From",
     "hideUnsave": "Hide Unsave",
     "enableSound": "Enable Sound",
+    "enableThePit": "Enable The Pit",
+    "collapseSections": "Collapse Sections",
+    "listLimit": "List Limit",
+    "listLimitWarning": "Warning: Using limits different from 100 might lead to a ban",
     "globalPromptAddon": "Global Prompt Addon",
     "globalPromptAddonPlaceholder": "Enter text to append to all prompts...",
     "navigatePostsWithArrows": "Navigate Posts with Arrows",
+    "openPacksManagement": "Open Packs Management",
     "dataManagement": "Data Management",
     "importMode": "Pack Import Mode",
     "importModeAdd": "Add",
@@ -81,6 +90,18 @@
       "es": "Spanish",
       "ru": "Russian",
       "de": "German"
+    },
+    "tooltips": {
+      "packsManagement": "Manage packs: import/export, rename, organize prompts with drag & drop",
+      "rememberPostState": "Remember which prompt pack was used for each post, automatically switching packs when navigating between posts",
+      "simpleShortcut": "Use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter to apply prompt",
+      "confirmCopyFrom": "Show confirmation dialog when copying from page would replace existing prompt text",
+      "globalPromptAddon": "Add custom text that will be automatically appended to every prompt when pressing Make or Make+Next",
+      "autoDownload": "Automatically download media files when video generation completes",
+      "enableSound": "Enable sound effects for UI interactions",
+      "hideUnsave": "Hide the Unsave button from the page",
+      "enableThePit": "Show The Pit tab for accessing deleted posts",
+      "collapseSections": "Enable collapsible sections - sections start collapsed and can be expanded by clicking headers. When off, all sections are always expanded"
     }
   },
   "ops": {

@@ -43,17 +43,26 @@
     "rating": "Diesen Prompt bewerten"
   },
   "settings": {
+    "packsAndPrompts": "Packs + Prompts",
+    "behavior": "Verhalten",
+    "appearance": "Erscheinungsbild",
     "theme": "Thema",
     "size": "Größe",
     "language": "Sprache",
     "autoDownload": "Auto-Download",
     "rememberPostState": "Pack pro Beitrag merken",
     "simpleShortcut": "Einfache Tastenkombination",
+    "confirmCopyFrom": "Kopieren bestätigen",
     "hideUnsave": "Unsave ausblenden",
     "enableSound": "Sound aktivieren",
+    "enableThePit": "Die Grube aktivieren",
+    "collapseSections": "Abschnitte einklappen",
+    "listLimit": "Listenlimit",
+    "listLimitWarning": "Warnung: Die Verwendung von anderen Limits als 100 könnte zu einem Bann führen",
     "globalPromptAddon": "Globaler Prompt-Zusatz",
     "globalPromptAddonPlaceholder": "Text eingeben, der an alle Prompts angehängt wird...",
     "navigatePostsWithArrows": "Beiträge mit Pfeiltasten navigieren",
+    "openPacksManagement": "Pack-Verwaltung öffnen",
     "dataManagement": "Datenverwaltung",
     "importMode": "Pack-Importmodus",
     "importModeAdd": "Hinzufügen",
@@ -81,6 +90,18 @@
       "es": "Spanisch",
       "ru": "Russisch",
       "de": "Deutsch"
+    },
+    "tooltips": {
+      "packsManagement": "Packs verwalten: importieren/exportieren, umbenennen, Prompts mit Drag & Drop organisieren",
+      "rememberPostState": "Merken Sie sich, welches Prompt-Pack für jeden Beitrag verwendet wurde, und wechseln Sie beim Navigieren zwischen Beiträgen automatisch die Packs",
+      "simpleShortcut": "Verwenden Sie Strg/Cmd+Enter anstelle von Strg/Cmd+Shift+Enter, um den Prompt anzuwenden",
+      "confirmCopyFrom": "Bestätigungsdialog anzeigen, wenn das Kopieren von der Seite den vorhandenen Prompt-Text ersetzen würde",
+      "globalPromptAddon": "Fügen Sie benutzerdefinierten Text hinzu, der beim Drücken von Erstellen oder Erstellen+Weiter automatisch an jeden Prompt angehängt wird",
+      "autoDownload": "Mediendateien automatisch herunterladen, wenn die Videogenerierung abgeschlossen ist",
+      "enableSound": "Soundeffekte für UI-Interaktionen aktivieren",
+      "hideUnsave": "Blenden Sie die Unsave-Schaltfläche von der Seite aus",
+      "enableThePit": "Zeigen Sie die Registerkarte Die Grube für den Zugriff auf gelöschte Beiträge an",
+      "collapseSections": "Einklappbare Abschnitte aktivieren - Abschnitte starten eingeklappt und können durch Klicken auf die Überschriften erweitert werden. Wenn deaktiviert, sind alle Abschnitte immer erweitert"
     }
   },
   "ops": {
