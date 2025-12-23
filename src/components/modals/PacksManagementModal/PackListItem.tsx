@@ -8,6 +8,7 @@ import { Button } from '@/components/inputs/Button';
 import { Icon } from '@/components/common/Icon';
 import { usePromptStore } from '@/store/usePromptStore';
 import { usePacksManagementStore } from './usePacksManagementStore';
+import { useTranslation } from '@/contexts/I18nContext';
 import { mdiPencil, mdiDelete, mdiDrag, mdiEmoticonSadOutline, mdiCheckboxBlankOutline, mdiCheckboxMarked, mdiCheck, mdiClose } from '@mdi/js';
 import type { PackListItemProps } from './types';
 
@@ -21,6 +22,7 @@ export const PackListItem: React.FC<PackListItemProps> = ({
   onPackMove,
   getThemeColors,
 }) => {
+  const { t } = useTranslation();
   const { currentPack } = usePromptStore();
   const {
     selectedPackName,
@@ -224,7 +226,7 @@ export const PackListItem: React.FC<PackListItemProps> = ({
               e.stopPropagation();
               handleRename();
             }}
-            tooltip="Save"
+            tooltip={t('modals.packsManagement.saveTooltip')}
           />
           <Button
             icon={mdiClose}
@@ -235,7 +237,7 @@ export const PackListItem: React.FC<PackListItemProps> = ({
               setEditName(packName);
               setIsEditing(false);
             }}
-            tooltip="Cancel"
+            tooltip={t('modals.packsManagement.cancelTooltip')}
           />
         </div>
       ) : (
@@ -283,7 +285,7 @@ export const PackListItem: React.FC<PackListItemProps> = ({
                     color: '#fff',
                   }}
                 >
-                  Current
+                  {t('common.current')}
                 </span>
               )}
 
@@ -295,7 +297,7 @@ export const PackListItem: React.FC<PackListItemProps> = ({
                 e.stopPropagation();
                 setIsEditing(true);
               }}
-              tooltip="Rename pack"
+              tooltip={t('modals.packsManagement.renamePackTooltip')}
             />
 
               <Button
@@ -306,7 +308,7 @@ export const PackListItem: React.FC<PackListItemProps> = ({
                   e.stopPropagation();
                   onDelete(packName);
                 }}
-                tooltip="Delete pack"
+                tooltip={t('modals.packsManagement.deletePackTooltip')}
               />
             </div>
           )}

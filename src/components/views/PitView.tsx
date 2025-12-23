@@ -8,6 +8,7 @@ import { usePostsStore } from '@/store/usePostsStore';
 import { usePromptStore } from '@/store/usePromptStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useMediaStore } from '@/store/useMediaStore';
+import { useTranslation } from '@/contexts/I18nContext';
 import { Button } from '../inputs/Button';
 import { Toggle } from '../inputs/Toggle';
 import { Dropdown } from '../inputs/Dropdown';
@@ -26,6 +27,7 @@ import {
 } from '@mdi/js';
 
 export const PitView: React.FC = () => {
+  const { t } = useTranslation();
   const {
     selectedPostId,
     manualMode,
@@ -285,7 +287,7 @@ export const PitView: React.FC = () => {
           icon={mdiChevronLeft}
           onClick={handlePrevPost}
           disabled={posts.length === 0 || currentPostIndex === 0}
-          tooltip="Previous post"
+          tooltip={t('pit.navigation.previousPost')}
         />
 
         {/* Image Preview */}
@@ -343,7 +345,7 @@ export const PitView: React.FC = () => {
           icon={mdiChevronRight}
           onClick={handleNextPost}
           disabled={posts.length === 0 || currentPostIndex >= posts.length - 1}
-          tooltip="Next post"
+          tooltip={t('pit.navigation.nextPost')}
         />
       </div>
 
@@ -385,7 +387,7 @@ export const PitView: React.FC = () => {
         <textarea
           value={manualPrompt}
           onChange={(e) => setManualPrompt(e.target.value)}
-          placeholder="Enter your prompt..."
+          placeholder={t('pit.prompt.placeholder')}
           className="w-full h-20 px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar mb-3 backdrop-blur-xl"
           style={{
             backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
@@ -440,7 +442,7 @@ export const PitView: React.FC = () => {
                   icon={mdiChevronLeft}
                   onClick={handlePrevPrompt}
                   disabled={selectedPromptIndex === 0}
-                  tooltip="Previous prompt"
+                  tooltip={t('pit.navigation.previousPrompt')}
                 />
 
                 <span className="text-sm" style={{ color: colors.TEXT_SECONDARY }}>
@@ -452,7 +454,7 @@ export const PitView: React.FC = () => {
                   icon={mdiChevronRight}
                   onClick={handleNextPrompt}
                   disabled={selectedPromptIndex >= packPrompts.length - 1}
-                  tooltip="Next prompt"
+                  tooltip={t('pit.navigation.nextPrompt')}
                 />
               </div>
             </>
@@ -568,7 +570,7 @@ export const PitView: React.FC = () => {
         icon={isChurning ? mdiLoading : mdiFire}
         className="w-full !bg-white !text-black hover:!bg-white/90"
         disabled={true}
-        tooltip="Under construction"
+        tooltip={t('pit.status.underConstruction')}
       >
         {isChurning ? (
           <div className="flex items-center gap-2">
@@ -584,7 +586,7 @@ export const PitView: React.FC = () => {
 
       {/* Under construction message */}
       <div className="text-xs text-center mt-2" style={{ color: colors.TEXT_SECONDARY }}>
-        Under construction
+        {t('pit.status.underConstruction')}
       </div>
     </div>
   );

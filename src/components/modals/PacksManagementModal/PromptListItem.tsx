@@ -8,6 +8,7 @@ import { Icon } from '@/components/common/Icon';
 import { Button } from '@/components/inputs/Button';
 import { usePromptStore } from '@/store/usePromptStore';
 import { usePacksManagementStore } from './usePacksManagementStore';
+import { useTranslation } from '@/contexts/I18nContext';
 import { mdiDrag, mdiStar, mdiStarOutline, mdiPencil, mdiDelete, mdiCheck, mdiClose, mdiCheckboxBlankOutline, mdiCheckboxMarked, mdiContentDuplicate } from '@mdi/js';
 import type { PromptListItemProps } from './types';
 
@@ -21,6 +22,7 @@ export const PromptListItem: React.FC<PromptListItemProps> = ({
   onPromptMove,
   getThemeColors,
 }) => {
+  const { t } = useTranslation();
   const colors = getThemeColors();
   const { deletePromptByIndex, updatePromptByIndex, duplicatePromptByIndex } = usePromptStore();
   const { isSelectionMode, selectedPromptIndices, togglePromptSelection, setStatusMessage } = usePacksManagementStore();
@@ -195,14 +197,14 @@ export const PromptListItem: React.FC<PromptListItemProps> = ({
                   iconSize={0.6}
                   variant="icon"
                   onClick={handleSaveEdit}
-                  tooltip="Save"
+                  tooltip={t('common.save')}
                 />
                 <Button
                   icon={mdiClose}
                   iconSize={0.6}
                   variant="icon"
                   onClick={handleCancelEdit}
-                  tooltip="Cancel"
+                  tooltip={t('common.cancel')}
                 />
               </div>
             </div>
@@ -246,7 +248,7 @@ export const PromptListItem: React.FC<PromptListItemProps> = ({
                 e.stopPropagation();
                 handleEditClick();
               }}
-              tooltip="Edit prompt"
+              tooltip={t('modals.packsManagement.editPromptTooltip')}
             />
             <Button
               icon={mdiContentDuplicate}
@@ -256,7 +258,7 @@ export const PromptListItem: React.FC<PromptListItemProps> = ({
                 e.stopPropagation();
                 handleDuplicate();
               }}
-              tooltip="Duplicate prompt"
+              tooltip={t('modals.packsManagement.duplicatePromptTooltip')}
             />
             <Button
               icon={mdiDelete}
@@ -266,7 +268,7 @@ export const PromptListItem: React.FC<PromptListItemProps> = ({
                 e.stopPropagation();
                 handleDelete();
               }}
-              tooltip="Delete prompt"
+              tooltip={t('modals.packsManagement.deletePromptTooltip')}
             />
           </div>
         )}

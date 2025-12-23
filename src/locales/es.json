@@ -4,7 +4,6 @@
     "ops": "Ops",
     "settings": "Ajustes",
     "help": "Ayuda",
-    "queue": "Cola",
     "queueTooltip": "Cola de Trabajos"
   },
   "common": {
@@ -13,11 +12,8 @@
     "import": "Importar",
     "export": "Exportar",
     "add": "Agregar",
-    "remove": "Quitar",
     "copy": "Copiar",
     "make": "Crear",
-    "download": "Descargar",
-    "upscale": "Mejorar",
     "paste": "Pegar",
     "current": "Actual",
     "version": "Versión",
@@ -25,12 +21,18 @@
     "close": "Cerrar",
     "processing": "Procesando",
     "selectAll": "Seleccionar Todo",
-    "deselectAll": "Deseleccionar Todo"
+    "deselectAll": "Deseleccionar Todo",
+    "loading": "Cargando",
+    "save": "Guardar"
   },
   "panel": {
     "collapseTooltip": "Contraer panel",
     "expandTooltip": "Expandir panel",
-    "authorCredit": "por b2kdaman"
+    "authorCredit": "por b2kdaman",
+    "previousPostTooltip": "Publicación anterior",
+    "nextPostTooltip": "Siguiente publicación",
+    "autoTooltip": "Auto: Repetir automáticamente Crear + Siguiente",
+    "upscaleAllLikedTooltip": "Mejorar videos de múltiples publicaciones con me gusta"
   },
   "prompt": {
     "placeholder": "Ingresa tu prompt...",
@@ -38,9 +40,18 @@
     "fromTooltip": "Guardar prompt actual en este espacio",
     "copyTooltip": "Copiar este prompt al portapapeles",
     "addTooltip": "Agregar nuevo espacio de prompt",
-    "removeTooltip": "Eliminar este espacio de prompt",
     "makeTooltip": "Rellenar prompt y hacer clic en Crear",
-    "rating": "Califica este prompt"
+    "status": {
+      "navigateToPost": "Navega a una publicación para gestionar prompts"
+    },
+    "prefixPlaceholder": "Ingresa texto de prefijo...",
+    "previousTooltip": "Prompt anterior (Flecha izquierda, mantener para navegación rápida)",
+    "nextTooltip": "Siguiente prompt (Flecha derecha, mantener para navegación rápida)",
+    "duplicateTooltip": "Duplicar prompt actual",
+    "navigatePreviousPost": "Navegar a publicación anterior",
+    "navigateNextPost": "Navegar a siguiente publicación",
+    "makeAndNextTooltip": "Crear video y navegar a la siguiente publicación",
+    "autoMakeNextTooltip": "Auto: Repetir automáticamente Crear + Siguiente con 1-1.5s de retraso"
   },
   "settings": {
     "packsAndPrompts": "Paquetes + Prompts",
@@ -63,7 +74,6 @@
     "globalPromptAddonPlaceholder": "Ingresa texto para agregar a todos los prompts...",
     "navigatePostsWithArrows": "Navegar Posts con Flechas",
     "openPacksManagement": "Abrir Gestión de Paquetes",
-    "dataManagement": "Gestión de Datos",
     "importMode": "Modo de Importación de Pack",
     "importModeAdd": "Agregar",
     "importModeReplace": "Reemplazar",
@@ -105,22 +115,35 @@
     }
   },
   "ops": {
-    "noPostId": "No se encontró ID de publicación en la URL",
-    "fetchingPost": "Obteniendo datos de la publicación...",
-    "foundMedia": "Se encontraron {{count}} medios ({{hdCount}} videos HD)",
-    "upscaling": "Mejorando {{current}}/{{total}}...",
-    "upscaled": "Mejorados {{count}}/{{total}}",
-    "downloading": "Descargando...",
-    "downloaded": "{{count}} archivos descargados",
-    "upscaleTooltip": "Mejorar videos a calidad HD",
-    "downloadTooltip": "Descargar todos los archivos multimedia",
-    "ready": "Listo",
-    "waitingForPost": "Esperando publicación..."
+    "sections": {
+      "bulkActions": "Acciones Masivas"
+    },
+    "tooltips": {
+      "upscaleAllLiked": "Mejorar videos de múltiples publicaciones con me gusta",
+      "downloadAllLiked": "Descargar todos los medios de múltiples publicaciones con me gusta",
+      "manageLikes": "Quitar me gusta o volver a dar me gusta desde el archivo",
+      "deleteMultiple": "Eliminar múltiples publicaciones permanentemente"
+    },
+    "buttons": {
+      "upscaleAllLiked": "Mejorar Todos los Me Gusta",
+      "downloadAllLiked": "Descargar Todos los Me Gusta",
+      "manageLikes": "Gestionar Me Gusta"
+    }
   },
   "help": {
     "availableFeatures": "Características Disponibles",
     "keyboardShortcuts": "Atajos de Teclado",
-    "about": "Acerca de",
+    "about": {
+      "description": "Extensión de Chrome/Firefox para gestión de medios de Grok",
+      "author": "por b2kdaman",
+      "firefoxSupport": "Soporte de Firefox por wyntre"
+    },
+    "sections": {
+      "availableFeatures": "Características Disponibles",
+      "keyboardShortcuts": "Atajos de Teclado",
+      "about": "Acerca de",
+      "signIn": "Iniciar Sesión"
+    },
     "features": {
       "savePrompts": "Guardar y organizar prompts en paquetes",
       "ratePrompts": "Calificar prompts con estrellas",
@@ -128,16 +151,57 @@
       "upscale": "Mejorar videos a calidad HD",
       "autoDownload": "Descarga automática de medios generados",
       "keyboardShortcuts": "Soporte completo de atajos de teclado",
-      "themes": "Múltiples temas de color y tamaños de interfaz"
+      "themes": "Múltiples temas de color y tamaños de interfaz",
+      "crossBrowser": "Soporte para Firefox y Chrome",
+      "saveOrganize": "Guardar y organizar prompts con paquetes",
+      "packManagement": "Crear, eliminar y cambiar entre paquetes",
+      "ratePromptsStars": "Calificar prompts con calificaciones de 1-5 estrellas",
+      "arrowKeys": "Navegar prompts con teclas de flecha",
+      "importExportPacks": "Importar y exportar paquetes (modo agregar o reemplazar)",
+      "aiGenerate": "Generar nuevos paquetes con IA usando plantillas de prompts de Grok",
+      "downloadMedia": "Descargar imágenes y videos (cuando todos los videos son HD)",
+      "parallelUpscale": "Mejora paralela de videos a calidad HD",
+      "bulkOperations": "Operaciones masivas: Eliminar, mejorar, volver a gustar, quitar me gusta",
+      "purgeData": "Función de purga de todos los datos para limpieza completa",
+      "batchSelection": "Selección por lotes con Shift-clic en modal de operaciones masivas",
+      "makeNext": "Crear + Siguiente: Automatizar aplicación de prompt y navegación de publicaciones",
+      "realtimeProgress": "Progreso de generación de video en tiempo real",
+      "playPause": "Control de reproducir/pausar video",
+      "fullscreen": "Reproducción de video en pantalla completa",
+      "hideUnsave": "Opción para ocultar botón de no guardar",
+      "themeCustomization": "Personalización de tema (Oscuro, Claro, Drácula, Winamp, LimeWire, Steam, Discord)",
+      "uiScaling": "Escalado de tamaño de interfaz (Muy Pequeño a Grande)",
+      "autoDownloadMedia": "Descarga automática de medios cuando se completa la generación",
+      "multiLanguage": "Soporte multiidioma (Inglés, Español, Ruso, Alemán)"
     },
     "shortcuts": {
       "makeVideo": "Crear un Video",
       "copyMake": "Copiar y Crear",
       "navigatePrompts": "Navegar Prompts",
       "togglePanel": "Alternar Panel",
-      "switchTabs": "Cambiar Pestañas"
+      "switchTabs": "Cambiar Pestañas",
+      "descriptions": {
+        "makeVideo": "Crear un Video",
+        "copyMake": "Copiar y Crear",
+        "navigateVideos": "Navegar videos",
+        "toggleFullscreen": "Alternar pantalla completa",
+        "playPause": "Reproducir/pausar video"
+      },
+      "keys": {
+        "ctrl": "Ctrl",
+        "cmd": "Cmd",
+        "enter": "Enter",
+        "shift": "Shift",
+        "arrowLeft": "←",
+        "arrowRight": "→",
+        "f": "F",
+        "space": "Espacio"
+      }
     },
     "aboutText": "ImagineGodMode te ayuda a gestionar prompts de generación de video con características como guardar paquetes de prompts, calificación, importar/exportar, mejorar videos a HD y descarga automática de medios.",
+    "signIn": {
+      "linkText": "Iniciar sesión en X.ai"
+    },
     "tooltips": {
       "crossBrowser": "Funciona perfectamente en navegadores Firefox y Chrome",
       "saveOrganize": "Crea múltiples paquetes para organizar tus prompts por tema o proyecto",
@@ -164,11 +228,8 @@
     }
   },
   "packManager": {
-    "addPackTooltip": "Agregar nuevo paquete",
-    "deletePackTooltip": "Eliminar paquete actual (doble clic)",
-    "cannotDeleteLast": "No se puede eliminar el último paquete",
-    "packNamePlaceholder": "Nombre del paquete...",
-    "searchTooltip": "Buscar prompts"
+    "searchTooltip": "Buscar prompts",
+    "manageTooltip": "Gestionar paquetes y prompts"
   },
   "modals": {
     "likeManagement": {
@@ -222,7 +283,9 @@
       "importing": "Importando...",
       "success": "Importado exitosamente",
       "error": "Error al importar",
-      "pasteJsonPlaceholder": "Pega JSON aquí o haz clic en los botones de arriba..."
+      "pasteJsonPlaceholder": "Pega JSON aquí o haz clic en los botones de arriba...",
+      "pasteTooltip": "Pegar JSON desde el portapapeles",
+      "selectFileTooltip": "Seleccionar archivo JSON o PAK"
     },
     "selectPack": {
       "title": "Seleccionar Paquetes para Exportar",
@@ -253,6 +316,54 @@
       "startPressing": "Comienza a presionar las teclas de flecha...",
       "sequenceComplete": "✓ ¡Secuencia completa! Botón de purga habilitado.",
       "purgeAllDataButton": "Purgar Todos los Datos"
+    },
+    "confirmReplace": {
+      "title": "¿Reemplazar Texto del Prompt?",
+      "message": "Esto reemplazará el texto actual del prompt. ¿Estás seguro de que quieres continuar?",
+      "confirmText": "Reemplazar"
+    },
+    "packsManagement": {
+      "title": "Gestión de Paquetes",
+      "confirmDeleteTitle": "Confirmar Eliminación",
+      "createPackTooltip": "Crear nuevo paquete",
+      "selectAllPacksTooltip": "Seleccionar todos los paquetes",
+      "deselectAllPacksTooltip": "Deseleccionar todos los paquetes",
+      "deleteSelectedTooltip": "Eliminar paquetes seleccionados",
+      "newPackPlaceholder": "Nombre del nuevo paquete...",
+      "saveTooltip": "Guardar",
+      "cancelTooltip": "Cancelar",
+      "renamePackTooltip": "Renombrar paquete",
+      "deletePackTooltip": "Eliminar paquete",
+      "importTooltip": "Importar paquete desde archivo o portapapeles",
+      "copyPromptTooltip": "Copiar prompt del sistema Grok para paquetes generados por IA",
+      "exportTooltip": "Exportar paquetes seleccionados a archivo",
+      "addPromptTooltip": "Agregar nuevo prompt",
+      "searchPromptsPlaceholder": "Buscar prompts...",
+      "selectAllPromptsTooltip": "Seleccionar todo",
+      "deselectAllPromptsTooltip": "Deseleccionar todo",
+      "moveToPlaceholder": "Mover a...",
+      "editPromptTooltip": "Editar prompt",
+      "duplicatePromptTooltip": "Duplicar prompt",
+      "deletePromptTooltip": "Eliminar prompt",
+      "moveSelectedPromptsTooltip": "Mover prompts seleccionados",
+      "emptyPackPlaceholder": "Empieza a escribir para crear un prompt..."
+    },
+    "fullscreen": {
+      "enterTooltip": "Entrar en pantalla completa (F)"
+    }
+  },
+  "pit": {
+    "navigation": {
+      "previousPost": "Publicación anterior",
+      "nextPost": "Siguiente publicación",
+      "previousPrompt": "Prompt anterior",
+      "nextPrompt": "Siguiente prompt"
+    },
+    "prompt": {
+      "placeholder": "Ingresa tu prompt..."
+    },
+    "status": {
+      "underConstruction": "En construcción"
     }
   }
 }

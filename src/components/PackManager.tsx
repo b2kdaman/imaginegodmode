@@ -55,7 +55,7 @@ export const PackManager: React.FC = () => {
         icon={mdiPackageVariant}
         iconSize={0.7}
         variant="icon"
-        tooltip="Manage packs and prompts"
+        tooltip={t('packManager.manageTooltip')}
         className="flex-shrink-0"
       />
 

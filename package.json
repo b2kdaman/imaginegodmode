@@ -25,7 +25,8 @@
     "ios:deploy": "npm run ios:build && npm run ios:open",
     "ios:simulator": "xcodebuild -project ios/imagineGodMode/imagineGodMode.xcodeproj -scheme imagineGodMode -destination 'platform=iOS Simulator,name=iPhone 15' build",
     "ios:clean": "xcodebuild -project ios/imagineGodMode/imagineGodMode.xcodeproj -scheme imagineGodMode clean",
-    "ios:icons": "./scripts/generate-ios-icons.sh"
+    "ios:icons": "./scripts/generate-ios-icons.sh",
+    "check-translations": "node scripts/check-translations.js"
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",

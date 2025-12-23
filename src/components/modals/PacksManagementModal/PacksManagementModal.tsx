@@ -12,6 +12,7 @@ import { PackSelectModal } from '../PackSelectModal';
 import { ImportPackModal } from '../ImportPackModal';
 import { usePromptStore } from '@/store/usePromptStore';
 import { usePacksManagementStore } from './usePacksManagementStore';
+import { useTranslation } from '@/contexts/I18nContext';
 import { exportAllPacks, exportPack } from '@/utils/storage';
 import type { PacksManagementModalProps } from './types';
 
@@ -20,6 +21,7 @@ export const PacksManagementModal: React.FC<PacksManagementModalProps> = ({
   onClose,
   getThemeColors,
 }) => {
+  const { t } = useTranslation();
   const { packs, currentPack, addPack, renamePack, deletePack, importPack, movePromptToPack, reorderPrompts } = usePromptStore();
   const {
     selectedPackName,
@@ -233,7 +235,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
     <>
       <BaseModal
         isOpen={isOpen}
-        title="Packs Management"
+        title={t('modals.packsManagement.title')}
         onClose={onClose}
         getThemeColors={getThemeColors}
         width="95vw"
@@ -305,7 +307,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
       {packToDelete && (
         <BaseModal
           isOpen={true}
-          title="Confirm Delete"
+          title={t('modals.packsManagement.confirmDeleteTitle')}
           onClose={cancelDeletePack}
           getThemeColors={getThemeColors}
           maxWidth="sm"
@@ -322,7 +324,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
                 onClick={cancelDeletePack}
                 variant="default"
               >
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button
                 onClick={confirmDeletePack}
@@ -332,7 +334,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
                   color: '#fff',
                 }}
               >
-                Delete
+                {t('common.delete')}
               </Button>
             </div>
           </div>

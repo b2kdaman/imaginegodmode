@@ -194,7 +194,7 @@ export const PanelControls: React.FC = () => {
               onClick={handlePrevPost}
               icon={mdiChevronDoubleLeft}
               className="shadow-lg"
-              tooltip="Previous post"
+              tooltip={t('panel.previousPostTooltip')}
             />
           )}
           {hasNextPost && (
@@ -203,7 +203,7 @@ export const PanelControls: React.FC = () => {
               onClick={handleNextPost}
               icon={mdiChevronDoubleRight}
               className="shadow-lg"
-              tooltip="Next post"
+              tooltip={t('panel.nextPostTooltip')}
             />
           )}
           {currentPostId && !isPromptEmpty && (
@@ -233,7 +233,7 @@ export const PanelControls: React.FC = () => {
               icon={mdiAutorenew}
               className={`shadow-lg ${autoNavigate ? '!bg-slate-400 !border-slate-400' : ''}`}
               iconColor={autoNavigate ? UI_COLORS.BLACK : undefined}
-              tooltip="Auto: Automatically repeat Make + Next"
+              tooltip={t('panel.autoTooltip')}
             />
           )}
           <Button
@@ -241,7 +241,7 @@ export const PanelControls: React.FC = () => {
             onClick={openModal}
             icon={mdiFormatListBulletedSquare}
             className="shadow-lg"
-            tooltip="Upscale videos from multiple liked posts"
+            tooltip={t('panel.upscaleAllLikedTooltip')}
           />
         </>
       )}

@@ -4,7 +4,6 @@
     "ops": "Операции",
     "settings": "Настройки",
     "help": "Помощь",
-    "queue": "Очередь",
     "queueTooltip": "Очередь Задач"
   },
   "common": {
@@ -13,11 +12,8 @@
     "import": "Импорт",
     "export": "Экспорт",
     "add": "Добавить",
-    "remove": "Удалить",
     "copy": "Копировать",
     "make": "Создать",
-    "download": "Скачать",
-    "upscale": "Улучшить",
     "paste": "Вставить",
     "current": "Текущий",
     "version": "Версия",
@@ -25,12 +21,18 @@
     "close": "Закрыть",
     "processing": "Обработка",
     "selectAll": "Выбрать Все",
-    "deselectAll": "Снять Выбор"
+    "deselectAll": "Снять Выбор",
+    "loading": "Загрузка",
+    "save": "Сохранить"
   },
   "panel": {
     "collapseTooltip": "Свернуть панель",
     "expandTooltip": "Развернуть панель",
-    "authorCredit": "от b2kdaman"
+    "authorCredit": "от b2kdaman",
+    "previousPostTooltip": "Предыдущий пост",
+    "nextPostTooltip": "Следующий пост",
+    "autoTooltip": "Авто: Автоматически повторять Создать + Следующий",
+    "upscaleAllLikedTooltip": "Улучшить видео из нескольких понравившихся постов"
   },
   "prompt": {
     "placeholder": "Введите ваш промпт...",
@@ -38,9 +40,18 @@
     "fromTooltip": "Сохранить текущий промпт в этот слот",
     "copyTooltip": "Копировать этот промпт в буфер обмена",
     "addTooltip": "Добавить новый слот промпта",
-    "removeTooltip": "Удалить этот слот промпта",
     "makeTooltip": "Заполнить промпт и нажать кнопку Создать",
-    "rating": "Оценить этот промпт"
+    "status": {
+      "navigateToPost": "Перейдите к посту для управления промптами"
+    },
+    "prefixPlaceholder": "Введите текст префикса...",
+    "previousTooltip": "Предыдущий промпт (Стрелка влево, удерживайте для быстрой навигации)",
+    "nextTooltip": "Следующий промпт (Стрелка вправо, удерживайте для быстрой навигации)",
+    "duplicateTooltip": "Дублировать текущий промпт",
+    "navigatePreviousPost": "Перейти к предыдущему посту",
+    "navigateNextPost": "Перейти к следующему посту",
+    "makeAndNextTooltip": "Создать видео и перейти к следующему посту",
+    "autoMakeNextTooltip": "Авто: Автоматически повторять Создать + Следующий с задержкой 1-1.5с"
   },
   "settings": {
     "packsAndPrompts": "Паки + Промпты",
@@ -63,7 +74,6 @@
     "globalPromptAddonPlaceholder": "Введите текст для добавления ко всем промптам...",
     "navigatePostsWithArrows": "Навигация по постам стрелками",
     "openPacksManagement": "Открыть управление паками",
-    "dataManagement": "Управление данными",
     "importMode": "Режим импорта пака",
     "importModeAdd": "Добавить",
     "importModeReplace": "Заменить",
@@ -105,22 +115,35 @@
     }
   },
   "ops": {
-    "noPostId": "ID поста не найден в URL",
-    "fetchingPost": "Загрузка данных поста...",
-    "foundMedia": "Найдено {{count}} медиа ({{hdCount}} HD видео)",
-    "upscaling": "Улучшение {{current}}/{{total}}...",
-    "upscaled": "Улучшено {{count}}/{{total}}",
-    "downloading": "Загрузка...",
-    "downloaded": "Загружено {{count}} файлов",
-    "upscaleTooltip": "Улучшить видео до HD качества",
-    "downloadTooltip": "Скачать все медиа файлы",
-    "ready": "Готово",
-    "waitingForPost": "Ожидание поста..."
+    "sections": {
+      "bulkActions": "Массовые операции"
+    },
+    "tooltips": {
+      "upscaleAllLiked": "Улучшить видео из нескольких понравившихся постов",
+      "downloadAllLiked": "Скачать все медиа из нескольких понравившихся постов",
+      "manageLikes": "Убрать лайк с постов или поставить лайк из архива",
+      "deleteMultiple": "Удалить несколько постов навсегда"
+    },
+    "buttons": {
+      "upscaleAllLiked": "Улучшить Все Понравившиеся",
+      "downloadAllLiked": "Скачать Все Понравившиеся",
+      "manageLikes": "Управление Лайками"
+    }
   },
   "help": {
     "availableFeatures": "Доступные функции",
     "keyboardShortcuts": "Горячие клавиши",
-    "about": "О программе",
+    "about": {
+      "description": "Расширение Chrome/Firefox для управления медиа Grok",
+      "author": "от b2kdaman",
+      "firefoxSupport": "Поддержка Firefox от wyntre"
+    },
+    "sections": {
+      "availableFeatures": "Доступные функции",
+      "keyboardShortcuts": "Горячие клавиши",
+      "about": "О программе",
+      "signIn": "Вход"
+    },
     "features": {
       "savePrompts": "Сохранять и организовывать промпты в паках",
       "ratePrompts": "Оценивать промпты звездами",
@@ -128,16 +151,57 @@
       "upscale": "Улучшение видео до HD качества",
       "autoDownload": "Автоматическая загрузка сгенерированных медиа",
       "keyboardShortcuts": "Полная поддержка горячих клавиш",
-      "themes": "Множество цветовых тем и размеров интерфейса"
+      "themes": "Множество цветовых тем и размеров интерфейса",
+      "crossBrowser": "Поддержка Firefox и Chrome",
+      "saveOrganize": "Сохранение и организация промптов в паках",
+      "packManagement": "Создание, удаление и переключение между паками",
+      "ratePromptsStars": "Оценка промптов от 1 до 5 звезд",
+      "arrowKeys": "Навигация по промптам с помощью клавиш-стрелок",
+      "importExportPacks": "Импорт и экспорт паков (режим добавления или замены)",
+      "aiGenerate": "Генерация новых паков с помощью ИИ, используя шаблоны промптов Grok",
+      "downloadMedia": "Скачивание изображений и видео (когда все видео в HD)",
+      "parallelUpscale": "Параллельное улучшение видео до HD качества",
+      "bulkOperations": "Массовые операции: Удаление, улучшение, повторный лайк, анлайк постов",
+      "purgeData": "Функция полной очистки данных",
+      "batchSelection": "Пакетный выбор с помощью Shift-клик в модальном окне массовых операций",
+      "makeNext": "Создать + Следующий: Автоматизация применения промпта и навигации по постам",
+      "realtimeProgress": "Прогресс генерации видео в реальном времени",
+      "playPause": "Управление воспроизведением/паузой видео",
+      "fullscreen": "Полноэкранное воспроизведение видео",
+      "hideUnsave": "Опция скрытия кнопки отмены сохранения",
+      "themeCustomization": "Настройка темы (Темная, Светлая, Дракула, Winamp, LimeWire, Steam, Discord)",
+      "uiScaling": "Масштабирование интерфейса (от Крошечного до Большого)",
+      "autoDownloadMedia": "Автоматическая загрузка медиа при завершении генерации",
+      "multiLanguage": "Поддержка нескольких языков (Английский, Испанский, Русский, Немецкий)"
     },
     "shortcuts": {
       "makeVideo": "Создать видео",
       "copyMake": "Копировать и создать",
       "navigatePrompts": "Навигация по промптам",
       "togglePanel": "Переключить панель",
-      "switchTabs": "Переключить вкладки"
+      "switchTabs": "Переключить вкладки",
+      "descriptions": {
+        "makeVideo": "Создать видео",
+        "copyMake": "Копировать и создать",
+        "navigateVideos": "Навигация по видео",
+        "toggleFullscreen": "Переключить полноэкранный режим",
+        "playPause": "Воспроизведение/пауза видео"
+      },
+      "keys": {
+        "ctrl": "Ctrl",
+        "cmd": "Cmd",
+        "enter": "Enter",
+        "shift": "Shift",
+        "arrowLeft": "←",
+        "arrowRight": "→",
+        "f": "F",
+        "space": "Пробел"
+      }
     },
     "aboutText": "ImagineGodMode помогает управлять промптами для генерации видео с функциями сохранения паков промптов, оценки, импорта/экспорта, улучшения видео до HD и автоматической загрузки медиа.",
+    "signIn": {
+      "linkText": "Войти в X.ai"
+    },
     "tooltips": {
       "crossBrowser": "Безупречная работа в браузерах Firefox и Chrome",
       "saveOrganize": "Создавайте несколько паков для организации промптов по теме или проекту",
@@ -164,11 +228,8 @@
     }
   },
   "packManager": {
-    "addPackTooltip": "Добавить новый пак",
-    "deletePackTooltip": "Удалить текущий пак (двойной клик)",
-    "cannotDeleteLast": "Невозможно удалить последний пак",
-    "packNamePlaceholder": "Название пака...",
-    "searchTooltip": "Поиск промптов"
+    "searchTooltip": "Поиск промптов",
+    "manageTooltip": "Управление паками и промптами"
   },
   "modals": {
     "likeManagement": {
@@ -222,7 +283,9 @@
       "importing": "Импорт...",
       "success": "Успешно импортировано",
       "error": "Ошибка импорта",
-      "pasteJsonPlaceholder": "Вставьте JSON здесь или нажмите кнопки выше..."
+      "pasteJsonPlaceholder": "Вставьте JSON здесь или нажмите кнопки выше...",
+      "pasteTooltip": "Вставить JSON из буфера обмена",
+      "selectFileTooltip": "Выбрать файл JSON или PAK"
     },
     "selectPack": {
       "title": "Выбрать паки для экспорта",
@@ -253,6 +316,54 @@
       "startPressing": "Начните нажимать клавиши стрелок...",
       "sequenceComplete": "✓ Последовательность завершена! Кнопка очистки активна.",
       "purgeAllDataButton": "Очистить все данные"
+    },
+    "confirmReplace": {
+      "title": "Заменить текст промпта?",
+      "message": "Это заменит текущий текст промпта. Вы уверены, что хотите продолжить?",
+      "confirmText": "Заменить"
+    },
+    "packsManagement": {
+      "title": "Управление паками",
+      "confirmDeleteTitle": "Подтвердить удаление",
+      "createPackTooltip": "Создать новый пак",
+      "selectAllPacksTooltip": "Выбрать все паки",
+      "deselectAllPacksTooltip": "Снять выбор со всех паков",
+      "deleteSelectedTooltip": "Удалить выбранные паки",
+      "newPackPlaceholder": "Название нового пака...",
+      "saveTooltip": "Сохранить",
+      "cancelTooltip": "Отмена",
+      "renamePackTooltip": "Переименовать пак",
+      "deletePackTooltip": "Удалить пак",
+      "importTooltip": "Импортировать пак из файла или буфера обмена",
+      "copyPromptTooltip": "Копировать системный промпт Grok для паков, сгенерированных ИИ",
+      "exportTooltip": "Экспортировать выбранные паки в файл",
+      "addPromptTooltip": "Добавить новый промпт",
+      "searchPromptsPlaceholder": "Поиск промптов...",
+      "selectAllPromptsTooltip": "Выбрать все",
+      "deselectAllPromptsTooltip": "Снять выбор со всех",
+      "moveToPlaceholder": "Переместить в...",
+      "editPromptTooltip": "Редактировать промпт",
+      "duplicatePromptTooltip": "Дублировать промпт",
+      "deletePromptTooltip": "Удалить промпт",
+      "moveSelectedPromptsTooltip": "Переместить выбранные промпты",
+      "emptyPackPlaceholder": "Начните вводить текст, чтобы создать промпт..."
+    },
+    "fullscreen": {
+      "enterTooltip": "Войти в полноэкранный режим (F)"
+    }
+  },
+  "pit": {
+    "navigation": {
+      "previousPost": "Предыдущий пост",
+      "nextPost": "Следующий пост",
+      "previousPrompt": "Предыдущий промпт",
+      "nextPrompt": "Следующий промпт"
+    },
+    "prompt": {
+      "placeholder": "Введите ваш промпт..."
+    },
+    "status": {
+      "underConstruction": "В разработке"
     }
   }
 }

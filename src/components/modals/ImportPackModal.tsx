@@ -270,7 +270,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
             onClick={handlePaste}
             icon={mdiContentPaste}
             className="flex-1"
-            tooltip="Paste JSON from clipboard"
+            tooltip={t('modals.importPack.pasteTooltip')}
           >
             {t('common.paste')}
           </Button>
@@ -278,7 +278,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
             onClick={() => fileInputRef.current?.click()}
             icon={mdiUpload}
             className="flex-1"
-            tooltip="Select JSON or PAK file"
+            tooltip={t('modals.importPack.selectFileTooltip')}
           >
             {t('modals.importPack.selectFile')}
           </Button>

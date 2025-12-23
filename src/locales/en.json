@@ -4,7 +4,6 @@
     "ops": "Ops",
     "settings": "Settings",
     "help": "Help",
-    "queue": "Queue",
     "queueTooltip": "Job Queue"
   },
   "common": {
@@ -13,11 +12,8 @@
     "import": "Import",
     "export": "Export",
     "add": "Add",
-    "remove": "Remove",
     "copy": "Copy",
     "make": "Make",
-    "download": "Download",
-    "upscale": "Upscale",
     "paste": "Paste",
     "current": "Current",
     "version": "Version",
@@ -25,12 +21,18 @@
     "close": "Close",
     "processing": "Processing",
     "selectAll": "Select All",
-    "deselectAll": "Deselect All"
+    "deselectAll": "Deselect All",
+    "loading": "Loading",
+    "save": "Save"
   },
   "panel": {
     "collapseTooltip": "Collapse panel",
     "expandTooltip": "Expand panel",
-    "authorCredit": "by b2kdaman"
+    "authorCredit": "by b2kdaman",
+    "previousPostTooltip": "Previous post",
+    "nextPostTooltip": "Next post",
+    "autoTooltip": "Auto: Automatically repeat Make + Next",
+    "upscaleAllLikedTooltip": "Upscale videos from multiple liked posts"
   },
   "prompt": {
     "placeholder": "Enter your prompt...",
@@ -38,9 +40,18 @@
     "fromTooltip": "Save current prompt to this slot",
     "copyTooltip": "Copy this prompt to clipboard",
     "addTooltip": "Add new prompt slot",
-    "removeTooltip": "Delete this prompt slot",
     "makeTooltip": "Fill prompt and click Make button",
-    "rating": "Rate this prompt"
+    "status": {
+      "navigateToPost": "Navigate to a post to manage prompts"
+    },
+    "prefixPlaceholder": "Enter prefix text...",
+    "previousTooltip": "Previous prompt (Left arrow, hold for fast navigation)",
+    "nextTooltip": "Next prompt (Right arrow, hold for fast navigation)",
+    "duplicateTooltip": "Duplicate current prompt",
+    "navigatePreviousPost": "Navigate to previous post",
+    "navigateNextPost": "Navigate to next post",
+    "makeAndNextTooltip": "Make video and navigate to next post",
+    "autoMakeNextTooltip": "Auto: Automatically repeat Make + Next with 1-1.5s delay"
   },
   "settings": {
     "packsAndPrompts": "Packs + Prompts",
@@ -63,7 +74,6 @@
     "globalPromptAddonPlaceholder": "Enter text to append to all prompts...",
     "navigatePostsWithArrows": "Navigate Posts with Arrows",
     "openPacksManagement": "Open Packs Management",
-    "dataManagement": "Data Management",
     "importMode": "Pack Import Mode",
     "importModeAdd": "Add",
     "importModeReplace": "Replace",
@@ -105,22 +115,35 @@
     }
   },
   "ops": {
-    "noPostId": "No post ID found in URL",
-    "fetchingPost": "Fetching post data...",
-    "foundMedia": "Found {{count}} media ({{hdCount}} HD videos)",
-    "upscaling": "Upscaling {{current}}/{{total}}...",
-    "upscaled": "Upscaled {{count}}/{{total}}",
-    "downloading": "Downloading...",
-    "downloaded": "Downloaded {{count}} files",
-    "upscaleTooltip": "Upscale videos to HD quality",
-    "downloadTooltip": "Download all media files",
-    "ready": "Ready",
-    "waitingForPost": "Waiting for post..."
+    "sections": {
+      "bulkActions": "Bulk Actions"
+    },
+    "tooltips": {
+      "upscaleAllLiked": "Upscale videos from multiple liked posts",
+      "downloadAllLiked": "Download all media from multiple liked posts",
+      "manageLikes": "Unlike posts or re-like from archive",
+      "deleteMultiple": "Delete multiple posts permanently"
+    },
+    "buttons": {
+      "upscaleAllLiked": "Upscale All Liked",
+      "downloadAllLiked": "Download All Liked",
+      "manageLikes": "Manage Likes"
+    }
   },
   "help": {
     "availableFeatures": "Available Features",
     "keyboardShortcuts": "Keyboard Shortcuts",
-    "about": "About",
+    "about": {
+      "description": "Chrome/Firefox extension for Grok media management",
+      "author": "by b2kdaman",
+      "firefoxSupport": "Firefox support by wyntre"
+    },
+    "sections": {
+      "availableFeatures": "Available Features",
+      "keyboardShortcuts": "Keyboard Shortcuts",
+      "about": "About",
+      "signIn": "Sign In"
+    },
     "features": {
       "savePrompts": "Save and organize prompts in packs",
       "ratePrompts": "Rate prompts with star ratings",
@@ -128,16 +151,57 @@
       "upscale": "Upscale videos to HD quality",
       "autoDownload": "Auto-download generated media",
       "keyboardShortcuts": "Full keyboard shortcut support",
-      "themes": "Multiple color themes and UI sizes"
+      "themes": "Multiple color themes and UI sizes",
+      "crossBrowser": "Firefox and Chrome cross-browser support",
+      "saveOrganize": "Save and organize prompts with packs",
+      "packManagement": "Create, delete, and switch between packs",
+      "ratePromptsStars": "Rate prompts with 1-5 star ratings",
+      "arrowKeys": "Navigate prompts with arrow keys",
+      "importExportPacks": "Import and export packs (add or replace mode)",
+      "aiGenerate": "Generate new packs with AI using Grok prompt templates",
+      "downloadMedia": "Download images and videos (when all videos are HD)",
+      "parallelUpscale": "Parallel video upscaling to HD quality",
+      "bulkOperations": "Bulk operations: Delete, upscale, relike, unlike posts",
+      "purgeData": "Purge all data feature for complete data cleanup",
+      "batchSelection": "Shift-click batch selection in bulk operations modal",
+      "makeNext": "Make + Next: Automate prompt application and post navigation",
+      "realtimeProgress": "Real-time video generation progress",
+      "playPause": "Play/pause video control",
+      "fullscreen": "Fullscreen video playback",
+      "hideUnsave": "Hide unsave button option",
+      "themeCustomization": "Theme customization (Dark, Light, Dracula, Winamp, LimeWire, Steam, Discord)",
+      "uiScaling": "UI size scaling (Tiny to Large)",
+      "autoDownloadMedia": "Auto-download media when generation completes",
+      "multiLanguage": "Multi-language support (English, Spanish, Russian, German)"
     },
     "shortcuts": {
       "makeVideo": "Make a Video",
       "copyMake": "Copy & Make",
       "navigatePrompts": "Navigate Prompts",
       "togglePanel": "Toggle Panel",
-      "switchTabs": "Switch Tabs"
+      "switchTabs": "Switch Tabs",
+      "descriptions": {
+        "makeVideo": "Make a Video",
+        "copyMake": "Copy & Make",
+        "navigateVideos": "Navigate videos",
+        "toggleFullscreen": "Toggle fullscreen",
+        "playPause": "Play/pause video"
+      },
+      "keys": {
+        "ctrl": "Ctrl",
+        "cmd": "Cmd",
+        "enter": "Enter",
+        "shift": "Shift",
+        "arrowLeft": "←",
+        "arrowRight": "→",
+        "f": "F",
+        "space": "Space"
+      }
     },
     "aboutText": "ImagineGodMode helps you manage video generation prompts with features like saving prompt packs, rating, importing/exporting, upscaling videos to HD, and auto-downloading media.",
+    "signIn": {
+      "linkText": "Sign in to X.ai"
+    },
     "tooltips": {
       "crossBrowser": "Works seamlessly on both Firefox and Chrome browsers",
       "saveOrganize": "Create multiple packs to organize your prompts by theme or project",
@@ -164,11 +228,8 @@
     }
   },
   "packManager": {
-    "addPackTooltip": "Add new pack",
-    "deletePackTooltip": "Delete current pack (double-click)",
-    "cannotDeleteLast": "Cannot delete the last pack",
-    "packNamePlaceholder": "Pack name...",
-    "searchTooltip": "Search prompts"
+    "searchTooltip": "Search prompts",
+    "manageTooltip": "Manage packs and prompts"
   },
   "modals": {
     "likeManagement": {
@@ -222,7 +283,9 @@
       "importing": "Importing...",
       "success": "Imported successfully",
       "error": "Import failed",
-      "pasteJsonPlaceholder": "Paste JSON here or click buttons above..."
+      "pasteJsonPlaceholder": "Paste JSON here or click buttons above...",
+      "pasteTooltip": "Paste JSON from clipboard",
+      "selectFileTooltip": "Select JSON or PAK file"
     },
     "selectPack": {
       "title": "Select Packs to Export",
@@ -253,6 +316,54 @@
       "startPressing": "Start pressing the arrow keys...",
       "sequenceComplete": "✓ Sequence complete! Purge button enabled.",
       "purgeAllDataButton": "Purge All Data"
+    },
+    "confirmReplace": {
+      "title": "Replace Prompt Text?",
+      "message": "This will replace the current prompt text. Are you sure you want to continue?",
+      "confirmText": "Replace"
+    },
+    "packsManagement": {
+      "title": "Packs Management",
+      "confirmDeleteTitle": "Confirm Delete",
+      "createPackTooltip": "Create new pack",
+      "selectAllPacksTooltip": "Select all packs",
+      "deselectAllPacksTooltip": "Deselect all packs",
+      "deleteSelectedTooltip": "Delete selected packs",
+      "newPackPlaceholder": "New pack name...",
+      "saveTooltip": "Save",
+      "cancelTooltip": "Cancel",
+      "renamePackTooltip": "Rename pack",
+      "deletePackTooltip": "Delete pack",
+      "importTooltip": "Import pack from file or clipboard",
+      "copyPromptTooltip": "Copy Grok system prompt for AI-generated packs",
+      "exportTooltip": "Export selected packs to file",
+      "addPromptTooltip": "Add new prompt",
+      "searchPromptsPlaceholder": "Search prompts...",
+      "selectAllPromptsTooltip": "Select all",
+      "deselectAllPromptsTooltip": "Deselect all",
+      "moveToPlaceholder": "Move to...",
+      "editPromptTooltip": "Edit prompt",
+      "duplicatePromptTooltip": "Duplicate prompt",
+      "deletePromptTooltip": "Delete prompt",
+      "moveSelectedPromptsTooltip": "Move selected prompts",
+      "emptyPackPlaceholder": "Start typing to create a prompt..."
+    },
+    "fullscreen": {
+      "enterTooltip": "Enter fullscreen (F)"
+    }
+  },
+  "pit": {
+    "navigation": {
+      "previousPost": "Previous post",
+      "nextPost": "Next post",
+      "previousPrompt": "Previous prompt",
+      "nextPrompt": "Next prompt"
+    },
+    "prompt": {
+      "placeholder": "Enter your prompt..."
+    },
+    "status": {
+      "underConstruction": "Under construction"
     }
   }
 }

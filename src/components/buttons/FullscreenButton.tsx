@@ -7,8 +7,10 @@ import { Button } from '../inputs/Button';
 import { mdiFullscreen } from '@mdi/js';
 import { getPostIdFromUrl } from '@/utils/helpers';
 import { trackVideoFullscreen } from '@/utils/analytics';
+import { useTranslation } from '@/contexts/I18nContext';
 
 export const FullscreenButton: React.FC = () => {
+  const { t } = useTranslation();
   const [errorShown, setErrorShown] = useState(false);
   const [shouldShow, setShouldShow] = useState(false);
 
@@ -114,7 +116,7 @@ export const FullscreenButton: React.FC = () => {
       variant="icon"
       icon={mdiFullscreen}
       onClick={handleFullscreen}
-      tooltip="Enter fullscreen (F)"
+      tooltip={t('modals.fullscreen.enterTooltip')}
       className={errorShown ? 'opacity-50' : ''}
     />
   );

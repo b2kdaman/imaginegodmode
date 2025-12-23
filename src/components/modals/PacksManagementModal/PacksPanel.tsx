@@ -10,6 +10,7 @@ import { PackListItem } from './PackListItem';
 import { PacksManagementFooter } from './PacksManagementFooter';
 import { usePromptStore } from '@/store/usePromptStore';
 import { usePacksManagementStore } from './usePacksManagementStore';
+import { useTranslation } from '@/contexts/I18nContext';
 import { mdiPlus, mdiCheckboxMultipleMarked, mdiSelectAll, mdiSelectOff, mdiDelete, mdiCheck, mdiClose } from '@mdi/js';
 import type { PacksPanelProps } from './types';
 
@@ -25,6 +26,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
   onCopyGrokPrompt,
   getThemeColors,
 }) => {
+  const { t } = useTranslation();
   const colors = getThemeColors();
   const { packs, packOrder, reorderPacks, deletePacksByNames } = usePromptStore();
   const {
@@ -140,7 +142,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
               iconSize={0.6}
               variant="icon"
               onClick={() => setIsCreating(true)}
-              tooltip="Create new pack"
+              tooltip={t('modals.packsManagement.createPackTooltip')}
             />
           )}
           <Button
@@ -165,14 +167,14 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
             iconSize={0.5}
             variant="icon"
             onClick={handleSelectAllPacks}
-            tooltip="Select all packs"
+            tooltip={t('modals.packsManagement.selectAllPacksTooltip')}
           />
           <Button
             icon={mdiSelectOff}
             iconSize={0.5}
             variant="icon"
             onClick={handleDeselectAllPacks}
-            tooltip="Deselect all packs"
+            tooltip={t('modals.packsManagement.deselectAllPacksTooltip')}
           />
           <div className="flex-1" />
           <Button
@@ -180,7 +182,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
             iconSize={0.5}
             variant="icon"
             onClick={handleBatchDeletePacks}
-            tooltip="Delete selected packs"
+            tooltip={t('modals.packsManagement.deleteSelectedTooltip')}
             disabled={selectedPackNames.size === 0}
           />
         </div>
@@ -198,7 +200,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
                 onChange={(e) => setNewPackName(e.target.value)}
                 onKeyDown={handleKeyDown}
                 onFocus={(e) => e.target.select()}
-                placeholder="New pack name..."
+                placeholder={t('modals.packsManagement.newPackPlaceholder')}
                 className="flex-1 px-1 rounded text-sm"
                 style={{
                   backgroundColor: 'transparent',
@@ -213,7 +215,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
                 iconSize={0.5}
                 variant="icon"
                 onClick={handleCreatePack}
-                tooltip="Create"
+                tooltip={t('modals.packsManagement.saveTooltip')}
               />
               <Button
                 icon={mdiClose}
@@ -223,7 +225,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
                   setNewPackName('');
                   setIsCreating(false);
                 }}
-                tooltip="Cancel"
+                tooltip={t('modals.packsManagement.cancelTooltip')}
               />
             </div>
           </div>
@@ -265,7 +267,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
       {isDeleteConfirmOpen && (
         <BaseModal
           isOpen={true}
-          title="Confirm Delete"
+          title={t('modals.packsManagement.confirmDeleteTitle')}
           onClose={cancelBatchDeletePacks}
           getThemeColors={getThemeColors}
           maxWidth="sm"

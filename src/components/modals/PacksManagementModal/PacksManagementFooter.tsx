@@ -59,7 +59,7 @@ export const PacksManagementFooter: React.FC<PacksManagementFooterProps> = ({
           onClick={onImport}
           icon={mdiUpload}
           className="flex-1"
-          tooltip="Import pack from file or clipboard"
+          tooltip={t('modals.packsManagement.importTooltip')}
         >
           {t('common.import')}
         </Button>
@@ -68,14 +68,14 @@ export const PacksManagementFooter: React.FC<PacksManagementFooterProps> = ({
           onClick={onCopyGrokPrompt}
           icon={mdiContentCopy}
           variant="icon"
-          tooltip="Copy Grok system prompt for AI-generated packs"
+          tooltip={t('modals.packsManagement.copyPromptTooltip')}
         />
 
         <Button
           onClick={onExport}
           icon={mdiUpload}
           className="flex-1"
-          tooltip="Export selected packs to file"
+          tooltip={t('modals.packsManagement.exportTooltip')}
         >
           {t('common.export')}
         </Button>

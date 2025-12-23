@@ -10,6 +10,7 @@ import { Dropdown } from '@/components/inputs/Dropdown';
 import { PromptListItem } from './PromptListItem';
 import { usePromptStore } from '@/store/usePromptStore';
 import { usePacksManagementStore } from './usePacksManagementStore';
+import { useTranslation } from '@/contexts/I18nContext';
 import { mdiPackageVariant, mdiCheckboxMultipleMarked, mdiSelectAll, mdiSelectOff, mdiDelete, mdiSwapHorizontal, mdiPlus, mdiMagnify, mdiClose } from '@mdi/js';
 import type { PromptsPanelProps } from './types';
 
@@ -17,6 +18,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
   onReorderPrompts,
   getThemeColors,
 }) => {
+  const { t } = useTranslation();
   const colors = getThemeColors();
   const { packs, packOrder, deletePromptsByIndices, movePromptToPack, addPromptToPack } = usePromptStore();
   const {
@@ -156,7 +158,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
                 iconSize={0.6}
                 variant="icon"
                 onClick={handleAddPrompt}
-                tooltip="Add new prompt"
+                tooltip={t('modals.packsManagement.addPromptTooltip')}
               />
               <Button
                 icon={isSearchActive ? mdiClose : mdiMagnify}
@@ -189,7 +191,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search prompts..."
+            placeholder={t('modals.packsManagement.searchPromptsPlaceholder')}
             className="w-full px-3 py-2 rounded text-sm"
             style={{
               backgroundColor: colors.BACKGROUND_MEDIUM,
@@ -212,14 +214,14 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
             iconSize={0.5}
             variant="icon"
             onClick={handleSelectAll}
-            tooltip="Select all"
+            tooltip={t('modals.packsManagement.selectAllPromptsTooltip')}
           />
           <Button
             icon={mdiSelectOff}
             iconSize={0.5}
             variant="icon"
             onClick={handleDeselectAll}
-            tooltip="Deselect all"
+            tooltip={t('modals.packsManagement.deselectAllPromptsTooltip')}
           />
           <div className="flex-1" />
           {allPackNames.length > 0 && (
@@ -228,14 +230,14 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
                 options={allPackNames.map(p => ({ value: p, label: p }))}
                 value={targetPackForMove}
                 onChange={setTargetPackForMove}
-                placeholder="Move to..."
+                placeholder={t('modals.packsManagement.moveToPlaceholder')}
               />
               <Button
                 icon={mdiSwapHorizontal}
                 iconSize={0.5}
                 variant="icon"
                 onClick={handleBatchMove}
-                tooltip="Move selected prompts"
+                tooltip={t('modals.packsManagement.moveSelectedPromptsTooltip')}
                 disabled={selectedPromptIndices.size === 0 || !targetPackForMove}
               />
             </>
@@ -245,7 +247,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
             iconSize={0.5}
             variant="icon"
             onClick={handleBatchDelete}
-            tooltip="Delete selected prompts"
+            tooltip={t('modals.packsManagement.deletePromptTooltip')}
             disabled={selectedPromptIndices.size === 0}
           />
         </div>
@@ -263,7 +265,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
             <textarea
               value={emptyPackText}
               onChange={handleEmptyPackTextChange}
-              placeholder="Start typing to create a prompt..."
+              placeholder={t('modals.packsManagement.emptyPackPlaceholder')}
               className="w-full max-w-md px-3 py-2 rounded text-sm resize-none custom-scrollbar"
               style={{
                 backgroundColor: colors.BACKGROUND_MEDIUM,

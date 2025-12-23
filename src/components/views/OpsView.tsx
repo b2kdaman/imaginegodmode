@@ -8,6 +8,7 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 import { useJobQueueStore } from '@/store/useJobQueueStore';
 import { usePostsStore } from '@/store/usePostsStore';
 import { useUserStore } from '@/store/useUserStore';
+import { useTranslation } from '@/contexts/I18nContext';
 import { getPostIdFromUrl } from '@/utils/helpers';
 import { fetchPost } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
@@ -27,6 +28,7 @@ import { UnlikedPost, getUnlikedPosts, addUnlikedPosts } from '@/utils/storage';
 import { STATUS_MESSAGES, LOG_PREFIX } from '@/constants/opsView';
 
 export const OpsView: React.FC = () => {
+  const { t } = useTranslation();
   const {
     urls,
     videoIdsToUpscale,
@@ -418,7 +420,7 @@ export const OpsView: React.FC = () => {
 
       {/* Bulk Actions Panel - Modern Glassy Design */}
       <CollapsibleSection
-        title="Bulk Actions"
+        title={t('ops.sections.bulkActions')}
         className="mt-4 rounded-xl p-4 backdrop-blur-md border"
         style={{
           background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -434,9 +436,9 @@ export const OpsView: React.FC = () => {
             iconClassName={isLoadingLikedPosts ? "animate-spin" : ""}
             disabled={isLoadingLikedPosts}
             className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-            tooltip="Upscale videos from multiple liked posts"
+            tooltip={t('ops.tooltips.upscaleAllLiked')}
           >
-            {isLoadingLikedPosts ? 'Loading' : 'Upscale All Liked'}
+            {isLoadingLikedPosts ? t('common.loading') : t('ops.buttons.upscaleAllLiked')}
           </Button>
 
           <Button
@@ -445,9 +447,9 @@ export const OpsView: React.FC = () => {
             iconClassName={isLoadingLikedPosts ? "animate-spin" : ""}
             disabled={isLoadingLikedPosts}
             className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-            tooltip="Download all media from multiple liked posts"
+            tooltip={t('ops.tooltips.downloadAllLiked')}
           >
-            {isLoadingLikedPosts ? 'Loading' : 'Download All Liked'}
+            {isLoadingLikedPosts ? t('common.loading') : t('ops.buttons.downloadAllLiked')}
           </Button>
 
           <Button
@@ -456,9 +458,9 @@ export const OpsView: React.FC = () => {
             iconClassName={isLoadingLikedPosts ? "animate-spin" : ""}
             disabled={isLoadingLikedPosts}
             className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-            tooltip="Unlike posts or re-like from archive"
+            tooltip={t('ops.tooltips.manageLikes')}
           >
-            {isLoadingLikedPosts ? 'Loading' : 'Manage Likes'}
+            {isLoadingLikedPosts ? t('common.loading') : t('ops.buttons.manageLikes')}
           </Button>
         </div>
 
@@ -476,7 +478,7 @@ export const OpsView: React.FC = () => {
             iconClassName={isLoadingLikedPosts ? "animate-spin" : ""}
             disabled={isLoadingLikedPosts}
             className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-            tooltip="Delete multiple posts permanently"
+            tooltip={t('ops.tooltips.deleteMultiple')}
             style={{
               backgroundColor: colors.DANGER,
               color: '#fff',

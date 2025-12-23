@@ -386,7 +386,7 @@ export const PromptView: React.FC = () => {
 
   // If no post ID, show a message instead of the prompt content
   if (!postId) {
-    return <NoPostMessage subMessage="Navigate to a post to manage prompts" />;
+    return <NoPostMessage subMessage={t('prompt.status.navigateToPost')} />;
   }
 
   return (
@@ -405,7 +405,7 @@ export const PromptView: React.FC = () => {
           type="text"
           value={prefix}
           onChange={(e) => handlePrefixChange(e.target.value)}
-          placeholder="Enter prefix text..."
+          placeholder={t('prompt.prefixPlaceholder')}
           className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none backdrop-blur-xl"
           style={{
             backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
@@ -458,7 +458,7 @@ export const PromptView: React.FC = () => {
               onTouchStart={() => startLongPress('prev')}
               onTouchEnd={stopLongPress}
               disabled={currentIndex === 0}
-              tooltip="Previous prompt (Left arrow, hold for fast navigation)"
+              tooltip={t('prompt.previousTooltip')}
             />
 
             <span className="text-sm" style={{ color: colors.TEXT_SECONDARY }}>
@@ -480,7 +480,7 @@ export const PromptView: React.FC = () => {
               onTouchStart={() => startLongPress('next')}
               onTouchEnd={stopLongPress}
               disabled={currentIndex >= promptCount - 1}
-              tooltip="Next prompt (Right arrow, hold for fast navigation)"
+              tooltip={t('prompt.nextTooltip')}
             />
           </div>
         </div>
@@ -535,7 +535,7 @@ export const PromptView: React.FC = () => {
             onClick={handleDuplicate}
             icon={mdiContentDuplicate}
             className="flex-1"
-            tooltip="Duplicate current prompt"
+            tooltip={t('prompt.duplicateTooltip')}
           >
             Duplicate
           </Button>
@@ -560,14 +560,14 @@ export const PromptView: React.FC = () => {
               icon={mdiChevronDoubleLeft}
               onClick={handlePrevClick}
               disabled={!getPrevPostId()}
-              tooltip="Navigate to previous post"
+              tooltip={t('prompt.navigatePreviousPost')}
             />
             <Button
               variant="icon"
               icon={mdiChevronDoubleRight}
               onClick={handleNextClick}
               disabled={!getNextPostId()}
-              tooltip="Navigate to next post"
+              tooltip={t('prompt.navigateNextPost')}
             />
           </div>
 
@@ -579,7 +579,7 @@ export const PromptView: React.FC = () => {
               className="!bg-white !text-black hover:!bg-white/90 !rounded-r-none"
               style={{ width: '80%' }}
               disabled={!getNextPostId() || isPromptAndPrefixEmpty}
-              tooltip="Make video and navigate to next post"
+              tooltip={t('prompt.makeAndNextTooltip')}
             >
               Make + Next
             </Button>
@@ -587,7 +587,7 @@ export const PromptView: React.FC = () => {
               variant="icon"
               icon={mdiAutorenew}
               onClick={() => setAutoNavigate(!autoNavigate)}
-              tooltip="Auto: Automatically repeat Make + Next with 1-1.5s delay"
+              tooltip={t('prompt.autoMakeNextTooltip')}
               className={autoNavigate ? '!bg-slate-400 !border-slate-400 !rounded-l-none !border-l-0' : '!rounded-l-none !border-l-0'}
               style={{ width: '20%' }}
               iconColor={autoNavigate ? UI_COLORS.BLACK : undefined}
@@ -599,9 +599,9 @@ export const PromptView: React.FC = () => {
 
       <ConfirmModal
         isOpen={showConfirmModal}
-        title="Replace Prompt Text?"
-        message="This will replace the current prompt text. Are you sure you want to continue?"
-        confirmText="Replace"
+        title={t('modals.confirmReplace.title')}
+        message={t('modals.confirmReplace.message')}
+        confirmText={t('modals.confirmReplace.confirmText')}
         onClose={() => setShowConfirmModal(false)}
         onConfirm={handleConfirmCopyFromPage}
         getThemeColors={getThemeColors}

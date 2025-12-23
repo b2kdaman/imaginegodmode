@@ -18,27 +18,27 @@ export const HelpView: React.FC = () => {
   const isIOS = isIOSDevice();
 
   const features = [
-    { text: 'Firefox and Chrome cross-browser support', tooltip: t('help.tooltips.crossBrowser') },
-    { text: 'Save and organize prompts with packs', tooltip: t('help.tooltips.saveOrganize') },
-    { text: 'Create, delete, and switch between packs', tooltip: t('help.tooltips.packManagement') },
-    { text: 'Rate prompts with 1-5 star ratings', tooltip: t('help.tooltips.ratePrompts') },
-    { text: 'Navigate prompts with arrow keys', tooltip: t('help.tooltips.arrowKeys') },
-    { text: 'Import and export packs (add or replace mode)', tooltip: t('help.tooltips.importExport') },
-    { text: 'Generate new packs with AI using Grok prompt templates', tooltip: t('help.tooltips.aiGenerate') },
-    { text: 'Download images and videos (when all videos are HD)', tooltip: t('help.tooltips.downloadMedia') },
-    { text: 'Parallel video upscaling to HD quality', tooltip: t('help.tooltips.parallelUpscale') },
-    { text: 'Bulk operations: Delete, upscale, relike, unlike posts', tooltip: t('help.tooltips.bulkOperations') },
-    { text: 'Purge all data feature for complete data cleanup', tooltip: t('help.tooltips.purgeData') },
-    { text: 'Shift-click batch selection in bulk operations modal', tooltip: t('help.tooltips.batchSelection') },
-    { text: 'Make + Next: Automate prompt application and post navigation', tooltip: t('help.tooltips.makeNext') },
-    { text: 'Real-time video generation progress', tooltip: t('help.tooltips.realtimeProgress') },
-    { text: 'Play/pause video control', tooltip: t('help.tooltips.playPause') },
-    { text: 'Fullscreen video playback', tooltip: t('help.tooltips.fullscreen') },
-    { text: 'Hide unsave button option', tooltip: t('help.tooltips.hideUnsave') },
-    { text: 'Theme customization (Dark, Light, Dracula, Winamp, LimeWire, Steam, Discord)', tooltip: t('help.tooltips.themeCustomization') },
-    { text: 'UI size scaling (Tiny to Large)', tooltip: t('help.tooltips.uiScaling') },
-    { text: 'Auto-download media when generation completes', tooltip: t('help.tooltips.autoDownloadMedia') },
-    { text: 'Multi-language support (English, Spanish, Russian)', tooltip: t('help.tooltips.multiLanguage') },
+    { text: t('help.features.crossBrowser'), tooltip: t('help.tooltips.crossBrowser') },
+    { text: t('help.features.saveOrganize'), tooltip: t('help.tooltips.saveOrganize') },
+    { text: t('help.features.packManagement'), tooltip: t('help.tooltips.packManagement') },
+    { text: t('help.features.ratePromptsStars'), tooltip: t('help.tooltips.ratePrompts') },
+    { text: t('help.features.arrowKeys'), tooltip: t('help.tooltips.arrowKeys') },
+    { text: t('help.features.importExportPacks'), tooltip: t('help.tooltips.importExport') },
+    { text: t('help.features.aiGenerate'), tooltip: t('help.tooltips.aiGenerate') },
+    { text: t('help.features.downloadMedia'), tooltip: t('help.tooltips.downloadMedia') },
+    { text: t('help.features.parallelUpscale'), tooltip: t('help.tooltips.parallelUpscale') },
+    { text: t('help.features.bulkOperations'), tooltip: t('help.tooltips.bulkOperations') },
+    { text: t('help.features.purgeData'), tooltip: t('help.tooltips.purgeData') },
+    { text: t('help.features.batchSelection'), tooltip: t('help.tooltips.batchSelection') },
+    { text: t('help.features.makeNext'), tooltip: t('help.tooltips.makeNext') },
+    { text: t('help.features.realtimeProgress'), tooltip: t('help.tooltips.realtimeProgress') },
+    { text: t('help.features.playPause'), tooltip: t('help.tooltips.playPause') },
+    { text: t('help.features.fullscreen'), tooltip: t('help.tooltips.fullscreen') },
+    { text: t('help.features.hideUnsave'), tooltip: t('help.tooltips.hideUnsave') },
+    { text: t('help.features.themeCustomization'), tooltip: t('help.tooltips.themeCustomization') },
+    { text: t('help.features.uiScaling'), tooltip: t('help.tooltips.uiScaling') },
+    { text: t('help.features.autoDownloadMedia'), tooltip: t('help.tooltips.autoDownloadMedia') },
+    { text: t('help.features.multiLanguage'), tooltip: t('help.tooltips.multiLanguage') },
   ];
 
   return (
@@ -50,7 +50,7 @@ export const HelpView: React.FC = () => {
     >
       {/* Features Section */}
       <CollapsibleSection
-        title="Available Features"
+        title={t('help.sections.availableFeatures')}
         className="rounded-xl p-4 backdrop-blur-md border"
         style={{
           background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -84,7 +84,7 @@ export const HelpView: React.FC = () => {
 
       {/* Keyboard Shortcuts Section */}
       <CollapsibleSection
-        title="Keyboard Shortcuts"
+        title={t('help.sections.keyboardShortcuts')}
         className="rounded-xl p-4 backdrop-blur-md border"
         style={{
           background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -104,7 +104,7 @@ export const HelpView: React.FC = () => {
                   border: `1px solid ${colors.BORDER}`,
                 }}
               >
-                Ctrl
+                {t('help.shortcuts.keys.ctrl')}
               </span>
               <span className="text-[10px]">/</span>
               <span
@@ -115,7 +115,7 @@ export const HelpView: React.FC = () => {
                   border: `1px solid ${colors.BORDER}`,
                 }}
               >
-                Cmd
+                {t('help.shortcuts.keys.cmd')}
               </span>
               <span className="text-[10px]">+</span>
               <span
@@ -126,10 +126,10 @@ export const HelpView: React.FC = () => {
                   border: `1px solid ${colors.BORDER}`,
                 }}
               >
-                Enter
+                {t('help.shortcuts.keys.enter')}
               </span>
             </div>
-            <span>Make a Video</span>
+            <span>{t('help.shortcuts.descriptions.makeVideo')}</span>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1">
@@ -141,7 +141,7 @@ export const HelpView: React.FC = () => {
                   border: `1px solid ${colors.BORDER}`,
                 }}
               >
-                Ctrl
+                {t('help.shortcuts.keys.ctrl')}
               </span>
               <span className="text-[10px]">/</span>
               <span
@@ -152,7 +152,7 @@ export const HelpView: React.FC = () => {
                   border: `1px solid ${colors.BORDER}`,
                 }}
               >
-                Cmd
+                {t('help.shortcuts.keys.cmd')}
               </span>
               <span className="text-[10px]">+</span>
               <span
@@ -163,7 +163,7 @@ export const HelpView: React.FC = () => {
                   border: `1px solid ${colors.BORDER}`,
                 }}
               >
-                Shift
+                {t('help.shortcuts.keys.shift')}
               </span>
               <span className="text-[10px]">+</span>
               <span
@@ -174,10 +174,10 @@ export const HelpView: React.FC = () => {
                   border: `1px solid ${colors.BORDER}`,
                 }}
               >
-                Enter
+                {t('help.shortcuts.keys.enter')}
               </span>
             </div>
-            <span>Copy & Make</span>
+            <span>{t('help.shortcuts.descriptions.copyMake')}</span>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1">
@@ -189,7 +189,7 @@ export const HelpView: React.FC = () => {
                   border: `1px solid ${colors.BORDER}`,
                 }}
               >
-                ←
+                {t('help.shortcuts.keys.arrowLeft')}
               </span>
               <span className="text-[10px]">/</span>
               <span
@@ -200,10 +200,10 @@ export const HelpView: React.FC = () => {
                   border: `1px solid ${colors.BORDER}`,
                 }}
               >
-                →
+                {t('help.shortcuts.keys.arrowRight')}
               </span>
             </div>
-            <span>Navigate videos</span>
+            <span>{t('help.shortcuts.descriptions.navigateVideos')}</span>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1">
@@ -215,10 +215,10 @@ export const HelpView: React.FC = () => {
                   border: `1px solid ${colors.BORDER}`,
                 }}
               >
-                F
+                {t('help.shortcuts.keys.f')}
               </span>
             </div>
-            <span>Toggle fullscreen</span>
+            <span>{t('help.shortcuts.descriptions.toggleFullscreen')}</span>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1">
@@ -230,10 +230,10 @@ export const HelpView: React.FC = () => {
                   border: `1px solid ${colors.BORDER}`,
                 }}
               >
-                Space
+                {t('help.shortcuts.keys.space')}
               </span>
             </div>
-            <span>Play/pause video</span>
+            <span>{t('help.shortcuts.descriptions.playPause')}</span>
           </div>
           </div>
         </div>
@@ -241,7 +241,7 @@ export const HelpView: React.FC = () => {
 
       {/* About Section */}
       <CollapsibleSection
-        title="About"
+        title={t('help.sections.about')}
         className="rounded-xl p-4 backdrop-blur-md border"
         style={{
           background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -254,9 +254,9 @@ export const HelpView: React.FC = () => {
             <p className="mb-1">
               <strong style={{ color: colors.TEXT_PRIMARY }}>ImagineGodMode v{VERSION}</strong>
             </p>
-            <p>Chrome/Firefox extension for Grok media management</p>
-            <p className="mt-2">by b2kdaman</p>
-            <p className="mt-1 text-[11px]">Firefox support by wyntre</p>
+            <p>{t('help.about.description')}</p>
+            <p className="mt-2">{t('help.about.author')}</p>
+            <p className="mt-1 text-[11px]">{t('help.about.firefoxSupport')}</p>
           </div>
         </div>
       </CollapsibleSection>
@@ -264,7 +264,7 @@ export const HelpView: React.FC = () => {
       {/* iOS Sign-in Link */}
       {isIOS && (
         <CollapsibleSection
-          title="Sign In"
+          title={t('help.sections.signIn')}
           className="rounded-xl p-4 backdrop-blur-md border"
           style={{
             background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
@@ -279,7 +279,7 @@ export const HelpView: React.FC = () => {
               style={{ color: colors.TEXT_PRIMARY }}
             >
               <Icon path={mdiLogin} size={0.6} color={colors.TEXT_PRIMARY} />
-              <span>Sign in to X.ai</span>
+              <span>{t('help.signIn.linkText')}</span>
             </a>
           </div>
         </CollapsibleSection>

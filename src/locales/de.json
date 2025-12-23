@@ -4,7 +4,6 @@
     "ops": "Ops",
     "settings": "Einstellungen",
     "help": "Hilfe",
-    "queue": "Warteschlange",
     "queueTooltip": "Auftragswarteschlange"
   },
   "common": {
@@ -13,11 +12,8 @@
     "import": "Importieren",
     "export": "Exportieren",
     "add": "Hinzufügen",
-    "remove": "Entfernen",
     "copy": "Kopieren",
     "make": "Erstellen",
-    "download": "Herunterladen",
-    "upscale": "Hochskalieren",
     "paste": "Einfügen",
     "current": "Aktuell",
     "version": "Version",
@@ -25,12 +21,18 @@
     "close": "Schließen",
     "processing": "Verarbeitung",
     "selectAll": "Alle auswählen",
-    "deselectAll": "Alle abwählen"
+    "deselectAll": "Alle abwählen",
+    "loading": "Wird geladen",
+    "save": "Speichern"
   },
   "panel": {
     "collapseTooltip": "Panel einklappen",
     "expandTooltip": "Panel ausklappen",
-    "authorCredit": "von b2kdaman"
+    "authorCredit": "von b2kdaman",
+    "previousPostTooltip": "Vorheriger Beitrag",
+    "nextPostTooltip": "Nächster Beitrag",
+    "autoTooltip": "Auto: Automatisch Erstellen + Weiter wiederholen",
+    "upscaleAllLikedTooltip": "Videos von mehreren gelikten Beiträgen hochskalieren"
   },
   "prompt": {
     "placeholder": "Geben Sie Ihren Prompt ein...",
@@ -38,9 +40,18 @@
     "fromTooltip": "Aktuellen Prompt in diesem Slot speichern",
     "copyTooltip": "Diesen Prompt in die Zwischenablage kopieren",
     "addTooltip": "Neuen Prompt-Slot hinzufügen",
-    "removeTooltip": "Diesen Prompt-Slot löschen",
     "makeTooltip": "Prompt ausfüllen und Make-Button klicken",
-    "rating": "Diesen Prompt bewerten"
+    "status": {
+      "navigateToPost": "Navigieren Sie zu einem Beitrag, um Prompts zu verwalten"
+    },
+    "prefixPlaceholder": "Präfixtext eingeben...",
+    "previousTooltip": "Vorheriger Prompt (Pfeiltaste links, gedrückt halten für schnelle Navigation)",
+    "nextTooltip": "Nächster Prompt (Pfeiltaste rechts, gedrückt halten für schnelle Navigation)",
+    "duplicateTooltip": "Aktuellen Prompt duplizieren",
+    "navigatePreviousPost": "Zum vorherigen Beitrag navigieren",
+    "navigateNextPost": "Zum nächsten Beitrag navigieren",
+    "makeAndNextTooltip": "Video erstellen und zum nächsten Beitrag navigieren",
+    "autoMakeNextTooltip": "Auto: Erstellen + Weiter automatisch wiederholen mit 1-1,5s Verzögerung"
   },
   "settings": {
     "packsAndPrompts": "Packs + Prompts",
@@ -63,7 +74,6 @@
     "globalPromptAddonPlaceholder": "Text eingeben, der an alle Prompts angehängt wird...",
     "navigatePostsWithArrows": "Beiträge mit Pfeiltasten navigieren",
     "openPacksManagement": "Pack-Verwaltung öffnen",
-    "dataManagement": "Datenverwaltung",
     "importMode": "Pack-Importmodus",
     "importModeAdd": "Hinzufügen",
     "importModeReplace": "Ersetzen",
@@ -105,22 +115,35 @@
     }
   },
   "ops": {
-    "noPostId": "Keine Beitrags-ID in URL gefunden",
-    "fetchingPost": "Beitragsdaten werden abgerufen...",
-    "foundMedia": "{{count}} Medien gefunden ({{hdCount}} HD-Videos)",
-    "upscaling": "Hochskalierung {{current}}/{{total}}...",
-    "upscaled": "{{count}}/{{total}} hochskaliert",
-    "downloading": "Wird heruntergeladen...",
-    "downloaded": "{{count}} Dateien heruntergeladen",
-    "upscaleTooltip": "Videos auf HD-Qualität hochskalieren",
-    "downloadTooltip": "Alle Mediendateien herunterladen",
-    "ready": "Bereit",
-    "waitingForPost": "Warte auf Beitrag..."
+    "sections": {
+      "bulkActions": "Massenaktionen"
+    },
+    "tooltips": {
+      "upscaleAllLiked": "Videos von mehreren gelikten Beiträgen hochskalieren",
+      "downloadAllLiked": "Alle Medien von mehreren gelikten Beiträgen herunterladen",
+      "manageLikes": "Beiträge unliken oder aus Archiv erneut liken",
+      "deleteMultiple": "Mehrere Beiträge dauerhaft löschen"
+    },
+    "buttons": {
+      "upscaleAllLiked": "Alle Gelikten hochskalieren",
+      "downloadAllLiked": "Alle Gelikten herunterladen",
+      "manageLikes": "Likes verwalten"
+    }
   },
   "help": {
     "availableFeatures": "Verfügbare Funktionen",
     "keyboardShortcuts": "Tastaturkürzel",
-    "about": "Über",
+    "about": {
+      "description": "Chrome/Firefox-Erweiterung für Grok-Medienverwaltung",
+      "author": "von b2kdaman",
+      "firefoxSupport": "Firefox-Unterstützung von wyntre"
+    },
+    "sections": {
+      "availableFeatures": "Verfügbare Funktionen",
+      "keyboardShortcuts": "Tastaturkürzel",
+      "about": "Über",
+      "signIn": "Anmelden"
+    },
     "features": {
       "savePrompts": "Prompts in Packs speichern und organisieren",
       "ratePrompts": "Prompts mit Sternebewertungen bewerten",
@@ -128,16 +151,57 @@
       "upscale": "Videos auf HD-Qualität hochskalieren",
       "autoDownload": "Generierte Medien automatisch herunterladen",
       "keyboardShortcuts": "Vollständige Tastaturkürzel-Unterstützung",
-      "themes": "Mehrere Farbthemen und UI-Größen"
+      "themes": "Mehrere Farbthemen und UI-Größen",
+      "crossBrowser": "Firefox- und Chrome-Cross-Browser-Unterstützung",
+      "saveOrganize": "Prompts mit Packs speichern und organisieren",
+      "packManagement": "Packs erstellen, löschen und zwischen ihnen wechseln",
+      "ratePromptsStars": "Prompts mit 1-5-Sterne-Bewertungen bewerten",
+      "arrowKeys": "Mit Pfeiltasten durch Prompts navigieren",
+      "importExportPacks": "Packs importieren und exportieren (Hinzufügen- oder Ersetzen-Modus)",
+      "aiGenerate": "Neue Packs mit KI generieren unter Verwendung von Grok-Prompt-Vorlagen",
+      "downloadMedia": "Bilder und Videos herunterladen (wenn alle Videos HD sind)",
+      "parallelUpscale": "Parallele Video-Hochskalierung auf HD-Qualität",
+      "bulkOperations": "Massenoperationen: Beiträge löschen, hochskalieren, erneut liken, unliken",
+      "purgeData": "Alle Daten löschen-Funktion für vollständige Datenbereinigung",
+      "batchSelection": "Shift-Klick-Stapelauswahl im Massenoperations-Modal",
+      "makeNext": "Erstellen + Weiter: Automatisieren Sie die Prompt-Anwendung und Beitrags-Navigation",
+      "realtimeProgress": "Echtzeit-Videogenerierungsfortschritt",
+      "playPause": "Video-Wiedergabe/Pause-Steuerung",
+      "fullscreen": "Vollbild-Videowiedergabe",
+      "hideUnsave": "Unsave-Button ausblenden-Option",
+      "themeCustomization": "Theme-Anpassung (Dunkel, Hell, Dracula, Winamp, LimeWire, Steam, Discord)",
+      "uiScaling": "UI-Größenskalierung (Mini bis Groß)",
+      "autoDownloadMedia": "Automatischer Medien-Download nach Abschluss der Generierung",
+      "multiLanguage": "Mehrsprachige Unterstützung (Englisch, Spanisch, Russisch, Deutsch)"
     },
     "shortcuts": {
       "makeVideo": "Video erstellen",
       "copyMake": "Kopieren & Erstellen",
       "navigatePrompts": "Prompts navigieren",
       "togglePanel": "Panel umschalten",
-      "switchTabs": "Tabs wechseln"
+      "switchTabs": "Tabs wechseln",
+      "descriptions": {
+        "makeVideo": "Video erstellen",
+        "copyMake": "Kopieren & Erstellen",
+        "navigateVideos": "Videos navigieren",
+        "toggleFullscreen": "Vollbild umschalten",
+        "playPause": "Video wiedergeben/pausieren"
+      },
+      "keys": {
+        "ctrl": "Strg",
+        "cmd": "Cmd",
+        "enter": "Eingabe",
+        "shift": "Umschalt",
+        "arrowLeft": "←",
+        "arrowRight": "→",
+        "f": "F",
+        "space": "Leertaste"
+      }
     },
     "aboutText": "ImagineGodMode hilft Ihnen bei der Verwaltung von Videogenerierungs-Prompts mit Funktionen wie dem Speichern von Prompt-Packs, Bewertungen, Import/Export, Hochskalierung von Videos auf HD und automatischem Medien-Download.",
+    "signIn": {
+      "linkText": "Bei X.ai anmelden"
+    },
     "tooltips": {
       "crossBrowser": "Funktioniert nahtlos auf Firefox- und Chrome-Browsern",
       "saveOrganize": "Erstellen Sie mehrere Packs, um Ihre Prompts nach Thema oder Projekt zu organisieren",
@@ -164,11 +228,8 @@
     }
   },
   "packManager": {
-    "addPackTooltip": "Neues Pack hinzufügen",
-    "deletePackTooltip": "Aktuelles Pack löschen (Doppelklick)",
-    "cannotDeleteLast": "Das letzte Pack kann nicht gelöscht werden",
-    "packNamePlaceholder": "Pack-Name...",
-    "searchTooltip": "Prompts durchsuchen"
+    "searchTooltip": "Prompts durchsuchen",
+    "manageTooltip": "Packs und Prompts verwalten"
   },
   "modals": {
     "likeManagement": {
@@ -222,7 +283,9 @@
       "importing": "Wird importiert...",
       "success": "Erfolgreich importiert",
       "error": "Import fehlgeschlagen",
-      "pasteJsonPlaceholder": "JSON hier einfügen oder oben auf Schaltflächen klicken..."
+      "pasteJsonPlaceholder": "JSON hier einfügen oder oben auf Schaltflächen klicken...",
+      "pasteTooltip": "JSON aus Zwischenablage einfügen",
+      "selectFileTooltip": "JSON- oder PAK-Datei auswählen"
     },
     "selectPack": {
       "title": "Packs zum Exportieren auswählen",
@@ -253,6 +316,54 @@
       "startPressing": "Beginnen Sie mit dem Drücken der Pfeiltasten...",
       "sequenceComplete": "✓ Sequenz abgeschlossen! Bereinigungsschaltfläche aktiviert.",
       "purgeAllDataButton": "Alle Daten löschen"
+    },
+    "confirmReplace": {
+      "title": "Prompt-Text ersetzen?",
+      "message": "Dies ersetzt den aktuellen Prompt-Text. Möchten Sie wirklich fortfahren?",
+      "confirmText": "Ersetzen"
+    },
+    "packsManagement": {
+      "title": "Pack-Verwaltung",
+      "confirmDeleteTitle": "Löschen bestätigen",
+      "createPackTooltip": "Neues Pack erstellen",
+      "selectAllPacksTooltip": "Alle Packs auswählen",
+      "deselectAllPacksTooltip": "Alle Packs abwählen",
+      "deleteSelectedTooltip": "Ausgewählte Packs löschen",
+      "newPackPlaceholder": "Name des neuen Packs...",
+      "saveTooltip": "Speichern",
+      "cancelTooltip": "Abbrechen",
+      "renamePackTooltip": "Pack umbenennen",
+      "deletePackTooltip": "Pack löschen",
+      "importTooltip": "Pack aus Datei oder Zwischenablage importieren",
+      "copyPromptTooltip": "Grok-System-Prompt für KI-generierte Packs kopieren",
+      "exportTooltip": "Ausgewählte Packs in Datei exportieren",
+      "addPromptTooltip": "Neuen Prompt hinzufügen",
+      "searchPromptsPlaceholder": "Prompts durchsuchen...",
+      "selectAllPromptsTooltip": "Alle auswählen",
+      "deselectAllPromptsTooltip": "Alle abwählen",
+      "moveToPlaceholder": "Verschieben nach...",
+      "editPromptTooltip": "Prompt bearbeiten",
+      "duplicatePromptTooltip": "Prompt duplizieren",
+      "deletePromptTooltip": "Prompt löschen",
+      "moveSelectedPromptsTooltip": "Ausgewählte Prompts verschieben",
+      "emptyPackPlaceholder": "Beginnen Sie mit der Eingabe, um einen Prompt zu erstellen..."
+    },
+    "fullscreen": {
+      "enterTooltip": "Vollbild aktivieren (F)"
+    }
+  },
+  "pit": {
+    "navigation": {
+      "previousPost": "Vorheriger Beitrag",
+      "nextPost": "Nächster Beitrag",
+      "previousPrompt": "Vorheriger Prompt",
+      "nextPrompt": "Nächster Prompt"
+    },
+    "prompt": {
+      "placeholder": "Geben Sie Ihren Prompt ein..."
+    },
+    "status": {
+      "underConstruction": "In Bearbeitung"
     }
   }
 }
