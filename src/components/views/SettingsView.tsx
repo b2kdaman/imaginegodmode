@@ -45,7 +45,7 @@ import {
 } from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, listLimit, collapseSections, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setGlobalPromptAddonEnabled, setGlobalPromptAddon, setListLimit, setCollapseSections, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, listLimit, collapseSections, navigatePostsWithArrows, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setGlobalPromptAddonEnabled, setGlobalPromptAddon, setListLimit, setCollapseSections, setNavigatePostsWithArrows, getThemeColors } = useSettingsStore();
   const { clearAllPacks } = usePromptStore();
   const { userId } = useUserStore();
   const { t, locale, setLocale } = useTranslation();
@@ -281,6 +281,28 @@ export const SettingsView: React.FC = () => {
               onChange={(checked) => {
                 setEnableSound(checked);
                 trackSoundToggled(checked);
+              }}
+            />
+          </div>
+
+          {/* Navigate Posts with Arrows Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-content={t('help.tooltips.navigatePostsWithArrows')}
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="navigate-posts-arrows-toggle"
+            >
+              <Icon path={mdiKeyboard} size={0.7} color={colors.TEXT_PRIMARY} />
+              {t('settings.navigatePostsWithArrows')}
+            </label>
+            <Toggle
+              id="navigate-posts-arrows-toggle"
+              checked={navigatePostsWithArrows}
+              onChange={(checked) => {
+                setNavigatePostsWithArrows(checked);
               }}
             />
           </div>
