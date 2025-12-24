@@ -137,7 +137,16 @@ export const DownloadAllModal: React.FC<DownloadAllModalProps> = ({
           onItemClick={toggleSelection}
           getBorderColor={(isSelected) => isSelected ? colors.SUCCESS : colors.BORDER}
           colors={colors}
-          renderOverlay={() => null}
+          renderOverlay={(_post, isSelected) => (
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                backgroundColor: isSelected
+                  ? `${colors.SUCCESS}33`
+                  : 'rgba(0, 0, 0, 0.5)',
+              }}
+            />
+          )}
         />
       </>
     </BaseModal>

@@ -16,6 +16,7 @@ import { UI_POSITION, Z_INDEX, TIMING } from '@/utils/constants';
 import { Tabs } from './inputs/Tabs';
 import { PanelControls } from './common/PanelControls';
 import { VersionBadge } from './common/VersionBadge';
+import { DragHandle } from './common/DragHandle';
 import { useUrlVisibility } from '@/hooks/useUrlVisibility';
 import { useTranslation } from '@/contexts/I18nContext';
 import { isMobileDevice } from '@/utils/deviceDetection';
@@ -34,12 +35,17 @@ const VIEW_COMPONENTS: Record<ViewType, React.FC> = {
 
 export const MainPanel: React.FC = () => {
   const { isExpanded, currentView, setCurrentView } = useUIStore();
-  const { getThemeColors, getScale, enableThePit } = useSettingsStore();
+  const { getThemeColors, getScale, enableThePit, panelPosition, setPanelPosition } = useSettingsStore();
   const { jobs } = useJobQueueStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
   const scale = getScale();
   const isVisible = useUrlVisibility('/imagine');
+
+  // Dragging state
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const panelRef = useRef<HTMLDivElement>(null);
 
   // Calculate active jobs count (pending + processing)
   const activeJobsCount = jobs.filter((job) => job.status === 'pending' || job.status === 'processing').length;
@@ -130,6 +136,108 @@ export const MainPanel: React.FC = () => {
     };
   }, [currentView, setCurrentView]);
 
+  // Handle drag move
+  useEffect(() => {
+    if (!isDragging) {
+      return;
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!panelRef.current) {
+        return;
+      }
+
+      const rect = panelRef.current.getBoundingClientRect();
+      const newX = e.clientX - dragOffset.x;
+      const newBottom = window.innerHeight - (e.clientY - dragOffset.y) - rect.height;
+
+      // Get panel dimensions
+      const panelWidth = rect.width;
+
+      // Calculate boundaries (with some padding)
+      const minX = 0;
+      const maxX = window.innerWidth - panelWidth;
+      const minBottom = 0;
+      const maxBottom = window.innerHeight - rect.height;
+
+      // Constrain position within boundaries
+      const constrainedX = Math.max(minX, Math.min(maxX, newX));
+      const constrainedBottom = Math.max(minBottom, Math.min(maxBottom, newBottom));
+
+      setPanelPosition({ x: constrainedX, y: constrainedBottom });
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragOffset, setPanelPosition]);
+
+  // Check if panel is fully visible and adjust position if needed
+  useEffect(() => {
+    const checkAndAdjustPosition = () => {
+      if (!panelRef.current || !panelPosition) {
+        return;
+      }
+
+      const rect = panelRef.current.getBoundingClientRect();
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+
+      let needsAdjustment = false;
+      let newX = panelPosition.x;
+      let newY = panelPosition.y;
+
+      // Account for scale when checking bounds
+      // The rect values are already scaled, so we need to work with them directly
+
+      // Check if panel is outside viewport bounds
+      // Left edge (panel going off left side)
+      if (rect.left < 0) {
+        newX = panelPosition.x - rect.left;
+        needsAdjustment = true;
+      }
+
+      // Right edge (panel going off right side)
+      if (rect.right > windowWidth) {
+        newX = panelPosition.x - (rect.right - windowWidth);
+        needsAdjustment = true;
+      }
+
+      // Top edge (panel going off top)
+      if (rect.top < 0) {
+        newY = panelPosition.y - rect.top;
+        needsAdjustment = true;
+      }
+
+      // Bottom edge (panel going off bottom)
+      if (rect.bottom > windowHeight) {
+        newY = panelPosition.y - (rect.bottom - windowHeight);
+        needsAdjustment = true;
+      }
+
+      // Update position if adjustment is needed
+      if (needsAdjustment) {
+        setPanelPosition({ x: newX, y: newY });
+      }
+    };
+
+    // Only check on window resize, not on every position change
+    // to avoid feedback loops
+    window.addEventListener('resize', checkAndAdjustPosition);
+
+    return () => {
+      window.removeEventListener('resize', checkAndAdjustPosition);
+    };
+  }, [panelPosition, setPanelPosition]);
+
   // Don't render if URL doesn't contain /imagine
   if (!isVisible) {
     return null;
@@ -190,19 +298,59 @@ export const MainPanel: React.FC = () => {
   // Determine bottom position based on device type
   const bottomPosition = isMobileDevice() ? UI_POSITION.BOTTOM_MOBILE : UI_POSITION.BOTTOM;
 
+  // Handle drag start
+  const handleDragStart = (e: React.MouseEvent) => {
+    if (!panelRef.current) {
+      return;
+    }
+
+    const rect = panelRef.current.getBoundingClientRect();
+
+    // If this is the first drag (no panelPosition set), initialize it with current position
+    // This prevents jumping when transform origin changes from bottom-right to bottom-left
+    if (!panelPosition) {
+      const currentX = rect.left;
+      const currentY = window.innerHeight - rect.bottom;
+      setPanelPosition({ x: currentX, y: currentY });
+    }
+
+    setDragOffset({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+    setIsDragging(true);
+  };
+
+  // Calculate position styles
+  const getPositionStyles = () => {
+    if (panelPosition) {
+      return {
+        left: `${panelPosition.x}px`,
+        bottom: `${panelPosition.y}px`,
+        top: 'auto',
+        right: 'auto',
+      };
+    }
+    return {
+      bottom: bottomPosition,
+      right: UI_POSITION.RIGHT,
+    };
+  };
+
   return (
     <div
+      ref={panelRef}
       className="fixed flex flex-col transition-transform duration-200"
       style={{
-        bottom: bottomPosition,
-        right: UI_POSITION.RIGHT,
+        ...getPositionStyles(),
         transform: `scale(${scale})`,
-        transformOrigin: 'bottom right',
+        transformOrigin: panelPosition ? 'bottom left' : 'bottom right',
         zIndex: Z_INDEX.MAIN_PANEL,
+        cursor: isDragging ? 'grabbing' : 'auto',
       }}
     >
       {/* Main container */}
-      <div className="flex flex-col items-end gap-2">
+      <div className="flex flex-col items-end gap-2 w-[360px]">
         {/* Version badge above controls */}
         <VersionBadge />
 
@@ -212,7 +360,7 @@ export const MainPanel: React.FC = () => {
         {/* Content wrapper with expand/collapse animation */}
         {shouldRender && (
           <div
-            className="rounded-2xl p-4 shadow-2xl w-[360px] overflow-hidden transition-all duration-300 ease-out"
+            className="rounded-2xl p-4 shadow-2xl w-full overflow-hidden transition-all duration-300 ease-out relative"
             style={{
               backgroundColor: `${colors.BACKGROUND_DARK}aa`,
               backdropFilter: 'blur(12px)',
@@ -222,9 +370,15 @@ export const MainPanel: React.FC = () => {
               opacity: isAnimatingIn ? 1 : 0,
               padding: isAnimatingIn ? '16px' : '0px 16px',
               transform: isAnimatingIn ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.95)',
-              transformOrigin: 'bottom right',
+              transformOrigin: panelPosition ? 'bottom left' : 'bottom right',
             }}
           >
+            {/* Drag handle */}
+            <DragHandle
+              onMouseDown={handleDragStart}
+              tooltipContent={t('help.tooltips.dragPanel')}
+            />
+
             {/* View content with transition */}
             <div className="relative">
               {/* Previous view fading out */}

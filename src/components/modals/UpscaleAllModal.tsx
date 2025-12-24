@@ -156,21 +156,34 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
           getBorderColor={(isSelected) => isSelected ? colors.SUCCESS : colors.BORDER}
           colors={colors}
           renderOverlay={(post, isSelected) => (
-            <button
-              onClick={(e) => toggleSelection(post.id, e)}
-              disabled={isProcessing}
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full p-2"
-              style={{
-                backgroundColor: isSelected ? colors.SUCCESS : colors.BACKGROUND_MEDIUM,
-                cursor: isProcessing ? 'not-allowed' : 'pointer',
-              }}
-            >
-              <Icon
-                path={isSelected ? mdiCheckboxMarked : mdiCheckboxBlankOutline}
-                size={1.5}
-                color='#fff'
+            <>
+              {/* Colored overlay */}
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  backgroundColor: isSelected
+                    ? `${colors.SUCCESS}33`
+                    : 'rgba(0, 0, 0, 0.5)',
+                }}
               />
-            </button>
+              {/* Icon button */}
+              <button
+                onClick={(e) => toggleSelection(post.id, e)}
+                disabled={isProcessing}
+                className="absolute bottom-2 right-2 rounded-full p-2"
+                style={{
+                  backgroundColor: isSelected ? colors.SUCCESS : colors.BACKGROUND_MEDIUM,
+                  cursor: isProcessing ? 'not-allowed' : 'pointer',
+                  opacity: 0.5,
+                }}
+              >
+                <Icon
+                  path={isSelected ? mdiCheckboxMarked : mdiCheckboxBlankOutline}
+                  size={1.5}
+                  color='#fff'
+                />
+              </button>
+            </>
           )}
         />
       </>

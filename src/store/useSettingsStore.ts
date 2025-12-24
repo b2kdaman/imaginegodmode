@@ -26,6 +26,7 @@ interface SettingsState {
   listLimit: ListLimit;
   collapseSections: boolean;
   navigatePostsWithArrows: boolean;
+  panelPosition: { x: number; y: number } | null;
 
   // Non-persisted state
   themes: Record<string, ThemeColors>;
@@ -46,6 +47,7 @@ interface SettingsState {
   setListLimit: (limit: ListLimit) => void;
   setCollapseSections: (collapse: boolean) => void;
   setNavigatePostsWithArrows: (navigate: boolean) => void;
+  setPanelPosition: (position: { x: number; y: number } | null) => void;
   getThemeColors: () => ThemeColors;
   getScale: () => number;
 }
@@ -76,6 +78,7 @@ export const useSettingsStore = create<SettingsState>()(
       listLimit: 100,
       collapseSections: true,
       navigatePostsWithArrows: false,
+      panelPosition: null,
       themes: {},
 
       // Actions
@@ -98,6 +101,7 @@ export const useSettingsStore = create<SettingsState>()(
       setListLimit: (listLimit: ListLimit) => set({ listLimit }),
       setCollapseSections: (collapseSections: boolean) => set({ collapseSections }),
       setNavigatePostsWithArrows: (navigatePostsWithArrows: boolean) => set({ navigatePostsWithArrows }),
+      setPanelPosition: (panelPosition: { x: number; y: number } | null) => set({ panelPosition }),
 
       getThemeColors: () => {
         const { theme, themes } = get();
@@ -126,6 +130,7 @@ export const useSettingsStore = create<SettingsState>()(
         listLimit: state.listLimit,
         collapseSections: state.collapseSections,
         navigatePostsWithArrows: state.navigatePostsWithArrows,
+        panelPosition: state.panelPosition,
       }),
     }
   )

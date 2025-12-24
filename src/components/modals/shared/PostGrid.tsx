@@ -78,11 +78,11 @@ export const PostGrid: React.FC<PostGridProps> = ({
               {/* Video Count Badge */}
               {post.videoCount !== undefined && post.videoCount > 0 && (
                 <div
-                  className="absolute top-1 left-1 px-1.5 py-0.5 rounded text-xs font-semibold flex items-center gap-0.5"
+                  className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded text-xs font-semibold flex items-center gap-0.5"
                   style={{
                     backgroundColor: colors.BACKGROUND_DARK,
                     color: colors.TEXT_PRIMARY,
-                    opacity: 0.9,
+                    opacity: 0.5,
                   }}
                 >
                   <Icon path={mdiFilmstripBoxMultiple} size={0.5} />

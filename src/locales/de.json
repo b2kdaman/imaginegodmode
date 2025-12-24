@@ -224,7 +224,8 @@
       "themeCustomization": "Wählen Sie aus 7 verschiedenen Themen, um Ihren Stil anzupassen",
       "uiScaling": "Skalieren Sie die gesamte Benutzeroberfläche von 70% (Mini) bis 115% (Groß)",
       "autoDownloadMedia": "Aktivieren Sie automatische Downloads, wenn die Videogenerierung abgeschlossen ist",
-      "multiLanguage": "Wechseln Sie zwischen Englisch, Spanisch, Russisch und Deutsch"
+      "multiLanguage": "Wechseln Sie zwischen Englisch, Spanisch, Russisch und Deutsch",
+      "dragPanel": "Ziehen Sie, um das Panel neu zu positionieren"
     }
   },
   "packManager": {

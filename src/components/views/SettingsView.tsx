@@ -29,7 +29,8 @@ import {
   mdiAlertCircleOutline,
   mdiPackageVariant,
   mdiTextBoxPlus,
-  mdiFormatListNumbered
+  mdiFormatListNumbered,
+  mdiRestartOff
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -45,7 +46,7 @@ import {
 } from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, listLimit, collapseSections, navigatePostsWithArrows, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setGlobalPromptAddonEnabled, setGlobalPromptAddon, setListLimit, setCollapseSections, setNavigatePostsWithArrows, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, listLimit, collapseSections, navigatePostsWithArrows, setPanelPosition, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setGlobalPromptAddonEnabled, setGlobalPromptAddon, setListLimit, setCollapseSections, setNavigatePostsWithArrows, getThemeColors } = useSettingsStore();
   const { clearAllPacks } = usePromptStore();
   const { userId } = useUserStore();
   const { t, locale, setLocale } = useTranslation();
@@ -505,6 +506,16 @@ export const SettingsView: React.FC = () => {
               }}
             />
           </div>
+
+          {/* Reset Panel Position Button */}
+          <Button
+            onClick={() => setPanelPosition(null)}
+            icon={mdiRestartOff}
+            className="w-full"
+            tooltip="Reset panel to default position"
+          >
+            Reset Position
+          </Button>
         </div>
       </CollapsibleSection>
 

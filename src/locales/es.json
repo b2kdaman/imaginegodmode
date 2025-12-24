@@ -224,7 +224,8 @@
       "themeCustomization": "Elige entre 7 temas diferentes para que coincida con tu estilo",
       "uiScaling": "Escala toda la interfaz desde 70% (Pequeño) hasta 115% (Grande)",
       "autoDownloadMedia": "Habilita descargas automáticas cuando se complete la generación de video",
-      "multiLanguage": "Cambia entre los idiomas inglés, español, ruso y alemán"
+      "multiLanguage": "Cambia entre los idiomas inglés, español, ruso y alemán",
+      "dragPanel": "Arrastra para reposicionar el panel"
     }
   },
   "packManager": {

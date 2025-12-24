@@ -304,20 +304,33 @@ export const LikeManagementModal: React.FC<LikeManagementModalProps> = ({
             getBorderColor={(isSelected) => isSelected ? colors.DANGER : colors.BORDER}
             colors={colors}
             renderOverlay={(post, isSelected) => (
-              <button
-                onClick={(e) => likedSelection.toggleSelection(post.id, e)}
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full p-2"
-                style={{
-                  backgroundColor: isSelected ? colors.DANGER : colors.SUCCESS,
-                  cursor: 'pointer',
-                }}
-              >
-                <Icon
-                  path={isSelected ? mdiHeartBroken : mdiHeart}
-                  size={1.5}
-                  color='#fff'
+              <>
+                {/* Colored overlay */}
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    backgroundColor: isSelected
+                      ? `${colors.DANGER}33`
+                      : 'rgba(0, 0, 0, 0.5)',
+                  }}
                 />
-              </button>
+                {/* Icon button */}
+                <button
+                  onClick={(e) => likedSelection.toggleSelection(post.id, e)}
+                  className="absolute bottom-2 right-2 rounded-full p-2"
+                  style={{
+                    backgroundColor: isSelected ? colors.DANGER : colors.SUCCESS,
+                    cursor: 'pointer',
+                    opacity: 0.5,
+                  }}
+                >
+                  <Icon
+                    path={isSelected ? mdiHeartBroken : mdiHeart}
+                    size={1.5}
+                    color='#fff'
+                  />
+                </button>
+              </>
             )}
           />
         </>
@@ -370,18 +383,27 @@ export const LikeManagementModal: React.FC<LikeManagementModalProps> = ({
               getBorderColor={(isSelected) => isSelected ? colors.SUCCESS : colors.BORDER}
               colors={colors}
               renderOverlay={(_post, isSelected) => (
-                isSelected ? (
+                <>
+                  {/* Colored overlay */}
                   <div
-                    className="absolute inset-0 flex items-center justify-center"
-                    style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-                  >
-                    <Icon
-                      path={mdiHeart}
-                      size={2}
-                      color={colors.SUCCESS}
-                    />
-                  </div>
-                ) : null
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      backgroundColor: isSelected
+                        ? `${colors.SUCCESS}33`
+                        : 'rgba(0, 0, 0, 0.5)',
+                    }}
+                  />
+                  {/* Heart icon when selected */}
+                  {isSelected && (
+                    <div className="absolute bottom-2 right-2 pointer-events-none" style={{ opacity: 0.5 }}>
+                      <Icon
+                        path={mdiHeart}
+                        size={2}
+                        color={colors.SUCCESS}
+                      />
+                    </div>
+                  )}
+                </>
               )}
               renderBadges={(post) => {
                 const unlikedPost = sortedArchivedPosts.find(p => p.id === post.id);
