@@ -10,7 +10,7 @@ import { PackManager } from '../PackManager';
 import { RatingSystem } from '../inputs/RatingSystem';
 import { Button } from '../inputs/Button';
 import { ConfirmModal } from '../modals/ConfirmModal';
-import { UI_COLORS, SELECTORS } from '@/utils/constants';
+import { SELECTORS } from '@/utils/constants';
 import {
   mdiChevronLeft,
   mdiChevronRight,
@@ -24,6 +24,7 @@ import {
   mdiChevronDoubleRight,
   mdiChevronDoubleLeft,
   mdiAutorenew,
+  mdiStop,
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -68,12 +69,16 @@ export const PromptView: React.FC = () => {
   const [postId, setPostId] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [autoNavigate, setAutoNavigate] = useState(false);
+  const [isAutoRunning, setIsAutoRunning] = useState(false);
 
   // Long press state for prompt navigation
   const longPressTimerRef = React.useRef<number | null>(null);
   const longPressIntervalRef = React.useRef<number | null>(null);
   const longPressStartTimeRef = React.useRef<number>(0);
   const isLongPressingRef = React.useRef<boolean>(false);
+
+  // Auto Make + Next timeout ref
+  const autoMakeNextTimeoutRef = React.useRef<number | null>(null);
 
   // Load liked posts hook
   const { loadLikedPosts } = useLikedPostsLoader(() => {});
@@ -288,12 +293,12 @@ export const PromptView: React.FC = () => {
   };
 
   // Helper function to construct full prompt text with global addon
-  const getFullPromptText = (promptText: string): string => {
+  const getFullPromptText = useCallback((promptText: string): string => {
     if (globalPromptAddonEnabled && globalPromptAddon.trim()) {
       return `${promptText}, ${globalPromptAddon.trim()}`;
     }
     return promptText;
-  };
+  }, [globalPromptAddonEnabled, globalPromptAddon]);
 
   // Helper function to strip global addon from text
   const stripGlobalAddon = (text: string): string => {
@@ -320,7 +325,16 @@ export const PromptView: React.FC = () => {
     applyPromptAndMake(fullPromptText, prefix);
   };
 
-  const handleMakeAndNextClick = () => {
+  const stopAutoMakeNext = useCallback(() => {
+    if (autoMakeNextTimeoutRef.current) {
+      window.clearTimeout(autoMakeNextTimeoutRef.current);
+      autoMakeNextTimeoutRef.current = null;
+    }
+    setAutoNavigate(false);
+    setIsAutoRunning(false);
+  }, []);
+
+  const handleMakeAndNextClick = useCallback(() => {
     if (!currentPrompt) {
       return;
     }
@@ -329,7 +343,7 @@ export const PromptView: React.FC = () => {
 
     if (!nextPostId) {
       // No next post available
-      setAutoNavigate(false); // Stop auto-navigation if no next post
+      stopAutoMakeNext();
       return;
     }
 
@@ -343,19 +357,27 @@ export const PromptView: React.FC = () => {
 
     // If auto-navigate is enabled, schedule the next iteration
     if (autoNavigate) {
+      setIsAutoRunning(true); // Mark auto loop as running
       const delay = 1000 + Math.random() * 500; // Random delay between 1-1.5s
-      setTimeout(() => {
+      autoMakeNextTimeoutRef.current = window.setTimeout(() => {
         const hasNextPost = getNextPostId();
         // Re-check if auto-navigate is still enabled and next post exists
         if (autoNavigate && hasNextPost) {
           handleMakeAndNextClick();
-        } else if (!hasNextPost) {
+        } else {
           // Turn off auto-navigate when reaching the final post
-          setAutoNavigate(false);
+          stopAutoMakeNext();
         }
       }, delay);
     }
-  };
+  }, [currentPrompt, autoNavigate, prefix, getNextPostId, stopAutoMakeNext, getFullPromptText]);
+
+  // Cleanup auto Make+Next timeout on unmount
+  React.useEffect(() => {
+    return () => {
+      stopAutoMakeNext();
+    };
+  }, [stopAutoMakeNext]);
 
   const handlePrevClick = () => {
     const prevPostId = getPrevPostId();
@@ -549,6 +571,18 @@ export const PromptView: React.FC = () => {
               backgroundColor: colors.TEXT_PRIMARY,
               color: colors.BACKGROUND_DARK,
             }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+              e.currentTarget.style.color = colors.BACKGROUND_DARK;
+              e.currentTarget.style.opacity = '0.9';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+              e.currentTarget.style.color = colors.BACKGROUND_DARK;
+              e.currentTarget.style.opacity = '1';
+              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
             disabled={isPromptAndPrefixEmpty}
             tooltip={t('prompt.makeTooltip')}
           >
@@ -586,6 +620,18 @@ export const PromptView: React.FC = () => {
                 backgroundColor: colors.TEXT_PRIMARY,
                 color: colors.BACKGROUND_DARK,
               }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                e.currentTarget.style.color = colors.BACKGROUND_DARK;
+                e.currentTarget.style.opacity = '0.9';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                e.currentTarget.style.color = colors.BACKGROUND_DARK;
+                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
               disabled={!getNextPostId() || isPromptAndPrefixEmpty}
               tooltip={t('prompt.makeAndNextTooltip')}
             >
@@ -593,12 +639,38 @@ export const PromptView: React.FC = () => {
             </Button>
             <Button
               variant="icon"
-              icon={mdiAutorenew}
-              onClick={() => setAutoNavigate(!autoNavigate)}
-              tooltip={t('prompt.autoMakeNextTooltip')}
-              className={autoNavigate ? '!bg-slate-400 !border-slate-400 !rounded-l-none !border-l-0' : '!rounded-l-none !border-l-0'}
-              style={{ width: '20%' }}
-              iconColor={autoNavigate ? UI_COLORS.BLACK : undefined}
+              icon={isAutoRunning ? mdiStop : mdiAutorenew}
+              onClick={() => {
+                if (isAutoRunning) {
+                  // Stop the running auto loop
+                  stopAutoMakeNext();
+                } else {
+                  // Toggle auto-navigate on/off
+                  setAutoNavigate(!autoNavigate);
+                }
+              }}
+              tooltip={isAutoRunning ? t('prompt.stopAutoTooltip') : t('prompt.autoMakeNextTooltip')}
+              className="!rounded-l-none !border-l-0"
+              style={{
+                width: '20%',
+                ...((autoNavigate || isAutoRunning) && {
+                  backgroundColor: colors.TEXT_PRIMARY,
+                  borderColor: colors.TEXT_PRIMARY,
+                }),
+              }}
+              iconColor={(autoNavigate || isAutoRunning) ? colors.BACKGROUND_DARK : undefined}
+              onMouseEnter={(autoNavigate || isAutoRunning) ? (e) => {
+                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                e.currentTarget.style.borderColor = colors.TEXT_PRIMARY;
+                e.currentTarget.style.opacity = '0.9';
+              } : undefined}
+              onMouseLeave={(autoNavigate || isAutoRunning) ? (e) => {
+                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                e.currentTarget.style.borderColor = colors.TEXT_PRIMARY;
+                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.transform = 'scale(1)';
+              } : undefined}
               disabled={!getNextPostId() || isPromptAndPrefixEmpty}
             />
           </div>

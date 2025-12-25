@@ -51,7 +51,8 @@
     "navigatePreviousPost": "Navegar a publicación anterior",
     "navigateNextPost": "Navegar a siguiente publicación",
     "makeAndNextTooltip": "Crear video y navegar a la siguiente publicación",
-    "autoMakeNextTooltip": "Auto: Repetir automáticamente Crear + Siguiente con 1-1.5s de retraso"
+    "autoMakeNextTooltip": "Auto: Repetir automáticamente Crear + Siguiente con 1-1.5s de retraso",
+    "stopAutoTooltip": "Detener auto Crear + Siguiente"
   },
   "settings": {
     "packsAndPrompts": "Paquetes + Prompts",

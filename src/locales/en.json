@@ -51,7 +51,8 @@
     "navigatePreviousPost": "Navigate to previous post",
     "navigateNextPost": "Navigate to next post",
     "makeAndNextTooltip": "Make video and navigate to next post",
-    "autoMakeNextTooltip": "Auto: Automatically repeat Make + Next with 1-1.5s delay"
+    "autoMakeNextTooltip": "Auto: Automatically repeat Make + Next with 1-1.5s delay",
+    "stopAutoTooltip": "Stop auto Make + Next"
   },
   "settings": {
     "packsAndPrompts": "Packs + Prompts",

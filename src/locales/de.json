@@ -51,7 +51,8 @@
     "navigatePreviousPost": "Zum vorherigen Beitrag navigieren",
     "navigateNextPost": "Zum nächsten Beitrag navigieren",
     "makeAndNextTooltip": "Video erstellen und zum nächsten Beitrag navigieren",
-    "autoMakeNextTooltip": "Auto: Erstellen + Weiter automatisch wiederholen mit 1-1,5s Verzögerung"
+    "autoMakeNextTooltip": "Auto: Erstellen + Weiter automatisch wiederholen mit 1-1,5s Verzögerung",
+    "stopAutoTooltip": "Auto Erstellen + Weiter stoppen"
   },
   "settings": {
     "packsAndPrompts": "Packs + Prompts",

@@ -5,7 +5,7 @@
 import React, { useState } from 'react';
 import { Icon } from '../common/Icon';
 import { mdiStar, mdiStarOutline } from '@mdi/js';
-import { UI_COLORS } from '@/utils/constants';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 interface RatingSystemProps {
   rating: number;
@@ -14,6 +14,8 @@ interface RatingSystemProps {
 }
 
 export const RatingSystem: React.FC<RatingSystemProps> = ({ rating, onChange, readonly = false }) => {
+  const { getThemeColors } = useSettingsStore();
+  const colors = getThemeColors();
   const [hoveredRating, setHoveredRating] = useState<number | null>(null);
 
   const displayRating = hoveredRating !== null ? hoveredRating : rating;
@@ -33,7 +35,7 @@ export const RatingSystem: React.FC<RatingSystemProps> = ({ rating, onChange, re
           <Icon
             path={displayRating >= star ? mdiStar : mdiStarOutline}
             size={1}
-            color={UI_COLORS.WHITE}
+            color={colors.TEXT_PRIMARY}
           />
         </button>
       ))}

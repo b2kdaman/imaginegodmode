@@ -347,6 +347,8 @@ export const MainPanel: React.FC = () => {
         transformOrigin: panelPosition ? 'bottom left' : 'bottom right',
         zIndex: Z_INDEX.MAIN_PANEL,
         cursor: isDragging ? 'grabbing' : 'auto',
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
       }}
     >
       {/* Main container */}
