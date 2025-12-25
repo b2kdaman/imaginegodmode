@@ -33,12 +33,11 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   getThemeColors,
   variant = 'warning',
 }) => {
-  const colors = getThemeColors();
   const { t } = useTranslation();
 
-  const variantColor = variant === 'danger' ? colors.DANGER :
-                       variant === 'warning' ? colors.DANGER :
-                       colors.GLOW_PRIMARY;
+  const variantColor = variant === 'danger' ? 'var(--theme-danger)' :
+                       variant === 'warning' ? 'var(--theme-danger)' :
+                       'var(--theme-glow-primary)';
 
   return (
     <BaseModal
@@ -72,17 +71,14 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
         <div
           className="rounded-full p-3"
           style={{
-            backgroundColor: `${variantColor}20`,
+            backgroundColor: `${variantColor}33`,
           }}
         >
           <Icon path={mdiAlertCircle} size={1.5} color={variantColor} />
         </div>
 
         <div className="text-center">
-          <p
-            className="text-sm mb-2"
-            style={{ color: colors.TEXT_PRIMARY }}
-          >
+          <p className="text-sm mb-2 text-theme-text-primary">
             {message}
           </p>
         </div>

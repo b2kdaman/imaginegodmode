@@ -124,8 +124,7 @@ export const SettingsView: React.FC = () => {
             data-tooltip-content={t('settings.tooltips.rememberPostState')}
           >
             <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
+              className="text-sm cursor-pointer flex items-center gap-1.5 text-primary"
               htmlFor="remember-post-state-toggle"
             >
               <Icon path={mdiDatabase} size={0.7} color={colors.TEXT_PRIMARY} />
@@ -147,8 +146,7 @@ export const SettingsView: React.FC = () => {
             data-tooltip-content={t('settings.tooltips.simpleShortcut')}
           >
             <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
+              className="text-sm cursor-pointer flex items-center gap-1.5 text-primary"
               htmlFor="simple-shortcut-toggle"
             >
               <Icon path={mdiKeyboard} size={0.7} color={colors.TEXT_PRIMARY} />
@@ -170,8 +168,7 @@ export const SettingsView: React.FC = () => {
             data-tooltip-content={t('settings.tooltips.confirmCopyFrom')}
           >
             <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
+              className="text-sm cursor-pointer flex items-center gap-1.5 text-primary"
               htmlFor="confirm-copy-from-toggle"
             >
               <Icon path={mdiAlertCircleOutline} size={0.7} color={colors.TEXT_PRIMARY} />
@@ -193,8 +190,7 @@ export const SettingsView: React.FC = () => {
             data-tooltip-content={t('settings.tooltips.globalPromptAddon')}
           >
             <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
+              className="text-sm cursor-pointer flex items-center gap-1.5 text-primary"
               htmlFor="global-prompt-addon-toggle"
             >
               <Icon path={mdiTextBoxPlus} size={0.7} color={colors.TEXT_PRIMARY} />
@@ -215,15 +211,8 @@ export const SettingsView: React.FC = () => {
               value={globalPromptAddon}
               onChange={(e) => setGlobalPromptAddon(e.target.value)}
               placeholder={t('settings.globalPromptAddonPlaceholder')}
-              className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar backdrop-blur-xl"
+              className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar backdrop-blur-xl bg-medium/[.67] text-primary border border-border"
               rows={3}
-              style={{
-                backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
-                color: colors.TEXT_PRIMARY,
-                border: `1px solid ${colors.BORDER}`,
-                WebkitBackdropFilter: 'blur(12px)',
-                backdropFilter: 'blur(12px)',
-              }}
             />
           )}
         </div>
@@ -246,8 +235,7 @@ export const SettingsView: React.FC = () => {
             data-tooltip-content={t('settings.tooltips.autoDownload')}
           >
             <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
+              className="text-sm cursor-pointer flex items-center gap-1.5 text-primary"
               htmlFor="auto-download-toggle"
             >
               <Icon path={mdiDownloadCircle} size={0.7} color={colors.TEXT_PRIMARY} />
@@ -269,8 +257,7 @@ export const SettingsView: React.FC = () => {
             data-tooltip-content={t('settings.tooltips.enableSound')}
           >
             <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
+              className="text-sm cursor-pointer flex items-center gap-1.5 text-primary"
               htmlFor="enable-sound-toggle"
             >
               <Icon path={mdiVolumeHigh} size={0.7} color={colors.TEXT_PRIMARY} />
@@ -292,8 +279,7 @@ export const SettingsView: React.FC = () => {
             data-tooltip-content={t('help.tooltips.navigatePostsWithArrows')}
           >
             <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
+              className="text-sm cursor-pointer flex items-center gap-1.5 text-primary"
               htmlFor="navigate-posts-arrows-toggle"
             >
               <Icon path={mdiKeyboard} size={0.7} color={colors.TEXT_PRIMARY} />
@@ -311,8 +297,7 @@ export const SettingsView: React.FC = () => {
           {/* List Limit Setting */}
           <div className="flex flex-col gap-2">
             <label
-              className="text-xs flex items-center gap-1.5"
-              style={{ color: colors.TEXT_SECONDARY }}
+              className="text-xs flex items-center gap-1.5 text-secondary"
             >
               <Icon path={mdiFormatListNumbered} size={0.6} color={colors.TEXT_SECONDARY} />
               {t('settings.listLimit')}
@@ -363,8 +348,7 @@ export const SettingsView: React.FC = () => {
           {/* Theme Setting */}
           <div className="flex flex-col gap-2">
             <label
-              className="text-xs flex items-center gap-1.5"
-              style={{ color: colors.TEXT_SECONDARY }}
+              className="text-xs flex items-center gap-1.5 text-secondary"
             >
               <Icon path={mdiPalette} size={0.6} color={colors.TEXT_SECONDARY} />
               {t('settings.theme')}
@@ -392,8 +376,7 @@ export const SettingsView: React.FC = () => {
           {/* Size Setting */}
           <div className="flex flex-col gap-2">
             <label
-              className="text-xs flex items-center gap-1.5"
-              style={{ color: colors.TEXT_SECONDARY }}
+              className="text-xs flex items-center gap-1.5 text-secondary"
             >
               <Icon path={mdiResize} size={0.6} color={colors.TEXT_SECONDARY} />
               {t('settings.size')}
@@ -418,8 +401,7 @@ export const SettingsView: React.FC = () => {
           {/* Language Setting */}
           <div className="flex flex-col gap-2">
             <label
-              className="text-xs flex items-center gap-1.5"
-              style={{ color: colors.TEXT_SECONDARY }}
+              className="text-xs flex items-center gap-1.5 text-secondary"
             >
               <Icon path={mdiTranslate} size={0.6} color={colors.TEXT_SECONDARY} />
               {t('settings.language')}
@@ -446,8 +428,7 @@ export const SettingsView: React.FC = () => {
             data-tooltip-content={t('settings.tooltips.hideUnsave')}
           >
             <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
+              className="text-sm cursor-pointer flex items-center gap-1.5 text-primary"
               htmlFor="hide-unsave-toggle"
             >
               <Icon path={mdiEyeOff} size={0.7} color={colors.TEXT_PRIMARY} />
@@ -469,8 +450,7 @@ export const SettingsView: React.FC = () => {
             data-tooltip-content={t('settings.tooltips.enableThePit')}
           >
             <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
+              className="text-sm cursor-pointer flex items-center gap-1.5 text-primary"
               htmlFor="enable-pit-toggle"
             >
               <Icon path={mdiFlare} size={0.7} color={colors.TEXT_PRIMARY} />
@@ -491,8 +471,7 @@ export const SettingsView: React.FC = () => {
             data-tooltip-content={t('settings.tooltips.collapseSections')}
           >
             <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
+              className="text-sm cursor-pointer flex items-center gap-1.5 text-primary"
               htmlFor="collapse-sections-toggle"
             >
               <Icon path={mdiResize} size={0.7} color={colors.TEXT_PRIMARY} />
@@ -548,8 +527,7 @@ export const SettingsView: React.FC = () => {
               : t('settings.purgeAllData')}
           </button>
           <div
-            className="text-xs text-center"
-            style={{ color: colors.TEXT_SECONDARY }}
+            className="text-xs text-center text-secondary"
           >
             {t('settings.purgeClickHint')}
           </div>

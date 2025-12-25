@@ -32,8 +32,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   className = '',
   placeholder = '',
 }) => {
-  const { getThemeColors, getScale } = useSettingsStore();
-  const colors = getThemeColors();
+  const { getScale } = useSettingsStore();
   const scale = getScale();
   const baseFontSize = 0.875; // text-sm = 0.875rem (14px)
   const scaledFontSize = baseFontSize * scale;
@@ -148,29 +147,21 @@ export const Dropdown: React.FC<DropdownProps> = ({
           type="button"
           onClick={handleToggle}
           disabled={disabled}
-          className="pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none transition-all duration-300 text-left relative block overflow-hidden"
-          style={{
-            backgroundColor: colors.BACKGROUND_MEDIUM,
-            color: colors.TEXT_PRIMARY,
-            border: `1px solid ${colors.BORDER}`,
-            opacity: disabled ? 0.5 : 1,
-            cursor: disabled ? 'not-allowed' : 'pointer',
-            width: '100%',
-          }}
+          className="pl-3 pr-8 py-2 rounded-full text-sm focus:outline-none transition-all duration-300 text-left relative block overflow-hidden w-full bg-theme-bg-medium text-theme-text-primary border border-theme-border disabled:opacity-50 disabled:cursor-not-allowed"
           onMouseEnter={(e) => {
             if (!disabled) {
               triggerGlow.handleMouseEnter(e);
               // Override with dropdown-specific colors
-              e.currentTarget.style.backgroundColor = colors.BACKGROUND_LIGHT;
-              e.currentTarget.style.color = colors.TEXT_PRIMARY;
+              e.currentTarget.style.backgroundColor = 'var(--color-bg-light)';
+              e.currentTarget.style.color = 'var(--color-text-primary)';
             }
           }}
           onMouseLeave={(e) => {
             if (!disabled) {
               triggerGlow.handleMouseLeave(e);
               // Override with dropdown-specific colors
-              e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
-              e.currentTarget.style.color = colors.TEXT_PRIMARY;
+              e.currentTarget.style.backgroundColor = 'var(--color-bg-medium)';
+              e.currentTarget.style.color = 'var(--color-text-primary)';
             }
           }}
         >
@@ -192,7 +183,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
             <Icon
               path={mdiChevronDown}
               size={0.6}
-              color={colors.TEXT_PRIMARY}
+              color="var(--color-text-primary)"
               className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
             />
           </span>
@@ -203,15 +194,13 @@ export const Dropdown: React.FC<DropdownProps> = ({
       {isOpen && createPortal(
         <div
           ref={dropdownRef}
-          className="rounded-lg shadow-lg overflow-hidden"
+          className="rounded-lg shadow-lg overflow-hidden bg-theme-bg-medium border border-theme-border"
           style={{
             position: 'absolute',
             top: `${dropdownPosition.top}px`,
             left: `${dropdownPosition.left}px`,
             width: `${dropdownPosition.width}px`,
             pointerEvents: 'auto',
-            backgroundColor: colors.BACKGROUND_MEDIUM,
-            border: `1px solid ${colors.BORDER}`,
             maxHeight: '200px',
             overflowY: 'auto',
           }}
@@ -223,11 +212,10 @@ export const Dropdown: React.FC<DropdownProps> = ({
                 key={option.value}
                 type="button"
                 onClick={() => handleSelect(option.value)}
-                className="w-full px-3 py-2 text-left cursor-pointer transition-all duration-300 relative overflow-hidden"
+                className={`w-full px-3 py-2 text-left cursor-pointer transition-all duration-300 relative overflow-hidden border-none ${
+                  isSelected ? 'bg-theme-bg-light text-theme-text-hover' : 'bg-theme-bg-medium text-theme-text-primary'
+                }`}
                 style={{
-                  backgroundColor: isSelected ? colors.BACKGROUND_LIGHT : colors.BACKGROUND_MEDIUM,
-                  color: isSelected ? colors.TEXT_HOVER || colors.TEXT_PRIMARY : colors.TEXT_PRIMARY,
-                  border: 'none',
                   fontSize: `${scaledFontSize}rem`,
                 }}
                 onMouseEnter={(e) => {
@@ -236,8 +224,8 @@ export const Dropdown: React.FC<DropdownProps> = ({
                     option.value,
                     false,
                     {
-                      backgroundColor: colors.BACKGROUND_LIGHT,
-                      color: colors.TEXT_HOVER || colors.TEXT_PRIMARY,
+                      backgroundColor: 'var(--color-bg-light)',
+                      color: 'var(--color-text-hover)',
                     }
                   );
                 }}
@@ -247,12 +235,12 @@ export const Dropdown: React.FC<DropdownProps> = ({
                     false,
                     isSelected
                       ? {
-                          backgroundColor: colors.BACKGROUND_LIGHT,
-                          color: colors.TEXT_HOVER || colors.TEXT_PRIMARY,
+                          backgroundColor: 'var(--color-bg-light)',
+                          color: 'var(--color-text-hover)',
                         }
                       : {
-                          backgroundColor: colors.BACKGROUND_MEDIUM,
-                          color: colors.TEXT_PRIMARY,
+                          backgroundColor: 'var(--color-bg-medium)',
+                          color: 'var(--color-text-primary)',
                         }
                   );
                 }}

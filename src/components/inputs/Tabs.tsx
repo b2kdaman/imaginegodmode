@@ -3,7 +3,6 @@
  */
 
 import React from 'react';
-import { useSettingsStore } from '@/store/useSettingsStore';
 import { useMultiGlowAnimation } from '@/hooks/useGlowAnimation';
 import { Icon } from '../common/Icon';
 
@@ -24,8 +23,6 @@ interface TabsProps {
 }
 
 export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, direction = 'down' }) => {
-  const { getThemeColors } = useSettingsStore();
-  const colors = getThemeColors();
   const isUp = direction === 'up';
   const { glowStyles, handleMouseEnter, handleMouseLeave, getGlowOverlay } = useMultiGlowAnimation();
 
@@ -33,8 +30,7 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, direction
     <>
       <style>{glowStyles}</style>
       <div
-        className={`flex gap-2 ${isUp ? 'border-t mt-4' : 'border-b mb-4'}`}
-        style={{ borderColor: `${colors.BORDER}` }}
+        className={`flex gap-2 ${isUp ? 'border-t border-theme-border mt-4' : 'border-b border-theme-border mb-4'}`}
       >
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -44,13 +40,16 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, direction
               onClick={() => onChange(tab.id)}
               className={`flex-1 px-4 py-2 text-xs transition-all duration-300 relative overflow-hidden flex items-center justify-center ${
                 isUp ? 'rounded-b-lg' : 'rounded-t-lg'
+              } ${
+                isActive
+                  ? 'bg-theme-bg-medium text-theme-text-primary border border-theme-border'
+                  : 'text-theme-text-secondary'
+              } ${
+                isActive && !isUp ? 'border-t-theme-border' : ''
+              } ${
+                isActive && isUp ? 'border-b-theme-border' : ''
               }`}
               style={{
-                backgroundColor: isActive ? colors.BACKGROUND_MEDIUM : 'transparent',
-                color: isActive ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY,
-                border: isActive ? `1px solid ${colors.BORDER}` : 'none',
-                borderTop: isActive && !isUp ? `1px solid ${colors.BORDER}` : isUp ? 'none' : 'none',
-                borderBottom: isActive && isUp ? `1px solid ${colors.BORDER}` : !isUp ? 'none' : 'none',
                 marginBottom: !isUp && isActive ? '-1px' : '0',
                 marginTop: isUp && isActive ? '-1px' : '0',
               }}
@@ -62,8 +61,8 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, direction
                     tab.id,
                     false,
                     {
-                      backgroundColor: `${colors.BACKGROUND_LIGHT}40`,
-                      color: colors.TEXT_HOVER,
+                      backgroundColor: `var(--color-bg-light)`,
+                      color: `var(--color-text-hover)`,
                     }
                   );
                 }
@@ -75,7 +74,7 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, direction
                     false,
                     {
                       backgroundColor: 'transparent',
-                      color: colors.TEXT_SECONDARY,
+                      color: `var(--color-text-secondary)`,
                     }
                   );
                 }
@@ -86,18 +85,14 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, direction
               <span className="relative z-10 flex items-center gap-1.5">
                 {tab.icon && (
                   <span className="-mx-1">
-                    <Icon path={tab.icon} size={0.8} color={isActive ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY} />
+                    <Icon path={tab.icon} size={0.8} color={isActive ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'} />
                   </span>
                 )}
                 {tab.label && <span>{tab.label}</span>}
                 {/* Badge - only show when count > 0 */}
                 {tab.badge !== undefined && tab.badge > 0 && (
                   <span
-                    className="min-w-[16px] h-[16px] rounded-full text-[9px] font-bold flex items-center justify-center px-1"
-                    style={{
-                      backgroundColor: colors.GLOW_PRIMARY,
-                      color: colors.BACKGROUND_DARK,
-                    }}
+                    className="min-w-[16px] h-[16px] rounded-full text-[9px] font-bold flex items-center justify-center px-1 bg-theme-glow-primary text-theme-bg-dark"
                   >
                     {tab.badge}
                   </span>

@@ -29,7 +29,6 @@ export const PackSelectModal: React.FC<PackSelectModalProps> = ({
   onSelectPack,
   getThemeColors,
 }) => {
-  const colors = getThemeColors();
   const { t } = useTranslation();
   const [selectedPacks, setSelectedPacks] = useState<Set<string>>(new Set());
   const [isExportHovered, setIsExportHovered] = useState(false);
@@ -95,7 +94,7 @@ export const PackSelectModal: React.FC<PackSelectModalProps> = ({
             className="text-xs"
             style={{
               backgroundColor: selectedPacks.size > 0
-                ? (isExportHovered ? colors.TEXT_HOVER : colors.SUCCESS)
+                ? (isExportHovered ? 'var(--theme-text-hover)' : 'var(--theme-success)')
                 : undefined,
               color: selectedPacks.size > 0 ? '#fff' : undefined,
               opacity: selectedPacks.size === 0 ? 0.5 : 1,
@@ -141,38 +140,21 @@ export const PackSelectModal: React.FC<PackSelectModalProps> = ({
               <button
                 key={packName}
                 onClick={() => togglePack(packName)}
-                className="text-left px-3 py-2 rounded-lg transition-all flex items-center gap-2 group text-sm"
+                className="text-left px-3 py-2 rounded-lg transition-all flex items-center gap-2 group text-sm text-theme-text-primary hover:bg-theme-bg-medium"
                 style={{
-                  backgroundColor: isSelected
-                    ? colors.BACKGROUND_MEDIUM
-                    : colors.BACKGROUND_DARK,
-                  border: `1px solid ${
-                    isSelected ? colors.SUCCESS : colors.BORDER
-                  }`,
-                  color: colors.TEXT_PRIMARY,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
-                  if (!isSelected) {
-                    e.currentTarget.style.borderColor = colors.TEXT_SECONDARY;
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isSelected) {
-                    e.currentTarget.style.backgroundColor = colors.BACKGROUND_DARK;
-                    e.currentTarget.style.borderColor = colors.BORDER;
-                  }
+                  backgroundColor: isSelected ? 'var(--theme-bg-medium)' : 'var(--theme-bg-dark)',
+                  border: isSelected ? '1px solid var(--theme-success)' : '1px solid var(--theme-border)',
                 }}
               >
                 {/* Checkbox */}
                 <Icon
                   path={isSelected ? mdiCheckboxMarked : mdiCheckboxBlankOutline}
                   size={0.8}
-                  color={isSelected ? colors.SUCCESS : colors.TEXT_SECONDARY}
+                  color={isSelected ? 'var(--theme-success)' : 'var(--theme-text-secondary)'}
                 />
 
                 {/* Pack Icon */}
-                <Icon path={mdiPackageVariant} size={0.7} color={colors.TEXT_SECONDARY} />
+                <Icon path={mdiPackageVariant} size={0.7} color="var(--theme-text-secondary)" />
 
                 {/* Pack Name */}
                 <span className="font-medium truncate flex-1">{packName}</span>
@@ -182,7 +164,7 @@ export const PackSelectModal: React.FC<PackSelectModalProps> = ({
                   <span
                     className="text-xs px-1.5 py-0.5 rounded-full ml-2 flex-shrink-0"
                     style={{
-                      backgroundColor: colors.SUCCESS,
+                      backgroundColor: 'var(--theme-success)',
                       color: '#fff',
                     }}
                   >
@@ -197,11 +179,10 @@ export const PackSelectModal: React.FC<PackSelectModalProps> = ({
         {/* Selection Summary */}
         {selectedPacks.size > 0 && (
           <div
-            className="text-xs text-center p-2 rounded-lg"
+            className="text-xs text-center p-2 rounded-lg text-theme-text-primary"
             style={{
-              backgroundColor: `${colors.SUCCESS}20`,
-              color: colors.TEXT_PRIMARY,
-              border: `1px solid ${colors.SUCCESS}`,
+              backgroundColor: 'color-mix(in srgb, var(--theme-success) 20%, transparent)',
+              border: '1px solid var(--theme-success)',
             }}
           >
             {t('modals.selectPack.selectedCount', { count: selectedPacks.size })}

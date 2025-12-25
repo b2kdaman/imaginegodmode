@@ -46,7 +46,6 @@ export const LikeManagementModal: React.FC<LikeManagementModalProps> = ({
   onImportArchive,
   initialTab = 'liked',
 }) => {
-  const colors = getThemeColors();
   const { t } = useTranslation();
 
   // Tab state
@@ -301,8 +300,8 @@ export const LikeManagementModal: React.FC<LikeManagementModalProps> = ({
             selectedIds={likedSelection.selectedIds}
             isProcessing={false}
             onItemClick={likedSelection.toggleSelection}
-            getBorderColor={(isSelected) => isSelected ? colors.DANGER : colors.BORDER}
-            colors={colors}
+            getBorderColor={(isSelected) => isSelected ? 'var(--theme-danger)' : 'var(--theme-border)'}
+            colors={getThemeColors()}
             renderOverlay={(post, isSelected) => (
               <>
                 {/* Colored overlay */}
@@ -310,7 +309,7 @@ export const LikeManagementModal: React.FC<LikeManagementModalProps> = ({
                   className="absolute inset-0 pointer-events-none"
                   style={{
                     backgroundColor: isSelected
-                      ? `${colors.DANGER}33`
+                      ? 'color-mix(in srgb, var(--theme-danger) 20%, transparent)'
                       : 'rgba(0, 0, 0, 0.5)',
                   }}
                 />
@@ -319,7 +318,7 @@ export const LikeManagementModal: React.FC<LikeManagementModalProps> = ({
                   onClick={(e) => likedSelection.toggleSelection(post.id, e)}
                   className="absolute bottom-2 right-2 rounded-full p-2"
                   style={{
-                    backgroundColor: isSelected ? colors.DANGER : colors.SUCCESS,
+                    backgroundColor: isSelected ? 'var(--theme-danger)' : 'var(--theme-success)',
                     cursor: 'pointer',
                     opacity: 0.5,
                   }}
@@ -351,12 +350,7 @@ export const LikeManagementModal: React.FC<LikeManagementModalProps> = ({
           {/* Import Error Message */}
           {importError && (
             <div
-              className="mb-3 p-2 rounded text-xs"
-              style={{
-                backgroundColor: colors.BACKGROUND_MEDIUM,
-                color: colors.DANGER || '#ff4444',
-                border: `1px solid ${colors.DANGER || '#ff4444'}`,
-              }}
+              className="mb-3 p-2 rounded text-xs bg-theme-bg-medium text-theme-danger border border-theme-danger"
             >
               {importError}
             </div>
@@ -368,10 +362,7 @@ export const LikeManagementModal: React.FC<LikeManagementModalProps> = ({
           />
 
           {sortedArchivedPosts.length === 0 ? (
-            <div
-              className="flex items-center justify-center h-full text-sm"
-              style={{ color: colors.TEXT_SECONDARY }}
-            >
+            <div className="flex items-center justify-center h-full text-sm text-theme-text-secondary">
               {t('modals.unlikedArchive.noPostsMessage')}
             </div>
           ) : (
@@ -380,8 +371,8 @@ export const LikeManagementModal: React.FC<LikeManagementModalProps> = ({
               selectedIds={archiveSelection.selectedIds}
               isProcessing={false}
               onItemClick={archiveSelection.toggleSelection}
-              getBorderColor={(isSelected) => isSelected ? colors.SUCCESS : colors.BORDER}
-              colors={colors}
+              getBorderColor={(isSelected) => isSelected ? 'var(--theme-success)' : 'var(--theme-border)'}
+              colors={getThemeColors()}
               renderOverlay={(_post, isSelected) => (
                 <>
                   {/* Colored overlay */}
@@ -389,7 +380,7 @@ export const LikeManagementModal: React.FC<LikeManagementModalProps> = ({
                     className="absolute inset-0 pointer-events-none"
                     style={{
                       backgroundColor: isSelected
-                        ? `${colors.SUCCESS}33`
+                        ? 'color-mix(in srgb, var(--theme-success) 20%, transparent)'
                         : 'rgba(0, 0, 0, 0.5)',
                     }}
                   />
@@ -399,7 +390,7 @@ export const LikeManagementModal: React.FC<LikeManagementModalProps> = ({
                       <Icon
                         path={mdiHeart}
                         size={2}
-                        color={colors.SUCCESS}
+                        color="var(--theme-success)"
                       />
                     </div>
                   )}
@@ -413,12 +404,8 @@ export const LikeManagementModal: React.FC<LikeManagementModalProps> = ({
 
                 return (
                   <div
-                    className="absolute top-1 left-1 px-1.5 py-0.5 rounded text-xs font-semibold"
-                    style={{
-                      backgroundColor: colors.BACKGROUND_DARK,
-                      color: colors.TEXT_SECONDARY,
-                      opacity: 0.9,
-                    }}
+                    className="absolute top-1 left-1 px-1.5 py-0.5 rounded text-xs font-semibold bg-theme-bg-dark text-theme-text-secondary"
+                    style={{ opacity: 0.9 }}
                   >
                     {formatDate(unlikedPost.unlikedAt)}
                   </div>

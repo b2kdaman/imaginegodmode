@@ -123,16 +123,15 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
     >
       {/* Header */}
       <div
-        className="px-3 border-b flex items-center justify-between gap-2"
-        style={{ borderColor: colors.BORDER, height: '50px' }}
+        className="px-3 border-b border-border flex items-center justify-between gap-2"
+        style={{ height: '50px' }}
       >
         <h3
-          className="text-sm font-semibold"
-          style={{ color: colors.TEXT_PRIMARY }}
+          className="text-sm font-semibold text-primary"
         >
           Packs ({packNames.length})
           {isPackSelectionMode && selectedPackNames.size > 0 && (
-            <span style={{ color: colors.SUCCESS }}> - {selectedPackNames.size} selected</span>
+            <span className="text-success"> - {selectedPackNames.size} selected</span>
           )}
         </h3>
         <div className="flex gap-1">
@@ -159,8 +158,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
       {/* Selection Mode Controls */}
       {isPackSelectionMode && (
         <div
-          className="px-3 pr-3 py-2 border-b flex items-center gap-2"
-          style={{ borderColor: colors.BORDER, backgroundColor: `${colors.BACKGROUND_MEDIUM}80` }}
+          className="px-3 pr-3 py-2 border-b border-border bg-medium/50 flex items-center gap-2"
         >
           <Button
             icon={mdiSelectAll}
@@ -192,7 +190,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
       <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar pl-2 pr-3 py-2">
         {/* Create New Pack Input */}
         {isCreating && (
-          <div className="mb-2 p-2 rounded-lg" style={{ backgroundColor: colors.BACKGROUND_DARK, border: `1px solid ${colors.BORDER}` }}>
+          <div className="mb-2 p-2 rounded-lg bg-dark border border-border">
             <div className="flex items-center gap-2">
               <input
                 type="text"
@@ -201,13 +199,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
                 onKeyDown={handleKeyDown}
                 onFocus={(e) => e.target.select()}
                 placeholder={t('modals.packsManagement.newPackPlaceholder')}
-                className="flex-1 px-1 rounded text-sm"
-                style={{
-                  backgroundColor: 'transparent',
-                  color: colors.TEXT_PRIMARY,
-                  border: 'none',
-                  outline: 'none',
-                }}
+                className="flex-1 px-1 rounded text-sm bg-transparent text-primary border-0 outline-none"
                 autoFocus
               />
               <Button
@@ -273,7 +265,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
           maxWidth="sm"
         >
           <div className="flex flex-col gap-4">
-            <p style={{ color: colors.TEXT_PRIMARY }}>
+            <p className="text-primary">
               Are you sure you want to delete <strong>{selectedPackNames.size} pack{selectedPackNames.size !== 1 ? 's' : ''}</strong>?
               {Array.from(selectedPackNames).some(name => packs[name]?.length > 0) && (
                 <>
@@ -299,10 +291,7 @@ export const PacksPanel: React.FC<PacksPanelProps> = ({
               <Button
                 onClick={confirmBatchDeletePacks}
                 variant="default"
-                style={{
-                  backgroundColor: colors.DANGER,
-                  color: '#fff',
-                }}
+                className="bg-danger text-white"
               >
                 Delete
               </Button>

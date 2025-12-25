@@ -138,16 +138,16 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
     >
       {/* Header */}
       <div
-        className="pl-3 pr-4 border-b flex items-center justify-between gap-2"
-        style={{ borderColor: colors.BORDER, height: '50px' }}
+        className="pl-3 pr-4 border-b border-border flex items-center justify-between gap-2"
+        style={{ height: '50px' }}
       >
         <h3 className="text-base font-semibold truncate flex items-baseline gap-1">
-          <span style={{ color: colors.TEXT_PRIMARY }}>{packName}</span>
-          <span className="text-xs font-normal" style={{ color: colors.TEXT_SECONDARY }}>
+          <span className="text-primary">{packName}</span>
+          <span className="text-xs font-normal text-secondary">
             ({filteredPrompts.length}{searchQuery.trim() ? `/${prompts.length}` : ''} prompt{prompts.length !== 1 ? 's' : ''})
           </span>
           {isSelectionMode && selectedPromptIndices.size > 0 && (
-            <span className="text-xs font-normal" style={{ color: colors.SUCCESS }}> - {selectedPromptIndices.size} selected</span>
+            <span className="text-xs font-normal text-success"> - {selectedPromptIndices.size} selected</span>
           )}
         </h3>
         <div className="flex gap-1">
@@ -184,20 +184,14 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
       {/* Search Input */}
       {isSearchActive && (
         <div
-          className="px-3 py-2 border-b"
-          style={{ borderColor: colors.BORDER, backgroundColor: `${colors.BACKGROUND_MEDIUM}80` }}
+          className="px-3 py-2 border-b border-border bg-medium/50"
         >
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t('modals.packsManagement.searchPromptsPlaceholder')}
-            className="w-full px-3 py-2 rounded text-sm"
-            style={{
-              backgroundColor: colors.BACKGROUND_MEDIUM,
-              color: colors.TEXT_PRIMARY,
-              border: `1px solid ${colors.BORDER}`,
-            }}
+            className="w-full px-3 py-2 rounded text-sm bg-medium text-primary border border-border"
             autoFocus
           />
         </div>
@@ -206,8 +200,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
       {/* Selection Mode Controls */}
       {isSelectionMode && (
         <div
-          className="px-3 py-2 border-b flex items-center gap-2 pr-6"
-          style={{ borderColor: colors.BORDER, backgroundColor: `${colors.BACKGROUND_MEDIUM}80` }}
+          className="px-3 py-2 border-b border-border bg-medium/50 flex items-center gap-2 pr-6"
         >
           <Button
             icon={mdiSelectAll}
@@ -257,8 +250,7 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
       <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar pl-2 pr-4 py-2">
         {prompts.length === 0 ? (
           <div
-            className="flex flex-col items-center justify-center py-12 px-4"
-            style={{ color: colors.TEXT_SECONDARY }}
+            className="flex flex-col items-center justify-center py-12 px-4 text-secondary"
           >
             <Icon path={mdiPackageVariant} size={2} color={colors.TEXT_SECONDARY} />
             <p className="mt-2 mb-4 text-sm">No prompts in this pack</p>
@@ -266,19 +258,15 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
               value={emptyPackText}
               onChange={handleEmptyPackTextChange}
               placeholder={t('modals.packsManagement.emptyPackPlaceholder')}
-              className="w-full max-w-md px-3 py-2 rounded text-sm resize-none custom-scrollbar"
+              className="w-full max-w-md px-3 py-2 rounded text-sm resize-none custom-scrollbar bg-medium text-primary border border-border"
               style={{
-                backgroundColor: colors.BACKGROUND_MEDIUM,
-                color: colors.TEXT_PRIMARY,
-                border: `1px solid ${colors.BORDER}`,
                 minHeight: '80px',
               }}
             />
           </div>
         ) : filteredPrompts.length === 0 ? (
           <div
-            className="flex flex-col items-center justify-center py-12 px-4"
-            style={{ color: colors.TEXT_SECONDARY }}
+            className="flex flex-col items-center justify-center py-12 px-4 text-secondary"
           >
             <Icon path={mdiMagnify} size={2} color={colors.TEXT_SECONDARY} />
             <p className="mt-2 text-sm">No prompts match your search</p>

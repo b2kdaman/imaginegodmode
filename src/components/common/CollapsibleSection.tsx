@@ -22,8 +22,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
   style = {},
   headerClassName = '',
 }) => {
-  const { collapseSections, getThemeColors } = useSettingsStore();
-  const colors = getThemeColors();
+  const { collapseSections } = useSettingsStore();
   const [isCollapsed, setIsCollapsed] = useState(collapseSections);
   const [maxHeight, setMaxHeight] = useState<string>('none');
   const contentRef = useRef<HTMLDivElement>(null);
@@ -49,12 +48,10 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     <div className={className} style={style}>
       {/* Section Header - Conditionally Clickable */}
       <div
-        className={`text-xs font-semibold uppercase tracking-wider pb-2 border-b flex items-center justify-between transition-all duration-200 ${
+        className={`text-xs font-semibold uppercase tracking-wider pb-2 border-b border-theme-border/25 flex items-center justify-between transition-all duration-200 text-theme-text-secondary ${
           collapseSections ? 'cursor-pointer hover:opacity-80' : ''
         } ${headerClassName}`}
         style={{
-          color: colors.TEXT_SECONDARY,
-          borderColor: `${colors.BORDER}40`,
           marginBottom: isCollapsed && collapseSections ? '0' : '12px',
           transition: 'margin-bottom 0.3s ease-in-out',
         }}
@@ -65,7 +62,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
           <Icon
             path={isCollapsed ? mdiChevronDown : mdiChevronUp}
             size={0.7}
-            color={colors.TEXT_SECONDARY}
+            color="var(--color-text-secondary)"
           />
         )}
       </div>

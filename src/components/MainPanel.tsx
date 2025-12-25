@@ -35,10 +35,9 @@ const VIEW_COMPONENTS: Record<ViewType, React.FC> = {
 
 export const MainPanel: React.FC = () => {
   const { isExpanded, currentView, setCurrentView } = useUIStore();
-  const { getThemeColors, getScale, enableThePit, panelPosition, setPanelPosition } = useSettingsStore();
+  const { getScale, enableThePit, panelPosition, setPanelPosition } = useSettingsStore();
   const { jobs } = useJobQueueStore();
   const { t } = useTranslation();
-  const colors = getThemeColors();
   const scale = getScale();
   const isVisible = useUrlVisibility('/imagine');
 
@@ -362,12 +361,8 @@ export const MainPanel: React.FC = () => {
         {/* Content wrapper with expand/collapse animation */}
         {shouldRender && (
           <div
-            className="rounded-2xl p-4 shadow-2xl w-full overflow-hidden transition-all duration-300 ease-out relative"
+            className="rounded-2xl p-4 shadow-2xl w-full overflow-hidden transition-all duration-300 ease-out relative bg-theme-bg-dark/[0.67] backdrop-blur-xl border border-theme-border"
             style={{
-              backgroundColor: `${colors.BACKGROUND_DARK}aa`,
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              border: `1px solid ${colors.BORDER}`,
               maxHeight: isAnimatingIn ? '800px' : '0px',
               opacity: isAnimatingIn ? 1 : 0,
               padding: isAnimatingIn ? '16px' : '0px 16px',

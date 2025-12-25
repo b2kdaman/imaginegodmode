@@ -41,7 +41,7 @@ export const BaseModal: React.FC<BaseModalProps> = ({
   isOpen,
   title,
   onClose,
-  getThemeColors,
+  getThemeColors: _getThemeColors,
   children,
   maxWidth = 'md',
   maxHeight,
@@ -55,8 +55,6 @@ export const BaseModal: React.FC<BaseModalProps> = ({
   footer,
   headerExtra,
 }) => {
-  const colors = getThemeColors();
-
   if (!isOpen) {return null;}
 
   const handleOverlayClick = () => {
@@ -83,13 +81,8 @@ export const BaseModal: React.FC<BaseModalProps> = ({
       onClick={handleOverlayClick}
     >
       <div
-        className={`modal-content rounded-xl ${padding} ${maxWidthClass} w-full mx-4 flex flex-col gap-2`}
+        className={`modal-content bg-theme-bg-dark/[0.67] backdrop-blur-xl border border-theme-border shadow-theme-shadow rounded-xl ${padding} ${maxWidthClass} w-full mx-4 flex flex-col gap-2`}
         style={{
-          backgroundColor: `${colors.BACKGROUND_DARK}aa`,
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          border: `1px solid ${colors.BORDER}`,
-          boxShadow: `0 8px 32px ${colors.SHADOW}`,
           ...(width && { width }),
           ...(height && { height }),
           ...(maxHeight && { maxHeight }),
@@ -99,10 +92,7 @@ export const BaseModal: React.FC<BaseModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 flex-1">
-            <h2
-              className="text-sm font-semibold"
-              style={{ color: colors.TEXT_PRIMARY }}
-            >
+            <h2 className="text-sm font-semibold text-theme-text-primary">
               {title}
             </h2>
             {headerExtra}
@@ -111,23 +101,18 @@ export const BaseModal: React.FC<BaseModalProps> = ({
             <button
               onClick={handleCloseClick}
               disabled={disableClose}
-              className="rounded-full p-1 transition-colors flex-shrink-0"
+              className="rounded-full p-1 transition-colors flex-shrink-0 text-theme-text-secondary hover:bg-theme-bg-medium hover:text-theme-text-primary disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
-                backgroundColor: 'transparent',
-                color: colors.TEXT_SECONDARY,
-                opacity: disableClose ? 0.5 : 1,
-                cursor: disableClose ? 'not-allowed' : 'pointer',
+                color: 'var(--color-text-secondary)',
               }}
               onMouseEnter={(e) => {
                 if (!disableClose) {
-                  e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
-                  e.currentTarget.style.color = colors.TEXT_PRIMARY;
+                  e.currentTarget.style.color = 'var(--color-text-primary)';
                 }
               }}
               onMouseLeave={(e) => {
                 if (!disableClose) {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = colors.TEXT_SECONDARY;
+                  e.currentTarget.style.color = 'var(--color-text-secondary)';
                 }
               }}
             >

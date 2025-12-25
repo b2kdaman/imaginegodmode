@@ -3,7 +3,6 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { useSettingsStore } from '@/store/useSettingsStore';
 
 interface ToggleProps {
   id: string;
@@ -21,8 +20,6 @@ export const Toggle: React.FC<ToggleProps> = ({
   onChange,
   disabled = false,
 }) => {
-  const { getThemeColors } = useSettingsStore();
-  const colors = getThemeColors();
 
   // Custom glow state management
   const [isHovered, setIsHovered] = useState(false);
@@ -64,14 +61,14 @@ export const Toggle: React.FC<ToggleProps> = ({
           className="sr-only peer"
         />
         <div
-          className="toggle-track w-full h-full rounded-full relative overflow-hidden transition-all duration-300 border"
+          className={`toggle-track w-full h-full rounded-full relative overflow-hidden transition-all duration-300 border ${
+            checked
+              ? 'bg-theme-success border-theme-success'
+              : 'bg-theme-bg-medium border-theme-border'
+          } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           style={{
-            ['--toggle-bg' as string]: checked ? colors.SUCCESS : colors.BACKGROUND_MEDIUM,
-            ['--toggle-border' as string]: checked ? colors.SUCCESS : colors.BORDER,
-            opacity: disabled ? 0.5 : 1,
-            cursor: disabled ? 'not-allowed' : 'pointer',
-            boxShadow: isHovered && !disabled ? `0 0 15px ${colors.SUCCESS}30` : 'none',
-          } as React.CSSProperties}
+            boxShadow: isHovered && !disabled ? `0 0 15px var(--color-success)` : 'none',
+          }}
           onMouseEnter={() => {
             if (!disabled) {
               setIsHovered(true);
@@ -92,7 +89,7 @@ export const Toggle: React.FC<ToggleProps> = ({
               style={{
                 background: checked
                   ? 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%)'
-                  : `linear-gradient(90deg, transparent 0%, ${colors.SUCCESS}50 50%, transparent 100%)`,
+                  : `linear-gradient(90deg, transparent 0%, var(--color-success) 50%, transparent 100%)`,
                 width: '60px',
                 height: '200%',
                 top: '-50%',

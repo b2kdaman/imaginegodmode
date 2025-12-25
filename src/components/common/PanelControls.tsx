@@ -256,14 +256,7 @@ export const PanelControls: React.FC = () => {
             className="shadow-lg"
             tooltip={t('tabs.queueTooltip')}
           />
-          <div
-            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[10px] font-bold shadow-lg"
-            style={{
-              backgroundColor: getThemeColors().SUCCESS,
-              color: '#fff',
-              padding: '0 4px',
-            }}
-          >
+          <div className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[10px] font-bold shadow-lg bg-theme-success text-white px-1">
             {queueCount}
           </div>
         </div>

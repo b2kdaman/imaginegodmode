@@ -49,7 +49,6 @@ export function GridSelectionModal<T extends GridItem>({
   headerExtra,
   onImageClick,
 }: GridSelectionModalProps<T>) {
-  const colors = getThemeColors();
   const { t } = useTranslation();
   const {
     selectedIds,
@@ -151,9 +150,9 @@ export function GridSelectionModal<T extends GridItem>({
             processedCount={processedCount}
             totalCount={totalCount}
             label={t('common.processing')}
-            backgroundColor={colors.BACKGROUND_MEDIUM}
-            progressColor={colors.DANGER}
-            textColor={colors.TEXT_SECONDARY}
+            backgroundColor="var(--theme-bg-medium)"
+            progressColor="var(--theme-danger)"
+            textColor="var(--theme-text-secondary)"
           />
         )}
 
@@ -172,7 +171,7 @@ export function GridSelectionModal<T extends GridItem>({
           isProcessing={isProcessing}
           onItemClick={onImageClick || toggleSelection}
           getBorderColor={getBorderColor}
-          colors={colors}
+          colors={getThemeColors()}
           renderOverlay={(gridPost, isSelected) => {
             // Find the original post to pass to renderOverlay
             const originalPost = safePosts.find((p) => p.id === gridPost.id);

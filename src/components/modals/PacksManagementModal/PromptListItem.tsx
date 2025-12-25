@@ -176,12 +176,8 @@ export const PromptListItem: React.FC<PromptListItemProps> = ({
               <textarea
                 value={editText}
                 onChange={(e) => setEditText(e.target.value)}
-                className="w-full px-2 py-1 rounded text-sm resize-none custom-scrollbar"
+                className="w-full px-2 py-1 rounded text-sm resize-none custom-scrollbar bg-medium text-primary border-0 outline-none"
                 style={{
-                  backgroundColor: colors.BACKGROUND_MEDIUM,
-                  color: colors.TEXT_PRIMARY,
-                  border: 'none',
-                  outline: 'none',
                   minHeight: '60px',
                 }}
                 autoFocus
@@ -212,11 +208,11 @@ export const PromptListItem: React.FC<PromptListItemProps> = ({
             /* View Mode */
             <>
               <p
-                className="text-sm line-clamp-2 break-words"
-                style={{ color: colors.TEXT_PRIMARY, wordBreak: 'break-word', overflowWrap: 'break-word' }}
+                className="text-sm line-clamp-2 break-words text-primary"
+                style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
               >
                 {prompt.text || (
-                  <em style={{ color: colors.TEXT_SECONDARY }}>Empty prompt</em>
+                  <em className="text-secondary">Empty prompt</em>
                 )}
               </p>
 

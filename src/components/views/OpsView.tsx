@@ -371,7 +371,7 @@ export const OpsView: React.FC = () => {
   return (
     <div className="flex flex-col gap-3">
       {/* Status text */}
-      <div className="text-sm text-center flex items-center justify-center gap-2" style={{ color: colors.TEXT_SECONDARY }}>
+      <div className="text-sm text-center flex items-center justify-center gap-2 text-secondary">
         {allVideosHD && (
           <Icon path={mdiCheckCircle} size={0.7} color={colors.SUCCESS} />
         )}
@@ -382,8 +382,7 @@ export const OpsView: React.FC = () => {
       {/* Media info */}
       {urls.length > 0 && (
         <div
-          className="text-xs text-center"
-          style={{ color: `${colors.TEXT_SECONDARY}80` }}
+          className="text-xs text-center text-secondary/50"
         >
           {urls.length} media files • {hdVideoCount} HD videos
         </div>

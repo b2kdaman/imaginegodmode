@@ -25,10 +25,9 @@ export const WarningBanner: React.FC<WarningBannerProps> = ({
 
   return (
     <div
-      className="mb-3 p-3 rounded-lg flex items-center gap-2"
+      className="mb-3 p-3 rounded-lg flex items-center gap-2 text-theme-text-primary"
       style={{
         backgroundColor,
-        color: colors.TEXT_PRIMARY,
       }}
     >
       <Icon path={icon} size={0.8} color={variantColor} />

@@ -35,7 +35,6 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
   onImport,
   getThemeColors,
 }) => {
-  const colors = getThemeColors();
   const { t } = useTranslation();
   const [jsonInput, setJsonInput] = useState('');
   const [validation, setValidation] = useState<ValidationResult | null>(null);
@@ -253,7 +252,7 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
             onClick={handleImport}
             disabled={!validation?.isValid || isImporting}
             style={{
-              backgroundColor: validation?.isValid ? colors.SUCCESS : undefined,
+              backgroundColor: validation?.isValid ? 'var(--theme-success)' : undefined,
               color: validation?.isValid ? '#fff' : undefined,
               opacity: !validation?.isValid || isImporting ? 0.5 : 1,
             }}
@@ -300,18 +299,10 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
             value={jsonInput}
             onChange={(e) => handleTextChange(e.target.value)}
             placeholder={t('modals.importPack.pasteJsonPlaceholder')}
-            className="w-full h-32 px-3 py-2 rounded-lg text-xs font-mono resize-none"
-            style={{
-              backgroundColor: colors.BACKGROUND_MEDIUM,
-              color: colors.TEXT_PRIMARY,
-              border: `1px solid ${colors.BORDER}`,
-            }}
+            className="w-full h-32 px-3 py-2 rounded-lg text-xs font-mono resize-none bg-theme-bg-medium text-theme-text-primary border border-theme-border"
           />
           {jsonInput && (
-            <div
-              className="text-xs mt-1"
-              style={{ color: colors.TEXT_SECONDARY }}
-            >
+            <div className="text-xs mt-1 text-theme-text-secondary">
               {lineCount} line{lineCount !== 1 ? 's' : ''}
             </div>
           )}
@@ -323,62 +314,56 @@ export const ImportPackModal: React.FC<ImportPackModalProps> = ({
             className="mb-3 p-3 rounded-lg flex items-start gap-2"
             style={{
               backgroundColor: validation.isValid
-                ? `${colors.SUCCESS}20`
-                : `${colors.BACKGROUND_MEDIUM}`,
-              border: `1px solid ${
-                validation.isValid ? colors.SUCCESS : colors.BORDER
-              }`,
+                ? 'color-mix(in srgb, var(--theme-success) 20%, transparent)'
+                : 'var(--theme-bg-medium)',
+              border: validation.isValid
+                ? '1px solid var(--theme-success)'
+                : '1px solid var(--theme-border)',
             }}
           >
             <Icon
               path={validation.isValid ? mdiCheckCircle : mdiAlertCircle}
               size={0.7}
-              color={validation.isValid ? colors.SUCCESS : colors.TEXT_SECONDARY}
+              color={validation.isValid ? 'var(--theme-success)' : 'var(--theme-text-secondary)'}
             />
             <div className="flex-1">
               {validation.isValid ? (
                 <div className="text-xs">
-                  <div
-                    className="font-semibold mb-1"
-                    style={{ color: colors.SUCCESS }}
-                  >
+                  <div className="font-semibold mb-1 text-theme-success">
                     {t('modals.importPack.validJson')}
                   </div>
                   {validation.isMultiPack ? (
                     <>
-                      <div style={{ color: colors.TEXT_SECONDARY }}>
-                        Format: <span style={{ color: colors.TEXT_PRIMARY }}>Multi-pack (v2.0)</span>
+                      <div className="text-theme-text-secondary">
+                        Format: <span className="text-theme-text-primary">Multi-pack (v2.0)</span>
                       </div>
-                      <div style={{ color: colors.TEXT_SECONDARY }}>
-                        Packs: <span style={{ color: colors.TEXT_PRIMARY }}>{validation.packCount}</span>
+                      <div className="text-theme-text-secondary">
+                        Packs: <span className="text-theme-text-primary">{validation.packCount}</span>
                       </div>
-                      <div style={{ color: colors.TEXT_SECONDARY }}>
-                        Total Prompts: <span style={{ color: colors.TEXT_PRIMARY }}>{validation.promptCount}</span>
+                      <div className="text-theme-text-secondary">
+                        Total Prompts: <span className="text-theme-text-primary">{validation.promptCount}</span>
                       </div>
                     </>
                   ) : (
                     <>
-                      <div style={{ color: colors.TEXT_SECONDARY }}>
-                        Format: <span style={{ color: colors.TEXT_PRIMARY }}>Single pack (v1.0)</span>
+                      <div className="text-theme-text-secondary">
+                        Format: <span className="text-theme-text-primary">Single pack (v1.0)</span>
                       </div>
-                      <div style={{ color: colors.TEXT_SECONDARY }}>
-                        Pack: <span style={{ color: colors.TEXT_PRIMARY }}>{validation.packName}</span>
+                      <div className="text-theme-text-secondary">
+                        Pack: <span className="text-theme-text-primary">{validation.packName}</span>
                       </div>
-                      <div style={{ color: colors.TEXT_SECONDARY }}>
-                        Prompts: <span style={{ color: colors.TEXT_PRIMARY }}>{validation.promptCount}</span>
+                      <div className="text-theme-text-secondary">
+                        Prompts: <span className="text-theme-text-primary">{validation.promptCount}</span>
                       </div>
                     </>
                   )}
                 </div>
               ) : (
                 <div className="text-xs">
-                  <div
-                    className="font-semibold mb-1"
-                    style={{ color: colors.TEXT_SECONDARY }}
-                  >
+                  <div className="font-semibold mb-1 text-theme-text-secondary">
                     {t('modals.importPack.invalidJson')}
                   </div>
-                  <div style={{ color: colors.TEXT_SECONDARY }}>
+                  <div className="text-theme-text-secondary">
                     {validation.error}
                   </div>
                 </div>

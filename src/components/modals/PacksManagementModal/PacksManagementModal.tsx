@@ -248,12 +248,9 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
         {/* Drop Notification */}
         {statusMessage && (
           <div
-            className="absolute left-1/2 transform -translate-x-1/2 z-50 px-4 py-2 rounded-md shadow-lg text-sm font-medium whitespace-nowrap"
+            className="absolute left-1/2 transform -translate-x-1/2 z-50 px-4 py-2 rounded-md shadow-lg text-sm font-medium whitespace-nowrap bg-theme-bg-medium text-theme-text-primary border border-theme-border"
             style={{
-              backgroundColor: getThemeColors().BACKGROUND_MEDIUM,
-              color: getThemeColors().TEXT_PRIMARY,
-              border: `1px solid ${getThemeColors().BORDER}`,
-              boxShadow: `0 4px 6px ${getThemeColors().SHADOW}`,
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
               maxWidth: '300px',
               top: isNotificationVisible ? '16px' : '-60px',
               opacity: isNotificationVisible ? 0.95 : 0,
@@ -313,7 +310,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
           maxWidth="sm"
         >
           <div className="flex flex-col gap-4">
-            <p style={{ color: getThemeColors().TEXT_PRIMARY }}>
+            <p className="text-theme-text-primary">
               Are you sure you want to delete the pack <strong>&quot;{packToDelete}&quot;</strong>?
               {packs[packToDelete]?.length > 0 && (
                 <span> This will delete {packs[packToDelete].length} prompt{packs[packToDelete].length !== 1 ? 's' : ''}.</span>
@@ -330,7 +327,7 @@ What type of SFW video prompt pack would you like me to create? (Describe the th
                 onClick={confirmDeletePack}
                 variant="default"
                 style={{
-                  backgroundColor: getThemeColors().DANGER,
+                  backgroundColor: 'var(--theme-danger)',
                   color: '#fff',
                 }}
               >

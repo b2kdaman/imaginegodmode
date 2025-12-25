@@ -4,7 +4,6 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { useSettingsStore } from '@/store/useSettingsStore';
 
 export interface GlowAnimationConfig {
   /** Width of the glow beam in pixels (default: 80px) */
@@ -13,8 +12,6 @@ export interface GlowAnimationConfig {
   duration?: number;
   /** Rotation angle in degrees (default: 25deg) */
   rotation?: number;
-  /** Glow color opacity 0-100 (default: 60) */
-  opacity?: number;
   /** Enable scale transform on hover (default: true) */
   enableScale?: boolean;
   /** Scale factor (default: 1.05) */
@@ -30,15 +27,11 @@ export const useGlowAnimation = (config: GlowAnimationConfig = {}) => {
     width = 80,
     duration = 0.8,
     rotation = 25,
-    opacity = 60,
     enableScale = true,
     scaleFactor = 1.05,
     enableShadow = true,
     shadowBlur = 20,
   } = config;
-
-  const { getThemeColors } = useSettingsStore();
-  const colors = getThemeColors();
 
   const [isHovered, setIsHovered] = useState(false);
   const [animationKey, setAnimationKey] = useState(0);
@@ -75,11 +68,11 @@ export const useGlowAnimation = (config: GlowAnimationConfig = {}) => {
     setAnimationKey(prev => prev + 1);
 
     // Apply hover styles
-    e.currentTarget.style.backgroundColor = `${colors.BACKGROUND_LIGHT}aa`;
-    e.currentTarget.style.color = colors.TEXT_HOVER;
+    e.currentTarget.style.backgroundColor = `var(--color-bg-light)`;
+    e.currentTarget.style.color = `var(--color-text-hover)`;
 
     if (enableShadow) {
-      e.currentTarget.style.boxShadow = `0 0 ${shadowBlur}px ${colors.TEXT_HOVER}40, 0 0 ${shadowBlur * 2}px ${colors.TEXT_HOVER}20`;
+      e.currentTarget.style.boxShadow = `0 0 ${shadowBlur}px var(--color-text-hover), 0 0 ${shadowBlur * 2}px var(--color-text-hover)`;
     }
 
     if (enableScale) {
@@ -95,8 +88,8 @@ export const useGlowAnimation = (config: GlowAnimationConfig = {}) => {
     setIsHovered(false);
 
     // Reset styles
-    e.currentTarget.style.backgroundColor = `${colors.BACKGROUND_MEDIUM}aa`;
-    e.currentTarget.style.color = colors.TEXT_SECONDARY;
+    e.currentTarget.style.backgroundColor = `var(--color-bg-medium)`;
+    e.currentTarget.style.color = `var(--color-text-secondary)`;
     e.currentTarget.style.boxShadow = 'none';
 
     if (enableScale) {
@@ -114,7 +107,7 @@ export const useGlowAnimation = (config: GlowAnimationConfig = {}) => {
         key={animationKey}
         className="absolute pointer-events-none"
         style={{
-          background: `linear-gradient(90deg, transparent 0%, ${colors.TEXT_HOVER}${opacity} 50%, transparent 100%)`,
+          background: `linear-gradient(90deg, transparent 0%, var(--color-text-hover) 50%, transparent 100%)`,
           width: `${width}px`,
           height: '200%',
           top: '-50%',
@@ -146,15 +139,11 @@ export const useMultiGlowAnimation = (config: GlowAnimationConfig = {}) => {
     width = 60,
     duration = 0.8,
     rotation = 25,
-    opacity = 60,
     enableScale = true,
     scaleFactor = 1.03,
     enableShadow = true,
     shadowBlur = 15,
   } = config;
-
-  const { getThemeColors } = useSettingsStore();
-  const colors = getThemeColors();
 
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [animationKeys, setAnimationKeys] = useState<Record<string, number>>({});
@@ -196,11 +185,11 @@ export const useMultiGlowAnimation = (config: GlowAnimationConfig = {}) => {
     setAnimationKeys(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
 
     // Apply hover styles
-    e.currentTarget.style.backgroundColor = customStyles?.backgroundColor || `${colors.BACKGROUND_LIGHT}aa`;
-    e.currentTarget.style.color = customStyles?.color || colors.TEXT_HOVER;
+    e.currentTarget.style.backgroundColor = customStyles?.backgroundColor || `var(--color-bg-light)`;
+    e.currentTarget.style.color = customStyles?.color || `var(--color-text-hover)`;
 
     if (enableShadow) {
-      e.currentTarget.style.boxShadow = `0 0 ${shadowBlur}px ${colors.TEXT_HOVER}30`;
+      e.currentTarget.style.boxShadow = `0 0 ${shadowBlur}px var(--color-text-hover)`;
     }
 
     if (enableScale) {
@@ -220,8 +209,8 @@ export const useMultiGlowAnimation = (config: GlowAnimationConfig = {}) => {
     setHoveredId(null);
 
     // Reset styles
-    e.currentTarget.style.backgroundColor = resetStyles?.backgroundColor || `${colors.BACKGROUND_MEDIUM}aa`;
-    e.currentTarget.style.color = resetStyles?.color || colors.TEXT_SECONDARY;
+    e.currentTarget.style.backgroundColor = resetStyles?.backgroundColor || `var(--color-bg-medium)`;
+    e.currentTarget.style.color = resetStyles?.color || `var(--color-text-secondary)`;
     e.currentTarget.style.boxShadow = 'none';
 
     if (enableScale) {
@@ -239,7 +228,7 @@ export const useMultiGlowAnimation = (config: GlowAnimationConfig = {}) => {
         key={animationKeys[id]}
         className="absolute pointer-events-none"
         style={{
-          background: `linear-gradient(90deg, transparent 0%, ${colors.TEXT_HOVER}${opacity} 50%, transparent 100%)`,
+          background: `linear-gradient(90deg, transparent 0%, var(--color-text-hover) 50%, transparent 100%)`,
           width: `${width}px`,
           height: '200%',
           top: '-50%',

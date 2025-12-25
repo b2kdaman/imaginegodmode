@@ -38,7 +38,6 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
   processedCount = 0,
   totalCount = 0,
 }) => {
-  const colors = getThemeColors();
   const { t } = useTranslation();
   const {
     selectedIds,
@@ -133,9 +132,9 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
             processedCount={processedCount}
             totalCount={totalCount}
             label={t('common.processing')}
-            backgroundColor={colors.BACKGROUND_MEDIUM}
-            progressColor={colors.SUCCESS}
-            textColor={colors.TEXT_SECONDARY}
+            backgroundColor="var(--theme-bg-medium)"
+            progressColor="var(--theme-success)"
+            textColor="var(--theme-text-secondary)"
           />
         )}
 
@@ -153,8 +152,8 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
           selectedIds={selectedIds}
           isProcessing={isProcessing}
           onItemClick={toggleSelection}
-          getBorderColor={(isSelected) => isSelected ? colors.SUCCESS : colors.BORDER}
-          colors={colors}
+          getBorderColor={(isSelected) => isSelected ? 'var(--theme-success)' : 'var(--theme-border)'}
+          colors={getThemeColors()}
           renderOverlay={(post, isSelected) => (
             <>
               {/* Colored overlay */}
@@ -162,7 +161,7 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
                 className="absolute inset-0 pointer-events-none"
                 style={{
                   backgroundColor: isSelected
-                    ? `${colors.SUCCESS}33`
+                    ? 'color-mix(in srgb, var(--theme-success) 20%, transparent)'
                     : 'rgba(0, 0, 0, 0.5)',
                 }}
               />
@@ -172,7 +171,7 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
                 disabled={isProcessing}
                 className="absolute bottom-2 right-2 rounded-full p-2"
                 style={{
-                  backgroundColor: isSelected ? colors.SUCCESS : colors.BACKGROUND_MEDIUM,
+                  backgroundColor: isSelected ? 'var(--theme-success)' : 'var(--theme-bg-medium)',
                   cursor: isProcessing ? 'not-allowed' : 'pointer',
                   opacity: 0.5,
                 }}

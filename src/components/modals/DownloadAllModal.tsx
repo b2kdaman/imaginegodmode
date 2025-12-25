@@ -28,7 +28,6 @@ export const DownloadAllModal: React.FC<DownloadAllModalProps> = ({
   onConfirm,
   getThemeColors,
 }) => {
-  const colors = getThemeColors();
   const { t } = useTranslation();
   const {
     selectedIds,
@@ -112,14 +111,7 @@ export const DownloadAllModal: React.FC<DownloadAllModalProps> = ({
     >
       <>
         {/* Warning Message */}
-        <div
-          className="mb-3 p-3 rounded text-xs"
-          style={{
-            backgroundColor: `${colors.BACKGROUND_MEDIUM}`,
-            color: colors.TEXT_SECONDARY,
-            border: `1px solid ${colors.BORDER}`,
-          }}
-        >
+        <div className="mb-3 p-3 rounded text-xs bg-theme-bg-medium text-theme-text-secondary border border-theme-border">
           {t('modals.download.warningMessage')}
         </div>
 
@@ -135,14 +127,14 @@ export const DownloadAllModal: React.FC<DownloadAllModalProps> = ({
           selectedIds={selectedIds}
           isProcessing={false}
           onItemClick={toggleSelection}
-          getBorderColor={(isSelected) => isSelected ? colors.SUCCESS : colors.BORDER}
-          colors={colors}
+          getBorderColor={(isSelected) => isSelected ? 'var(--theme-success)' : 'var(--theme-border)'}
+          colors={getThemeColors()}
           renderOverlay={(_post, isSelected) => (
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
                 backgroundColor: isSelected
-                  ? `${colors.SUCCESS}33`
+                  ? 'color-mix(in srgb, var(--theme-success) 20%, transparent)'
                   : 'rgba(0, 0, 0, 0.5)',
               }}
             />

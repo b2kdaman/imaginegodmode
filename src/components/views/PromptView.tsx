@@ -60,7 +60,6 @@ export const PromptView: React.FC = () => {
   const { getThemeColors, rememberPostState, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, listLimit } = useSettingsStore();
   const { getNextPostId, getPrevPostId, setCurrentPostId, setPosts } = usePostsStore();
   const { t } = useTranslation();
-  const colors = getThemeColors();
 
   const currentPrompt = getCurrentPrompt();
   const promptCount = getCurrentPromptCount();
@@ -418,8 +417,7 @@ export const PromptView: React.FC = () => {
       {/* Prefix input */}
       <div className="mt-3">
         <label
-          className="text-xs mb-1 block"
-          style={{ color: colors.TEXT_SECONDARY }}
+          className="text-xs mb-1 block text-secondary"
         >
           Prefix (applied when pressing Make)
         </label>
@@ -428,14 +426,7 @@ export const PromptView: React.FC = () => {
           value={prefix}
           onChange={(e) => handlePrefixChange(e.target.value)}
           placeholder={t('prompt.prefixPlaceholder')}
-          className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none backdrop-blur-xl"
-          style={{
-            backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
-            color: colors.TEXT_PRIMARY,
-            border: `1px solid ${colors.BORDER}`,
-            WebkitBackdropFilter: 'blur(12px)',
-            backdropFilter: 'blur(12px)',
-          }}
+          className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none backdrop-blur-xl bg-medium/[.67] text-primary border border-border"
         />
       </div>
 
@@ -444,14 +435,7 @@ export const PromptView: React.FC = () => {
         value={currentPrompt?.text || ''}
         onChange={(e) => updatePromptText(e.target.value)}
         placeholder={t('prompt.placeholder')}
-        className="w-full h-32 px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar mt-3 backdrop-blur-xl"
-        style={{
-          backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
-          color: colors.TEXT_PRIMARY,
-          border: `1px solid ${colors.BORDER}`,
-          WebkitBackdropFilter: 'blur(12px)',
-          backdropFilter: 'blur(12px)',
-        }}
+        className="w-full h-32 px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar mt-3 backdrop-blur-xl bg-medium/[.67] text-primary border border-border"
       />
 
       <div className="flex flex-col gap-3 mt-3">
@@ -483,7 +467,7 @@ export const PromptView: React.FC = () => {
               tooltip={t('prompt.previousTooltip')}
             />
 
-            <span className="text-sm" style={{ color: colors.TEXT_SECONDARY }}>
+            <span className="text-sm text-secondary">
               {currentIndex + 1} / {promptCount}
             </span>
 
@@ -565,24 +549,7 @@ export const PromptView: React.FC = () => {
           <Button
             onClick={handlePlayClick}
             icon={mdiPlay}
-            iconColor={colors.BACKGROUND_DARK}
-            className="flex-1"
-            style={{
-              backgroundColor: colors.TEXT_PRIMARY,
-              color: colors.BACKGROUND_DARK,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
-              e.currentTarget.style.color = colors.BACKGROUND_DARK;
-              e.currentTarget.style.opacity = '0.9';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
-              e.currentTarget.style.color = colors.BACKGROUND_DARK;
-              e.currentTarget.style.opacity = '1';
-              e.currentTarget.style.boxShadow = 'none';
-              e.currentTarget.style.transform = 'scale(1)';
-            }}
+            className="flex-1 bg-primary text-dark hover:bg-primary hover:text-dark hover:opacity-90"
             disabled={isPromptAndPrefixEmpty}
             tooltip={t('prompt.makeTooltip')}
           >
@@ -613,24 +580,9 @@ export const PromptView: React.FC = () => {
             <Button
               onClick={handleMakeAndNextClick}
               icon={mdiSkipNext}
-              iconColor={colors.BACKGROUND_DARK}
-              className="!rounded-r-none"
+              className="!rounded-r-none bg-primary text-dark hover:bg-primary hover:text-dark hover:opacity-90"
               style={{
                 width: '80%',
-                backgroundColor: colors.TEXT_PRIMARY,
-                color: colors.BACKGROUND_DARK,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.color = colors.BACKGROUND_DARK;
-                e.currentTarget.style.opacity = '0.9';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.color = colors.BACKGROUND_DARK;
-                e.currentTarget.style.opacity = '1';
-                e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.transform = 'scale(1)';
               }}
               disabled={!getNextPostId() || isPromptAndPrefixEmpty}
               tooltip={t('prompt.makeAndNextTooltip')}
@@ -650,27 +602,10 @@ export const PromptView: React.FC = () => {
                 }
               }}
               tooltip={isAutoRunning ? t('prompt.stopAutoTooltip') : t('prompt.autoMakeNextTooltip')}
-              className="!rounded-l-none !border-l-0"
+              className={(autoNavigate || isAutoRunning) ? "!rounded-l-none !border-l-0 bg-primary border-primary hover:bg-primary hover:border-primary hover:opacity-90" : "!rounded-l-none !border-l-0"}
               style={{
                 width: '20%',
-                ...((autoNavigate || isAutoRunning) && {
-                  backgroundColor: colors.TEXT_PRIMARY,
-                  borderColor: colors.TEXT_PRIMARY,
-                }),
               }}
-              iconColor={(autoNavigate || isAutoRunning) ? colors.BACKGROUND_DARK : undefined}
-              onMouseEnter={(autoNavigate || isAutoRunning) ? (e) => {
-                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.borderColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.opacity = '0.9';
-              } : undefined}
-              onMouseLeave={(autoNavigate || isAutoRunning) ? (e) => {
-                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.borderColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.opacity = '1';
-                e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.transform = 'scale(1)';
-              } : undefined}
               disabled={!getNextPostId() || isPromptAndPrefixEmpty}
             />
           </div>

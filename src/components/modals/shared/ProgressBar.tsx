@@ -25,7 +25,10 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
 }) => {
   return (
     <div className="mb-3">
-      <div className="flex justify-between text-xs mb-1 items-center" style={{ color: textColor }}>
+      <div
+        className="flex justify-between text-xs mb-1 items-center"
+        style={{ color: textColor }}
+      >
         <span className="flex items-center gap-1">
           <Icon path={mdiLoading} size={0.6} className="animate-spin" />
           {label}
@@ -38,11 +41,10 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       >
         <div
           key={`progress-${processedCount}`}
-          className="h-full"
+          className="h-full transition-[width]"
           style={{
             width: `${totalCount > 0 ? (processedCount / totalCount) * 100 : 0}%`,
             backgroundColor: progressColor,
-            transition: 'width 0.3s ease-in-out',
           }}
         />
       </div>

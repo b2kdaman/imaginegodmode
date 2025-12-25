@@ -32,7 +32,6 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 }) => {
   const { packs, setCurrentPack, setCurrentIndex } = usePromptStore();
   const { t } = useTranslation();
-  const colors = getThemeColors();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -111,7 +110,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       {/* Search Input */}
       <div className="relative mb-3">
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-          <Icon path={mdiMagnify} size={0.7} color={colors.TEXT_SECONDARY} />
+          <Icon path={mdiMagnify} size={0.7} color="var(--theme-text-secondary)" />
         </div>
         <input
           ref={inputRef}
@@ -119,21 +118,13 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={t('modals.searchPrompts.placeholder')}
-          className="w-full pl-10 pr-3 py-2 rounded-lg text-sm focus:outline-none"
-          style={{
-            backgroundColor: colors.BACKGROUND_MEDIUM,
-            color: colors.TEXT_PRIMARY,
-            border: `1px solid ${colors.BORDER}`,
-          }}
+          className="w-full pl-10 pr-3 py-2 rounded-lg text-sm focus:outline-none bg-theme-bg-medium text-theme-text-primary border border-theme-border"
         />
       </div>
 
       {/* Result Count */}
       {searchQuery && (
-        <div
-          className="text-xs mb-2"
-          style={{ color: colors.TEXT_SECONDARY }}
-        >
+        <div className="text-xs mb-2 text-theme-text-secondary">
           {t('modals.searchPrompts.resultCount', { count: results.length })}
         </div>
       )}
@@ -141,10 +132,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       {/* Results List */}
       <div className="flex-1 overflow-y-scroll custom-scrollbar">
         {searchQuery && results.length === 0 ? (
-          <div
-            className="text-center py-8 text-sm"
-            style={{ color: colors.TEXT_SECONDARY }}
-          >
+          <div className="text-center py-8 text-sm text-theme-text-secondary">
             {t('modals.searchPrompts.noResults')}
           </div>
         ) : (
@@ -153,40 +141,19 @@ export const SearchModal: React.FC<SearchModalProps> = ({
               <button
                 key={`${result.packName}-${result.promptIndex}-${idx}`}
                 onClick={() => handleSelectResult(result)}
-                className="text-left p-3 rounded-lg transition-colors"
-                style={{
-                  backgroundColor: colors.BACKGROUND_MEDIUM,
-                  border: `1px solid ${colors.BORDER}`,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = colors.BACKGROUND_LIGHT;
-                  e.currentTarget.style.borderColor = colors.TEXT_SECONDARY;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
-                  e.currentTarget.style.borderColor = colors.BORDER;
-                }}
+                className="text-left p-3 rounded-lg transition-colors bg-theme-bg-medium border border-theme-border hover:bg-theme-bg-light hover:border-theme-text-secondary"
               >
                 {/* Prompt Text */}
-                <div
-                  className="text-sm mb-2 line-clamp-2"
-                  style={{ color: colors.TEXT_PRIMARY }}
-                >
+                <div className="text-sm mb-2 line-clamp-2 text-theme-text-primary">
                   {result.text}
                 </div>
 
                 {/* Pack Name and Prompt Number */}
                 <div className="flex items-center justify-between text-xs">
-                  <span
-                    className="font-medium truncate"
-                    style={{ color: colors.TEXT_SECONDARY }}
-                  >
+                  <span className="font-medium truncate text-theme-text-secondary">
                     {result.packName}
                   </span>
-                  <span
-                    className="ml-2 flex-shrink-0"
-                    style={{ color: colors.TEXT_SECONDARY, opacity: 0.5 }}
-                  >
+                  <span className="ml-2 flex-shrink-0 text-theme-text-secondary opacity-50">
                     {t('modals.searchPrompts.promptNumber', { number: result.promptIndex + 1 })}
                   </span>
                 </div>

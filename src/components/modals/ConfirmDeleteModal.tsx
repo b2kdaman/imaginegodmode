@@ -25,7 +25,6 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
   onConfirm,
   getThemeColors,
 }) => {
-  const colors = getThemeColors();
   const { t } = useTranslation();
 
   return (
@@ -49,7 +48,7 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
             iconSize={0.7}
             className="flex-1 text-xs"
             style={{
-              backgroundColor: colors.DANGER,
+              backgroundColor: 'var(--theme-danger)',
               color: '#fff',
             }}
           >
@@ -63,17 +62,14 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
         <div
           className="rounded-full p-3"
           style={{
-            backgroundColor: `${colors.DANGER}20`,
+            backgroundColor: 'color-mix(in srgb, var(--theme-danger) 33%, transparent)',
           }}
         >
-          <Icon path={mdiAlertCircle} size={1.5} color={colors.DANGER} />
+          <Icon path={mdiAlertCircle} size={1.5} color="var(--theme-danger)" />
         </div>
 
         <div className="text-center">
-          <p
-            className="text-sm mb-2"
-            style={{ color: colors.TEXT_PRIMARY }}
-          >
+          <p className="text-sm mb-2 text-theme-text-primary">
             {t('modals.confirmDelete.message', { packName })}
           </p>
         </div>

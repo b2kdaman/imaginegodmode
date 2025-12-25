@@ -275,7 +275,7 @@ export const PitView: React.FC = () => {
     <div className="flex flex-col w-full">
       {/* Status text */}
       {statusText && (
-        <div className="text-sm text-center mb-3" style={{ color: colors.TEXT_SECONDARY }}>
+        <div className="text-sm text-center mb-3 text-secondary">
           {statusText}
         </div>
       )}
@@ -292,16 +292,14 @@ export const PitView: React.FC = () => {
 
         {/* Image Preview */}
         <div
-          className="w-1/2 rounded-lg overflow-hidden relative flex items-center justify-center bg-white/20"
+          className="w-1/2 rounded-lg overflow-hidden relative flex items-center justify-center bg-white/20 border border-border"
           style={{
             height: '120px',
-            border: `1px solid ${colors.BORDER}`,
           }}
         >
           {posts.length === 0 ? (
             <div
-              className="w-full h-full flex items-center justify-center text-sm"
-              style={{ color: colors.TEXT_SECONDARY }}
+              className="w-full h-full flex items-center justify-center text-sm text-secondary"
             >
               No posts loaded
             </div>
@@ -309,8 +307,7 @@ export const PitView: React.FC = () => {
             <>
               {imageLoading && (
                 <div
-                  className="absolute inset-0 flex items-center justify-center"
-                  style={{ backgroundColor: `${colors.BACKGROUND_MEDIUM}aa` }}
+                  className="absolute inset-0 flex items-center justify-center bg-medium/[.67]"
                 >
                   <div className="animate-spin">
                     <Icon
@@ -332,8 +329,7 @@ export const PitView: React.FC = () => {
             </>
           ) : (
             <div
-              className="w-full h-full flex items-center justify-center text-sm"
-              style={{ color: colors.TEXT_SECONDARY }}
+              className="w-full h-full flex items-center justify-center text-sm text-secondary"
             >
               No preview available
             </div>
@@ -351,7 +347,7 @@ export const PitView: React.FC = () => {
 
       {/* Post counter */}
       {posts.length > 0 && (
-        <div className="text-xs text-center mb-3" style={{ color: colors.TEXT_SECONDARY }}>
+        <div className="text-xs text-center mb-3 text-secondary">
           {currentPostIndex + 1} / {posts.length}
           {isLoadingLikedPosts && ' (loading more...)'}
         </div>
@@ -359,7 +355,7 @@ export const PitView: React.FC = () => {
 
       {/* Loading indicator when no posts yet */}
       {posts.length === 0 && isLoadingLikedPosts && (
-        <div className="text-xs text-center mb-3 flex items-center justify-center gap-2" style={{ color: colors.TEXT_SECONDARY }}>
+        <div className="text-xs text-center mb-3 flex items-center justify-center gap-2 text-secondary">
           <Icon path={mdiLoading} size={0.5} className="animate-spin" />
           <span>Loading liked posts...</span>
         </div>
@@ -368,8 +364,7 @@ export const PitView: React.FC = () => {
       {/* Manual Mode Toggle */}
       <div className="flex items-center justify-between gap-2 mb-3">
         <label
-          className="text-sm cursor-pointer"
-          style={{ color: colors.TEXT_PRIMARY }}
+          className="text-sm cursor-pointer text-primary"
           htmlFor="manual-mode-toggle"
         >
           Manual Prompt
@@ -388,14 +383,7 @@ export const PitView: React.FC = () => {
           value={manualPrompt}
           onChange={(e) => setManualPrompt(e.target.value)}
           placeholder={t('pit.prompt.placeholder')}
-          className="w-full h-20 px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar mb-3 backdrop-blur-xl"
-          style={{
-            backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
-            color: colors.TEXT_PRIMARY,
-            border: `1px solid ${colors.BORDER}`,
-            WebkitBackdropFilter: 'blur(12px)',
-            backdropFilter: 'blur(12px)',
-          }}
+          className="w-full h-20 px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar mb-3 backdrop-blur-xl bg-medium/[.67] text-primary border border-border"
         />
       ) : (
         // Pack Mode
@@ -403,8 +391,7 @@ export const PitView: React.FC = () => {
           {/* Pack Dropdown */}
           <div className="flex flex-col gap-2">
             <label
-              className="text-xs"
-              style={{ color: colors.TEXT_SECONDARY }}
+              className="text-xs text-secondary"
             >
               Pack
             </label>
@@ -423,14 +410,7 @@ export const PitView: React.FC = () => {
           {packPrompts.length > 0 ? (
             <>
               <div
-                className="w-full px-3 py-2 rounded-lg text-sm min-h-[80px] max-h-[80px] overflow-y-auto custom-scrollbar backdrop-blur-xl"
-                style={{
-                  backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
-                  color: colors.TEXT_PRIMARY,
-                  border: `1px solid ${colors.BORDER}`,
-                  WebkitBackdropFilter: 'blur(12px)',
-                  backdropFilter: 'blur(12px)',
-                }}
+                className="w-full px-3 py-2 rounded-lg text-sm min-h-[80px] max-h-[80px] overflow-y-auto custom-scrollbar backdrop-blur-xl bg-medium/[.67] text-primary border border-border"
               >
                 {currentPackPrompt?.text || ''}
               </div>
@@ -445,7 +425,7 @@ export const PitView: React.FC = () => {
                   tooltip={t('pit.navigation.previousPrompt')}
                 />
 
-                <span className="text-sm" style={{ color: colors.TEXT_SECONDARY }}>
+                <span className="text-sm text-secondary">
                   {selectedPromptIndex + 1} / {packPrompts.length}
                 </span>
 
@@ -460,12 +440,7 @@ export const PitView: React.FC = () => {
             </>
           ) : (
             <div
-              className="w-full px-3 py-2 rounded-lg text-sm text-center"
-              style={{
-                backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
-                color: colors.TEXT_SECONDARY,
-                border: `1px solid ${colors.BORDER}`,
-              }}
+              className="w-full px-3 py-2 rounded-lg text-sm text-center bg-medium/[.67] text-secondary border border-border"
             >
               No prompts in this pack
             </div>
@@ -476,8 +451,7 @@ export const PitView: React.FC = () => {
       {/* Tries Input */}
       <div className="flex items-center justify-between gap-2 mb-3">
         <label
-          className="text-sm"
-          style={{ color: colors.TEXT_PRIMARY }}
+          className="text-sm text-primary"
           htmlFor="tries-input"
         >
           Tries
@@ -489,14 +463,9 @@ export const PitView: React.FC = () => {
           max={10}
           value={tries}
           onChange={(e) => setTries(Number(e.target.value))}
-          className="px-3 py-2 rounded-lg text-sm focus:outline-none backdrop-blur-xl"
+          className="px-3 py-2 rounded-lg text-sm focus:outline-none backdrop-blur-xl bg-medium/[.67] text-primary border border-border"
           style={{
             width: '80px',
-            backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
-            color: colors.TEXT_PRIMARY,
-            border: `1px solid ${colors.BORDER}`,
-            WebkitBackdropFilter: 'blur(12px)',
-            backdropFilter: 'blur(12px)',
           }}
         />
       </div>
@@ -504,8 +473,7 @@ export const PitView: React.FC = () => {
       {/* Stop on First Success Toggle */}
       <div className="flex items-center justify-between gap-2 mb-3">
         <label
-          className="text-sm cursor-pointer"
-          style={{ color: colors.TEXT_PRIMARY }}
+          className="text-sm cursor-pointer text-primary"
           htmlFor="stop-on-success-toggle"
         >
           Stop on First Success
@@ -520,28 +488,21 @@ export const PitView: React.FC = () => {
       {/* Progress Display */}
       {isChurning && (
         <div
-          className="px-3 py-2 rounded-lg text-sm mb-3 backdrop-blur-xl"
-          style={{
-            backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
-            color: colors.TEXT_PRIMARY,
-            border: `1px solid ${colors.BORDER}`,
-            WebkitBackdropFilter: 'blur(12px)',
-            backdropFilter: 'blur(12px)',
-          }}
+          className="px-3 py-2 rounded-lg text-sm mb-3 backdrop-blur-xl bg-medium/[.67] text-primary border border-border"
         >
           <div className="flex flex-col gap-1">
             <div className="flex justify-between items-center">
-              <span style={{ color: colors.TEXT_SECONDARY }}>Progress:</span>
+              <span className="text-secondary">Progress:</span>
               <span className="font-medium">
                 {currentAttempt} / {tries}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span style={{ color: colors.TEXT_SECONDARY }}>Succeeded:</span>
+              <span className="text-secondary">Succeeded:</span>
               <span className="font-medium text-green-500">{succeededCount}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span style={{ color: colors.TEXT_SECONDARY }}>Failed:</span>
+              <span className="text-secondary">Failed:</span>
               <span className="font-medium text-red-500">{failedCount}</span>
             </div>
           </div>
@@ -551,13 +512,10 @@ export const PitView: React.FC = () => {
       {/* Error Message */}
       {errorMessage && (
         <div
-          className="px-3 py-2 rounded-lg text-sm mb-3 backdrop-blur-xl"
+          className="px-3 py-2 rounded-lg text-sm mb-3 backdrop-blur-xl bg-medium/[.67] border"
           style={{
-            backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
             color: '#ff4444',
-            border: `1px solid #ff4444`,
-            WebkitBackdropFilter: 'blur(12px)',
-            backdropFilter: 'blur(12px)',
+            borderColor: '#ff4444',
           }}
         >
           {errorMessage}
@@ -585,7 +543,7 @@ export const PitView: React.FC = () => {
       </Button>
 
       {/* Under construction message */}
-      <div className="text-xs text-center mt-2" style={{ color: colors.TEXT_SECONDARY }}>
+      <div className="text-xs text-center mt-2 text-secondary">
         {t('pit.status.underConstruction')}
       </div>
     </div>

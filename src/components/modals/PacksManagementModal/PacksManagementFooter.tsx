@@ -15,16 +15,15 @@ export const PacksManagementFooter: React.FC<PacksManagementFooterProps> = ({
   onImport,
   onExport,
   onCopyGrokPrompt,
-  getThemeColors,
+  getThemeColors: _getThemeColors,
 }) => {
-  const colors = getThemeColors();
   const { t } = useTranslation();
 
   return (
     <div className="flex flex-col gap-3 w-full">
       {/* Import Mode Selection */}
       <div className="flex items-center gap-4 text-sm">
-        <span style={{ color: colors.TEXT_SECONDARY }}>
+        <span className="text-theme-text-secondary">
           {t('settings.importMode')}:
         </span>
         <label className="flex items-center gap-2 cursor-pointer">
@@ -33,9 +32,9 @@ export const PacksManagementFooter: React.FC<PacksManagementFooterProps> = ({
             value="add"
             checked={importMode === 'add'}
             onChange={() => onImportModeChange('add')}
-            style={{ accentColor: colors.SUCCESS }}
+            style={{ accentColor: 'var(--theme-success)' }}
           />
-          <span style={{ color: colors.TEXT_PRIMARY }}>
+          <span className="text-theme-text-primary">
             {t('settings.importModeAdd')}
           </span>
         </label>
@@ -45,9 +44,9 @@ export const PacksManagementFooter: React.FC<PacksManagementFooterProps> = ({
             value="replace"
             checked={importMode === 'replace'}
             onChange={() => onImportModeChange('replace')}
-            style={{ accentColor: colors.SUCCESS }}
+            style={{ accentColor: 'var(--theme-success)' }}
           />
-          <span style={{ color: colors.TEXT_PRIMARY }}>
+          <span className="text-theme-text-primary">
             {t('settings.importModeReplace')}
           </span>
         </label>

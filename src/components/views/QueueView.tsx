@@ -77,7 +77,7 @@ export const QueueView: React.FC = () => {
   if (totalCount === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <div className="text-base opacity-50" style={{ color: colors.TEXT_SECONDARY }}>
+        <div className="text-base opacity-50 text-secondary">
           Queue is empty
         </div>
       </div>
@@ -88,33 +88,31 @@ export const QueueView: React.FC = () => {
     <div className="flex flex-col">
       {/* Header */}
       <div className="pb-3">
-        <h2 className="text-base font-medium" style={{ color: colors.TEXT_PRIMARY }}>
+        <h2 className="text-base font-medium text-primary">
           Job Queue
         </h2>
       </div>
 
       {/* Current job progress */}
       {processingJobs.length > 0 && processingJobs[0] && (
-        <div className="mb-3 pb-3" style={{ borderBottom: `1px solid ${colors.BORDER}` }}>
+        <div className="mb-3 pb-3 border-b border-border">
           <div className="flex items-center justify-between text-xs mb-1">
-            <span style={{ color: colors.TEXT_SECONDARY }}>
+            <span className="text-secondary">
               {getJobDescription(processingJobs[0])}
             </span>
-            <span style={{ color: colors.GLOW_PRIMARY }}>{Math.round(processingJobs[0].progress)}%</span>
+            <span className="text-glow-primary">{Math.round(processingJobs[0].progress)}%</span>
           </div>
           <div
-            className="w-full h-1.5 rounded-full overflow-hidden"
-            style={{ backgroundColor: colors.BACKGROUND_MEDIUM }}
+            className="w-full h-1.5 rounded-full overflow-hidden bg-medium"
           >
             <div
-              className="h-full transition-all duration-300"
+              className="h-full transition-all duration-300 bg-glow-primary"
               style={{
                 width: `${processingJobs[0].progress}%`,
-                backgroundColor: colors.GLOW_PRIMARY,
               }}
             />
           </div>
-          <div className="text-xs mt-1 flex items-center gap-1" style={{ color: colors.TEXT_SECONDARY }}>
+          <div className="text-xs mt-1 flex items-center gap-1 text-secondary">
             Processing: {processingJobs[0].processedItems}/{processingJobs[0].totalItems}
           </div>
         </div>
@@ -122,23 +120,22 @@ export const QueueView: React.FC = () => {
 
       {/* Stats */}
       <div
-        className="mb-3 pb-3 flex gap-3 text-xs"
-        style={{ borderBottom: `1px solid ${colors.BORDER}` }}
+        className="mb-3 pb-3 flex gap-3 text-xs border-b border-border"
       >
-        <span style={{ color: colors.TEXT_SECONDARY }}>
-          <span style={{ color: colors.TEXT_PRIMARY }}>{pendingCount}</span> pending
+        <span className="text-secondary">
+          <span className="text-primary">{pendingCount}</span> pending
         </span>
         {processingJobs.length > 0 && (
-          <span style={{ color: colors.TEXT_SECONDARY }}>
-            <span style={{ color: colors.GLOW_PRIMARY }}>{processingJobs.length}</span> processing
+          <span className="text-secondary">
+            <span className="text-glow-primary">{processingJobs.length}</span> processing
           </span>
         )}
-        <span style={{ color: colors.TEXT_SECONDARY }}>
-          <span style={{ color: colors.SUCCESS }}>{completedCount}</span> done
+        <span className="text-secondary">
+          <span className="text-success">{completedCount}</span> done
         </span>
         {failedCount > 0 && (
-          <span style={{ color: colors.TEXT_SECONDARY }}>
-            <span style={{ color: UI_COLORS.DANGER }}>{failedCount}</span> failed
+          <span className="text-secondary">
+            <span className="text-danger">{failedCount}</span> failed
           </span>
         )}
       </div>
@@ -151,8 +148,7 @@ export const QueueView: React.FC = () => {
           return (
             <div
               key={job.id}
-              className="py-2 flex items-start gap-2 text-xs"
-              style={{ borderBottom: `1px solid ${colors.BORDER}20` }}
+              className="py-2 flex items-start gap-2 text-xs border-b border-border/[.13]"
             >
               {/* Status icon */}
               <div className="pt-0.5">{getStatusIcon(job.status)}</div>
@@ -166,8 +162,7 @@ export const QueueView: React.FC = () => {
                     color={info.color || colors.TEXT_PRIMARY}
                   />
                   <span
-                    className="font-medium truncate"
-                    style={{ color: colors.TEXT_PRIMARY }}
+                    className="font-medium truncate text-primary"
                   >
                     {getJobDescription(job)}
                   </span>
@@ -176,14 +171,12 @@ export const QueueView: React.FC = () => {
                 {/* Progress bar for processing jobs */}
                 {job.status === 'processing' && (
                   <div
-                    className="w-full h-1 rounded-full overflow-hidden mt-1"
-                    style={{ backgroundColor: colors.BACKGROUND_MEDIUM }}
+                    className="w-full h-1 rounded-full overflow-hidden mt-1 bg-medium"
                   >
                     <div
-                      className="h-full transition-all duration-300"
+                      className="h-full transition-all duration-300 bg-glow-primary"
                       style={{
                         width: `${job.progress}%`,
-                        backgroundColor: colors.GLOW_PRIMARY,
                       }}
                     />
                   </div>
@@ -192,8 +185,7 @@ export const QueueView: React.FC = () => {
                 {/* Error message for failed jobs */}
                 {job.status === 'failed' && job.error && (
                   <div
-                    className="text-[10px] mt-1 opacity-70"
-                    style={{ color: UI_COLORS.DANGER }}
+                    className="text-[10px] mt-1 opacity-70 text-danger"
                   >
                     {job.error}
                   </div>
@@ -202,8 +194,7 @@ export const QueueView: React.FC = () => {
 
               {/* Status text */}
               <span
-                className="text-[10px] opacity-50 whitespace-nowrap"
-                style={{ color: colors.TEXT_SECONDARY }}
+                className="text-[10px] opacity-50 whitespace-nowrap text-secondary"
               >
                 {job.status === 'processing'
                   ? `${job.processedItems}/${job.totalItems}`
@@ -214,8 +205,7 @@ export const QueueView: React.FC = () => {
         })}
         {jobs.length > 20 && (
           <div
-            className="py-2 text-xs text-center"
-            style={{ color: colors.TEXT_SECONDARY }}
+            className="py-2 text-xs text-center text-secondary"
           >
             +{jobs.length - 20} more jobs
           </div>
@@ -232,11 +222,7 @@ export const QueueView: React.FC = () => {
           pendingCount > 0 && (
             <Button
               onClick={startProcessing}
-              className="flex-1 !bg-white"
-              style={{
-                backgroundColor: colors.GLOW_PRIMARY,
-                color: colors.BACKGROUND_DARK,
-              }}
+              className="flex-1 bg-glow-primary text-dark"
             >
               Resume
             </Button>

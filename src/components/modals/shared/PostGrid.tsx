@@ -34,7 +34,7 @@ export const PostGrid: React.FC<PostGridProps> = ({
   renderOverlay,
   renderBadges,
   getBorderColor,
-  colors,
+  colors: _colors,
 }) => {
   return (
     <div className="flex-1 overflow-y-scroll mb-3">
@@ -77,14 +77,7 @@ export const PostGrid: React.FC<PostGridProps> = ({
 
               {/* Video Count Badge */}
               {post.videoCount !== undefined && post.videoCount > 0 && (
-                <div
-                  className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded text-xs font-semibold flex items-center gap-0.5"
-                  style={{
-                    backgroundColor: colors.BACKGROUND_DARK,
-                    color: colors.TEXT_PRIMARY,
-                    opacity: 0.5,
-                  }}
-                >
+                <div className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded text-xs font-semibold flex items-center gap-0.5 bg-theme-bg-dark text-theme-text-primary opacity-50">
                   <Icon path={mdiFilmstripBoxMultiple} size={0.5} />
                   {post.videoCount}
                 </div>

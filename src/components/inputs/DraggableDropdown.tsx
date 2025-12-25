@@ -4,7 +4,6 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useSettingsStore } from '@/store/useSettingsStore';
 import { Icon } from '../common/Icon';
 import { mdiChevronDown, mdiDrag } from '@mdi/js';
 import { Z_INDEX } from '@/utils/constants';
@@ -24,22 +23,12 @@ interface DraggableDropdownProps {
   className?: string;
 }
 
-interface ThemeColors {
-  BACKGROUND_DARK: string;
-  BACKGROUND_MEDIUM: string;
-  BACKGROUND_LIGHT: string;
-  TEXT_PRIMARY: string;
-  TEXT_SECONDARY: string;
-  TEXT_HOVER?: string;
-}
-
 interface DraggableOptionProps {
   option: DropdownOption;
   index: number;
   isSelected: boolean;
   onClick: () => void;
   onMove: (dragIndex: number, hoverIndex: number) => void;
-  colors: ThemeColors;
 }
 
 const DraggableOption: React.FC<DraggableOptionProps> = ({
@@ -48,7 +37,6 @@ const DraggableOption: React.FC<DraggableOptionProps> = ({
   isSelected,
   onClick,
   onMove,
-  colors,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -93,20 +81,19 @@ const DraggableOption: React.FC<DraggableOptionProps> = ({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       onClick={onClick}
-      className="w-full px-3 py-2 text-sm text-left transition-all duration-300 flex items-center gap-2"
-      style={{
-        backgroundColor: isDragOver
-          ? colors.BACKGROUND_DARK
+      className={`w-full px-3 py-2 text-sm text-left transition-all duration-300 flex items-center gap-2 border-none ${
+        isDragOver
+          ? 'bg-theme-bg-dark'
           : isSelected
-          ? colors.BACKGROUND_LIGHT
-          : colors.BACKGROUND_MEDIUM,
-        color: isSelected ? colors.TEXT_HOVER || colors.TEXT_PRIMARY : colors.TEXT_PRIMARY,
-        border: 'none',
+          ? 'bg-theme-bg-light text-theme-text-hover'
+          : 'bg-theme-bg-medium text-theme-text-primary'
+      }`}
+      style={{
         opacity: isDragging ? 0.5 : 1,
         cursor: isDragging ? 'grabbing' : 'pointer',
       }}
     >
-      <Icon path={mdiDrag} size={0.5} color={colors.TEXT_SECONDARY} />
+      <Icon path={mdiDrag} size={0.5} color="var(--color-text-secondary)" />
       <span className="flex-1">{option.label}</span>
     </button>
   );
@@ -120,8 +107,6 @@ export const DraggableDropdown: React.FC<DraggableDropdownProps> = ({
   disabled = false,
   className = '',
 }) => {
-  const { getThemeColors } = useSettingsStore();
-  const colors = getThemeColors();
   const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState(initialOptions);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -241,27 +226,19 @@ export const DraggableDropdown: React.FC<DraggableDropdownProps> = ({
           type="button"
           onClick={handleToggle}
           disabled={disabled}
-          className="pl-3 pr-8 py-2 rounded-full text-sm cursor-pointer focus:outline-none transition-all duration-300 text-left relative block overflow-hidden"
-          style={{
-            backgroundColor: colors.BACKGROUND_MEDIUM,
-            color: colors.TEXT_PRIMARY,
-            border: `1px solid ${colors.BORDER}`,
-            opacity: disabled ? 0.5 : 1,
-            cursor: disabled ? 'not-allowed' : 'pointer',
-            width: '100%',
-          }}
+          className="pl-3 pr-8 py-2 rounded-full text-sm focus:outline-none transition-all duration-300 text-left relative block overflow-hidden w-full bg-theme-bg-medium text-theme-text-primary border border-theme-border disabled:opacity-50 disabled:cursor-not-allowed"
           onMouseEnter={(e) => {
             if (!disabled) {
               triggerGlow.handleMouseEnter(e);
-              e.currentTarget.style.backgroundColor = colors.BACKGROUND_LIGHT;
-              e.currentTarget.style.color = colors.TEXT_PRIMARY;
+              e.currentTarget.style.backgroundColor = 'var(--color-bg-light)';
+              e.currentTarget.style.color = 'var(--color-text-primary)';
             }
           }}
           onMouseLeave={(e) => {
             if (!disabled) {
               triggerGlow.handleMouseLeave(e);
-              e.currentTarget.style.backgroundColor = colors.BACKGROUND_MEDIUM;
-              e.currentTarget.style.color = colors.TEXT_PRIMARY;
+              e.currentTarget.style.backgroundColor = 'var(--color-bg-medium)';
+              e.currentTarget.style.color = 'var(--color-text-primary)';
             }
           }}
         >
@@ -282,7 +259,7 @@ export const DraggableDropdown: React.FC<DraggableDropdownProps> = ({
             <Icon
               path={mdiChevronDown}
               size={0.6}
-              color={colors.TEXT_PRIMARY}
+              color="var(--color-text-primary)"
               className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
             />
           </span>
@@ -293,15 +270,13 @@ export const DraggableDropdown: React.FC<DraggableDropdownProps> = ({
       {isOpen && createPortal(
         <div
           ref={dropdownRef}
-          className="rounded-lg shadow-lg overflow-hidden"
+          className="rounded-lg shadow-lg overflow-hidden bg-theme-bg-medium border border-theme-border"
           style={{
             position: 'absolute',
             top: `${dropdownPosition.top}px`,
             left: `${dropdownPosition.left}px`,
             width: `${dropdownPosition.width}px`,
             pointerEvents: 'auto',
-            backgroundColor: colors.BACKGROUND_MEDIUM,
-            border: `1px solid ${colors.BORDER}`,
             maxHeight: '200px',
             overflowY: 'auto',
           }}
@@ -314,7 +289,6 @@ export const DraggableDropdown: React.FC<DraggableDropdownProps> = ({
               isSelected={option.value === value}
               onClick={() => handleSelect(option.value)}
               onMove={moveOption}
-              colors={colors}
             />
           ))}
         </div>,

@@ -208,13 +208,7 @@ export const PackListItem: React.FC<PackListItemProps> = ({
             onChange={(e) => setEditName(e.target.value)}
             onKeyDown={handleKeyDown}
             onFocus={(e) => e.target.select()}
-            className="flex-1 px-1 rounded text-sm"
-            style={{
-              backgroundColor: 'transparent',
-              color: colors.TEXT_PRIMARY,
-              border: 'none',
-              outline: 'none',
-            }}
+            className="flex-1 px-1 rounded text-sm bg-transparent text-primary border-0 outline-none"
             autoFocus
             onClick={(e) => e.stopPropagation()}
           />
@@ -255,8 +249,7 @@ export const PackListItem: React.FC<PackListItemProps> = ({
           )}
           <div className="flex-1 min-w-0 flex items-center gap-2">
             <div
-              className="font-medium text-sm truncate"
-              style={{ color: colors.TEXT_PRIMARY }}
+              className="font-medium text-sm truncate text-primary"
             >
               {packName}
             </div>
@@ -264,11 +257,7 @@ export const PackListItem: React.FC<PackListItemProps> = ({
               <Icon path={mdiEmoticonSadOutline} size={0.6} color={colors.TEXT_SECONDARY} />
             ) : (
               <div
-                className="flex items-center justify-center text-xs font-semibold rounded-full min-w-[20px] h-5 px-1.5"
-                style={{
-                  backgroundColor: colors.SUCCESS,
-                  color: '#fff',
-                }}
+                className="flex items-center justify-center text-xs font-semibold rounded-full min-w-[20px] h-5 px-1.5 bg-success text-white"
               >
                 {promptCount}
               </div>
@@ -279,11 +268,7 @@ export const PackListItem: React.FC<PackListItemProps> = ({
             <div className="flex items-center gap-1">
               {isCurrent && (
                 <span
-                  className="text-xs px-1.5 py-0.5 rounded-full"
-                  style={{
-                    backgroundColor: colors.SUCCESS,
-                    color: '#fff',
-                  }}
+                  className="text-xs px-1.5 py-0.5 rounded-full bg-success text-white"
                 >
                   {t('common.current')}
                 </span>

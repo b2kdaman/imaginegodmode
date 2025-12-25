@@ -35,7 +35,6 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
   processedCount = 0,
   totalCount = 0,
 }) => {
-  const colors = getThemeColors();
   const { t } = useTranslation();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
@@ -74,7 +73,7 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
         actionText={t('modals.delete.actionText')}
         actionVariant="danger"
         warningMessage={t('modals.delete.warningMessage')}
-        getBorderColor={(isSelected) => (isSelected ? colors.DANGER : colors.BORDER)}
+        getBorderColor={(isSelected) => (isSelected ? 'var(--theme-danger)' : 'var(--theme-border)')}
         renderOverlay={(_post, isSelected) => (
           <>
             {/* Selection Indicator */}
@@ -88,7 +87,7 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
                 <Icon
                   path={mdiDelete}
                   size={2}
-                  color={colors.DANGER}
+                  color="var(--theme-danger)"
                 />
               </div>
             )}

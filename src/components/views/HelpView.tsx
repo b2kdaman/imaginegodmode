@@ -59,10 +59,10 @@ export const HelpView: React.FC = () => {
         }}
       >
         <div className="flex flex-col gap-2 mt-3">
-          <ul className="space-y-1 ml-3 text-xs" style={{ color: colors.TEXT_SECONDARY }}>
+          <ul className="space-y-1 ml-3 text-xs text-secondary">
             {features.map((feature, index) => (
               <li key={index} className="flex items-start gap-2">
-                <span style={{ color: colors.TEXT_SECONDARY, marginTop: '2px' }}>•</span>
+                <span className="text-secondary" style={{ marginTop: '2px' }}>•</span>
                 <span
                   className="flex items-center gap-1 group cursor-help flex-1"
                   data-tooltip-content={feature.tooltip}
@@ -93,38 +93,23 @@ export const HelpView: React.FC = () => {
         }}
       >
         <div className="flex flex-col gap-2 mt-3">
-          <div className="text-xs flex flex-col gap-2" style={{ color: colors.TEXT_SECONDARY }}>
+          <div className="text-xs flex flex-col gap-2 text-secondary">
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1">
               <span
-                className="px-2 py-1 rounded text-[10px] font-medium"
-                style={{
-                  backgroundColor: colors.BACKGROUND_MEDIUM,
-                  color: colors.TEXT_PRIMARY,
-                  border: `1px solid ${colors.BORDER}`,
-                }}
+                className="px-2 py-1 rounded text-[10px] font-medium bg-medium text-primary border border-border"
               >
                 {t('help.shortcuts.keys.ctrl')}
               </span>
               <span className="text-[10px]">/</span>
               <span
-                className="px-2 py-1 rounded text-[10px] font-medium"
-                style={{
-                  backgroundColor: colors.BACKGROUND_MEDIUM,
-                  color: colors.TEXT_PRIMARY,
-                  border: `1px solid ${colors.BORDER}`,
-                }}
+                className="px-2 py-1 rounded text-[10px] font-medium bg-medium text-primary border border-border"
               >
                 {t('help.shortcuts.keys.cmd')}
               </span>
               <span className="text-[10px]">+</span>
               <span
-                className="px-2 py-1 rounded text-[10px] font-medium"
-                style={{
-                  backgroundColor: colors.BACKGROUND_MEDIUM,
-                  color: colors.TEXT_PRIMARY,
-                  border: `1px solid ${colors.BORDER}`,
-                }}
+                className="px-2 py-1 rounded text-[10px] font-medium bg-medium text-primary border border-border"
               >
                 {t('help.shortcuts.keys.enter')}
               </span>
@@ -134,45 +119,25 @@ export const HelpView: React.FC = () => {
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1">
               <span
-                className="px-2 py-1 rounded text-[10px] font-medium"
-                style={{
-                  backgroundColor: colors.BACKGROUND_MEDIUM,
-                  color: colors.TEXT_PRIMARY,
-                  border: `1px solid ${colors.BORDER}`,
-                }}
+                className="px-2 py-1 rounded text-[10px] font-medium bg-medium text-primary border border-border"
               >
                 {t('help.shortcuts.keys.ctrl')}
               </span>
               <span className="text-[10px]">/</span>
               <span
-                className="px-2 py-1 rounded text-[10px] font-medium"
-                style={{
-                  backgroundColor: colors.BACKGROUND_MEDIUM,
-                  color: colors.TEXT_PRIMARY,
-                  border: `1px solid ${colors.BORDER}`,
-                }}
+                className="px-2 py-1 rounded text-[10px] font-medium bg-medium text-primary border border-border"
               >
                 {t('help.shortcuts.keys.cmd')}
               </span>
               <span className="text-[10px]">+</span>
               <span
-                className="px-2 py-1 rounded text-[10px] font-medium"
-                style={{
-                  backgroundColor: colors.BACKGROUND_MEDIUM,
-                  color: colors.TEXT_PRIMARY,
-                  border: `1px solid ${colors.BORDER}`,
-                }}
+                className="px-2 py-1 rounded text-[10px] font-medium bg-medium text-primary border border-border"
               >
                 {t('help.shortcuts.keys.shift')}
               </span>
               <span className="text-[10px]">+</span>
               <span
-                className="px-2 py-1 rounded text-[10px] font-medium"
-                style={{
-                  backgroundColor: colors.BACKGROUND_MEDIUM,
-                  color: colors.TEXT_PRIMARY,
-                  border: `1px solid ${colors.BORDER}`,
-                }}
+                className="px-2 py-1 rounded text-[10px] font-medium bg-medium text-primary border border-border"
               >
                 {t('help.shortcuts.keys.enter')}
               </span>
@@ -182,23 +147,13 @@ export const HelpView: React.FC = () => {
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1">
               <span
-                className="px-2 py-1 rounded text-[10px] font-medium"
-                style={{
-                  backgroundColor: colors.BACKGROUND_MEDIUM,
-                  color: colors.TEXT_PRIMARY,
-                  border: `1px solid ${colors.BORDER}`,
-                }}
+                className="px-2 py-1 rounded text-[10px] font-medium bg-medium text-primary border border-border"
               >
                 {t('help.shortcuts.keys.arrowLeft')}
               </span>
               <span className="text-[10px]">/</span>
               <span
-                className="px-2 py-1 rounded text-[10px] font-medium"
-                style={{
-                  backgroundColor: colors.BACKGROUND_MEDIUM,
-                  color: colors.TEXT_PRIMARY,
-                  border: `1px solid ${colors.BORDER}`,
-                }}
+                className="px-2 py-1 rounded text-[10px] font-medium bg-medium text-primary border border-border"
               >
                 {t('help.shortcuts.keys.arrowRight')}
               </span>
@@ -208,12 +163,7 @@ export const HelpView: React.FC = () => {
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1">
               <span
-                className="px-2 py-1 rounded text-[10px] font-medium"
-                style={{
-                  backgroundColor: colors.BACKGROUND_MEDIUM,
-                  color: colors.TEXT_PRIMARY,
-                  border: `1px solid ${colors.BORDER}`,
-                }}
+                className="px-2 py-1 rounded text-[10px] font-medium bg-medium text-primary border border-border"
               >
                 {t('help.shortcuts.keys.f')}
               </span>
@@ -223,12 +173,7 @@ export const HelpView: React.FC = () => {
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1">
               <span
-                className="px-2 py-1 rounded text-[10px] font-medium"
-                style={{
-                  backgroundColor: colors.BACKGROUND_MEDIUM,
-                  color: colors.TEXT_PRIMARY,
-                  border: `1px solid ${colors.BORDER}`,
-                }}
+                className="px-2 py-1 rounded text-[10px] font-medium bg-medium text-primary border border-border"
               >
                 {t('help.shortcuts.keys.space')}
               </span>
@@ -250,9 +195,9 @@ export const HelpView: React.FC = () => {
         }}
       >
         <div className="flex flex-col gap-2 mt-3">
-          <div className="text-xs" style={{ color: colors.TEXT_SECONDARY }}>
+          <div className="text-xs text-secondary">
             <p className="mb-1">
-              <strong style={{ color: colors.TEXT_PRIMARY }}>ImagineGodMode v{VERSION}</strong>
+              <strong className="text-primary">ImagineGodMode v{VERSION}</strong>
             </p>
             <p>{t('help.about.description')}</p>
             <p className="mt-2">{t('help.about.author')}</p>
@@ -275,8 +220,7 @@ export const HelpView: React.FC = () => {
           <div className="mt-3">
             <a
               href="https://accounts.x.ai/sign-in?redirect=grok-com"
-              className="flex items-center gap-2 text-xs hover:opacity-80 transition-opacity"
-              style={{ color: colors.TEXT_PRIMARY }}
+              className="flex items-center gap-2 text-xs hover:opacity-80 transition-opacity text-primary"
             >
               <Icon path={mdiLogin} size={0.6} color={colors.TEXT_PRIMARY} />
               <span>{t('help.signIn.linkText')}</span>

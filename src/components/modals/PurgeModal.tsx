@@ -51,7 +51,6 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
   onConfirm: _onConfirm,
   getThemeColors,
 }) => {
-  const colors = getThemeColors();
   const { t } = useTranslation();
   const { addJob } = useJobQueueStore();
   const [arrowSequence, setArrowSequence] = useState<ArrowKey[]>([]);
@@ -269,33 +268,18 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
         >
           <Icon path={mdiAlertCircle} size={2.5} color="#ef4444" />
           <div className="text-center">
-            <h3
-              className="text-lg font-bold mb-2"
-              style={{ color: '#ef4444' }}
-            >
+            <h3 className="text-lg font-bold mb-2" style={{ color: '#ef4444' }}>
               {t('modals.purge.dangerZone')}
             </h3>
-            <p
-              className="text-sm"
-              style={{ color: colors.TEXT_PRIMARY }}
-            >
+            <p className="text-sm text-theme-text-primary">
               {t('modals.purge.warningMessage')}
             </p>
           </div>
         </div>
 
         {/* What Will Be Deleted */}
-        <div
-          className="p-3 rounded-lg"
-          style={{
-            backgroundColor: colors.BACKGROUND_MEDIUM,
-            border: `1px solid ${colors.BORDER}`,
-          }}
-        >
-          <ul
-            className="text-sm space-y-2"
-            style={{ color: colors.TEXT_PRIMARY }}
-          >
+        <div className="p-3 rounded-lg bg-theme-bg-medium border border-theme-border">
+          <ul className="text-sm space-y-2 text-theme-text-primary">
             {purgeItems.map((item) => {
               const isCompleted = item.status === PurgeItemStatus.COMPLETED;
               const isInProgress = item.status === PurgeItemStatus.IN_PROGRESS;
@@ -304,7 +288,7 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
                 <li key={item.id} className="flex items-start gap-2">
                   <span
                     style={{
-                      color: isCompleted ? colors.SUCCESS : isInProgress ? '#f59e0b' : '#ef4444',
+                      color: isCompleted ? 'var(--theme-success)' : isInProgress ? '#f59e0b' : '#ef4444',
                       transition: 'color 0.3s ease',
                     }}
                   >
@@ -333,30 +317,18 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
         {/* Arrow Challenge */}
         {!isCompleted ? (
           <div className="flex flex-col gap-3">
-            <div
-              className="text-sm text-center p-2 rounded"
-              style={{
-                backgroundColor: colors.BACKGROUND_MEDIUM,
-                color: colors.TEXT_SECONDARY,
-              }}
-            >
+            <div className="text-sm text-center p-2 rounded bg-theme-bg-medium text-theme-text-secondary">
               {t('modals.purge.pressArrowKeys')}
             </div>
 
             {/* Timer Progress Bar */}
             {timerActive && (
-              <div
-                className="h-2 rounded-full overflow-hidden"
-                style={{
-                  backgroundColor: colors.BACKGROUND_MEDIUM,
-                  border: `1px solid ${colors.BORDER}`,
-                }}
-              >
+              <div className="h-2 rounded-full overflow-hidden bg-theme-bg-medium border border-theme-border">
                 <div
                   className="h-full transition-all"
                   style={{
                     width: `${(timeRemaining / ANIMATION_TIMINGS.SEQUENCE_TIMEOUT) * 100}%`,
-                    backgroundColor: timeRemaining < 1000 ? '#ef4444' : colors.SUCCESS,
+                    backgroundColor: timeRemaining < 1000 ? '#ef4444' : 'var(--theme-success)',
                     transition: 'width 0.016s linear, background-color 0.3s ease',
                   }}
                 />
@@ -381,19 +353,17 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
                       backgroundColor: isFailed
                         ? '#ef4444'
                         : isCorrect
-                        ? colors.SUCCESS
+                        ? 'var(--theme-success)'
                         : isWrong
                         ? '#ef4444'
-                        : colors.BACKGROUND_MEDIUM,
-                      border: `2px solid ${
-                        isFailed
-                          ? '#ef4444'
-                          : isCorrect
-                          ? colors.SUCCESS
-                          : isWrong
-                          ? '#ef4444'
-                          : colors.BORDER
-                      }`,
+                        : 'var(--theme-bg-medium)',
+                      border: isFailed
+                        ? '2px solid #ef4444'
+                        : isCorrect
+                        ? '2px solid var(--theme-success)'
+                        : isWrong
+                        ? '2px solid #ef4444'
+                        : '2px solid var(--theme-border)',
                       opacity: isAscending ? 0 : (isEntered || isFailed ? 1 : 0.5),
                       transform: isBeingPressed
                         ? `scale(${ANIMATION_TRANSFORMS.PRESS_SCALE}) rotate(${ANIMATION_TRANSFORMS.PRESS_ROTATION}deg)`
@@ -408,7 +378,7 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
                         ? `all ${ANIMATION_TIMINGS.ASCEND_ANIMATION_DURATION / 1000}s ${ANIMATION_CUBIC_BEZIER} ${getAscendDelay(index, ANIMATION_TIMINGS.ASCEND_STAGGER_DELAY)}`
                         : `all ${ANIMATION_TIMINGS.PRESS_ANIMATION_DURATION / 1000}s ease`,
                       boxShadow: isBeingPressed
-                        ? `0 0 20px ${isCorrect ? colors.SUCCESS : '#ef4444'}`
+                        ? `0 0 20px ${isCorrect ? 'var(--theme-success)' : '#ef4444'}`
                         : 'none',
                     }}
                   >
@@ -417,7 +387,7 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
                       style={{
                         color: isEntered
                           ? '#fff'
-                          : colors.TEXT_SECONDARY,
+                          : 'var(--theme-text-secondary)',
                         transform: isBeingPressed
                           ? `scale(${ANIMATION_TRANSFORMS.ICON_PRESS_SCALE})`
                           : 'scale(1)',
@@ -431,21 +401,17 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
               })}
             </div>
 
-            <div
-              className="text-xs text-center"
-              style={{ color: colors.TEXT_SECONDARY }}
-            >
+            <div className="text-xs text-center text-theme-text-secondary">
               {userInput.length === 0 && t('modals.purge.startPressing')}
               {userInput.length > 0 && userInput.length < arrowSequence.length && `${userInput.length} / ${arrowSequence.length}`}
             </div>
           </div>
         ) : (
           <div
-            className="text-center p-3 rounded-lg"
+            className="text-center p-3 rounded-lg text-theme-success"
             style={{
-              backgroundColor: `${colors.SUCCESS}20`,
-              border: `1px solid ${colors.SUCCESS}`,
-              color: colors.SUCCESS,
+              backgroundColor: 'color-mix(in srgb, var(--theme-success) 20%, transparent)',
+              border: '1px solid var(--theme-success)',
             }}
           >
             {t('modals.purge.sequenceComplete')}
@@ -471,8 +437,8 @@ export const PurgeModal: React.FC<PurgeModalProps> = ({
             className="flex-1"
             disabled={!isCompleted || isPurging}
             style={{
-              backgroundColor: isCompleted && !isPurging ? colors.DANGER : colors.BACKGROUND_MEDIUM,
-              color: isCompleted && !isPurging ? '#fff' : colors.TEXT_SECONDARY,
+              backgroundColor: isCompleted && !isPurging ? 'var(--theme-danger)' : 'var(--theme-bg-medium)',
+              color: isCompleted && !isPurging ? '#fff' : 'var(--theme-text-secondary)',
               opacity: isCompleted && !isPurging ? 1 : 0.5,
               cursor: isCompleted && !isPurging ? 'pointer' : 'not-allowed',
             }}
