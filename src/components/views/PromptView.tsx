@@ -543,8 +543,12 @@ export const PromptView: React.FC = () => {
           <Button
             onClick={handlePlayClick}
             icon={mdiPlay}
-            iconColor={UI_COLORS.BLACK}
-            className="flex-1 !bg-white !text-black hover:!bg-white/90"
+            iconColor={colors.BACKGROUND_DARK}
+            className="flex-1"
+            style={{
+              backgroundColor: colors.TEXT_PRIMARY,
+              color: colors.BACKGROUND_DARK,
+            }}
             disabled={isPromptAndPrefixEmpty}
             tooltip={t('prompt.makeTooltip')}
           >
@@ -575,9 +579,13 @@ export const PromptView: React.FC = () => {
             <Button
               onClick={handleMakeAndNextClick}
               icon={mdiSkipNext}
-              iconColor={UI_COLORS.BLACK}
-              className="!bg-white !text-black hover:!bg-white/90 !rounded-r-none"
-              style={{ width: '80%' }}
+              iconColor={colors.BACKGROUND_DARK}
+              className="!rounded-r-none"
+              style={{
+                width: '80%',
+                backgroundColor: colors.TEXT_PRIMARY,
+                color: colors.BACKGROUND_DARK,
+              }}
               disabled={!getNextPostId() || isPromptAndPrefixEmpty}
               tooltip={t('prompt.makeAndNextTooltip')}
             >

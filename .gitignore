@@ -20,6 +20,9 @@ build
 .pem
 *.zip
 
+# Build artifacts
+manifest.chrome.json
+
 # Archived userscript build
 !archive/userscript/dist/grokgoonify.user.js
 
