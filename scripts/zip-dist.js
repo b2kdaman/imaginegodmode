@@ -2,14 +2,14 @@
  * Script to create a zip file of the dist folder for Chrome Web Store or Firefox Add-ons
  */
 
-import { createWriteStream, existsSync, readFileSync } from 'fs';
+import { createWriteStream, existsSync, mkdirSync, readFileSync } from 'fs';
 import { readdir, stat } from 'fs/promises';
 import { join, relative } from 'path';
 import { createGzip } from 'zlib';
 import archiver from 'archiver';
 
 const DIST_DIR = 'dist';
-const OUTPUT_DIR = '.';
+const OUTPUT_DIR = 'zip';
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 const version = pkg.version;
 
@@ -22,6 +22,11 @@ async function zipDist() {
   if (!existsSync(DIST_DIR)) {
     console.error('Error: dist folder not found. Run "npm run build" first.');
     process.exit(1);
+  }
+
+  // Ensure output directory exists
+  if (!existsSync(OUTPUT_DIR)) {
+    mkdirSync(OUTPUT_DIR, { recursive: true });
   }
 
   console.log(`Creating zip file: ${OUTPUT_FILE}`);

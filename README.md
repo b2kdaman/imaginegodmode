@@ -7,7 +7,7 @@ A multi-platform application for Grok media management built with React, TypeScr
 
 ## Features
 
-- **Analytics**: Comprehensive Google Analytics 4 integration for anonymous usage tracking (always enabled, see [PRIVACY.md](PRIVACY.md))
+- **Analytics**: Comprehensive Google Analytics 4 integration for anonymous usage tracking (always enabled, see [docs/PRIVACY.md](docs/PRIVACY.md))
   - Modal lifecycle tracking (open/close for all modals)
   - Prompt interaction tracking (navigation, clipboard copy, to/from page actions)
   - Bulk operation analytics (select all, deselect all, confirmations with counts)
@@ -301,9 +301,15 @@ open ios/imagineGodMode/imagineGodMode.xcodeproj
 **Features**:
 - Full extension functionality in native iOS app
 - WKWebView-based wrapper loading grok.com
-- Chrome Storage bridge using UserDefaults
+- Chrome Storage bridge with dual-backend support:
+  - Primary: Swift UserDefaults for persistent storage
+  - Fallback: WKWebView localStorage when UserDefaults unavailable
+  - Automatic backend detection and graceful degradation
+  - Storage inspector utility (`window.__inspectStorage()`) for debugging
 - Photo library download support
 - Back/forward navigation and refresh controls
+- Optimized logging with reduced console output for better performance
+- Streamlined script injection with minimal logging overhead
 
 ### Usage
 
@@ -459,17 +465,26 @@ grkgoondl/
 │   ├── XCODE_SETUP.md    # Xcode setup instructions
 │   └── imagineGodMode/   # Xcode project
 │       └── imagineGodMode/
-│           ├── WebView.swift              # WKWebView container
-│           ├── ChromeStorageBridge.swift  # Chrome API bridge
+│           ├── WebView.swift              # WKWebView container with optimized logging
+│           ├── ChromeStorageBridge.swift  # Chrome API bridge with enhanced debugging
 │           ├── DownloadManager.swift      # Photo library integration
 │           ├── StorageManager.swift       # App lifecycle handling
 │           ├── ContentView.swift          # Main view
 │           ├── imagineGodModeApp.swift   # App entry point
 │           └── extension/                 # Built extension assets
+│               ├── chromeStoragePolyfill.js  # Dual-backend storage polyfill
+│               ├── content-script.js         # Main content script
+│               ├── content-script.css        # Extension styles
+│               └── helpers.js                # Utility functions
 ├── public/               # Static assets (icons, themes.json)
 ├── scripts/              # Build scripts
 │   └── build-ios.sh      # iOS build script
 ├── dist/                 # Build output (load this in Chrome)
+├── docs/                 # Documentation files
+│   ├── PRIVACY.md        # Privacy policy and analytics documentation
+│   ├── PLAN.md           # Development roadmap and planning
+│   ├── CLAUDE.md         # Claude AI integration notes
+│   └── *.md              # Release notes and other documentation
 ├── archive/              # Archived Tampermonkey userscript
 ├── manifest.json         # Extension manifest
 ├── vite.config.ts        # Vite configuration
@@ -672,6 +687,8 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 
 ## Notes
 
+- **Documentation**: All documentation files have been organized into the `docs/` folder for better project structure
+- **Build Artifacts**: ZIP files are now stored in `zip/` directory instead of being scattered throughout the project
 - **Archived Userscript**: The original Tampermonkey version is in `archive/userscript/`
 - Spin automation feature not yet implemented in extension (was in userscript)
 - Custom icons included (gold "G" logo at 16px, 48px, 128px)
@@ -737,7 +754,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
   - Add mode prevents overwriting, Replace mode allows updates
   - Grok AI integration: Copy system prompt to generate custom packs via conversation
 - **Analytics**: Google Analytics 4 (GA4) integration for anonymous usage tracking
-  - Mandatory analytics (no opt-out) - see [PRIVACY.md](PRIVACY.md)
+  - Mandatory analytics (no opt-out) - see [docs/PRIVACY.md](docs/PRIVACY.md)
   - Anonymous client IDs using UUID v4
   - Session tracking with 30-minute timeout
   - Comprehensive event tracking:

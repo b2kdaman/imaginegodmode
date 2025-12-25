@@ -84,22 +84,11 @@ struct GrokWebView: PlatformViewRepresentable {
         userContentController.add(downloadManager, name: "chromeDownloads")
         userContentController.add(fileImportHandler, name: "fileImport")
 
-        // Add console log interceptor and link handler
+        // Add console log interceptor and link handler (only errors and warnings)
         let consoleLogScript = """
         (function() {
-            const originalLog = console.log;
             const originalError = console.error;
             const originalWarn = console.warn;
-
-            console.log = function(...args) {
-                originalLog.apply(console, args);
-                try {
-                    window.webkit.messageHandlers.consoleLog?.postMessage({
-                        level: 'log',
-                        message: args.map(String).join(' ')
-                    });
-                } catch(e) {}
-            };
 
             console.error = function(...args) {
                 originalError.apply(console, args);
@@ -217,7 +206,7 @@ struct GrokWebView: PlatformViewRepresentable {
                 forMainFrameOnly: false
             )
             userContentController.addUserScript(script)
-            print("[WebView] Injected chrome storage polyfill")
+            // Polyfill injected
         }
 
         // 2. Inject helpers
@@ -228,7 +217,7 @@ struct GrokWebView: PlatformViewRepresentable {
                 forMainFrameOnly: false
             )
             userContentController.addUserScript(script)
-            print("[WebView] Injected helpers")
+            // Helpers injected
         }
 
         // 3. Inject main content script
@@ -239,7 +228,7 @@ struct GrokWebView: PlatformViewRepresentable {
                 forMainFrameOnly: false
             )
             userContentController.addUserScript(script)
-            print("[WebView] Injected content script")
+            // Content script injected
         }
     }
 
@@ -262,7 +251,7 @@ struct GrokWebView: PlatformViewRepresentable {
                 forMainFrameOnly: false
             )
             userContentController.addUserScript(script)
-            print("[WebView] Injected CSS")
+            // CSS injected
         }
     }
 
@@ -272,28 +261,16 @@ struct GrokWebView: PlatformViewRepresentable {
         // Try loading from root of bundle first (files added directly)
         if let path = Bundle.main.path(forResource: name, ofType: "js"),
            let content = try? String(contentsOfFile: path, encoding: .utf8) {
-            print("[WebView] Successfully loaded script from bundle root: \(name).js")
             return content
         }
 
         // Try loading from extension directory
         if let path = Bundle.main.path(forResource: name, ofType: "js", inDirectory: "extension"),
            let content = try? String(contentsOfFile: path, encoding: .utf8) {
-            print("[WebView] Successfully loaded script from extension directory: \(name).js")
             return content
         }
 
-        // DEBUG: List all JS files in bundle
-        if let resourcePath = Bundle.main.resourcePath {
-            print("[WebView] Bundle resource path: \(resourcePath)")
-            do {
-                let allFiles = try FileManager.default.contentsOfDirectory(atPath: resourcePath)
-                let jsFiles = allFiles.filter { $0.hasSuffix(".js") }
-                print("[WebView] JS files in bundle: \(jsFiles)")
-            } catch {
-                print("[WebView] Error listing bundle: \(error)")
-            }
-        }
+        // Bundle debug logging removed for performance
 
         print("[WebView] Failed to load script: \(name).js")
         return nil
@@ -303,14 +280,12 @@ struct GrokWebView: PlatformViewRepresentable {
         // Try loading from root of bundle first
         if let path = Bundle.main.path(forResource: name, ofType: "css"),
            let content = try? String(contentsOfFile: path, encoding: .utf8) {
-            print("[WebView] Successfully loaded CSS from bundle root: \(name).css")
             return content
         }
 
         // Try loading from extension directory
         if let path = Bundle.main.path(forResource: name, ofType: "css", inDirectory: "extension"),
            let content = try? String(contentsOfFile: path, encoding: .utf8) {
-            print("[WebView] Successfully loaded CSS from extension directory: \(name).css")
             return content
         }
 
@@ -362,18 +337,8 @@ struct GrokWebView: PlatformViewRepresentable {
                 self.parent.canGoForward = webView.canGoForward
             }
 
-            print("[WebView] ✓ Finished loading: \(webView.url?.absoluteString ?? "unknown")")
-
-            // Test basic JavaScript execution first
-            webView.evaluateJavaScript("console.log('[WebView] ✓ JavaScript execution works!'); 'test';") { result, error in
-                if let error = error {
-                    print("[WebView] ✗ JavaScript test FAILED: \(error)")
-                } else {
-                    print("[WebView] ✓ JavaScript test passed, result: \(String(describing: result))")
-                    // JavaScript works, now inject scripts
-                    self.injectScriptsAfterLoad(webView)
-                }
-            }
+            // Page loaded, inject scripts
+            self.injectScriptsAfterLoad(webView)
         }
 
         private func injectScriptsAfterLoad(_ webView: WKWebView) {
@@ -417,14 +382,14 @@ struct GrokWebView: PlatformViewRepresentable {
                     viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
                     document.head.appendChild(viewport);
                 }
-                console.log('[ImagineGodMode] Viewport meta tag configured');
+                // Viewport configured
 
                 // Inject polyfill
                 var polyfillCode = decodeBase64('\(polyfillBase64)');
                 var polyfillScript = document.createElement('script');
                 polyfillScript.textContent = polyfillCode;
                 document.head.appendChild(polyfillScript);
-                console.log('[ImagineGodMode] Polyfill injected');
+                // Polyfill injected
 
                 // Inject CSS fixes for WKWebView first
                 var wkWebViewFixes = document.createElement('style');
@@ -473,7 +438,7 @@ struct GrokWebView: PlatformViewRepresentable {
                     }
                 `;
                 document.head.appendChild(wkWebViewFixes);
-                console.log('[ImagineGodMode] WKWebView CSS fixes injected');
+                // CSS fixes injected
 
                 // Inject main CSS
                 var cssCode = decodeBase64('\(cssBase64)');
@@ -481,26 +446,26 @@ struct GrokWebView: PlatformViewRepresentable {
                 style.type = 'text/css';
                 style.innerHTML = cssCode;
                 document.head.appendChild(style);
-                console.log('[ImagineGodMode] CSS injected');
+                // CSS injected
 
                 // Create blob URL for helpers first
                 var helpersCode = decodeBase64('\(helpersBase64)');
                 var helpersBlob = new Blob([helpersCode], { type: 'application/javascript' });
                 var helpersURL = URL.createObjectURL(helpersBlob);
-                console.log('[ImagineGodMode] Helpers blob URL created:', helpersURL);
+                // Helpers blob URL created
 
                 // Replace import statement in content script to use the blob URL
                 var contentCode = decodeBase64('\(contentScriptBase64)');
                 // Replace the relative import with our blob URL
                 contentCode = contentCode.replace(/from"\\.\\/helpers-[^"]+\\.js"/, 'from"' + helpersURL + '"');
-                console.log('[ImagineGodMode] Content script import replaced');
+                // Import replaced
 
                 // Inject helpers module
                 var helpersScript = document.createElement('script');
                 helpersScript.type = 'module';
                 helpersScript.src = helpersURL;
                 document.head.appendChild(helpersScript);
-                console.log('[ImagineGodMode] Helpers module injected');
+                // Helpers injected
 
                 // Wait a bit then inject content script
                 setTimeout(function() {
@@ -509,14 +474,11 @@ struct GrokWebView: PlatformViewRepresentable {
                     var contentScriptElement = document.createElement('script');
                     contentScriptElement.type = 'module';
                     contentScriptElement.src = contentURL;
-                    contentScriptElement.onload = function() {
-                        console.log('[ImagineGodMode] Content script loaded successfully!');
-                    };
                     contentScriptElement.onerror = function(e) {
-                        console.error('[ImagineGodMode] Content script load error:', e);
+                        console.error('[ImagineGodMode] Content script error:', e);
                     };
                     document.head.appendChild(contentScriptElement);
-                    console.log('[ImagineGodMode] Content script injected');
+                    // Content script injected
                 }, 200);
             })();
             """
@@ -524,8 +486,6 @@ struct GrokWebView: PlatformViewRepresentable {
             webView.evaluateJavaScript(scriptInjection) { _, error in
                 if let error = error {
                     print("[WebView] Script injection error: \(error)")
-                } else {
-                    print("[WebView] Scripts injected successfully")
                 }
             }
         }
@@ -542,15 +502,9 @@ struct GrokWebView: PlatformViewRepresentable {
                 return
             }
 
-            print("[WebView] Navigation requested: \(url.absoluteString)")
-            print("[WebView] Navigation type: \(navigationAction.navigationType.rawValue)")
-            print("[WebView] Target frame main: \(navigationAction.targetFrame?.isMainFrame ?? false)")
-            print("[WebView] Source frame main: \(navigationAction.sourceFrame.isMainFrame)")
-
             // Handle navigation based on target frame
             if navigationAction.targetFrame == nil {
                 // Link wants to open in new window/tab - load it in current WebView instead
-                print("[WebView] Redirecting new window request to current WebView")
                 webView.load(navigationAction.request)
                 decisionHandler(.cancel)
                 return
@@ -567,7 +521,6 @@ struct GrokWebView: PlatformViewRepresentable {
             // Handle links with target="_blank" or window.open()
             // Instead of opening a new window, navigate in the current WebView
             if let url = navigationAction.request.url {
-                print("[WebView] Intercepting new window request, loading in same WebView: \(url.absoluteString)")
                 webView.load(URLRequest(url: url))
             }
             return nil

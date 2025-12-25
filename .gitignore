@@ -18,7 +18,7 @@ dist-ssr
 build
 .crx
 .pem
-*.zip
+zip/
 
 # Build artifacts
 manifest.chrome.json

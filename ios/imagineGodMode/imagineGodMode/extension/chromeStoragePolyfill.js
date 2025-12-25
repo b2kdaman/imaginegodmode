@@ -85,6 +85,8 @@
           normalizedKeys = Object.keys(keys);
         }
 
+        console.log('[ChromePolyfill] storage.get called with keys:', normalizedKeys);
+
         // Store callback
         if (callback) {
           pendingCallbacks.set(requestId, {
@@ -96,11 +98,21 @@
 
         // Send message to Swift
         try {
+          if (!window.webkit || !window.webkit.messageHandlers || !window.webkit.messageHandlers.chromeStorage) {
+            console.error('[ChromePolyfill] webkit.messageHandlers.chromeStorage not available!');
+            if (callback) {
+              pendingCallbacks.delete(requestId);
+              callback({});
+            }
+            return;
+          }
+
           window.webkit.messageHandlers.chromeStorage.postMessage({
             type: 'storage.get',
             id: requestId,
             keys: normalizedKeys
           });
+          console.log('[ChromePolyfill] storage.get message sent to Swift');
         } catch (error) {
           console.error('[ChromePolyfill] Failed to send storage.get message:', error);
           if (callback) {
@@ -117,6 +129,8 @@
        */
       set: function(items, callback) {
         const requestId = generateId();
+
+        console.log('[ChromePolyfill] storage.set called with items:', Object.keys(items || {}));
 
         // Store callback and items for change notification
         if (callback) {
@@ -135,11 +149,21 @@
 
         // Send message to Swift
         try {
+          if (!window.webkit || !window.webkit.messageHandlers || !window.webkit.messageHandlers.chromeStorage) {
+            console.error('[ChromePolyfill] webkit.messageHandlers.chromeStorage not available!');
+            if (callback) {
+              pendingCallbacks.delete(requestId);
+              callback();
+            }
+            return;
+          }
+
           window.webkit.messageHandlers.chromeStorage.postMessage({
             type: 'storage.set',
             id: requestId,
             data: items
           });
+          console.log('[ChromePolyfill] storage.set message sent to Swift');
         } catch (error) {
           console.error('[ChromePolyfill] Failed to send storage.set message:', error);
           if (callback) {
@@ -268,6 +292,8 @@
   window.__chromeStorageResponse = function(response) {
     const { id, success, data, error } = response;
 
+    console.log('[ChromePolyfill] Received response from Swift:', { id, success, dataKeys: data ? Object.keys(data) : [], error });
+
     if (!pendingCallbacks.has(id)) {
       console.warn('[ChromePolyfill] Received response for unknown request:', id);
       return;
@@ -360,12 +386,179 @@
     }
   };
 
+  // Check if we have webkit message handlers available
+  const hasWebKitBridge = typeof window.webkit !== 'undefined' &&
+                          window.webkit.messageHandlers &&
+                          window.webkit.messageHandlers.chromeStorage;
+
+  if (!hasWebKitBridge) {
+    console.warn('[ChromePolyfill] ⚠️ Swift bridge not available, falling back to localStorage');
+
+    // Create localStorage-based fallback for iOS WKWebView
+    window.chrome.storage.local = {
+      get: function(keys, callback) {
+        try {
+          const result = {};
+          const normalizedKeys = keys === null || keys === undefined ?
+            Object.keys(localStorage).filter(k => k.startsWith('chrome_storage_')) :
+            (Array.isArray(keys) ? keys : (typeof keys === 'string' ? [keys] : Object.keys(keys)));
+
+          if (normalizedKeys === null) {
+            // Get all keys
+            for (let i = 0; i < localStorage.length; i++) {
+              const key = localStorage.key(i);
+              if (key && key.startsWith('chrome_storage_')) {
+                const cleanKey = key.replace('chrome_storage_', '');
+                try {
+                  result[cleanKey] = JSON.parse(localStorage.getItem(key));
+                } catch {
+                  result[cleanKey] = localStorage.getItem(key);
+                }
+              }
+            }
+          } else {
+            // Get specific keys
+            normalizedKeys.forEach(key => {
+              const storageKey = 'chrome_storage_' + key;
+              const value = localStorage.getItem(storageKey);
+              if (value !== null) {
+                try {
+                  result[key] = JSON.parse(value);
+                } catch {
+                  result[key] = value;
+                }
+              }
+            });
+          }
+
+          console.log('[ChromePolyfill] localStorage.get result:', Object.keys(result));
+          if (callback) callback(result);
+        } catch (error) {
+          console.error('[ChromePolyfill] localStorage.get error:', error);
+          if (callback) callback({});
+        }
+      },
+
+      set: function(items, callback) {
+        try {
+          for (const key in items) {
+            const storageKey = 'chrome_storage_' + key;
+            localStorage.setItem(storageKey, JSON.stringify(items[key]));
+          }
+          console.log('[ChromePolyfill] localStorage.set saved:', Object.keys(items));
+
+          // Trigger storage change listeners
+          setTimeout(() => {
+            const changes = {};
+            for (const key in items) {
+              changes[key] = { newValue: items[key] };
+            }
+            storageChangeListeners.forEach(listener => {
+              try {
+                listener(changes, 'local');
+              } catch (e) {
+                console.error('[ChromePolyfill] Error in storage change listener:', e);
+              }
+            });
+          }, 0);
+
+          if (callback) callback();
+        } catch (error) {
+          console.error('[ChromePolyfill] localStorage.set error:', error);
+          if (callback) callback();
+        }
+      },
+
+      remove: function(keys, callback) {
+        try {
+          const normalizedKeys = Array.isArray(keys) ? keys : [keys];
+          normalizedKeys.forEach(key => {
+            const storageKey = 'chrome_storage_' + key;
+            localStorage.removeItem(storageKey);
+          });
+          if (callback) callback();
+        } catch (error) {
+          console.error('[ChromePolyfill] localStorage.remove error:', error);
+          if (callback) callback();
+        }
+      },
+
+      clear: function(callback) {
+        try {
+          const keysToRemove = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('chrome_storage_')) {
+              keysToRemove.push(key);
+            }
+          }
+          keysToRemove.forEach(key => localStorage.removeItem(key));
+          if (callback) callback();
+        } catch (error) {
+          console.error('[ChromePolyfill] localStorage.clear error:', error);
+          if (callback) callback();
+        }
+      },
+
+      getBytesInUse: function(keys, callback) {
+        if (callback) setTimeout(() => callback(0), 0);
+      }
+    };
+  }
+
+  // Test localStorage availability
+  let localStorageWorks = false;
+  try {
+    const testKey = '__test_storage__';
+    localStorage.setItem(testKey, 'test');
+    const testValue = localStorage.getItem(testKey);
+    localStorage.removeItem(testKey);
+    localStorageWorks = testValue === 'test';
+    console.log('[ChromePolyfill] localStorage test:', localStorageWorks ? '✓ Working' : '✗ Failed');
+  } catch (error) {
+    console.error('[ChromePolyfill] localStorage test error:', error);
+  }
+
   // Verify the API is accessible
   if (typeof window.chrome !== 'undefined' && window.chrome.storage) {
-    console.log('[ChromePolyfill] ✓ Chrome Storage & Downloads polyfill loaded for iOS');
-    console.log('[ChromePolyfill] ✓ chrome.storage.local available');
-    console.log('[ChromePolyfill] ✓ chrome.storage.onChanged available');
-    console.log('[ChromePolyfill] ✓ chrome.runtime.id:', window.chrome.runtime.id);
+    console.log('[ChromePolyfill] ✓ Loaded for iOS');
+    console.log('[ChromePolyfill] Storage backend:', hasWebKitBridge ? 'Swift UserDefaults' : 'WKWebView localStorage');
+    console.log('[ChromePolyfill] localStorage available:', localStorageWorks);
+
+    // If neither backend is working, warn loudly
+    if (!hasWebKitBridge && !localStorageWorks) {
+      console.error('[ChromePolyfill] ⚠️⚠️⚠️ CRITICAL: No storage backend available! Data will not persist!');
+    }
+
+    // Test that chrome.storage.local.get works
+    console.log('[ChromePolyfill] Testing chrome.storage.local.get...');
+    window.chrome.storage.local.get(null, function(result) {
+      console.log('[ChromePolyfill] ✓ chrome.storage.local.get test successful, keys:', Object.keys(result));
+    });
+
+    // Add a global inspector for debugging
+    window.__inspectStorage = function() {
+      console.log('=== Storage Inspector ===');
+      console.log('Backend:', hasWebKitBridge ? 'Swift UserDefaults' : 'WKWebView localStorage');
+
+      if (!hasWebKitBridge && localStorageWorks) {
+        console.log('localStorage keys:');
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('chrome_storage_')) {
+            console.log(' -', key, '=', localStorage.getItem(key)?.substring(0, 100) + '...');
+          }
+        }
+      }
+
+      window.chrome.storage.local.get(null, function(data) {
+        console.log('chrome.storage.local data:', data);
+        console.log('Total keys:', Object.keys(data).length);
+      });
+      console.log('========================');
+    };
+
+    console.log('[ChromePolyfill] 💡 Debug tip: Run window.__inspectStorage() in console to inspect storage');
   } else {
     console.error('[ChromePolyfill] ✗ Failed to create chrome.storage API');
   }
