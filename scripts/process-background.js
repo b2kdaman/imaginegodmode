@@ -85,6 +85,7 @@ const themeColors = {
   steam: '#66c0f4',       // Steam Blue (from SUCCESS)
   discord: '#5865f2',     // Discord Blurple (from SUCCESS)
   champagne: '#d4af37',   // Gold (from SUCCESS)
+  newyearseve: '#ffd700', // Bright Gold (from TEXT_PRIMARY)
 };
 
 // Main execution

@@ -6,7 +6,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { loadThemes, type ThemeColors } from '@/utils/themeLoader';
 
-export type Theme = 'dark' | 'light' | 'dracula' | 'winamp' | 'limewire' | 'steam' | 'discord' | 'champagne';
+export type Theme = 'dark' | 'light' | 'dracula' | 'winamp' | 'limewire' | 'steam' | 'discord' | 'champagne' | 'newyearseve';
 export type Size = 'tiny' | 'small' | 'medium' | 'large';
 export type ListLimit = 100 | 200 | 500 | 1000;
 

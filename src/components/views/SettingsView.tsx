@@ -372,7 +372,7 @@ export const SettingsView: React.FC = () => {
             <Dropdown
               value={theme}
               onChange={(value) => {
-                const newTheme = value as 'dark' | 'light' | 'dracula' | 'winamp' | 'limewire' | 'steam' | 'discord' | 'champagne';
+                const newTheme = value as 'dark' | 'light' | 'dracula' | 'winamp' | 'limewire' | 'steam' | 'discord' | 'champagne' | 'newyearseve';
                 setTheme(newTheme);
                 trackThemeChanged(newTheme);
               }}
@@ -385,6 +385,7 @@ export const SettingsView: React.FC = () => {
                 { value: 'steam', label: t('settings.themes.steam') },
                 { value: 'discord', label: t('settings.themes.discord') },
                 { value: 'champagne', label: t('settings.themes.champagne') },
+                { value: 'newyearseve', label: t('settings.themes.newyearseve') },
               ]}
               className="w-full"
             />
