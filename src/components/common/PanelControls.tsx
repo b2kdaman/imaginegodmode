@@ -226,7 +226,7 @@ export const PanelControls: React.FC = () => {
               tooltip={`Make + Next: ${getPromptForTooltip()}`}
             />
           )}
-          {currentPostId && (
+          {currentPostId && !isPromptEmpty && (
             <Button
               variant="icon"
               onClick={() => setAutoNavigate(!autoNavigate)}
