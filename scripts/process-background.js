@@ -84,6 +84,7 @@ const themeColors = {
   limewire: '#8FD14F',    // Lime Green (from TEXT_PRIMARY)
   steam: '#66c0f4',       // Steam Blue (from SUCCESS)
   discord: '#5865f2',     // Discord Blurple (from SUCCESS)
+  champagne: '#d4af37',   // Gold (from SUCCESS)
 };
 
 // Main execution
