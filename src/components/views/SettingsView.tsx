@@ -46,7 +46,7 @@ import {
 } from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, listLimit, collapseSections, navigatePostsWithArrows, setPanelPosition, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setGlobalPromptAddonEnabled, setGlobalPromptAddon, setListLimit, setCollapseSections, setNavigatePostsWithArrows, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, listLimit, maxBulkLimit, collapseSections, navigatePostsWithArrows, setPanelPosition, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setGlobalPromptAddonEnabled, setGlobalPromptAddon, setListLimit, setMaxBulkLimit, setCollapseSections, setNavigatePostsWithArrows, getThemeColors } = useSettingsStore();
   const { clearAllPacks } = usePromptStore();
   const { userId } = useUserStore();
   const { t, locale, setLocale } = useTranslation();
@@ -343,6 +343,46 @@ export const SettingsView: React.FC = () => {
                   <Icon path={mdiAlertCircleOutline} size={0.75} color="#ef4444" />
                 </div>
                 {t('settings.listLimitWarning')}
+              </div>
+            )}
+          </div>
+
+          {/* Max Bulk Limit Setting */}
+          <div className="flex flex-col gap-2">
+            <label
+              className="text-xs flex items-center gap-1.5"
+              style={{ color: colors.TEXT_SECONDARY }}
+            >
+              <Icon path={mdiFormatListNumbered} size={0.6} color={colors.TEXT_SECONDARY} />
+              {t('settings.maxBulkLimit')}
+            </label>
+            <Dropdown
+              value={maxBulkLimit.toString()}
+              onChange={(value) => {
+                setMaxBulkLimit(value === 'unlimited' ? 'unlimited' : parseInt(value) as 5 | 10 | 20 | 50);
+              }}
+              options={[
+                { value: '5', label: '5' },
+                { value: '10', label: '10' },
+                { value: '20', label: '20' },
+                { value: '50', label: '50' },
+                { value: 'unlimited', label: t('settings.unlimited') },
+              ]}
+              className="w-full"
+            />
+            {maxBulkLimit !== 'unlimited' && (
+              <div
+                className="text-xs px-2 py-1.5 rounded flex items-center gap-1.5"
+                style={{
+                  backgroundColor: `${colors.BACKGROUND_MEDIUM}80`,
+                  color: colors.TEXT_SECONDARY,
+                  border: `1px solid ${colors.BORDER}40`,
+                }}
+              >
+                <div className="flex-shrink-0">
+                  <Icon path={mdiAlertCircleOutline} size={0.75} color={colors.TEXT_SECONDARY} />
+                </div>
+                {t('settings.maxBulkLimitInfo')}
               </div>
             )}
           </div>

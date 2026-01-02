@@ -98,6 +98,12 @@ A multi-platform application for Grok media management built with React, TypeScr
   - Default: 100 posts (recommended to avoid potential bans)
   - Warning displayed when using limits different from 100
   - Automatically refetches data when limit changes across all views
+- **Max Bulk Processing Limit**: Configurable limit for bulk operations (5, 10, 20, 50, or Unlimited)
+  - Default: Unlimited
+  - Applies to all bulk processing operations (upscale, download, unlike, relike)
+  - Processing stops cleanly after reaching the configured limit
+  - Informational message displayed when limit is set
+  - Console logs show when limit is applied for transparency
 - **Video Upscaling**: Parallel upscale requests with staggered start times for optimal performance
   - Upscale jobs process 15 videos at a time per batch
   - Auto-downloads completed batch before starting next (if Auto Download enabled)
@@ -142,16 +148,23 @@ A multi-platform application for Grok media management built with React, TypeScr
   - Uses posts from favorites or fetched posts from bulk operations
 - **Make + Next**: Workflow automation for batch processing posts
   - Applies current prompt, clicks Make button, and automatically navigates to next post
-  - Unified split-button design (80% Make+Next, 20% Auto toggle)
+  - Unified split-button design (60% Make+Next, 20% Random, 20% Auto toggle)
   - Disabled when no next post available
   - Uses fetched posts from "Upscale All Liked" or "Show Unliked"
   - 1-second delay between Make and navigation for proper execution
+  - **Random Prompt Mode**: Toggle to randomly select prompts from current pack on each iteration
+    - Shuffle icon button for easy identification
+    - When enabled, randomly picks a different prompt from the pack after each Make + Next
+    - Works independently or combined with Auto mode
+    - Visual active state (highlighted when enabled)
+    - Perfect for testing prompt variations across multiple posts
   - **Auto Mode**: Integrated toggle for automatically repeating Make + Next workflow
     - Seamless button split design with shared border (no gap between buttons)
     - Visual active state (slate background, dark icon)
     - Random 1-1.5 second delay between iterations
     - Automatically stops when reaching the end of the post list
     - Toggle off anytime to stop automation
+    - Combines with Random mode for fully automated prompt variation testing
 - **Video Progress Tracking**: Real-time progress bar and button glow during video generation
 - **HD Status Indicator**: Green check icon appears when all videos are HD quality
 - **Video Controls**: Play/pause button with synchronized state tracking

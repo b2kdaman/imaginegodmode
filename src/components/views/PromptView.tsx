@@ -25,6 +25,7 @@ import {
   mdiChevronDoubleLeft,
   mdiAutorenew,
   mdiStop,
+  mdiShuffle,
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -56,6 +57,7 @@ export const PromptView: React.FC = () => {
     addPrompt,
     loadPostState,
     savePostState,
+    setCurrentIndex,
   } = usePromptStore();
   const { getThemeColors, rememberPostState, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, listLimit } = useSettingsStore();
   const { getNextPostId, getPrevPostId, setCurrentPostId, setPosts } = usePostsStore();
@@ -70,6 +72,7 @@ export const PromptView: React.FC = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [autoNavigate, setAutoNavigate] = useState(false);
   const [isAutoRunning, setIsAutoRunning] = useState(false);
+  const [randomPrompt, setRandomPrompt] = useState(false);
 
   // Long press state for prompt navigation
   const longPressTimerRef = React.useRef<number | null>(null);
@@ -355,6 +358,12 @@ export const PromptView: React.FC = () => {
     const fullPromptText = getFullPromptText(currentPrompt.text);
     applyPromptMakeAndNext(fullPromptText, prefix, nextPostId);
 
+    // If random prompt is enabled, select a random prompt from current pack
+    if (randomPrompt && promptCount > 0) {
+      const randomIndex = Math.floor(Math.random() * promptCount);
+      setCurrentIndex(randomIndex);
+    }
+
     // If auto-navigate is enabled, schedule the next iteration
     if (autoNavigate) {
       setIsAutoRunning(true); // Mark auto loop as running
@@ -370,7 +379,7 @@ export const PromptView: React.FC = () => {
         }
       }, delay);
     }
-  }, [currentPrompt, autoNavigate, prefix, getNextPostId, stopAutoMakeNext, getFullPromptText]);
+  }, [currentPrompt, autoNavigate, randomPrompt, promptCount, prefix, getNextPostId, stopAutoMakeNext, getFullPromptText, setCurrentIndex]);
 
   // Cleanup auto Make+Next timeout on unmount
   React.useEffect(() => {
@@ -616,7 +625,7 @@ export const PromptView: React.FC = () => {
               iconColor={colors.BACKGROUND_DARK}
               className="!rounded-r-none"
               style={{
-                width: '80%',
+                width: '60%',
                 backgroundColor: colors.TEXT_PRIMARY,
                 color: colors.BACKGROUND_DARK,
               }}
@@ -637,6 +646,33 @@ export const PromptView: React.FC = () => {
             >
               Make + Next
             </Button>
+            <Button
+              variant="icon"
+              icon={mdiShuffle}
+              onClick={() => setRandomPrompt(!randomPrompt)}
+              tooltip="Random: Pick random prompt from pack on next"
+              className="!rounded-none !border-l-0"
+              style={{
+                width: '20%',
+                ...(randomPrompt && {
+                  backgroundColor: colors.TEXT_PRIMARY,
+                  borderColor: colors.TEXT_PRIMARY,
+                }),
+              }}
+              iconColor={randomPrompt ? colors.BACKGROUND_DARK : undefined}
+              onMouseEnter={randomPrompt ? (e) => {
+                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                e.currentTarget.style.borderColor = colors.TEXT_PRIMARY;
+                e.currentTarget.style.opacity = '0.9';
+              } : undefined}
+              onMouseLeave={randomPrompt ? (e) => {
+                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                e.currentTarget.style.borderColor = colors.TEXT_PRIMARY;
+                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.transform = 'scale(1)';
+              } : undefined}
+            />
             <Button
               variant="icon"
               icon={isAutoRunning ? mdiStop : mdiAutorenew}

@@ -254,22 +254,26 @@ export const useJobQueueStore = create<JobQueueStore>()(
         const data = job.data as ProcessForUpscaleJobData;
         const { postIds } = data;
 
-        console.log(`[JobQueue] Processing ${postIds.length} posts for upscaling`);
+        // Get max bulk limit setting
+        const { maxBulkLimit } = useSettingsStore.getState();
+        const limitedPostIds = maxBulkLimit === 'unlimited' ? postIds : postIds.slice(0, maxBulkLimit);
+
+        console.log(`[JobQueue] Processing ${limitedPostIds.length} posts for upscaling${maxBulkLimit !== 'unlimited' ? ` (limited to ${maxBulkLimit})` : ''}`);
 
         const allVideoIds: string[] = [];
         const allPostIds: string[] = [];
 
         // Process each post to collect videos that need upscaling
-        for (let i = 0; i < postIds.length; i++) {
+        for (let i = 0; i < limitedPostIds.length; i++) {
           const { isProcessing } = get();
           if (!isProcessing) {
             throw new Error('Processing stopped by user');
           }
 
-          const postId = postIds[i];
+          const postId = limitedPostIds[i];
 
           try {
-            console.log(`[JobQueue] Fetching post ${i + 1}/${postIds.length}: ${postId}`);
+            console.log(`[JobQueue] Fetching post ${i + 1}/${limitedPostIds.length}: ${postId}`);
 
             // Fetch full post data
             const postData = await fetchPostData(postId);
@@ -289,11 +293,11 @@ export const useJobQueueStore = create<JobQueueStore>()(
           }
 
           // Update progress
-          const progress = ((i + 1) / postIds.length) * 100;
+          const progress = ((i + 1) / limitedPostIds.length) * 100;
           get()._updateJobProgress(job.id, i + 1, progress);
 
           // Add minimal delay between fetches
-          if (i < postIds.length - 1) {
+          if (i < limitedPostIds.length - 1) {
             await sleep(100);
           }
         }
@@ -321,9 +325,13 @@ export const useJobQueueStore = create<JobQueueStore>()(
       _processUpscaleJob: async (job) => {
         const data = job.data as UpscaleJobData;
         const { videoIds } = data;
-        const totalVideos = videoIds.length;
 
-        console.log(`[JobQueue] Upscaling ${totalVideos} videos`);
+        // Get max bulk limit setting
+        const { maxBulkLimit } = useSettingsStore.getState();
+        const limitedVideoIds = maxBulkLimit === 'unlimited' ? videoIds : videoIds.slice(0, maxBulkLimit);
+        const totalVideos = limitedVideoIds.length;
+
+        console.log(`[JobQueue] Upscaling ${totalVideos} videos${maxBulkLimit !== 'unlimited' ? ` (limited to ${maxBulkLimit})` : ''}`);
 
         // Process in batches of 15
         const hdUrlMap: Record<string, string> = {};
@@ -335,7 +343,7 @@ export const useJobQueueStore = create<JobQueueStore>()(
           }
 
           const batchEnd = Math.min(batchStart + BATCH_SIZE, totalVideos);
-          const batchVideoIds = videoIds.slice(batchStart, batchEnd);
+          const batchVideoIds = limitedVideoIds.slice(batchStart, batchEnd);
 
           console.log(
             `[JobQueue] Processing batch ${Math.floor(batchStart / BATCH_SIZE) + 1}: ${batchVideoIds.length} videos`
@@ -385,17 +393,21 @@ export const useJobQueueStore = create<JobQueueStore>()(
         const data = job.data as DownloadJobData;
         const { items } = data;
 
-        console.log(`[JobQueue] Downloading ${items.length} files`);
+        // Get max bulk limit setting
+        const { maxBulkLimit } = useSettingsStore.getState();
+        const limitedItems = maxBulkLimit === 'unlimited' ? items : items.slice(0, maxBulkLimit);
+
+        console.log(`[JobQueue] Downloading ${limitedItems.length} files${maxBulkLimit !== 'unlimited' ? ` (limited to ${maxBulkLimit})` : ''}`);
 
         // Download one file at a time with delays
-        for (let i = 0; i < items.length; i++) {
+        for (let i = 0; i < limitedItems.length; i++) {
           const { isProcessing } = get();
           if (!isProcessing) {
             throw new Error('Processing stopped by user');
           }
 
-          const item = items[i];
-          console.log(`[JobQueue] Downloading ${i + 1}/${items.length}: ${item.filename}`);
+          const item = limitedItems[i];
+          console.log(`[JobQueue] Downloading ${i + 1}/${limitedItems.length}: ${item.filename}`);
 
           try {
             const response = await downloadMedia([item.url]);
@@ -427,36 +439,40 @@ export const useJobQueueStore = create<JobQueueStore>()(
           }
 
           // Update progress
-          const progress = ((i + 1) / items.length) * 100;
+          const progress = ((i + 1) / limitedItems.length) * 100;
           get()._updateJobProgress(job.id, i + 1, progress);
 
           // Add delay between downloads (except for last item)
-          if (i < items.length - 1) {
+          if (i < limitedItems.length - 1) {
             await sleep(TIMING.DOWNLOAD_DELAY);
           }
         }
 
-        const successCount = items.filter((item) => item.status === 'completed').length;
-        console.log(`[JobQueue] Download complete: ${successCount}/${items.length} successful`);
+        const successCount = limitedItems.filter((item) => item.status === 'completed').length;
+        console.log(`[JobQueue] Download complete: ${successCount}/${limitedItems.length} successful`);
       },
 
       _processUnlikeJob: async (job) => {
         const data = job.data as UnlikeJobData;
         const { postIds, posts } = data;
 
-        console.log(`[JobQueue] Unliking ${postIds.length} posts`);
+        // Get max bulk limit setting
+        const { maxBulkLimit } = useSettingsStore.getState();
+        const limitedPostIds = maxBulkLimit === 'unlimited' ? postIds : postIds.slice(0, maxBulkLimit);
+
+        console.log(`[JobQueue] Unliking ${limitedPostIds.length} posts${maxBulkLimit !== 'unlimited' ? ` (limited to ${maxBulkLimit})` : ''}`);
         console.log(`[JobQueue] Posts data available:`, posts.length);
 
         const unlikedPosts = [];
 
         // Process one post at a time with delays
-        for (let i = 0; i < postIds.length; i++) {
+        for (let i = 0; i < limitedPostIds.length; i++) {
           const { isProcessing } = get();
           if (!isProcessing) {
             throw new Error('Processing stopped by user');
           }
 
-          const postId = postIds[i];
+          const postId = limitedPostIds[i];
           const post = posts.find((p) => p.id === postId);
 
           if (!post) {
@@ -470,7 +486,7 @@ export const useJobQueueStore = create<JobQueueStore>()(
               // Add to unliked archive
               const unlikedPost = convertToUnlikedPost(post);
               unlikedPosts.push(unlikedPost);
-              console.log(`[JobQueue] Unliked post ${i + 1}/${postIds.length}: ${postId}`, unlikedPost);
+              console.log(`[JobQueue] Unliked post ${i + 1}/${limitedPostIds.length}: ${postId}`, unlikedPost);
             } else {
               console.error(`[JobQueue] Unlike failed for ${postId}`, {
                 success: response.success,
@@ -483,14 +499,14 @@ export const useJobQueueStore = create<JobQueueStore>()(
           }
 
           // Update progress
-          const progress = ((i + 1) / postIds.length) * 100;
+          const progress = ((i + 1) / limitedPostIds.length) * 100;
           get()._updateJobProgress(job.id, i + 1, progress);
 
           // Force render cycle
           await sleep(50);
 
           // Add delay between API calls (except for last one)
-          if (i < postIds.length - 1) {
+          if (i < limitedPostIds.length - 1) {
             await sleep(getRandomApiDelay());
           }
         }
@@ -515,32 +531,36 @@ export const useJobQueueStore = create<JobQueueStore>()(
           console.warn(`[JobQueue] No posts to save to archive (0 successful unlikes)`);
         }
 
-        console.log(`[JobQueue] Unlike complete: ${unlikedPosts.length}/${postIds.length} successful`);
+        console.log(`[JobQueue] Unlike complete: ${unlikedPosts.length}/${limitedPostIds.length} successful`);
       },
 
       _processRelikeJob: async (job) => {
         const data = job.data as RelikeJobData;
         const { postIds } = data;
 
-        console.log(`[JobQueue] Re-liking ${postIds.length} posts`);
+        // Get max bulk limit setting
+        const { maxBulkLimit } = useSettingsStore.getState();
+        const limitedPostIds = maxBulkLimit === 'unlimited' ? postIds : postIds.slice(0, maxBulkLimit);
+
+        console.log(`[JobQueue] Re-liking ${limitedPostIds.length} posts${maxBulkLimit !== 'unlimited' ? ` (limited to ${maxBulkLimit})` : ''}`);
 
         const relikedPostIds: string[] = [];
 
         // Process one post at a time with delays
-        for (let i = 0; i < postIds.length; i++) {
+        for (let i = 0; i < limitedPostIds.length; i++) {
           const { isProcessing } = get();
           if (!isProcessing) {
             throw new Error('Processing stopped by user');
           }
 
-          const postId = postIds[i];
+          const postId = limitedPostIds[i];
 
           try {
             const response = await likePost(postId);
 
             if (response.success) {
               relikedPostIds.push(postId);
-              console.log(`[JobQueue] Re-liked post ${i + 1}/${postIds.length}: ${postId}`);
+              console.log(`[JobQueue] Re-liked post ${i + 1}/${limitedPostIds.length}: ${postId}`);
             } else {
               console.error(`[JobQueue] Re-like failed for ${postId}`);
             }
@@ -549,14 +569,14 @@ export const useJobQueueStore = create<JobQueueStore>()(
           }
 
           // Update progress
-          const progress = ((i + 1) / postIds.length) * 100;
+          const progress = ((i + 1) / limitedPostIds.length) * 100;
           get()._updateJobProgress(job.id, i + 1, progress);
 
           // Force render cycle
           await sleep(50);
 
           // Add delay between API calls (except for last one)
-          if (i < postIds.length - 1) {
+          if (i < limitedPostIds.length - 1) {
             await sleep(getRandomApiDelay());
           }
         }
@@ -572,7 +592,7 @@ export const useJobQueueStore = create<JobQueueStore>()(
           }
         }
 
-        console.log(`[JobQueue] Re-like complete: ${relikedPostIds.length}/${postIds.length} successful`);
+        console.log(`[JobQueue] Re-like complete: ${relikedPostIds.length}/${limitedPostIds.length} successful`);
       },
 
       _processPurgeJob: async (job) => {

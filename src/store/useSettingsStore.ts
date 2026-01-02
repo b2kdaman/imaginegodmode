@@ -9,6 +9,7 @@ import { loadThemes, type ThemeColors } from '@/utils/themeLoader';
 export type Theme = 'dark' | 'light' | 'dracula' | 'winamp' | 'limewire' | 'steam' | 'discord' | 'champagne' | 'newyearseve';
 export type Size = 'tiny' | 'small' | 'medium' | 'large';
 export type ListLimit = 100 | 200 | 500 | 1000;
+export type MaxBulkLimit = 5 | 10 | 20 | 50 | 'unlimited';
 
 interface SettingsState {
   // Persisted settings
@@ -24,6 +25,7 @@ interface SettingsState {
   globalPromptAddonEnabled: boolean;
   globalPromptAddon: string;
   listLimit: ListLimit;
+  maxBulkLimit: MaxBulkLimit;
   collapseSections: boolean;
   navigatePostsWithArrows: boolean;
   panelPosition: { x: number; y: number } | null;
@@ -45,6 +47,7 @@ interface SettingsState {
   setGlobalPromptAddonEnabled: (enabled: boolean) => void;
   setGlobalPromptAddon: (addon: string) => void;
   setListLimit: (limit: ListLimit) => void;
+  setMaxBulkLimit: (limit: MaxBulkLimit) => void;
   setCollapseSections: (collapse: boolean) => void;
   setNavigatePostsWithArrows: (navigate: boolean) => void;
   setPanelPosition: (position: { x: number; y: number } | null) => void;
@@ -76,6 +79,7 @@ export const useSettingsStore = create<SettingsState>()(
       globalPromptAddonEnabled: false,
       globalPromptAddon: '',
       listLimit: 100,
+      maxBulkLimit: 'unlimited',
       collapseSections: true,
       navigatePostsWithArrows: false,
       panelPosition: null,
@@ -99,6 +103,7 @@ export const useSettingsStore = create<SettingsState>()(
       setGlobalPromptAddonEnabled: (globalPromptAddonEnabled: boolean) => set({ globalPromptAddonEnabled }),
       setGlobalPromptAddon: (globalPromptAddon: string) => set({ globalPromptAddon }),
       setListLimit: (listLimit: ListLimit) => set({ listLimit }),
+      setMaxBulkLimit: (maxBulkLimit: MaxBulkLimit) => set({ maxBulkLimit }),
       setCollapseSections: (collapseSections: boolean) => set({ collapseSections }),
       setNavigatePostsWithArrows: (navigatePostsWithArrows: boolean) => set({ navigatePostsWithArrows }),
       setPanelPosition: (panelPosition: { x: number; y: number } | null) => set({ panelPosition }),
@@ -128,6 +133,7 @@ export const useSettingsStore = create<SettingsState>()(
         globalPromptAddonEnabled: state.globalPromptAddonEnabled,
         globalPromptAddon: state.globalPromptAddon,
         listLimit: state.listLimit,
+        maxBulkLimit: state.maxBulkLimit,
         collapseSections: state.collapseSections,
         navigatePostsWithArrows: state.navigatePostsWithArrows,
         panelPosition: state.panelPosition,
