@@ -112,6 +112,16 @@ export interface LikedPost {
   };
   modelName?: string;
   thumbnailImageUrl?: string;
+  originalPostId?: string;
+  rRated?: boolean;
+  moderated?: boolean;
+  videoDuration?: number;
+  availableActions?: string[];
+  userInteractionStatus?: {
+    likeStatus: boolean;
+  };
+  images?: LikedPost[];
+  videos?: LikedPost[];
 }
 
 export interface LikedPostsResponse {

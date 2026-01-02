@@ -60,7 +60,7 @@ export const PromptView: React.FC = () => {
     setCurrentIndex,
   } = usePromptStore();
   const { getThemeColors, rememberPostState, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, listLimit } = useSettingsStore();
-  const { getNextPostId, getPrevPostId, setCurrentPostId, setPosts } = usePostsStore();
+  const { getNextPostId, getPrevPostId, setCurrentPostId, setPosts, posts: _postsInStore, currentPostId: _currentPostIdInStore } = usePostsStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
 
@@ -171,6 +171,7 @@ export const PromptView: React.FC = () => {
   // Load prefix and post state from storage when component mounts or URL changes
   const loadPostData = useCallback(async () => {
     const currentPostId = getPostIdFromUrl();
+    console.log('[PromptView] loadPostData - currentPostId:', currentPostId);
     setPostId(currentPostId);
     setCurrentPostId(currentPostId); // Update posts store with current post ID
 
@@ -194,9 +195,13 @@ export const PromptView: React.FC = () => {
 
   // Load post data on mount
   useEffect(() => {
-    loadPostData();
-    // Load liked posts on mount to populate posts store for navigation
-    loadLikedPosts().then((posts) => setPosts(posts));
+    // Load liked posts first, then load post data
+    loadLikedPosts().then((posts) => {
+      console.log('[PromptView] Loaded liked posts:', posts.length);
+      setPosts(posts);
+      // After posts are loaded, load the current post data
+      loadPostData();
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
