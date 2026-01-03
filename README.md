@@ -161,7 +161,7 @@ A multi-platform application for Grok media management built with React, TypeScr
   - **Auto Mode**: Integrated toggle for automatically repeating Make + Next workflow
     - Seamless button split design with shared border (no gap between buttons)
     - Visual active state (slate background, dark icon)
-    - Random 1-1.5 second delay between iterations
+    - Random 2-4 second delay between iterations
     - Automatically stops when reaching the end of the post list
     - Toggle off anytime to stop automation
     - Combines with Random mode for fully automated prompt variation testing

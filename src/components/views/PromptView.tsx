@@ -370,7 +370,7 @@ export const PromptView: React.FC = () => {
     // If auto-navigate is enabled, schedule the next iteration
     if (autoNavigate) {
       setIsAutoRunning(true); // Mark auto loop as running
-      const delay = 1000 + Math.random() * 500; // Random delay between 1-1.5s
+      const delay = 2000 + Math.random() * 2000; // Random delay between 2-4s
       autoMakeNextTimeoutRef.current = window.setTimeout(() => {
         const hasNextPost = getNextPostId();
         // Re-check if auto-navigate is still enabled and next post exists
