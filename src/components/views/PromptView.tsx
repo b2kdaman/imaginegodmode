@@ -171,7 +171,6 @@ export const PromptView: React.FC = () => {
   // Load prefix and post state from storage when component mounts or URL changes
   const loadPostData = useCallback(async () => {
     const currentPostId = getPostIdFromUrl();
-    console.log('[PromptView] loadPostData - currentPostId:', currentPostId);
     setPostId(currentPostId);
     setCurrentPostId(currentPostId); // Update posts store with current post ID
 
@@ -197,7 +196,6 @@ export const PromptView: React.FC = () => {
   useEffect(() => {
     // Load liked posts first, then load post data
     loadLikedPosts().then((posts) => {
-      console.log('[PromptView] Loaded liked posts:', posts.length);
       setPosts(posts);
       // After posts are loaded, load the current post data
       loadPostData();

@@ -44,10 +44,7 @@ export const usePostsStore = create<PostsStore>((set, get) => ({
   getNextPostId: () => {
     const { posts, currentPostId } = get();
 
-    console.log('[PostsStore] getNextPostId - currentPostId:', currentPostId, 'posts.length:', posts.length);
-
     if (!currentPostId || posts.length === 0) {
-      console.log('[PostsStore] getNextPostId - returning null (no currentPostId or empty posts)');
       return null;
     }
 
@@ -71,19 +68,14 @@ export const usePostsStore = create<PostsStore>((set, get) => ({
         }
         return false;
       });
-      console.log('[PostsStore] getNextPostId - found parent at index:', currentIndex);
     }
-
-    console.log('[PostsStore] getNextPostId - currentIndex:', currentIndex, 'of', posts.length);
 
     // If current post not found or is last in list, return null
     if (currentIndex === -1 || currentIndex >= posts.length - 1) {
-      console.log('[PostsStore] getNextPostId - returning null (not found or last)');
       return null;
     }
 
     const nextId = posts[currentIndex + 1].id;
-    console.log('[PostsStore] getNextPostId - returning:', nextId);
     return nextId;
   },
 
@@ -91,10 +83,7 @@ export const usePostsStore = create<PostsStore>((set, get) => ({
   getPrevPostId: () => {
     const { posts, currentPostId } = get();
 
-    console.log('[PostsStore] getPrevPostId - currentPostId:', currentPostId, 'posts.length:', posts.length);
-
     if (!currentPostId || posts.length === 0) {
-      console.log('[PostsStore] getPrevPostId - returning null (no currentPostId or empty posts)');
       return null;
     }
 
@@ -118,19 +107,14 @@ export const usePostsStore = create<PostsStore>((set, get) => ({
         }
         return false;
       });
-      console.log('[PostsStore] getPrevPostId - found parent at index:', currentIndex);
     }
-
-    console.log('[PostsStore] getPrevPostId - currentIndex:', currentIndex, 'of', posts.length);
 
     // If current post not found or is first in list, return null
     if (currentIndex <= 0) {
-      console.log('[PostsStore] getPrevPostId - returning null (not found or first)');
       return null;
     }
 
     const prevId = posts[currentIndex - 1].id;
-    console.log('[PostsStore] getPrevPostId - returning:', prevId);
     return prevId;
   },
 

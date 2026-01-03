@@ -377,7 +377,9 @@ export const useJobQueueStore = create<JobQueueStore>()(
 
           // Wait for all upscale requests to complete
           await Promise.all(upscalePromises);
-          console.log('[JobQueue] Batch upscale requests sent, polling for HD URLs...');
+
+          // Wait for videos to start processing (upscaling takes time)
+          await sleep(10000);
 
           // Poll for HD URLs
           const batchHdUrls = await pollForHdUrls(data.postIds, batchVideoIds);
@@ -668,6 +670,8 @@ async function pollForHdUrls(postIds: string[], videoIds: string[]): Promise<Rec
   let attempts = 0;
 
   while (Object.keys(hdUrlMap).length < videoIds.length && attempts < maxAttempts) {
+    attempts++;
+
     for (const postId of postIds) {
       try {
         const response = await fetchPost(postId);
@@ -692,12 +696,15 @@ async function pollForHdUrls(postIds: string[], videoIds: string[]): Promise<Rec
       }
     }
 
-    if (Object.keys(hdUrlMap).length < videoIds.length) {
-      await new Promise((resolve) =>
-        setTimeout(resolve, randomDelay(TIMING.UPSCALE_REFETCH_MIN, TIMING.UPSCALE_REFETCH_MAX))
-      );
-      attempts++;
+    // Break early if we found all HD URLs
+    if (Object.keys(hdUrlMap).length >= videoIds.length) {
+      break;
     }
+
+    // Add delay before next poll attempt
+    await new Promise((resolve) =>
+      setTimeout(resolve, randomDelay(TIMING.UPSCALE_REFETCH_MIN, TIMING.UPSCALE_REFETCH_MAX))
+    );
   }
 
   return hdUrlMap;
