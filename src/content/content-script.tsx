@@ -67,18 +67,67 @@ function init() {
   // Create root container
   const rootId = 'imaginegodmode-root';
   let root = document.getElementById(rootId);
+  let reactRoot: ReactDOM.Root | null = null;
 
-  if (!root) {
-    root = document.createElement('div');
-    root.id = rootId;
-    document.body.appendChild(root);
-  }
+  const mountApp = () => {
+    console.log('[ImagineGodMode] Mounting app...');
 
-  // Create React root and render app
-  const reactRoot = ReactDOM.createRoot(root);
-  reactRoot.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
+    // Check if root exists and is attached to DOM
+    if (!root || !document.body.contains(root)) {
+      console.log('[ImagineGodMode] Root element missing or detached, recreating...');
+      root = document.createElement('div');
+      root.id = rootId;
+      document.body.appendChild(root);
+      console.log('[ImagineGodMode] Root element reattached to body');
+    }
+
+    // Create React root and render app (only if not already created)
+    if (!reactRoot) {
+      reactRoot = ReactDOM.createRoot(root);
+      reactRoot.render(
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      );
+      console.log('[ImagineGodMode] React app rendered');
+    }
+  };
+
+  // Initial mount
+  mountApp();
+
+  // Monitor for root element removal and reattach if needed
+  const bodyObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      // Check if our root was removed
+      if (mutation.type === 'childList' && mutation.removedNodes.length > 0) {
+        const wasRemoved = Array.from(mutation.removedNodes).some(
+          (node) => node instanceof Element && node.id === rootId
+        );
+
+        if (wasRemoved) {
+          console.warn('[ImagineGodMode] Root element was removed from DOM, reattaching...');
+          // Small delay to let any page operations complete
+          setTimeout(mountApp, 100);
+        }
+      }
+    }
+  });
+
+  // Observe body for child removals
+  bodyObserver.observe(document.body, {
+    childList: true,
+    subtree: false, // Only watch direct children of body
+  });
+
+  // Also periodically check if root is still attached (backup mechanism)
+  setInterval(() => {
+    const currentRoot = document.getElementById(rootId);
+    if (!currentRoot || !document.body.contains(currentRoot)) {
+      console.warn('[ImagineGodMode] Periodic check: root element missing, reattaching...');
+      mountApp();
+    }
+  }, 5000); // Check every 5 seconds
+
+  console.log('[ImagineGodMode] Initialization complete with reattachment protection');
 }
