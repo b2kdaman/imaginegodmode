@@ -51,6 +51,7 @@ interface SettingsState {
   setCollapseSections: (collapse: boolean) => void;
   setNavigatePostsWithArrows: (navigate: boolean) => void;
   setPanelPosition: (position: { x: number; y: number } | null) => void;
+  resetPanelPosition: () => void;
   getThemeColors: () => ThemeColors;
   getScale: () => number;
 }
@@ -107,6 +108,10 @@ export const useSettingsStore = create<SettingsState>()(
       setCollapseSections: (collapseSections: boolean) => set({ collapseSections }),
       setNavigatePostsWithArrows: (navigatePostsWithArrows: boolean) => set({ navigatePostsWithArrows }),
       setPanelPosition: (panelPosition: { x: number; y: number } | null) => set({ panelPosition }),
+      resetPanelPosition: () => {
+        console.log('[ImagineGodMode] Resetting panel position to bottom-right corner');
+        set({ panelPosition: null });
+      },
 
       getThemeColors: () => {
         const { theme, themes } = get();

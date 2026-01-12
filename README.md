@@ -23,6 +23,14 @@ A multi-platform application for Grok media management built with React, TypeScr
     - Touch and mouse support for all devices
     - Automatically stops at list boundaries (no looping)
   - **Non-Looping Navigation**: Prev/next buttons stop at first/last prompt instead of wrapping around
+  - **Streamlined UI**: Reorganized button layout with consolidated Make button and toggle switches
+    - Single "Make" button that respects all mode toggles (Random, Auto, Next)
+    - Three toggle switches for mode control:
+      - **Random**: Pick random prompt from current pack
+      - **Auto**: Automatically loop through posts with 2-4 second random delays
+      - **Next**: Navigate to next post after making (replaces separate "Make + Next" button)
+    - Grid-based layout with perfectly aligned columns across rows
+    - Reorganized action buttons into 2 rows (Add/Duplicate/Copy and Post Nav/To/From)
 - **Per-Post State**: Each post remembers its own selected pack, prompt, and prefix independently (optional, controlled via Settings)
 - **Prompt Prefix**: Per-post prefix text that automatically prepends to prompts when making videos (stored separately for each post)
 - **Star Ratings**: Rate your prompts with 1-5 stars (Material Design Icons)

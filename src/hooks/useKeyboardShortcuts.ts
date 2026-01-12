@@ -13,7 +13,7 @@ import { trackKeyboardShortcut, trackVideoFullscreen, trackVideoPlayPause } from
 
 export const useKeyboardShortcuts = () => {
   const { getCurrentPrompt } = usePromptStore();
-  const { simpleShortcut, globalPromptAddonEnabled, globalPromptAddon } = useSettingsStore();
+  const { simpleShortcut, globalPromptAddonEnabled, globalPromptAddon, resetPanelPosition } = useSettingsStore();
 
   useEffect(() => {
     // Helper function to apply global addon to prompt text
@@ -96,6 +96,14 @@ export const useKeyboardShortcuts = () => {
         }
       }
 
+      // Cmd/Ctrl+Shift+L: Reset panel position to bottom-right corner
+      if (modifierKey && e.shiftKey && e.key === 'l') {
+        e.preventDefault();
+        console.log('[ImagineGodMode] Cmd+Shift+L pressed - resetting panel position');
+        resetPanelPosition();
+        trackKeyboardShortcut('cmd+shift+l', 'reset_position');
+      }
+
       // Determine if we should apply prompt based on simpleShortcut setting
       // If simpleShortcut is enabled: Ctrl/Cmd+Enter applies prompt
       // If simpleShortcut is disabled: Ctrl/Cmd+Shift+Enter applies prompt
@@ -135,5 +143,5 @@ export const useKeyboardShortcuts = () => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [getCurrentPrompt, simpleShortcut, globalPromptAddonEnabled, globalPromptAddon]);
+  }, [getCurrentPrompt, simpleShortcut, globalPromptAddonEnabled, globalPromptAddon, resetPanelPosition]);
 };

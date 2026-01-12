@@ -235,6 +235,54 @@ export const HelpView: React.FC = () => {
             </div>
             <span>{t('help.shortcuts.descriptions.playPause')}</span>
           </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1">
+              <span
+                className="px-2 py-1 rounded text-[10px] font-medium"
+                style={{
+                  backgroundColor: colors.BACKGROUND_MEDIUM,
+                  color: colors.TEXT_PRIMARY,
+                  border: `1px solid ${colors.BORDER}`,
+                }}
+              >
+                {t('help.shortcuts.keys.ctrl')}
+              </span>
+              <span className="text-[10px]">/</span>
+              <span
+                className="px-2 py-1 rounded text-[10px] font-medium"
+                style={{
+                  backgroundColor: colors.BACKGROUND_MEDIUM,
+                  color: colors.TEXT_PRIMARY,
+                  border: `1px solid ${colors.BORDER}`,
+                }}
+              >
+                {t('help.shortcuts.keys.cmd')}
+              </span>
+              <span className="text-[10px]">+</span>
+              <span
+                className="px-2 py-1 rounded text-[10px] font-medium"
+                style={{
+                  backgroundColor: colors.BACKGROUND_MEDIUM,
+                  color: colors.TEXT_PRIMARY,
+                  border: `1px solid ${colors.BORDER}`,
+                }}
+              >
+                {t('help.shortcuts.keys.shift')}
+              </span>
+              <span className="text-[10px]">+</span>
+              <span
+                className="px-2 py-1 rounded text-[10px] font-medium"
+                style={{
+                  backgroundColor: colors.BACKGROUND_MEDIUM,
+                  color: colors.TEXT_PRIMARY,
+                  border: `1px solid ${colors.BORDER}`,
+                }}
+              >
+                L
+              </span>
+            </div>
+            <span>Reset panel position to bottom-right corner</span>
+          </div>
           </div>
         </div>
       </CollapsibleSection>

@@ -9,6 +9,7 @@ import { usePostsStore } from '@/store/usePostsStore';
 import { PackManager } from '../PackManager';
 import { RatingSystem } from '../inputs/RatingSystem';
 import { Button } from '../inputs/Button';
+import { Toggle } from '../inputs/Toggle';
 import { ConfirmModal } from '../modals/ConfirmModal';
 import { SELECTORS } from '@/utils/constants';
 import {
@@ -70,9 +71,9 @@ export const PromptView: React.FC = () => {
   const [prefix, setLocalPrefix] = useState<string>('');
   const [postId, setPostId] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [autoNavigate, setAutoNavigate] = useState(false);
   const [isAutoRunning, setIsAutoRunning] = useState(false);
-  const [randomPrompt, setRandomPrompt] = useState(false);
+  const [isRandomEnabled, setIsRandomEnabled] = useState(false);
+  const [isGoToNextEnabled, setIsGoToNextEnabled] = useState(false);
 
   // Long press state for prompt navigation
   const longPressTimerRef = React.useRef<number | null>(null);
@@ -80,8 +81,8 @@ export const PromptView: React.FC = () => {
   const longPressStartTimeRef = React.useRef<number>(0);
   const isLongPressingRef = React.useRef<boolean>(false);
 
-  // Auto Make + Next timeout ref
-  const autoMakeNextTimeoutRef = React.useRef<number | null>(null);
+  // Auto mode timeout ref (unified for both Make and Make+Next)
+  const autoTimeoutRef = React.useRef<number | null>(null);
 
   // Load liked posts hook
   const { loadLikedPosts } = useLikedPostsLoader(() => {});
@@ -318,27 +319,32 @@ export const PromptView: React.FC = () => {
     return text;
   };
 
-  const handlePlayClick = () => {
+  const handleMakeClick = useCallback(() => {
     if (!currentPrompt) {
       return;
     }
 
-    // Track video make action
-    trackVideoMakeClicked();
+    // If random is enabled, pick random prompt first
+    if (isRandomEnabled && promptCount > 1) {
+      const randomIndex = Math.floor(Math.random() * promptCount);
+      setCurrentIndex(randomIndex);
 
-    // Apply prompt with prefix, global addon, and click Make button
-    const fullPromptText = getFullPromptText(currentPrompt.text);
-    applyPromptAndMake(fullPromptText, prefix);
-  };
-
-  const stopAutoMakeNext = useCallback(() => {
-    if (autoMakeNextTimeoutRef.current) {
-      window.clearTimeout(autoMakeNextTimeoutRef.current);
-      autoMakeNextTimeoutRef.current = null;
+      // Small delay to let UI update with new prompt
+      setTimeout(() => {
+        const prompt = getCurrentPrompt();
+        if (prompt) {
+          trackVideoMakeClicked();
+          const fullPromptText = getFullPromptText(prompt.text);
+          applyPromptAndMake(fullPromptText, prefix);
+        }
+      }, 100);
+    } else {
+      // Normal make
+      trackVideoMakeClicked();
+      const fullPromptText = getFullPromptText(currentPrompt.text);
+      applyPromptAndMake(fullPromptText, prefix);
     }
-    setAutoNavigate(false);
-    setIsAutoRunning(false);
-  }, []);
+  }, [currentPrompt, isRandomEnabled, promptCount, prefix, getFullPromptText, setCurrentIndex, getCurrentPrompt]);
 
   const handleMakeAndNextClick = useCallback(() => {
     if (!currentPrompt) {
@@ -348,48 +354,91 @@ export const PromptView: React.FC = () => {
     const nextPostId = getNextPostId();
 
     if (!nextPostId) {
-      // No next post available
-      stopAutoMakeNext();
+      // No next post available - stop auto if running
+      if (isAutoRunning) {
+        if (autoTimeoutRef.current) {
+          window.clearTimeout(autoTimeoutRef.current);
+          autoTimeoutRef.current = null;
+        }
+        setIsAutoRunning(false);
+      }
       return;
     }
 
-    // Track video make action and Make+Next specific action
-    trackVideoMakeClicked();
-    trackMakeAndNextClicked();
-
-    // Apply prompt with global addon, make video, and navigate to next post
-    const fullPromptText = getFullPromptText(currentPrompt.text);
-    applyPromptMakeAndNext(fullPromptText, prefix, nextPostId);
-
-    // If random prompt is enabled, select a random prompt from current pack
-    if (randomPrompt && promptCount > 0) {
+    // If random is enabled, pick random prompt first
+    if (isRandomEnabled && promptCount > 1) {
       const randomIndex = Math.floor(Math.random() * promptCount);
       setCurrentIndex(randomIndex);
-    }
 
-    // If auto-navigate is enabled, schedule the next iteration
-    if (autoNavigate) {
-      setIsAutoRunning(true); // Mark auto loop as running
-      const delay = 2000 + Math.random() * 2000; // Random delay between 2-4s
-      autoMakeNextTimeoutRef.current = window.setTimeout(() => {
-        const hasNextPost = getNextPostId();
-        // Re-check if auto-navigate is still enabled and next post exists
-        if (autoNavigate && hasNextPost) {
-          handleMakeAndNextClick();
-        } else {
-          // Turn off auto-navigate when reaching the final post
-          stopAutoMakeNext();
+      setTimeout(() => {
+        const prompt = getCurrentPrompt();
+        if (prompt) {
+          trackVideoMakeClicked();
+          trackMakeAndNextClicked();
+          const fullPromptText = getFullPromptText(prompt.text);
+          applyPromptMakeAndNext(fullPromptText, prefix, nextPostId);
         }
-      }, delay);
+      }, 100);
+    } else {
+      trackVideoMakeClicked();
+      trackMakeAndNextClicked();
+      const fullPromptText = getFullPromptText(currentPrompt.text);
+      applyPromptMakeAndNext(fullPromptText, prefix, nextPostId);
     }
-  }, [currentPrompt, autoNavigate, randomPrompt, promptCount, prefix, getNextPostId, stopAutoMakeNext, getFullPromptText, setCurrentIndex]);
+  }, [currentPrompt, isRandomEnabled, promptCount, prefix, getNextPostId, getFullPromptText, setCurrentIndex, getCurrentPrompt, isAutoRunning]);
 
-  // Cleanup auto Make+Next timeout on unmount
+  const handleAutoToggle = useCallback((enabled: boolean) => {
+    if (!enabled) {
+      // Stop auto mode
+      if (autoTimeoutRef.current) {
+        window.clearTimeout(autoTimeoutRef.current);
+        autoTimeoutRef.current = null;
+      }
+      setIsAutoRunning(false);
+      return;
+    }
+
+    // Start auto mode
+    setIsAutoRunning(true);
+
+    const autoLoop = () => {
+      const nextPostId = getNextPostId();
+
+      if (nextPostId) {
+        // Has next post: use Make+Next
+        handleMakeAndNextClick();
+      } else {
+        // No next post: use Make on current post
+        handleMakeClick();
+      }
+
+      // Schedule next iteration with random delay
+      const delay = 2000 + Math.random() * 2000; // 2-4 seconds
+      autoTimeoutRef.current = window.setTimeout(() => {
+        const stillHasNext = getNextPostId();
+
+        // Auto-stop when reaching last post
+        if (!stillHasNext && nextPostId) {
+          handleAutoToggle(false);
+          return;
+        }
+
+        autoLoop();
+      }, delay);
+    };
+
+    autoLoop();
+  }, [getNextPostId, handleMakeAndNextClick, handleMakeClick]);
+
+  // Cleanup auto timeout on unmount
   React.useEffect(() => {
     return () => {
-      stopAutoMakeNext();
+      if (autoTimeoutRef.current) {
+        window.clearTimeout(autoTimeoutRef.current);
+        autoTimeoutRef.current = null;
+      }
     };
-  }, [stopAutoMakeNext]);
+  }, []);
 
   const handlePrevClick = () => {
     const prevPostId = getPrevPostId();
@@ -467,7 +516,7 @@ export const PromptView: React.FC = () => {
       />
 
       <div className="flex flex-col gap-3 mt-3">
-        {/* Rating and pagination merged */}
+        {/* Rating and prompt pagination */}
         <div className="flex items-center justify-between gap-2">
           {/* Rating on the left */}
           <RatingSystem
@@ -475,7 +524,7 @@ export const PromptView: React.FC = () => {
             onChange={updatePromptRating}
           />
 
-          {/* Pagination on the right */}
+          {/* Prompt pagination on the right */}
           <div className="flex items-center gap-2">
             <Button
               variant="icon"
@@ -519,42 +568,7 @@ export const PromptView: React.FC = () => {
           </div>
         </div>
 
-        {/* Action buttons row 1 */}
-        <div className="flex gap-2">
-          <Button
-            onClick={handleCopyToPage}
-            icon={mdiArrowDown}
-            className="flex-1"
-            tooltip={t('prompt.toTooltip')}
-          >
-            To
-          </Button>
-
-          <Button
-            onClick={handleCopyFromPage}
-            icon={mdiArrowUp}
-            className="flex-1"
-            tooltip={t('prompt.fromTooltip')}
-          >
-            From
-          </Button>
-
-          <Button
-            onClick={() => {
-              if (currentPrompt) {
-                navigator.clipboard.writeText(currentPrompt.text);
-                trackPromptCopiedToClipboard();
-              }
-            }}
-            icon={mdiContentCopy}
-            className="flex-1"
-            tooltip={t('prompt.copyTooltip')}
-          >
-            {t('common.copy')}
-          </Button>
-        </div>
-
-        {/* Action buttons row 2 */}
+        {/* Action buttons row 1: Add | Duplicate | Copy */}
         <div className="flex gap-2">
           <Button
             onClick={addPrompt}
@@ -575,10 +589,71 @@ export const PromptView: React.FC = () => {
           </Button>
 
           <Button
-            onClick={handlePlayClick}
+            onClick={() => {
+              if (currentPrompt) {
+                navigator.clipboard.writeText(currentPrompt.text);
+                trackPromptCopiedToClipboard();
+              }
+            }}
+            icon={mdiContentCopy}
+            className="flex-1"
+            tooltip={t('prompt.copyTooltip')}
+          >
+            {t('common.copy')}
+          </Button>
+        </div>
+
+        {/* Action buttons row 2: Post prev/next | To | From */}
+        <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="icon"
+              icon={mdiChevronDoubleLeft}
+              onClick={handlePrevClick}
+              disabled={!getPrevPostId()}
+              tooltip={t('prompt.navigatePreviousPost')}
+            />
+
+            <Button
+              variant="icon"
+              icon={mdiChevronDoubleRight}
+              onClick={handleNextClick}
+              disabled={!getNextPostId()}
+              tooltip={t('prompt.navigateNextPost')}
+            />
+          </div>
+
+          <Button
+            onClick={handleCopyToPage}
+            icon={mdiArrowDown}
+            className="flex-1"
+            tooltip={t('prompt.toTooltip')}
+          >
+            To
+          </Button>
+
+          <Button
+            onClick={handleCopyFromPage}
+            icon={mdiArrowUp}
+            className="flex-1"
+            tooltip={t('prompt.fromTooltip')}
+          >
+            From
+          </Button>
+        </div>
+
+        {/* Main action button with Next toggle */}
+        <div className="grid grid-cols-2 gap-4">
+          <Button
+            onClick={() => {
+              if (isGoToNextEnabled) {
+                handleMakeAndNextClick();
+              } else {
+                handleMakeClick();
+              }
+            }}
             icon={mdiPlay}
             iconColor={colors.BACKGROUND_DARK}
-            className="flex-1"
             style={{
               backgroundColor: colors.TEXT_PRIMARY,
               color: colors.BACKGROUND_DARK,
@@ -595,122 +670,60 @@ export const PromptView: React.FC = () => {
               e.currentTarget.style.boxShadow = 'none';
               e.currentTarget.style.transform = 'scale(1)';
             }}
-            disabled={isPromptAndPrefixEmpty}
-            tooltip={t('prompt.makeTooltip')}
+            disabled={isPromptAndPrefixEmpty || (isGoToNextEnabled && !getNextPostId())}
+            tooltip={`${t('prompt.makeTooltip')}${isRandomEnabled ? ' (Random)' : ''}${isAutoRunning ? ' (Auto Loop)' : ''}${isGoToNextEnabled ? ' + Next' : ''}`}
           >
             {t('common.make')}
           </Button>
+
+          <div className="flex items-center justify-between">
+            <label htmlFor="next-toggle" className="flex items-center gap-2 cursor-pointer select-none">
+              <svg className="w-4 h-4" viewBox="0 0 24 24" style={{ fill: isGoToNextEnabled ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
+                <path d={mdiSkipNext} />
+              </svg>
+              <span className="text-sm" style={{ color: isGoToNextEnabled ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
+                Next
+              </span>
+            </label>
+            <Toggle
+              id="next-toggle"
+              checked={isGoToNextEnabled}
+              onChange={setIsGoToNextEnabled}
+            />
+          </div>
         </div>
 
-        {/* Action buttons row 3 - Post navigation and Make + Next */}
-        <div className="grid grid-cols-3 gap-2">
-          <div className="col-span-1 flex justify-between">
-            <Button
-              variant="icon"
-              icon={mdiChevronDoubleLeft}
-              onClick={handlePrevClick}
-              disabled={!getPrevPostId()}
-              tooltip={t('prompt.navigatePreviousPost')}
-            />
-            <Button
-              variant="icon"
-              icon={mdiChevronDoubleRight}
-              onClick={handleNextClick}
-              disabled={!getNextPostId()}
-              tooltip={t('prompt.navigateNextPost')}
+        {/* Mode toggles */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex items-center justify-between">
+            <label htmlFor="random-toggle" className="flex items-center gap-2 cursor-pointer select-none">
+              <svg className="w-4 h-4" viewBox="0 0 24 24" style={{ fill: isRandomEnabled ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
+                <path d={mdiShuffle} />
+              </svg>
+              <span className="text-sm" style={{ color: isRandomEnabled ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
+                Random
+              </span>
+            </label>
+            <Toggle
+              id="random-toggle"
+              checked={isRandomEnabled}
+              onChange={setIsRandomEnabled}
             />
           </div>
 
-          <div className="col-span-2 flex">
-            <Button
-              onClick={handleMakeAndNextClick}
-              icon={mdiSkipNext}
-              iconColor={colors.BACKGROUND_DARK}
-              className="!rounded-r-none"
-              style={{
-                width: '60%',
-                backgroundColor: colors.TEXT_PRIMARY,
-                color: colors.BACKGROUND_DARK,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.color = colors.BACKGROUND_DARK;
-                e.currentTarget.style.opacity = '0.9';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.color = colors.BACKGROUND_DARK;
-                e.currentTarget.style.opacity = '1';
-                e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-              disabled={!getNextPostId() || isPromptAndPrefixEmpty}
-              tooltip={t('prompt.makeAndNextTooltip')}
-            >
-              Make + Next
-            </Button>
-            <Button
-              variant="icon"
-              icon={mdiShuffle}
-              onClick={() => setRandomPrompt(!randomPrompt)}
-              tooltip="Random: Pick random prompt from pack on next"
-              className="!rounded-none !border-l-0"
-              style={{
-                width: '20%',
-                ...(randomPrompt && {
-                  backgroundColor: colors.TEXT_PRIMARY,
-                  borderColor: colors.TEXT_PRIMARY,
-                }),
-              }}
-              iconColor={randomPrompt ? colors.BACKGROUND_DARK : undefined}
-              onMouseEnter={randomPrompt ? (e) => {
-                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.borderColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.opacity = '0.9';
-              } : undefined}
-              onMouseLeave={randomPrompt ? (e) => {
-                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.borderColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.opacity = '1';
-                e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.transform = 'scale(1)';
-              } : undefined}
-            />
-            <Button
-              variant="icon"
-              icon={isAutoRunning ? mdiStop : mdiAutorenew}
-              onClick={() => {
-                if (isAutoRunning) {
-                  // Stop the running auto loop
-                  stopAutoMakeNext();
-                } else {
-                  // Toggle auto-navigate on/off
-                  setAutoNavigate(!autoNavigate);
-                }
-              }}
-              tooltip={isAutoRunning ? t('prompt.stopAutoTooltip') : t('prompt.autoMakeNextTooltip')}
-              className="!rounded-l-none !border-l-0"
-              style={{
-                width: '20%',
-                ...((autoNavigate || isAutoRunning) && {
-                  backgroundColor: colors.TEXT_PRIMARY,
-                  borderColor: colors.TEXT_PRIMARY,
-                }),
-              }}
-              iconColor={(autoNavigate || isAutoRunning) ? colors.BACKGROUND_DARK : undefined}
-              onMouseEnter={(autoNavigate || isAutoRunning) ? (e) => {
-                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.borderColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.opacity = '0.9';
-              } : undefined}
-              onMouseLeave={(autoNavigate || isAutoRunning) ? (e) => {
-                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.borderColor = colors.TEXT_PRIMARY;
-                e.currentTarget.style.opacity = '1';
-                e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.transform = 'scale(1)';
-              } : undefined}
-              disabled={!getNextPostId() || isPromptAndPrefixEmpty}
+          <div className="flex items-center justify-between">
+            <label htmlFor="auto-toggle" className="flex items-center gap-2 cursor-pointer select-none">
+              <svg className="w-4 h-4" viewBox="0 0 24 24" style={{ fill: isAutoRunning ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
+                <path d={isAutoRunning ? mdiStop : mdiAutorenew} />
+              </svg>
+              <span className="text-sm" style={{ color: isAutoRunning ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
+                Auto
+              </span>
+            </label>
+            <Toggle
+              id="auto-toggle"
+              checked={isAutoRunning}
+              onChange={handleAutoToggle}
             />
           </div>
         </div>

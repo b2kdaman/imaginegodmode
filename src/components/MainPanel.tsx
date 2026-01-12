@@ -35,7 +35,7 @@ const VIEW_COMPONENTS: Record<ViewType, React.FC> = {
 
 export const MainPanel: React.FC = () => {
   const { isExpanded, currentView, setCurrentView } = useUIStore();
-  const { getThemeColors, getScale, enableThePit, panelPosition, setPanelPosition } = useSettingsStore();
+  const { getThemeColors, getScale, enableThePit, panelPosition, setPanelPosition, resetPanelPosition } = useSettingsStore();
   const { jobs } = useJobQueueStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
@@ -179,6 +179,35 @@ export const MainPanel: React.FC = () => {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging, dragOffset, setPanelPosition]);
+
+  // Check on mount if panel position is out of bounds and reset if needed
+  useEffect(() => {
+    // Only check if there's a saved position
+    if (!panelPosition) {
+      return;
+    }
+
+    // Wait for panel to be rendered
+    if (!panelRef.current) {
+      return;
+    }
+
+    const rect = panelRef.current.getBoundingClientRect();
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    // Check if panel is completely out of bounds (not visible at all)
+    const isCompletelyOutOfBounds =
+      rect.right < 0 ||  // Completely off left side
+      rect.left > windowWidth ||  // Completely off right side
+      rect.bottom < 0 ||  // Completely off top
+      rect.top > windowHeight;  // Completely off bottom
+
+    if (isCompletelyOutOfBounds) {
+      console.warn('[ImagineGodMode] Panel is completely out of bounds, resetting to default position');
+      resetPanelPosition();
+    }
+  }, [panelPosition, resetPanelPosition]);
 
   // Check if panel is fully visible and adjust position if needed
   useEffect(() => {
