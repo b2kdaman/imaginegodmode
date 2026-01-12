@@ -30,7 +30,8 @@ import {
   mdiPackageVariant,
   mdiTextBoxPlus,
   mdiFormatListNumbered,
-  mdiRestartOff
+  mdiRestartOff,
+  mdiViewCompactOutline
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -46,7 +47,7 @@ import {
 } from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, listLimit, maxBulkLimit, collapseSections, navigatePostsWithArrows, setPanelPosition, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setGlobalPromptAddonEnabled, setGlobalPromptAddon, setListLimit, setMaxBulkLimit, setCollapseSections, setNavigatePostsWithArrows, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, compactMakeTogglers, globalPromptAddonEnabled, globalPromptAddon, listLimit, maxBulkLimit, collapseSections, navigatePostsWithArrows, setPanelPosition, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setCompactMakeTogglers, setGlobalPromptAddonEnabled, setGlobalPromptAddon, setListLimit, setMaxBulkLimit, setCollapseSections, setNavigatePostsWithArrows, getThemeColors } = useSettingsStore();
   const { clearAllPacks } = usePromptStore();
   const { userId } = useUserStore();
   const { t, locale, setLocale } = useTranslation();
@@ -183,6 +184,28 @@ export const SettingsView: React.FC = () => {
               onChange={(checked) => {
                 setConfirmCopyFrom(checked);
                 trackConfirmCopyFromToggled(checked);
+              }}
+            />
+          </div>
+
+          {/* Compact Make Togglers Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-content="Show compact toggle buttons next to Make button instead of full row"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="compact-make-togglers-toggle"
+            >
+              <Icon path={mdiViewCompactOutline} size={0.7} color={colors.TEXT_PRIMARY} />
+              Compact Make Togglers
+            </label>
+            <Toggle
+              id="compact-make-togglers-toggle"
+              checked={compactMakeTogglers}
+              onChange={(checked) => {
+                setCompactMakeTogglers(checked);
               }}
             />
           </div>

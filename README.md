@@ -29,6 +29,10 @@ A multi-platform application for Grok media management built with React, TypeScr
       - **Random**: Pick random prompt from current pack
       - **Auto**: Automatically loop through posts with 2-4 second random delays
       - **Next**: Navigate to next post after making (replaces separate "Make + Next" button)
+    - **Compact Make Togglers** (optional): Space-saving mode with icon-only toggle buttons
+      - Displays Random, Auto, and Next as small icon buttons next to Make button
+      - Hides full toggle row for maximum space efficiency
+      - Toggle in Settings → Packs + Prompts → "Compact Make Togglers"
     - Grid-based layout with perfectly aligned columns across rows
     - Reorganized action buttons into 2 rows (Add/Duplicate/Copy and Post Nav/To/From)
 - **Per-Post State**: Each post remembers its own selected pack, prompt, and prefix independently (optional, controlled via Settings)

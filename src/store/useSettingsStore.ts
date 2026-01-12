@@ -22,6 +22,7 @@ interface SettingsState {
   enableThePit: boolean;
   enableSound: boolean;
   confirmCopyFrom: boolean;
+  compactMakeTogglers: boolean;
   globalPromptAddonEnabled: boolean;
   globalPromptAddon: string;
   listLimit: ListLimit;
@@ -44,6 +45,7 @@ interface SettingsState {
   setEnableThePit: (enableThePit: boolean) => void;
   setEnableSound: (enableSound: boolean) => void;
   setConfirmCopyFrom: (confirmCopyFrom: boolean) => void;
+  setCompactMakeTogglers: (compact: boolean) => void;
   setGlobalPromptAddonEnabled: (enabled: boolean) => void;
   setGlobalPromptAddon: (addon: string) => void;
   setListLimit: (limit: ListLimit) => void;
@@ -77,6 +79,7 @@ export const useSettingsStore = create<SettingsState>()(
       enableThePit: false,
       enableSound: true,
       confirmCopyFrom: true,
+      compactMakeTogglers: false,
       globalPromptAddonEnabled: false,
       globalPromptAddon: '',
       listLimit: 100,
@@ -101,6 +104,7 @@ export const useSettingsStore = create<SettingsState>()(
       setEnableThePit: (enableThePit: boolean) => set({ enableThePit }),
       setEnableSound: (enableSound: boolean) => set({ enableSound }),
       setConfirmCopyFrom: (confirmCopyFrom: boolean) => set({ confirmCopyFrom }),
+      setCompactMakeTogglers: (compactMakeTogglers: boolean) => set({ compactMakeTogglers }),
       setGlobalPromptAddonEnabled: (globalPromptAddonEnabled: boolean) => set({ globalPromptAddonEnabled }),
       setGlobalPromptAddon: (globalPromptAddon: string) => set({ globalPromptAddon }),
       setListLimit: (listLimit: ListLimit) => set({ listLimit }),
@@ -135,6 +139,7 @@ export const useSettingsStore = create<SettingsState>()(
         enableThePit: state.enableThePit,
         enableSound: state.enableSound,
         confirmCopyFrom: state.confirmCopyFrom,
+        compactMakeTogglers: state.compactMakeTogglers,
         globalPromptAddonEnabled: state.globalPromptAddonEnabled,
         globalPromptAddon: state.globalPromptAddon,
         listLimit: state.listLimit,

@@ -60,7 +60,7 @@ export const PromptView: React.FC = () => {
     savePostState,
     setCurrentIndex,
   } = usePromptStore();
-  const { getThemeColors, rememberPostState, confirmCopyFrom, globalPromptAddonEnabled, globalPromptAddon, listLimit } = useSettingsStore();
+  const { getThemeColors, rememberPostState, confirmCopyFrom, compactMakeTogglers, globalPromptAddonEnabled, globalPromptAddon, listLimit } = useSettingsStore();
   const { getNextPostId, getPrevPostId, setCurrentPostId, setPosts, posts: _postsInStore, currentPostId: _currentPostIdInStore } = usePostsStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
@@ -642,91 +642,171 @@ export const PromptView: React.FC = () => {
           </Button>
         </div>
 
-        {/* Main action button with Next toggle */}
-        <div className="grid grid-cols-2 gap-4">
-          <Button
-            onClick={() => {
-              if (isGoToNextEnabled) {
-                handleMakeAndNextClick();
-              } else {
-                handleMakeClick();
-              }
-            }}
-            icon={mdiPlay}
-            iconColor={colors.BACKGROUND_DARK}
-            style={{
-              backgroundColor: colors.TEXT_PRIMARY,
-              color: colors.BACKGROUND_DARK,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
-              e.currentTarget.style.color = colors.BACKGROUND_DARK;
-              e.currentTarget.style.opacity = '0.9';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
-              e.currentTarget.style.color = colors.BACKGROUND_DARK;
-              e.currentTarget.style.opacity = '1';
-              e.currentTarget.style.boxShadow = 'none';
-              e.currentTarget.style.transform = 'scale(1)';
-            }}
-            disabled={isPromptAndPrefixEmpty || (isGoToNextEnabled && !getNextPostId())}
-            tooltip={`${t('prompt.makeTooltip')}${isRandomEnabled ? ' (Random)' : ''}${isAutoRunning ? ' (Auto Loop)' : ''}${isGoToNextEnabled ? ' + Next' : ''}`}
-          >
-            {t('common.make')}
-          </Button>
+        {compactMakeTogglers ? (
+          /* Compact mode: Make button with inline toggle buttons */
+          <div className="flex gap-2">
+            <Button
+              onClick={() => {
+                if (isGoToNextEnabled) {
+                  handleMakeAndNextClick();
+                } else {
+                  handleMakeClick();
+                }
+              }}
+              icon={mdiPlay}
+              iconColor={colors.BACKGROUND_DARK}
+              className="flex-1"
+              style={{
+                backgroundColor: colors.TEXT_PRIMARY,
+                color: colors.BACKGROUND_DARK,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                e.currentTarget.style.color = colors.BACKGROUND_DARK;
+                e.currentTarget.style.opacity = '0.9';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                e.currentTarget.style.color = colors.BACKGROUND_DARK;
+                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              disabled={isPromptAndPrefixEmpty || (isGoToNextEnabled && !getNextPostId())}
+              tooltip={`${t('prompt.makeTooltip')}${isRandomEnabled ? ' (Random)' : ''}${isAutoRunning ? ' (Auto Loop)' : ''}${isGoToNextEnabled ? ' + Next' : ''}`}
+            >
+              {t('common.make')}
+            </Button>
 
-          <div className="flex items-center justify-between">
-            <label htmlFor="next-toggle" className="flex items-center gap-2 cursor-pointer select-none">
-              <svg className="w-4 h-4" viewBox="0 0 24 24" style={{ fill: isGoToNextEnabled ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
-                <path d={mdiSkipNext} />
-              </svg>
-              <span className="text-sm" style={{ color: isGoToNextEnabled ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
-                Next
-              </span>
-            </label>
-            <Toggle
-              id="next-toggle"
-              checked={isGoToNextEnabled}
-              onChange={setIsGoToNextEnabled}
+            <Button
+              variant="icon"
+              icon={mdiShuffle}
+              onClick={() => setIsRandomEnabled(!isRandomEnabled)}
+              tooltip="Random: Pick random prompt from pack"
+              style={isRandomEnabled ? {
+                backgroundColor: colors.TEXT_PRIMARY,
+                borderColor: colors.TEXT_PRIMARY,
+                color: colors.BACKGROUND_DARK,
+              } : undefined}
+              iconColor={isRandomEnabled ? colors.BACKGROUND_DARK : undefined}
+            />
+
+            <Button
+              variant="icon"
+              icon={isAutoRunning ? mdiStop : mdiAutorenew}
+              onClick={() => handleAutoToggle(!isAutoRunning)}
+              tooltip={isAutoRunning ? "Stop auto loop" : "Auto: Loop through posts"}
+              style={isAutoRunning ? {
+                backgroundColor: colors.TEXT_PRIMARY,
+                borderColor: colors.TEXT_PRIMARY,
+                color: colors.BACKGROUND_DARK,
+              } : undefined}
+              iconColor={isAutoRunning ? colors.BACKGROUND_DARK : undefined}
+            />
+
+            <Button
+              variant="icon"
+              icon={mdiSkipNext}
+              onClick={() => setIsGoToNextEnabled(!isGoToNextEnabled)}
+              tooltip="Next: Navigate to next post after making"
+              disabled={!getNextPostId()}
+              style={isGoToNextEnabled ? {
+                backgroundColor: colors.TEXT_PRIMARY,
+                borderColor: colors.TEXT_PRIMARY,
+                color: colors.BACKGROUND_DARK,
+              } : undefined}
+              iconColor={isGoToNextEnabled ? colors.BACKGROUND_DARK : undefined}
             />
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Main action button with Next toggle */}
+            <div className="grid grid-cols-2 gap-4">
+              <Button
+                onClick={() => {
+                  if (isGoToNextEnabled) {
+                    handleMakeAndNextClick();
+                  } else {
+                    handleMakeClick();
+                  }
+                }}
+                icon={mdiPlay}
+                iconColor={colors.BACKGROUND_DARK}
+                style={{
+                  backgroundColor: colors.TEXT_PRIMARY,
+                  color: colors.BACKGROUND_DARK,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                  e.currentTarget.style.color = colors.BACKGROUND_DARK;
+                  e.currentTarget.style.opacity = '0.9';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                  e.currentTarget.style.color = colors.BACKGROUND_DARK;
+                  e.currentTarget.style.opacity = '1';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+                disabled={isPromptAndPrefixEmpty || (isGoToNextEnabled && !getNextPostId())}
+                tooltip={`${t('prompt.makeTooltip')}${isRandomEnabled ? ' (Random)' : ''}${isAutoRunning ? ' (Auto Loop)' : ''}${isGoToNextEnabled ? ' + Next' : ''}`}
+              >
+                {t('common.make')}
+              </Button>
 
-        {/* Mode toggles */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex items-center justify-between">
-            <label htmlFor="random-toggle" className="flex items-center gap-2 cursor-pointer select-none">
-              <svg className="w-4 h-4" viewBox="0 0 24 24" style={{ fill: isRandomEnabled ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
-                <path d={mdiShuffle} />
-              </svg>
-              <span className="text-sm" style={{ color: isRandomEnabled ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
-                Random
-              </span>
-            </label>
-            <Toggle
-              id="random-toggle"
-              checked={isRandomEnabled}
-              onChange={setIsRandomEnabled}
-            />
-          </div>
+              <div className="flex items-center justify-between">
+                <label htmlFor="next-toggle" className="flex items-center gap-2 cursor-pointer select-none">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" style={{ fill: isGoToNextEnabled ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
+                    <path d={mdiSkipNext} />
+                  </svg>
+                  <span className="text-sm" style={{ color: isGoToNextEnabled ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
+                    Next
+                  </span>
+                </label>
+                <Toggle
+                  id="next-toggle"
+                  checked={isGoToNextEnabled}
+                  onChange={setIsGoToNextEnabled}
+                />
+              </div>
+            </div>
 
-          <div className="flex items-center justify-between">
-            <label htmlFor="auto-toggle" className="flex items-center gap-2 cursor-pointer select-none">
-              <svg className="w-4 h-4" viewBox="0 0 24 24" style={{ fill: isAutoRunning ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
-                <path d={isAutoRunning ? mdiStop : mdiAutorenew} />
-              </svg>
-              <span className="text-sm" style={{ color: isAutoRunning ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
-                Auto
-              </span>
-            </label>
-            <Toggle
-              id="auto-toggle"
-              checked={isAutoRunning}
-              onChange={handleAutoToggle}
-            />
-          </div>
-        </div>
+            {/* Mode toggles */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center justify-between">
+                <label htmlFor="random-toggle" className="flex items-center gap-2 cursor-pointer select-none">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" style={{ fill: isRandomEnabled ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
+                    <path d={mdiShuffle} />
+                  </svg>
+                  <span className="text-sm" style={{ color: isRandomEnabled ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
+                    Random
+                  </span>
+                </label>
+                <Toggle
+                  id="random-toggle"
+                  checked={isRandomEnabled}
+                  onChange={setIsRandomEnabled}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <label htmlFor="auto-toggle" className="flex items-center gap-2 cursor-pointer select-none">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" style={{ fill: isAutoRunning ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
+                    <path d={isAutoRunning ? mdiStop : mdiAutorenew} />
+                  </svg>
+                  <span className="text-sm" style={{ color: isAutoRunning ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
+                    Auto
+                  </span>
+                </label>
+                <Toggle
+                  id="auto-toggle"
+                  checked={isAutoRunning}
+                  onChange={handleAutoToggle}
+                />
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <ConfirmModal
