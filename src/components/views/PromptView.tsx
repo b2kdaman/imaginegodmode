@@ -71,6 +71,7 @@ export const PromptView: React.FC = () => {
   const [prefix, setLocalPrefix] = useState<string>('');
   const [postId, setPostId] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isAutoEnabled, setIsAutoEnabled] = useState(false);
   const [isAutoRunning, setIsAutoRunning] = useState(false);
   const [isRandomEnabled, setIsRandomEnabled] = useState(false);
   const [isGoToNextEnabled, setIsGoToNextEnabled] = useState(false);
@@ -83,6 +84,10 @@ export const PromptView: React.FC = () => {
 
   // Auto mode timeout ref (unified for both Make and Make+Next)
   const autoTimeoutRef = React.useRef<number | null>(null);
+
+  // Refs to break circular dependencies
+  const handleMakeClickRef = React.useRef<(() => void) | null>(null);
+  const handleMakeAndNextClickRef = React.useRef<(() => void) | null>(null);
 
   // Load liked posts hook
   const { loadLikedPosts } = useLikedPostsLoader(() => {});
@@ -319,6 +324,48 @@ export const PromptView: React.FC = () => {
     return text;
   };
 
+  // Auto loop control functions (defined before handleMakeClick to avoid hoisting issues)
+  const stopAutoLoop = useCallback(() => {
+    if (autoTimeoutRef.current) {
+      window.clearTimeout(autoTimeoutRef.current);
+      autoTimeoutRef.current = null;
+    }
+    setIsAutoRunning(false);
+    setIsAutoEnabled(false);
+  }, []);
+
+  const startAutoLoop = useCallback(() => {
+    setIsAutoRunning(true);
+
+    const autoLoop = () => {
+      const nextPostId = getNextPostId();
+
+      if (nextPostId) {
+        // Has next post: use Make+Next
+        handleMakeAndNextClickRef.current?.();
+      } else {
+        // No next post: use Make on current post
+        handleMakeClickRef.current?.();
+      }
+
+      // Schedule next iteration with random delay
+      const delay = 2000 + Math.random() * 2000; // 2-4 seconds
+      autoTimeoutRef.current = window.setTimeout(() => {
+        const stillHasNext = getNextPostId();
+
+        // Auto-stop when reaching last post
+        if (!stillHasNext && nextPostId) {
+          stopAutoLoop();
+          return;
+        }
+
+        autoLoop();
+      }, delay);
+    };
+
+    autoLoop();
+  }, [getNextPostId, stopAutoLoop]);
+
   const handleMakeClick = useCallback(() => {
     if (!currentPrompt) {
       return;
@@ -336,6 +383,11 @@ export const PromptView: React.FC = () => {
           trackVideoMakeClicked();
           const fullPromptText = getFullPromptText(prompt.text);
           applyPromptAndMake(fullPromptText, prefix);
+
+          // Start auto loop if auto is enabled and not already running
+          if (isAutoEnabled && !isAutoRunning) {
+            startAutoLoop();
+          }
         }
       }, 100);
     } else {
@@ -343,8 +395,13 @@ export const PromptView: React.FC = () => {
       trackVideoMakeClicked();
       const fullPromptText = getFullPromptText(currentPrompt.text);
       applyPromptAndMake(fullPromptText, prefix);
+
+      // Start auto loop if auto is enabled and not already running
+      if (isAutoEnabled && !isAutoRunning) {
+        startAutoLoop();
+      }
     }
-  }, [currentPrompt, isRandomEnabled, promptCount, prefix, getFullPromptText, setCurrentIndex, getCurrentPrompt]);
+  }, [currentPrompt, isRandomEnabled, promptCount, prefix, getFullPromptText, setCurrentIndex, getCurrentPrompt, isAutoEnabled, isAutoRunning, startAutoLoop]);
 
   const handleMakeAndNextClick = useCallback(() => {
     if (!currentPrompt) {
@@ -356,11 +413,7 @@ export const PromptView: React.FC = () => {
     if (!nextPostId) {
       // No next post available - stop auto if running
       if (isAutoRunning) {
-        if (autoTimeoutRef.current) {
-          window.clearTimeout(autoTimeoutRef.current);
-          autoTimeoutRef.current = null;
-        }
-        setIsAutoRunning(false);
+        stopAutoLoop();
       }
       return;
     }
@@ -385,50 +438,13 @@ export const PromptView: React.FC = () => {
       const fullPromptText = getFullPromptText(currentPrompt.text);
       applyPromptMakeAndNext(fullPromptText, prefix, nextPostId);
     }
-  }, [currentPrompt, isRandomEnabled, promptCount, prefix, getNextPostId, getFullPromptText, setCurrentIndex, getCurrentPrompt, isAutoRunning]);
+  }, [currentPrompt, isRandomEnabled, promptCount, prefix, getNextPostId, getFullPromptText, setCurrentIndex, getCurrentPrompt, isAutoRunning, stopAutoLoop]);
 
-  const handleAutoToggle = useCallback((enabled: boolean) => {
-    if (!enabled) {
-      // Stop auto mode
-      if (autoTimeoutRef.current) {
-        window.clearTimeout(autoTimeoutRef.current);
-        autoTimeoutRef.current = null;
-      }
-      setIsAutoRunning(false);
-      return;
-    }
-
-    // Start auto mode
-    setIsAutoRunning(true);
-
-    const autoLoop = () => {
-      const nextPostId = getNextPostId();
-
-      if (nextPostId) {
-        // Has next post: use Make+Next
-        handleMakeAndNextClick();
-      } else {
-        // No next post: use Make on current post
-        handleMakeClick();
-      }
-
-      // Schedule next iteration with random delay
-      const delay = 2000 + Math.random() * 2000; // 2-4 seconds
-      autoTimeoutRef.current = window.setTimeout(() => {
-        const stillHasNext = getNextPostId();
-
-        // Auto-stop when reaching last post
-        if (!stillHasNext && nextPostId) {
-          handleAutoToggle(false);
-          return;
-        }
-
-        autoLoop();
-      }, delay);
-    };
-
-    autoLoop();
-  }, [getNextPostId, handleMakeAndNextClick, handleMakeClick]);
+  // Update refs to break circular dependencies
+  React.useEffect(() => {
+    handleMakeClickRef.current = handleMakeClick;
+    handleMakeAndNextClickRef.current = handleMakeAndNextClick;
+  }, [handleMakeClick, handleMakeAndNextClick]);
 
   // Cleanup auto timeout on unmount
   React.useEffect(() => {
@@ -673,7 +689,7 @@ export const PromptView: React.FC = () => {
                 e.currentTarget.style.transform = 'scale(1)';
               }}
               disabled={isPromptAndPrefixEmpty || (isGoToNextEnabled && !getNextPostId())}
-              tooltip={`${t('prompt.makeTooltip')}${isRandomEnabled ? ' (Random)' : ''}${isAutoRunning ? ' (Auto Loop)' : ''}${isGoToNextEnabled ? ' + Next' : ''}`}
+              tooltip={`${t('prompt.makeTooltip')}${isRandomEnabled ? ' (Random)' : ''}${isAutoEnabled ? ' (Auto Loop)' : ''}${isGoToNextEnabled ? ' + Next' : ''}`}
             >
               {t('common.make')}
             </Button>
@@ -686,22 +702,56 @@ export const PromptView: React.FC = () => {
               style={isRandomEnabled ? {
                 backgroundColor: colors.TEXT_PRIMARY,
                 borderColor: colors.TEXT_PRIMARY,
-                color: colors.BACKGROUND_DARK,
               } : undefined}
-              iconColor={isRandomEnabled ? colors.BACKGROUND_DARK : undefined}
+              iconColor={isRandomEnabled ? '#000000' : undefined}
+              onMouseEnter={(e) => {
+                if (isRandomEnabled) {
+                  e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                  e.currentTarget.style.opacity = '0.9';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (isRandomEnabled) {
+                  e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                  e.currentTarget.style.borderColor = colors.TEXT_PRIMARY;
+                  e.currentTarget.style.opacity = '1';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }
+              }}
             />
 
             <Button
               variant="icon"
               icon={isAutoRunning ? mdiStop : mdiAutorenew}
-              onClick={() => handleAutoToggle(!isAutoRunning)}
-              tooltip={isAutoRunning ? "Stop auto loop" : "Auto: Loop through posts"}
-              style={isAutoRunning ? {
+              onClick={() => {
+                if (isAutoRunning) {
+                  stopAutoLoop();
+                } else {
+                  setIsAutoEnabled(!isAutoEnabled);
+                }
+              }}
+              tooltip={isAutoRunning ? "Stop auto loop" : "Auto: Loop through posts (starts on Make click)"}
+              style={(isAutoEnabled || isAutoRunning) ? {
                 backgroundColor: colors.TEXT_PRIMARY,
                 borderColor: colors.TEXT_PRIMARY,
-                color: colors.BACKGROUND_DARK,
               } : undefined}
-              iconColor={isAutoRunning ? colors.BACKGROUND_DARK : undefined}
+              iconColor={(isAutoEnabled || isAutoRunning) ? '#000000' : undefined}
+              onMouseEnter={(e) => {
+                if (isAutoEnabled || isAutoRunning) {
+                  e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                  e.currentTarget.style.opacity = '0.9';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (isAutoEnabled || isAutoRunning) {
+                  e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                  e.currentTarget.style.borderColor = colors.TEXT_PRIMARY;
+                  e.currentTarget.style.opacity = '1';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }
+              }}
             />
 
             <Button
@@ -713,9 +763,23 @@ export const PromptView: React.FC = () => {
               style={isGoToNextEnabled ? {
                 backgroundColor: colors.TEXT_PRIMARY,
                 borderColor: colors.TEXT_PRIMARY,
-                color: colors.BACKGROUND_DARK,
               } : undefined}
-              iconColor={isGoToNextEnabled ? colors.BACKGROUND_DARK : undefined}
+              iconColor={isGoToNextEnabled ? '#000000' : undefined}
+              onMouseEnter={(e) => {
+                if (isGoToNextEnabled) {
+                  e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                  e.currentTarget.style.opacity = '0.9';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (isGoToNextEnabled) {
+                  e.currentTarget.style.backgroundColor = colors.TEXT_PRIMARY;
+                  e.currentTarget.style.borderColor = colors.TEXT_PRIMARY;
+                  e.currentTarget.style.opacity = '1';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }
+              }}
             />
           </div>
         ) : (
@@ -749,7 +813,7 @@ export const PromptView: React.FC = () => {
                   e.currentTarget.style.transform = 'scale(1)';
                 }}
                 disabled={isPromptAndPrefixEmpty || (isGoToNextEnabled && !getNextPostId())}
-                tooltip={`${t('prompt.makeTooltip')}${isRandomEnabled ? ' (Random)' : ''}${isAutoRunning ? ' (Auto Loop)' : ''}${isGoToNextEnabled ? ' + Next' : ''}`}
+                tooltip={`${t('prompt.makeTooltip')}${isRandomEnabled ? ' (Random)' : ''}${isAutoEnabled ? ' (Auto Loop)' : ''}${isGoToNextEnabled ? ' + Next' : ''}`}
               >
                 {t('common.make')}
               </Button>
@@ -791,17 +855,23 @@ export const PromptView: React.FC = () => {
 
               <div className="flex items-center justify-between">
                 <label htmlFor="auto-toggle" className="flex items-center gap-2 cursor-pointer select-none">
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" style={{ fill: isAutoRunning ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" style={{ fill: (isAutoEnabled || isAutoRunning) ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
                     <path d={isAutoRunning ? mdiStop : mdiAutorenew} />
                   </svg>
-                  <span className="text-sm" style={{ color: isAutoRunning ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
+                  <span className="text-sm" style={{ color: (isAutoEnabled || isAutoRunning) ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY }}>
                     Auto
                   </span>
                 </label>
                 <Toggle
                   id="auto-toggle"
-                  checked={isAutoRunning}
-                  onChange={handleAutoToggle}
+                  checked={isAutoEnabled || isAutoRunning}
+                  onChange={(checked) => {
+                    if (isAutoRunning) {
+                      stopAutoLoop();
+                    } else {
+                      setIsAutoEnabled(checked);
+                    }
+                  }}
                 />
               </div>
             </div>
