@@ -7,8 +7,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { VERSION } from './constants';
 
 // GA4 Configuration
-const GA4_MEASUREMENT_ID = 'G-VQDV962F8P';
-const GA4_API_SECRET = 'xR8FlDL2T6abvy3LcOWedA';
+const GA4_MEASUREMENT_ID = import.meta.env.VITE_GA4_MEASUREMENT_ID;
+const GA4_API_SECRET = import.meta.env.VITE_GA4_API_SECRET;
 const GA4_ENDPOINT = `https://www.google-analytics.com/mp/collect?measurement_id=${GA4_MEASUREMENT_ID}&api_secret=${GA4_API_SECRET}`;
 
 const CLIENT_ID_KEY = 'ga_client_id';

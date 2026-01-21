@@ -12,6 +12,10 @@ node_modules
 archive/userscript/node_modules
 *.local
 
+# Environment variables
+.env
+.env.local
+
 # Build outputs
 dist
 dist-ssr
