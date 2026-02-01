@@ -429,6 +429,8 @@ export const PromptView: React.FC = () => {
           trackVideoMakeClicked();
           trackMakeAndNextClicked();
           const fullPromptText = getFullPromptText(prompt.text);
+          // Update current post ID immediately before navigation
+          setCurrentPostId(nextPostId);
           applyPromptMakeAndNext(fullPromptText, prefix, nextPostId);
         }
       }, 100);
@@ -436,9 +438,11 @@ export const PromptView: React.FC = () => {
       trackVideoMakeClicked();
       trackMakeAndNextClicked();
       const fullPromptText = getFullPromptText(currentPrompt.text);
+      // Update current post ID immediately before navigation
+      setCurrentPostId(nextPostId);
       applyPromptMakeAndNext(fullPromptText, prefix, nextPostId);
     }
-  }, [currentPrompt, isRandomEnabled, promptCount, prefix, getNextPostId, getFullPromptText, setCurrentIndex, getCurrentPrompt, isAutoRunning, stopAutoLoop]);
+  }, [currentPrompt, isRandomEnabled, promptCount, prefix, getNextPostId, getFullPromptText, setCurrentIndex, getCurrentPrompt, isAutoRunning, stopAutoLoop, setCurrentPostId]);
 
   // Update refs to break circular dependencies
   React.useEffect(() => {
@@ -464,6 +468,9 @@ export const PromptView: React.FC = () => {
       return;
     }
 
+    // Update current post ID immediately before navigation
+    setCurrentPostId(prevPostId);
+
     // Navigate to previous post using soft navigation
     navigateToPost(prevPostId);
   };
@@ -475,6 +482,9 @@ export const PromptView: React.FC = () => {
       // No next post available
       return;
     }
+
+    // Update current post ID immediately before navigation
+    setCurrentPostId(nextPostId);
 
     // Navigate to next post using soft navigation
     navigateToPost(nextPostId);
