@@ -269,7 +269,8 @@
     },
     "upscale": {
       "title": "Выбрать Посты для Улучшения ({{selected}}/{{total}})",
-      "actionText": "Улучшить {{count}} Пост{{plural}}"
+      "actionText": "Улучшить {{count}} Пост{{plural}}",
+      "autoDownloadWarning": "Автозагрузка включена. Улучшенные видео будут автоматически загружены, когда будут готовы."
     },
     "like": {
       "title": "Выбрать Посты для Лайка ({{selected}}/{{total}})",

@@ -269,7 +269,8 @@
     },
     "upscale": {
       "title": "Select Posts to Upscale ({{selected}}/{{total}})",
-      "actionText": "Upscale {{count}} Post{{plural}}"
+      "actionText": "Upscale {{count}} Post{{plural}}",
+      "autoDownloadWarning": "Auto Download is ON. Upscaled videos will be downloaded automatically when ready."
     },
     "like": {
       "title": "Select Posts to Like ({{selected}}/{{total}})",

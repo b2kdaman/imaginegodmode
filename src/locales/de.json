@@ -269,7 +269,8 @@
     },
     "upscale": {
       "title": "Beiträge zum Hochskalieren auswählen ({{selected}}/{{total}})",
-      "actionText": "{{count}} Beitrag{{plural}} hochskalieren"
+      "actionText": "{{count}} Beitrag{{plural}} hochskalieren",
+      "autoDownloadWarning": "Auto-Download ist aktiviert. Hochskalierte Videos werden automatisch heruntergeladen, sobald sie bereit sind."
     },
     "like": {
       "title": "Beiträge zum Liken auswählen ({{selected}}/{{total}})",

@@ -269,7 +269,8 @@
     },
     "upscale": {
       "title": "Seleccionar Publicaciones para Mejorar ({{selected}}/{{total}})",
-      "actionText": "Mejorar {{count}} Publicación{{plural}}"
+      "actionText": "Mejorar {{count}} Publicación{{plural}}",
+      "autoDownloadWarning": "La descarga automática está activada. Los videos mejorados se descargarán automáticamente cuando estén listos."
     },
     "like": {
       "title": "Seleccionar Publicaciones para Me Gusta ({{selected}}/{{total}})",

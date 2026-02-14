@@ -4,7 +4,7 @@
 
 import React, { useEffect } from 'react';
 import { Button } from '../inputs/Button';
-import { mdiCheckboxMarked, mdiCheckboxBlankOutline, mdiLoading } from '@mdi/js';
+import { mdiAlertCircle, mdiCheckboxMarked, mdiCheckboxBlankOutline, mdiLoading } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { LikedPost, ThemeColors } from '@/types';
 import { trackBulkSelectAll, trackBulkDeselectAll, trackBulkOperationConfirmed } from '@/utils/analytics';
@@ -12,8 +12,10 @@ import { BaseModal } from './BaseModal';
 import { ProgressBar } from './shared/ProgressBar';
 import { SelectionControls } from './shared/SelectionControls';
 import { PostGrid, PostGridItem } from './shared/PostGrid';
+import { WarningBanner } from './composition/WarningBanner';
 import { useShiftSelection } from '@/hooks/useShiftSelection';
 import { useTranslation } from '@/contexts/I18nContext';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 interface UpscaleAllModalProps {
   isOpen: boolean;
@@ -40,6 +42,7 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
 }) => {
   const colors = getThemeColors();
   const { t } = useTranslation();
+  const autoDownload = useSettingsStore((state) => state.autoDownload);
   const {
     selectedIds,
     toggleSelection,
@@ -127,6 +130,16 @@ export const UpscaleAllModal: React.FC<UpscaleAllModalProps> = ({
       }
     >
       <>
+        {/* Auto Download Warning */}
+        {mode === 'upscale' && autoDownload && (
+          <WarningBanner
+            variant="warning"
+            icon={mdiAlertCircle}
+            message={t('modals.upscale.autoDownloadWarning')}
+            getThemeColors={getThemeColors}
+          />
+        )}
+
         {/* Progress Bar */}
         {isProcessing && (
           <ProgressBar
