@@ -41,6 +41,35 @@ export const pickDownloadUrl = (obj: { hdMediaUrl?: string; mediaUrl?: string; t
 };
 
 /**
+ * Extract hdMediaUrl from an upscale response payload
+ * @param payload - Unknown response payload
+ * @returns HD media URL if present
+ */
+export const extractHdMediaUrl = (payload: unknown): string | null => {
+  if (!payload || typeof payload !== 'object') {
+    return null;
+  }
+
+  const record = payload as Record<string, unknown>;
+  const directHdMediaUrl = record.hdMediaUrl;
+  if (typeof directHdMediaUrl === 'string' && directHdMediaUrl.length > 0) {
+    return directHdMediaUrl;
+  }
+
+  const nestedData = record.data;
+  if (!nestedData || typeof nestedData !== 'object') {
+    return null;
+  }
+
+  const nestedHdMediaUrl = (nestedData as Record<string, unknown>).hdMediaUrl;
+  if (typeof nestedHdMediaUrl === 'string' && nestedHdMediaUrl.length > 0) {
+    return nestedHdMediaUrl;
+  }
+
+  return null;
+};
+
+/**
  * Create a random delay between min and max milliseconds
  * @param min - Minimum delay in ms
  * @param max - Maximum delay in ms

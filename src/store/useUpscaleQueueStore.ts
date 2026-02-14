@@ -8,7 +8,7 @@ import { persist } from 'zustand/middleware';
 import { QueueItem, QueueItemStatus } from '@/types';
 import { upscaleVideoById, fetchPost, downloadMedia } from '@/utils/messaging';
 import { processPostData } from '@/utils/mediaProcessor';
-import { randomDelay } from '@/utils/helpers';
+import { randomDelay, extractHdMediaUrl } from '@/utils/helpers';
 import { TIMING } from '@/utils/constants';
 import { useSettingsStore } from './useSettingsStore';
 
@@ -223,6 +223,7 @@ export const useUpscaleQueueStore = create<UpscaleQueueStore>()(
         // Fire off upscale requests with staggered delays
         let completed = 0;
         const upscalePromises: Promise<void>[] = [];
+        const responseHdUrlMap = new Map<string, string>();
 
         for (let i = 0; i < currentBatch.length; i++) {
           const item = currentBatch[i];
@@ -239,6 +240,12 @@ export const useUpscaleQueueStore = create<UpscaleQueueStore>()(
 
             if (!response.success) {
               _updateItemStatus(item.videoId, 'failed');
+              return;
+            }
+
+            const hdMediaUrl = extractHdMediaUrl(response.data);
+            if (hdMediaUrl) {
+              responseHdUrlMap.set(item.videoId, hdMediaUrl);
             }
           });
 
@@ -254,15 +261,18 @@ export const useUpscaleQueueStore = create<UpscaleQueueStore>()(
 
         // Wait for all upscale requests to complete
         await Promise.all(upscalePromises);
-        console.log('[ImagineGodMode] All upscale requests sent, polling for HD URLs...');
+        console.log('[ImagineGodMode] All upscale requests sent');
 
-        // Poll for HD URLs
-        const hdUrlMap = await _pollForHdUrls(batchVideoIds);
+        // Poll only unresolved videos not already returned with hdMediaUrl
+        const unresolvedVideoIds = batchVideoIds.filter((videoId) => !responseHdUrlMap.has(videoId));
+        const hdUrlMap = unresolvedVideoIds.length > 0
+          ? await _pollForHdUrls(unresolvedVideoIds)
+          : new Map<string, string>();
 
         // Update items with HD URLs and mark as completed
         const hdUrlsToDownload: string[] = [];
         for (const item of currentBatch) {
-          const hdUrl = hdUrlMap.get(item.videoId);
+          const hdUrl = responseHdUrlMap.get(item.videoId) || hdUrlMap.get(item.videoId);
           if (hdUrl) {
             _updateItemStatus(item.videoId, 'completed', hdUrl);
             hdUrlsToDownload.push(hdUrl);

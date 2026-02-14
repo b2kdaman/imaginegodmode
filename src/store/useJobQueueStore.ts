@@ -19,7 +19,7 @@ import {
 import { upscaleVideoById, fetchPost, downloadMedia } from '@/utils/messaging';
 import { unlikePost, likePost, fetchLikedPosts, fetchPostData } from '@/api/grokApi';
 import { processPostData } from '@/utils/mediaProcessor';
-import { randomDelay } from '@/utils/helpers';
+import { randomDelay, extractHdMediaUrl } from '@/utils/helpers';
 import { TIMING } from '@/utils/constants';
 import { sleep, getRandomApiDelay, convertToUnlikedPost } from '@/utils/opsHelpers';
 import { addUnlikedPosts, removeUnlikedPosts, clearUnlikedPosts } from '@/utils/storage';
@@ -362,6 +362,13 @@ export const useJobQueueStore = create<JobQueueStore>()(
 
               if (!response.success) {
                 console.error(`[JobQueue] Upscale failed for ${videoId}`);
+                return;
+              }
+
+              const hdMediaUrl = extractHdMediaUrl(response.data);
+              if (hdMediaUrl) {
+                hdUrlMap[videoId] = hdMediaUrl;
+                console.log(`[JobQueue] Got HD URL directly from upscale response for ${videoId}`);
               }
             });
 
@@ -378,12 +385,15 @@ export const useJobQueueStore = create<JobQueueStore>()(
           // Wait for all upscale requests to complete
           await Promise.all(upscalePromises);
 
-          // Wait for videos to start processing (upscaling takes time)
-          await sleep(10000);
+          const unresolvedVideoIds = batchVideoIds.filter((videoId) => !hdUrlMap[videoId]);
+          if (unresolvedVideoIds.length > 0) {
+            // Wait for videos to start processing (upscaling takes time)
+            await sleep(10000);
 
-          // Poll for HD URLs
-          const batchHdUrls = await pollForHdUrls(data.postIds, batchVideoIds);
-          Object.assign(hdUrlMap, batchHdUrls);
+            // Poll for HD URLs that were not returned directly by upscale response
+            const batchHdUrls = await pollForHdUrls(data.postIds, unresolvedVideoIds);
+            Object.assign(hdUrlMap, batchHdUrls);
+          }
         }
 
         // Store HD URLs in job data

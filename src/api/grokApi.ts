@@ -51,6 +51,7 @@ export enum MediaPostSource {
 export interface SimpleApiResponse {
   success: boolean;
   error?: string;
+  hdMediaUrl?: string;
 }
 
 /**
