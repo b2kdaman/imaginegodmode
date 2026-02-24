@@ -43,13 +43,13 @@ function getPromptTextarea(): HTMLTextAreaElement | null {
 
 function getPromptEditor(): HTMLElement | null {
   const proseMirror = document.querySelector('.ProseMirror') as HTMLElement | null;
-  if (proseMirror) return proseMirror;
+  if (proseMirror) {return proseMirror;}
   
   const p = document.querySelector('p[contenteditable="true"]') as HTMLElement | null;
-  if (p) return p;
+  if (p) {return p;}
   
   const emptyP = document.querySelector('p.is-editor-empty') as HTMLElement | null;
-  if (emptyP) return emptyP;
+  if (emptyP) {return emptyP;}
   
   return null;
 }
@@ -105,9 +105,9 @@ function clickMakeButton(): boolean {
     allButtons.find((b) => /\bmake\b/i.test(b.textContent?.trim() || '')) ||
     allButtons.find((b) => {
       const svg = b.querySelector('svg');
-      if (!svg) return false;
+      if (!svg) {return false;}
       const path = svg.querySelector('path');
-      if (!path) return false;
+      if (!path) {return false;}
       const d = path.getAttribute('d') || '';
       return d.includes('M6 11L12 5M12 5L18 11M12 5V19');
     }) ||
@@ -174,7 +174,7 @@ function checkAndRetry() {
     return;
   }
   
-  if (locked) return;
+  if (locked) {return;}
   
   if (isModerationVisible()) {
     if (retryCount >= store.maxRetries) {
@@ -256,7 +256,7 @@ function checkAndRetry() {
 function updateCountdown() {
   const store = usePowerToolsStore.getState();
   
-  if (!isCountingDown) return;
+  if (!isCountingDown) {return;}
   
   const now = Date.now();
   const remaining = Math.ceil((targetRetryTime - now) / 1000);
@@ -272,7 +272,7 @@ function updateCountdown() {
 }
 
 export function startAutoRetry() {
-  if (isRunning) return;
+  if (isRunning) {return;}
   
   const store = usePowerToolsStore.getState();
   savedPrompt = getPromptText();

@@ -39,7 +39,7 @@ export const useAnalyticsStore = create<AnalyticsState>()(
       entries: [],
 
       trackPromptUsed: (text) => {
-        if (!text.trim()) return;
+        if (!text.trim()) {return;}
         
         const id = generateId(text);
         set((state) => {
@@ -70,7 +70,7 @@ export const useAnalyticsStore = create<AnalyticsState>()(
       },
 
       trackPromptSuccess: (text, generationTime) => {
-        if (!text.trim()) return;
+        if (!text.trim()) {return;}
         
         const id = generateId(text);
         set((state) => {
@@ -112,7 +112,7 @@ export const useAnalyticsStore = create<AnalyticsState>()(
       },
 
       trackPromptModerated: (text) => {
-        if (!text.trim()) return;
+        if (!text.trim()) {return;}
         
         const id = generateId(text);
         set((state) => {

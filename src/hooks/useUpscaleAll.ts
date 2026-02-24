@@ -64,7 +64,7 @@ export const useUpscaleAll = (
             totalVideosAdded += processed.videosToUpscale.length;
           }
         }
-      } catch (error) {
+      } catch (_error) {
         // Silently skip posts that fail to fetch
       }
     }

@@ -285,7 +285,7 @@ export const useJobQueueStore = create<JobQueueStore>()(
                 allPostIds.push(postId);
               }
             }
-          } catch (error) {
+          } catch (_error) {
             // Silently skip posts that fail to fetch
           }
 

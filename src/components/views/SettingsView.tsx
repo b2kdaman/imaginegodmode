@@ -97,30 +97,30 @@ export const SettingsView: React.FC = () => {
     input.accept = '.json';
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
+      if (!file) {return;}
       
       try {
         const text = await file.text();
         const settings = JSON.parse(text);
         
-        if (settings.theme) setTheme(settings.theme);
-        if (settings.size) setSize(settings.size);
-        if (typeof settings.autoDownload === 'boolean') setAutoDownload(settings.autoDownload);
-        if (typeof settings.rememberPostState === 'boolean') setRememberPostState(settings.rememberPostState);
-        if (typeof settings.simpleShortcut === 'boolean') setSimpleShortcut(settings.simpleShortcut);
-        if (typeof settings.hideUnsave === 'boolean') setHideUnsave(settings.hideUnsave);
-        if (typeof settings.enableThePit === 'boolean') setEnableThePit(settings.enableThePit);
-        if (typeof settings.enableSound === 'boolean') setEnableSound(settings.enableSound);
-        if (typeof settings.confirmCopyFrom === 'boolean') setConfirmCopyFrom(settings.confirmCopyFrom);
-        if (typeof settings.compactMakeTogglers === 'boolean') setCompactMakeTogglers(settings.compactMakeTogglers);
-        if (typeof settings.globalPromptPrefixEnabled === 'boolean') setGlobalPromptPrefixEnabled(settings.globalPromptPrefixEnabled);
-        if (settings.globalPromptPrefix !== undefined) setGlobalPromptPrefix(settings.globalPromptPrefix);
-        if (typeof settings.globalPromptSuffixEnabled === 'boolean') setGlobalPromptSuffixEnabled(settings.globalPromptSuffixEnabled);
-        if (settings.globalPromptSuffix !== undefined) setGlobalPromptSuffix(settings.globalPromptSuffix);
-        if (settings.listLimit) setListLimit(settings.listLimit);
-        if (settings.maxBulkLimit) setMaxBulkLimit(settings.maxBulkLimit);
-        if (typeof settings.collapseSections === 'boolean') setCollapseSections(settings.collapseSections);
-        if (typeof settings.navigatePostsWithArrows === 'boolean') setNavigatePostsWithArrows(settings.navigatePostsWithArrows);
+        if (settings.theme) {setTheme(settings.theme);}
+        if (settings.size) {setSize(settings.size);}
+        if (typeof settings.autoDownload === 'boolean') {setAutoDownload(settings.autoDownload);}
+        if (typeof settings.rememberPostState === 'boolean') {setRememberPostState(settings.rememberPostState);}
+        if (typeof settings.simpleShortcut === 'boolean') {setSimpleShortcut(settings.simpleShortcut);}
+        if (typeof settings.hideUnsave === 'boolean') {setHideUnsave(settings.hideUnsave);}
+        if (typeof settings.enableThePit === 'boolean') {setEnableThePit(settings.enableThePit);}
+        if (typeof settings.enableSound === 'boolean') {setEnableSound(settings.enableSound);}
+        if (typeof settings.confirmCopyFrom === 'boolean') {setConfirmCopyFrom(settings.confirmCopyFrom);}
+        if (typeof settings.compactMakeTogglers === 'boolean') {setCompactMakeTogglers(settings.compactMakeTogglers);}
+        if (typeof settings.globalPromptPrefixEnabled === 'boolean') {setGlobalPromptPrefixEnabled(settings.globalPromptPrefixEnabled);}
+        if (settings.globalPromptPrefix !== undefined) {setGlobalPromptPrefix(settings.globalPromptPrefix);}
+        if (typeof settings.globalPromptSuffixEnabled === 'boolean') {setGlobalPromptSuffixEnabled(settings.globalPromptSuffixEnabled);}
+        if (settings.globalPromptSuffix !== undefined) {setGlobalPromptSuffix(settings.globalPromptSuffix);}
+        if (settings.listLimit) {setListLimit(settings.listLimit);}
+        if (settings.maxBulkLimit) {setMaxBulkLimit(settings.maxBulkLimit);}
+        if (typeof settings.collapseSections === 'boolean') {setCollapseSections(settings.collapseSections);}
+        if (typeof settings.navigatePostsWithArrows === 'boolean') {setNavigatePostsWithArrows(settings.navigatePostsWithArrows);}
         
         alert('Settings imported successfully!');
       } catch {

@@ -324,11 +324,11 @@ export const PromptView: React.FC = () => {
   };
 
   const handleToggleFavorite = () => {
-    if (!currentPrompt?.text) return;
+    if (!currentPrompt?.text) {return;}
     
     if (isFavorite(currentPrompt.text)) {
       const fav = favorites.find(f => f.text === currentPrompt.text);
-      if (fav) removeFavorite(fav.id);
+      if (fav) {removeFavorite(fav.id);}
     } else {
       addFavorite({
         text: currentPrompt.text,

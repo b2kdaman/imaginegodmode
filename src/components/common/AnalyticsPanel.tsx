@@ -26,7 +26,7 @@ export const AnalyticsPanel: React.FC = () => {
   };
 
   const getSuccessRate = (entry: PromptAnalyticsEntry): number => {
-    if (entry.timesUsed === 0) return 0;
+    if (entry.timesUsed === 0) {return 0;}
     return Math.round((entry.timesSucceeded / entry.timesUsed) * 100);
   };
 
