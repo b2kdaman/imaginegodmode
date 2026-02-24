@@ -131,7 +131,7 @@ export const DEFAULTS = {
 // DOM Selectors
 export const SELECTORS = {
   MAKE_VIDEO_BUTTON: 'button[aria-label="Make video"]',
-  TEXTAREA: 'textarea',
+  TEXTAREA: 'textarea, .ProseMirror, p[contenteditable="true"]',
   VIDEO_ELEMENT: 'video',
   FULLSCREEN_BUTTON: '[title*="fullscreen" i]',
   FULLSCREEN_BUTTON_ALT: 'button[aria-label*="fullscreen" i]',

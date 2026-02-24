@@ -43,6 +43,7 @@ interface PromptStore {
   addPrompt: () => void;
   removePrompt: () => void;
   updatePromptText: (text: string) => void;
+  updatePromptTitle: (title: string) => void;
   updatePromptRating: (rating: number) => void;
   nextPrompt: () => void;
   prevPrompt: () => void;
@@ -341,6 +342,28 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     currentPrompts[currentIndex] = {
       ...currentPrompts[currentIndex],
       text,
+    };
+
+    set({
+      packs: {
+        ...packs,
+        [currentPack]: currentPrompts,
+      },
+    });
+    get().saveToStorage();
+  },
+
+  updatePromptTitle: (title) => {
+    const { packs, currentPack, currentIndex } = get();
+    const currentPrompts = [...(packs[currentPack] || [])];
+
+    if (currentPrompts.length === 0 || !currentPrompts[currentIndex]) {
+      return;
+    }
+
+    currentPrompts[currentIndex] = {
+      ...currentPrompts[currentIndex],
+      title,
     };
 
     set({

@@ -273,8 +273,6 @@ export const useJobQueueStore = create<JobQueueStore>()(
           const postId = limitedPostIds[i];
 
           try {
-            console.log(`[JobQueue] Fetching post ${i + 1}/${limitedPostIds.length}: ${postId}`);
-
             // Fetch full post data
             const postData = await fetchPostData(postId);
 
@@ -285,11 +283,10 @@ export const useJobQueueStore = create<JobQueueStore>()(
               if (processed.videosToUpscale.length > 0) {
                 allVideoIds.push(...processed.videosToUpscale);
                 allPostIds.push(postId);
-                console.log(`[JobQueue] Found ${processed.videosToUpscale.length} videos to upscale in post ${postId}`);
               }
             }
           } catch (error) {
-            console.error(`[JobQueue] Failed to process post ${postId}:`, error);
+            // Silently skip posts that fail to fetch
           }
 
           // Update progress

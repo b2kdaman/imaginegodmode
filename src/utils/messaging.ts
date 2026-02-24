@@ -95,12 +95,17 @@ export const downloadMedia = async (urls: string[]): Promise<MessageResponse> =>
 export const fetchPost = async (postId: string): Promise<MessageResponse<PostData>> => {
   try {
     const data = await fetchPostData(postId);
+    if (!data) {
+      return {
+        success: false,
+        error: 'Post not found',
+      };
+    }
     return {
       success: true,
       data,
     };
   } catch (error) {
-    console.error('[ImagineGodMode] Fetch failed:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to fetch post',

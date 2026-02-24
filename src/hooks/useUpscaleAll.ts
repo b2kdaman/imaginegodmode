@@ -65,7 +65,7 @@ export const useUpscaleAll = (
           }
         }
       } catch (error) {
-        console.error(`Failed to process post ${postId}:`, error);
+        // Silently skip posts that fail to fetch
       }
     }
 

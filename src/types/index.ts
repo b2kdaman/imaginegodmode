@@ -5,7 +5,8 @@ export type { ThemeColors } from '@/utils/themeLoader';
 
 export interface PromptItem {
   text: string;
-  rating: number; // 0-5 stars
+  title?: string;
+  rating: number;
 }
 
 export interface Packs {
@@ -71,7 +72,7 @@ export interface PostData {
   };
 }
 
-export type ViewMode = 'prompt' | 'ops' | 'settings' | 'help' | 'queue' | 'pit';
+export type ViewMode = 'prompt' | 'ops' | 'settings' | 'help' | 'queue' | 'pit' | 'powertools';
 
 export type QueueItemStatus = 'pending' | 'processing' | 'completed' | 'failed';
 

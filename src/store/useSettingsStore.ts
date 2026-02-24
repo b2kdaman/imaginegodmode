@@ -23,13 +23,16 @@ interface SettingsState {
   enableSound: boolean;
   confirmCopyFrom: boolean;
   compactMakeTogglers: boolean;
-  globalPromptAddonEnabled: boolean;
-  globalPromptAddon: string;
+  globalPromptPrefixEnabled: boolean;
+  globalPromptPrefix: string;
+  globalPromptSuffixEnabled: boolean;
+  globalPromptSuffix: string;
   listLimit: ListLimit;
   maxBulkLimit: MaxBulkLimit;
   collapseSections: boolean;
   navigatePostsWithArrows: boolean;
   panelPosition: { x: number; y: number } | null;
+  panelSize: { width: number; height: number } | null;
 
   // Non-persisted state
   themes: Record<string, ThemeColors>;
@@ -46,13 +49,16 @@ interface SettingsState {
   setEnableSound: (enableSound: boolean) => void;
   setConfirmCopyFrom: (confirmCopyFrom: boolean) => void;
   setCompactMakeTogglers: (compact: boolean) => void;
-  setGlobalPromptAddonEnabled: (enabled: boolean) => void;
-  setGlobalPromptAddon: (addon: string) => void;
+  setGlobalPromptPrefixEnabled: (enabled: boolean) => void;
+  setGlobalPromptPrefix: (prefix: string) => void;
+  setGlobalPromptSuffixEnabled: (enabled: boolean) => void;
+  setGlobalPromptSuffix: (suffix: string) => void;
   setListLimit: (limit: ListLimit) => void;
   setMaxBulkLimit: (limit: MaxBulkLimit) => void;
   setCollapseSections: (collapse: boolean) => void;
   setNavigatePostsWithArrows: (navigate: boolean) => void;
   setPanelPosition: (position: { x: number; y: number } | null) => void;
+  setPanelSize: (size: { width: number; height: number } | null) => void;
   resetPanelPosition: () => void;
   getThemeColors: () => ThemeColors;
   getScale: () => number;
@@ -80,13 +86,16 @@ export const useSettingsStore = create<SettingsState>()(
       enableSound: true,
       confirmCopyFrom: true,
       compactMakeTogglers: false,
-      globalPromptAddonEnabled: false,
-      globalPromptAddon: '',
+      globalPromptPrefixEnabled: false,
+      globalPromptPrefix: '',
+      globalPromptSuffixEnabled: false,
+      globalPromptSuffix: '',
       listLimit: 100,
       maxBulkLimit: 'unlimited',
       collapseSections: true,
       navigatePostsWithArrows: false,
       panelPosition: null,
+      panelSize: null,
       themes: {},
 
       // Actions
@@ -105,16 +114,19 @@ export const useSettingsStore = create<SettingsState>()(
       setEnableSound: (enableSound: boolean) => set({ enableSound }),
       setConfirmCopyFrom: (confirmCopyFrom: boolean) => set({ confirmCopyFrom }),
       setCompactMakeTogglers: (compactMakeTogglers: boolean) => set({ compactMakeTogglers }),
-      setGlobalPromptAddonEnabled: (globalPromptAddonEnabled: boolean) => set({ globalPromptAddonEnabled }),
-      setGlobalPromptAddon: (globalPromptAddon: string) => set({ globalPromptAddon }),
+      setGlobalPromptPrefixEnabled: (globalPromptPrefixEnabled: boolean) => set({ globalPromptPrefixEnabled }),
+      setGlobalPromptPrefix: (globalPromptPrefix: string) => set({ globalPromptPrefix }),
+      setGlobalPromptSuffixEnabled: (globalPromptSuffixEnabled: boolean) => set({ globalPromptSuffixEnabled }),
+      setGlobalPromptSuffix: (globalPromptSuffix: string) => set({ globalPromptSuffix }),
       setListLimit: (listLimit: ListLimit) => set({ listLimit }),
       setMaxBulkLimit: (maxBulkLimit: MaxBulkLimit) => set({ maxBulkLimit }),
       setCollapseSections: (collapseSections: boolean) => set({ collapseSections }),
       setNavigatePostsWithArrows: (navigatePostsWithArrows: boolean) => set({ navigatePostsWithArrows }),
       setPanelPosition: (panelPosition: { x: number; y: number } | null) => set({ panelPosition }),
+      setPanelSize: (panelSize: { width: number; height: number } | null) => set({ panelSize }),
       resetPanelPosition: () => {
-        console.log('[ImagineGodMode] Resetting panel position to bottom-right corner');
-        set({ panelPosition: null });
+        console.log('[Imagine God Mode] Resetting panel position to bottom-right corner');
+        set({ panelPosition: null, panelSize: null });
       },
 
       getThemeColors: () => {
@@ -140,13 +152,16 @@ export const useSettingsStore = create<SettingsState>()(
         enableSound: state.enableSound,
         confirmCopyFrom: state.confirmCopyFrom,
         compactMakeTogglers: state.compactMakeTogglers,
-        globalPromptAddonEnabled: state.globalPromptAddonEnabled,
-        globalPromptAddon: state.globalPromptAddon,
+        globalPromptPrefixEnabled: state.globalPromptPrefixEnabled,
+        globalPromptPrefix: state.globalPromptPrefix,
+        globalPromptSuffixEnabled: state.globalPromptSuffixEnabled,
+        globalPromptSuffix: state.globalPromptSuffix,
         listLimit: state.listLimit,
         maxBulkLimit: state.maxBulkLimit,
         collapseSections: state.collapseSections,
         navigatePostsWithArrows: state.navigatePostsWithArrows,
         panelPosition: state.panelPosition,
+        panelSize: state.panelSize,
       }),
     }
   )

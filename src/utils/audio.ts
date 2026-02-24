@@ -139,3 +139,23 @@ export const playSuccessChord = (): void => {
     playFrequencySweep(1567.98, 3135.96, 0.4); // G6 to G7
   }, delay + 100);
 };
+
+/**
+ * Play notification sound - short pleasant alert
+ */
+export const playNotificationSound = (): void => {
+  if (!isSoundEnabled()) {return;}
+  playTone(880, 0.1, 'sine', 0.3);
+  setTimeout(() => playTone(1100, 0.1, 'sine', 0.3), 100);
+  setTimeout(() => playTone(1320, 0.15, 'sine', 0.4), 200);
+};
+
+/**
+ * Play retry success sound - ascending digital chirp
+ */
+export const playRetrySuccessSound = (): void => {
+  if (!isSoundEnabled()) {return;}
+  playFrequencySweep(600, 1200, 0.1);
+  setTimeout(() => playTone(1000, 0.08, 'square', 0.25), 50);
+  setTimeout(() => playTone(1400, 0.12, 'square', 0.3), 120);
+};

@@ -2,14 +2,16 @@
  * Help view component
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useTranslation } from '@/contexts/I18nContext';
 import { VERSION } from '@/utils/constants';
-import { mdiInformationOutline, mdiLogin } from '@mdi/js';
+import { mdiInformationOutline, mdiLogin, mdiDelete, mdiDownload } from '@mdi/js';
 import { Icon } from '../common/Icon';
 import { CollapsibleSection } from '../common/CollapsibleSection';
 import { isIOSDevice } from '@/utils/deviceDetection';
+import { getErrorLogs, clearErrorLogs, exportErrorLogs } from '@/utils/errorLogger';
+import { Button } from '../inputs/Button';
 
 export const HelpView: React.FC = () => {
   const { getThemeColors } = useSettingsStore();
@@ -39,7 +41,39 @@ export const HelpView: React.FC = () => {
     { text: t('help.features.uiScaling'), tooltip: t('help.tooltips.uiScaling') },
     { text: t('help.features.autoDownloadMedia'), tooltip: t('help.tooltips.autoDownloadMedia') },
     { text: t('help.features.multiLanguage'), tooltip: t('help.tooltips.multiLanguage') },
+    { text: 'Auto Retry with Video Goal', tooltip: 'Automatically retry moderated videos with a target video count goal' },
+    { text: 'Notification Sound', tooltip: 'Play a sound when video generation completes successfully' },
+    { text: 'Quick Style Presets', tooltip: 'One-click apply common style modifiers to your prompts' },
+    { text: 'Prompt Favorites', tooltip: 'Star and save your best prompts for quick access' },
+    { text: 'Prompt Comparison', tooltip: 'Compare two prompts side by side' },
+    { text: 'Prompt Lock Protection', tooltip: 'Lock prompts to prevent accidental edits' },
+    { text: 'Prompt Titles', tooltip: 'Add short titles to prompts for easy identification' },
   ];
+
+  const [errorLogs, setErrorLogs] = useState<ReturnType<typeof getErrorLogs>>(() => getErrorLogs());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setErrorLogs(getErrorLogs());
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleClearLogs = () => {
+    clearErrorLogs();
+    setErrorLogs([]);
+  };
+
+  const handleExportLogs = () => {
+    const logs = exportErrorLogs();
+    const blob = new Blob([logs], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `imagine-god-mode-errors-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div
@@ -300,10 +334,10 @@ export const HelpView: React.FC = () => {
         <div className="flex flex-col gap-2 mt-3">
           <div className="text-xs" style={{ color: colors.TEXT_SECONDARY }}>
             <p className="mb-1">
-              <strong style={{ color: colors.TEXT_PRIMARY }}>ImagineGodMode v{VERSION}</strong>
+              <strong style={{ color: colors.TEXT_PRIMARY }}>Imagine God Mode v{VERSION}</strong>
             </p>
             <p>{t('help.about.description')}</p>
-            <p className="mt-2">{t('help.about.author')}</p>
+            <p className="mt-2">by B2K, remixed by Imagine God Mode</p>
             <p className="mt-1 text-[11px]">{t('help.about.firefoxSupport')}</p>
           </div>
         </div>
@@ -332,6 +366,66 @@ export const HelpView: React.FC = () => {
           </div>
         </CollapsibleSection>
       )}
+
+      {/* Error Log Section */}
+      <CollapsibleSection
+        title="Error Log"
+        className="rounded-xl p-4 backdrop-blur-md border"
+        style={{
+          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
+          borderColor: `${colors.BORDER}50`,
+          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
+        }}
+      >
+        <div className="mt-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs" style={{ color: colors.TEXT_SECONDARY }}>
+              {errorLogs.length} errors logged
+            </span>
+            <div className="flex gap-1">
+              <Button
+                icon={mdiDownload}
+                onClick={handleExportLogs}
+                disabled={errorLogs.length === 0}
+                className="text-xs"
+              >
+                Export
+              </Button>
+              <Button
+                icon={mdiDelete}
+                onClick={handleClearLogs}
+                disabled={errorLogs.length === 0}
+                className="text-xs"
+              >
+                Clear
+              </Button>
+            </div>
+          </div>
+          <div
+            className="max-h-40 overflow-y-auto rounded p-2 text-[10px] font-mono"
+            style={{
+              backgroundColor: colors.BACKGROUND_DARK,
+              border: `1px solid ${colors.BORDER}`,
+            }}
+          >
+            {errorLogs.length === 0 ? (
+              <div style={{ color: colors.TEXT_SECONDARY }}>No errors logged</div>
+            ) : (
+              errorLogs.map((log, i) => (
+                <div
+                  key={i}
+                  className="mb-2 pb-2"
+                  style={{ borderBottom: i < errorLogs.length - 1 ? `1px solid ${colors.BORDER}` : 'none' }}
+                >
+                  <div style={{ color: colors.DANGER }}>{log.message}</div>
+                  <div style={{ color: colors.TEXT_SECONDARY }}>{log.timestamp}</div>
+                  {log.context && <div style={{ color: colors.TEXT_SECONDARY }}>Context: {log.context}</div>}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </CollapsibleSection>
     </div>
   );
 };

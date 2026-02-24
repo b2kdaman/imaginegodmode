@@ -4,6 +4,7 @@
  */
 
 import { SELECTORS } from './constants';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 /**
  * Navigate to a post by updating the URL using history.pushState
@@ -26,16 +27,23 @@ export const navigateToPost = (postId: string): boolean => {
 /**
  * Set textarea value using native setter to bypass React's control
  */
-export const setTextareaValue = (textarea: HTMLTextAreaElement, value: string): void => {
-  const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-    window.HTMLTextAreaElement.prototype,
-    'value'
-  )?.set;
-  nativeInputValueSetter?.call(textarea, value);
+export const setTextareaValue = (element: HTMLElement, value: string): void => {
+  if (element.tagName === 'TEXTAREA') {
+    const textarea = element as HTMLTextAreaElement;
+    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+      window.HTMLTextAreaElement.prototype,
+      'value'
+    )?.set;
+    nativeInputValueSetter?.call(textarea, value);
 
-  // Dispatch both input and change events for compatibility
-  textarea.dispatchEvent(new Event('input', { bubbles: true }));
-  textarea.dispatchEvent(new Event('change', { bubbles: true }));
+    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    textarea.dispatchEvent(new Event('change', { bubbles: true }));
+  } else {
+    element.focus();
+    document.execCommand('selectAll', false);
+    document.execCommand('insertText', false, value);
+    element.dispatchEvent(new Event('input', { bubbles: true }));
+  }
 };
 
 /**
@@ -63,22 +71,30 @@ export const clickMakeVideoButton = (): void => {
 };
 
 /**
- * Apply prompt text with optional prefix to the page textarea and click Make
+ * Apply prompt text with global prefix/suffix to the page textarea and click Make
  */
 export const applyPromptAndMake = (
   promptText: string,
-  prefix: string = '',
+  _prefix: string = '',
   delay: number = 100
 ): void => {
-  const textarea = document.querySelector(SELECTORS.TEXTAREA) as HTMLTextAreaElement;
+  const element = document.querySelector(SELECTORS.TEXTAREA) as HTMLElement | null;
 
-  if (textarea && promptText) {
-    // Apply prefix if it exists
-    const finalText = prefix.trim()
-      ? `${prefix.trim()}, ${promptText}`.trim()
-      : promptText;
+  if (element && promptText) {
+    const settings = useSettingsStore.getState();
+    let finalText = promptText;
 
-    setTextareaValue(textarea, finalText);
+    // Apply global prefix if enabled
+    if (settings.globalPromptPrefixEnabled && settings.globalPromptPrefix.trim()) {
+      finalText = `${settings.globalPromptPrefix.trim()}, ${finalText}`;
+    }
+
+    // Apply global suffix if enabled
+    if (settings.globalPromptSuffixEnabled && settings.globalPromptSuffix.trim()) {
+      finalText = `${finalText}, ${settings.globalPromptSuffix.trim()}`;
+    }
+
+    setTextareaValue(element, finalText);
 
     // Click the Make button after a short delay
     setTimeout(() => {
@@ -93,12 +109,12 @@ export const applyPromptAndMake = (
  */
 export const applyPromptMakeAndNext = (
   promptText: string,
-  prefix: string = '',
+  _prefix: string = '',
   nextPostId: string | null,
   delay: number = 100
 ): void => {
   // First, apply prompt and make
-  applyPromptAndMake(promptText, prefix, delay);
+  applyPromptAndMake(promptText, '', delay);
 
   // Then navigate to next post after Make button is clicked
   if (nextPostId) {

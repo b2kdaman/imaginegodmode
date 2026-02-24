@@ -28,7 +28,7 @@
   "panel": {
     "collapseTooltip": "Collapse panel",
     "expandTooltip": "Expand panel",
-    "authorCredit": "by b2kdaman",
+    "authorCredit": "by B2K, remixed by Imagine God Mode",
     "previousPostTooltip": "Previous post",
     "nextPostTooltip": "Next post",
     "autoTooltip": "Auto: Automatically repeat Make + Next",
@@ -204,7 +204,7 @@
         "space": "Space"
       }
     },
-    "aboutText": "ImagineGodMode helps you manage video generation prompts with features like saving prompt packs, rating, importing/exporting, upscaling videos to HD, and auto-downloading media.",
+    "aboutText": "Imagine God Mode helps you manage video generation prompts with features like saving prompt packs, rating, importing/exporting, upscaling videos to HD, and auto-downloading media.",
     "signIn": {
       "linkText": "Sign in to X.ai"
     },

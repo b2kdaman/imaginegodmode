@@ -11,6 +11,10 @@ import { RatingSystem } from '../inputs/RatingSystem';
 import { Button } from '../inputs/Button';
 import { Toggle } from '../inputs/Toggle';
 import { ConfirmModal } from '../modals/ConfirmModal';
+import { StylePresets } from '../common/StylePresets';
+import { FavoritesPanel } from '../common/FavoritesPanel';
+import { useFavoritesStore } from '@/store/useFavoritesStore';
+import { useAnalyticsStore } from '@/store/useAnalyticsStore';
 import { SELECTORS } from '@/utils/constants';
 import {
   mdiChevronLeft,
@@ -27,6 +31,10 @@ import {
   mdiAutorenew,
   mdiStop,
   mdiShuffle,
+  mdiStar,
+  mdiStarOutline,
+  mdiLock,
+  mdiLockOpen,
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -52,6 +60,7 @@ export const PromptView: React.FC = () => {
     getCurrentPrompt,
     getCurrentPromptCount,
     updatePromptText,
+    updatePromptTitle,
     updatePromptRating,
     nextPrompt,
     prevPrompt,
@@ -60,8 +69,10 @@ export const PromptView: React.FC = () => {
     savePostState,
     setCurrentIndex,
   } = usePromptStore();
-  const { getThemeColors, rememberPostState, confirmCopyFrom, compactMakeTogglers, globalPromptAddonEnabled, globalPromptAddon, listLimit } = useSettingsStore();
+  const { getThemeColors, rememberPostState, confirmCopyFrom, compactMakeTogglers, globalPromptPrefix, globalPromptSuffix, listLimit } = useSettingsStore();
   const { getNextPostId, getPrevPostId, setCurrentPostId, setPosts, posts: _postsInStore, currentPostId: _currentPostIdInStore } = usePostsStore();
+  const { addFavorite, removeFavorite, isFavorite, favorites } = useFavoritesStore();
+  const { trackPromptUsed } = useAnalyticsStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
 
@@ -75,6 +86,7 @@ export const PromptView: React.FC = () => {
   const [isAutoRunning, setIsAutoRunning] = useState(false);
   const [isRandomEnabled, setIsRandomEnabled] = useState(false);
   const [isGoToNextEnabled, setIsGoToNextEnabled] = useState(false);
+  const [isPromptLocked, setIsPromptLocked] = useState(true);
 
   // Long press state for prompt navigation
   const longPressTimerRef = React.useRef<number | null>(null);
@@ -268,7 +280,7 @@ export const PromptView: React.FC = () => {
     }
 
     // If empty or confirmation disabled, copy directly (strip addon if present)
-    const strippedText = stripGlobalAddon(textarea.value);
+    const strippedText = stripGlobalAddons(textarea.value);
     updatePromptText(strippedText);
     trackPromptEdited();
     trackPromptCopiedFromPage();
@@ -281,7 +293,7 @@ export const PromptView: React.FC = () => {
     }
 
     // Strip addon if present before saving
-    const strippedText = stripGlobalAddon(textarea.value);
+    const strippedText = stripGlobalAddons(textarea.value);
     updatePromptText(strippedText);
     trackPromptEdited();
     trackPromptCopiedFromPage();
@@ -304,24 +316,58 @@ export const PromptView: React.FC = () => {
     updatePromptRating(ratingToDuplicate);
   };
 
-  // Helper function to construct full prompt text with global addon
-  const getFullPromptText = useCallback((promptText: string): string => {
-    if (globalPromptAddonEnabled && globalPromptAddon.trim()) {
-      return `${promptText}, ${globalPromptAddon.trim()}`;
-    }
-    return promptText;
-  }, [globalPromptAddonEnabled, globalPromptAddon]);
+  const handleApplyStylePreset = (modifiers: string) => {
+    const currentText = currentPrompt?.text?.trim() || '';
+    const newText = currentText ? `${currentText}, ${modifiers}` : modifiers;
+    updatePromptText(newText);
+    trackPromptEdited();
+  };
 
-  // Helper function to strip global addon from text
-  const stripGlobalAddon = (text: string): string => {
-    if (globalPromptAddonEnabled && globalPromptAddon.trim()) {
-      const addonText = `, ${globalPromptAddon.trim()}`;
-      // Check if text ends with the addon (including comma)
-      if (text.endsWith(addonText)) {
-        return text.slice(0, -addonText.length).trim();
+  const handleToggleFavorite = () => {
+    if (!currentPrompt?.text) return;
+    
+    if (isFavorite(currentPrompt.text)) {
+      const fav = favorites.find(f => f.text === currentPrompt.text);
+      if (fav) removeFavorite(fav.id);
+    } else {
+      addFavorite({
+        text: currentPrompt.text,
+        rating: currentPrompt.rating || 0,
+        packId: currentPack,
+        packName: currentPack,
+        postId: postId || '',
+      });
+    }
+  };
+
+  const handleSelectFavorite = (text: string) => {
+    updatePromptText(text);
+    trackPromptEdited();
+  };
+
+  // Helper function to return prompt text (prefix/suffix applied in applyPromptAndMake)
+  const getFullPromptText = useCallback((promptText: string): string => {
+    return promptText;
+  }, []);
+
+  // Helper function to strip global prefix/suffix from text
+  const stripGlobalAddons = (text: string): string => {
+    let result = text;
+    // Always strip suffix if present, regardless of current enabled state
+    if (globalPromptSuffix.trim()) {
+      const suffixText = `, ${globalPromptSuffix.trim()}`;
+      if (result.endsWith(suffixText)) {
+        result = result.slice(0, -suffixText.length).trim();
       }
     }
-    return text;
+    // Always strip prefix if present, regardless of current enabled state
+    if (globalPromptPrefix.trim()) {
+      const prefixText = `${globalPromptPrefix.trim()}, `;
+      if (result.startsWith(prefixText)) {
+        result = result.slice(prefixText.length).trim();
+      }
+    }
+    return result;
   };
 
   // Auto loop control functions (defined before handleMakeClick to avoid hoisting issues)
@@ -371,6 +417,9 @@ export const PromptView: React.FC = () => {
       return;
     }
 
+    // Track prompt usage
+    trackPromptUsed(currentPrompt.text);
+
     // If random is enabled, pick random prompt first
     if (isRandomEnabled && promptCount > 1) {
       const randomIndex = Math.floor(Math.random() * promptCount);
@@ -401,7 +450,7 @@ export const PromptView: React.FC = () => {
         startAutoLoop();
       }
     }
-  }, [currentPrompt, isRandomEnabled, promptCount, prefix, getFullPromptText, setCurrentIndex, getCurrentPrompt, isAutoEnabled, isAutoRunning, startAutoLoop]);
+  }, [currentPrompt, isRandomEnabled, promptCount, prefix, getFullPromptText, setCurrentIndex, getCurrentPrompt, isAutoEnabled, isAutoRunning, startAutoLoop, trackPromptUsed]);
 
   const handleMakeAndNextClick = useCallback(() => {
     if (!currentPrompt) {
@@ -526,29 +575,72 @@ export const PromptView: React.FC = () => {
         />
       </div>
 
+      {/* Title input with lock */}
+      <div className="flex items-center gap-2 mt-3">
+        <input
+          type="text"
+          value={currentPrompt?.title || ''}
+          onChange={(e) => updatePromptTitle(e.target.value)}
+          placeholder="Title (optional)"
+          disabled={isPromptLocked}
+          className="flex-1 px-3 py-1.5 rounded-lg text-sm focus:outline-none backdrop-blur-xl"
+          style={{
+            backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
+            color: colors.TEXT_PRIMARY,
+            border: `1px solid ${colors.BORDER}`,
+            WebkitBackdropFilter: 'blur(12px)',
+            backdropFilter: 'blur(12px)',
+            opacity: isPromptLocked ? 0.7 : 1,
+          }}
+        />
+        <Button
+          variant="icon"
+          icon={isPromptLocked ? mdiLock : mdiLockOpen}
+          onClick={() => setIsPromptLocked(!isPromptLocked)}
+          tooltip={isPromptLocked ? 'Unlock to edit' : 'Lock to protect'}
+        />
+      </div>
+
       {/* Prompt textarea */}
       <textarea
         value={currentPrompt?.text || ''}
         onChange={(e) => updatePromptText(e.target.value)}
         placeholder={t('prompt.placeholder')}
-        className="w-full h-32 px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar mt-3 backdrop-blur-xl"
+        disabled={isPromptLocked}
+        className="w-full h-32 px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar mt-2 backdrop-blur-xl"
         style={{
           backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
           color: colors.TEXT_PRIMARY,
           border: `1px solid ${colors.BORDER}`,
           WebkitBackdropFilter: 'blur(12px)',
           backdropFilter: 'blur(12px)',
+          opacity: isPromptLocked ? 0.7 : 1,
         }}
       />
+
+      {/* Style Presets */}
+      <StylePresets onApply={handleApplyStylePreset} />
+
+      {/* Favorites Panel */}
+      <FavoritesPanel onSelectPrompt={handleSelectFavorite} />
 
       <div className="flex flex-col gap-3 mt-3">
         {/* Rating and prompt pagination */}
         <div className="flex items-center justify-between gap-2">
-          {/* Rating on the left */}
-          <RatingSystem
-            rating={currentPrompt?.rating || 0}
-            onChange={updatePromptRating}
-          />
+          {/* Rating and Favorite on the left */}
+          <div className="flex items-center gap-2">
+            <RatingSystem
+              rating={currentPrompt?.rating || 0}
+              onChange={updatePromptRating}
+            />
+            <Button
+              variant="icon"
+              icon={currentPrompt?.text && isFavorite(currentPrompt.text) ? mdiStar : mdiStarOutline}
+              onClick={handleToggleFavorite}
+              disabled={!currentPrompt?.text}
+              tooltip={currentPrompt?.text && isFavorite(currentPrompt.text) ? 'Remove from favorites' : 'Add to favorites'}
+            />
+          </div>
 
           {/* Prompt pagination on the right */}
           <div className="flex items-center gap-2">

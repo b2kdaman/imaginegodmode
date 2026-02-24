@@ -2,12 +2,14 @@
  * Hook to watch for "Make a Video" button progress and show visual feedback
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { Z_INDEX } from '@/utils/constants';
+import { playNotificationSound } from '@/utils/audio';
 
 export const useVideoProgress = () => {
   const { getThemeColors } = useSettingsStore();
+  const completionPlayedRef = useRef(false);
 
   useEffect(() => {
     let buttonRef: HTMLButtonElement | null = null;
@@ -111,12 +113,15 @@ export const useVideoProgress = () => {
           const percentage = parseInt(percentageMatch[1], 10);
 
           if (percentage === 100) {
-            // Remove progress bar when 100%
+            if (!completionPlayedRef.current) {
+              playNotificationSound();
+              completionPlayedRef.current = true;
+            }
             removeProgressBar();
             lastPercentage = null;
             buttonRef = null;
           } else {
-            // Create and update progress bar
+            completionPlayedRef.current = false;
             const bar = createProgressBar();
             bar.style.width = `${percentage}%`;
 

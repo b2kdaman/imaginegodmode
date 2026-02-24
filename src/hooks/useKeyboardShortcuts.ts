@@ -13,14 +13,11 @@ import { trackKeyboardShortcut, trackVideoFullscreen, trackVideoPlayPause } from
 
 export const useKeyboardShortcuts = () => {
   const { getCurrentPrompt } = usePromptStore();
-  const { simpleShortcut, globalPromptAddonEnabled, globalPromptAddon, resetPanelPosition } = useSettingsStore();
+  const { simpleShortcut, resetPanelPosition } = useSettingsStore();
 
   useEffect(() => {
-    // Helper function to apply global addon to prompt text
+    // Helper function to return prompt text (prefix/suffix applied in applyPromptAndMake)
     const getFullPromptText = (promptText: string): string => {
-      if (globalPromptAddonEnabled && globalPromptAddon.trim()) {
-        return `${promptText}, ${globalPromptAddon.trim()}`;
-      }
       return promptText;
     };
 
@@ -143,5 +140,5 @@ export const useKeyboardShortcuts = () => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [getCurrentPrompt, simpleShortcut, globalPromptAddonEnabled, globalPromptAddon, resetPanelPosition]);
+  }, [getCurrentPrompt, simpleShortcut, resetPanelPosition]);
 };
