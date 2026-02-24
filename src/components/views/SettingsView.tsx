@@ -31,7 +31,9 @@ import {
   mdiTextBoxPlus,
   mdiFormatListNumbered,
   mdiRestartOff,
-  mdiViewCompactOutline
+  mdiViewCompactOutline,
+  mdiExport,
+  mdiImport
 } from '@mdi/js';
 import { useTranslation } from '@/contexts/I18nContext';
 import {
@@ -47,7 +49,7 @@ import {
 } from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, compactMakeTogglers, globalPromptAddonEnabled, globalPromptAddon, listLimit, maxBulkLimit, collapseSections, navigatePostsWithArrows, setPanelPosition, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setCompactMakeTogglers, setGlobalPromptAddonEnabled, setGlobalPromptAddon, setListLimit, setMaxBulkLimit, setCollapseSections, setNavigatePostsWithArrows, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, compactMakeTogglers, globalPromptPrefixEnabled, globalPromptPrefix, globalPromptSuffixEnabled, globalPromptSuffix, listLimit, maxBulkLimit, collapseSections, navigatePostsWithArrows, setPanelPosition, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setCompactMakeTogglers, setGlobalPromptPrefixEnabled, setGlobalPromptPrefix, setGlobalPromptSuffixEnabled, setGlobalPromptSuffix, setListLimit, setMaxBulkLimit, setCollapseSections, setNavigatePostsWithArrows, getThemeColors } = useSettingsStore();
   const { clearAllPacks } = usePromptStore();
   const { userId } = useUserStore();
   const { t, locale, setLocale } = useTranslation();
@@ -57,6 +59,76 @@ export const SettingsView: React.FC = () => {
   const [isPacksModalOpen, setIsPacksModalOpen] = useState(false);
   const [purgeClickCount, setPurgeClickCount] = useState(0);
   const [isPurgeButtonHovered, setIsPurgeButtonHovered] = useState(false);
+
+  const handleExportSettings = () => {
+    const settings = {
+      theme,
+      size,
+      autoDownload,
+      rememberPostState,
+      simpleShortcut,
+      hideUnsave,
+      enableThePit,
+      enableSound,
+      confirmCopyFrom,
+      compactMakeTogglers,
+      globalPromptPrefixEnabled,
+      globalPromptPrefix,
+      globalPromptSuffixEnabled,
+      globalPromptSuffix,
+      listLimit,
+      maxBulkLimit,
+      collapseSections,
+      navigatePostsWithArrows,
+    };
+    
+    const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `imagine-god-mode-settings-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportSettings = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) {return;}
+      
+      try {
+        const text = await file.text();
+        const settings = JSON.parse(text);
+        
+        if (settings.theme) {setTheme(settings.theme);}
+        if (settings.size) {setSize(settings.size);}
+        if (typeof settings.autoDownload === 'boolean') {setAutoDownload(settings.autoDownload);}
+        if (typeof settings.rememberPostState === 'boolean') {setRememberPostState(settings.rememberPostState);}
+        if (typeof settings.simpleShortcut === 'boolean') {setSimpleShortcut(settings.simpleShortcut);}
+        if (typeof settings.hideUnsave === 'boolean') {setHideUnsave(settings.hideUnsave);}
+        if (typeof settings.enableThePit === 'boolean') {setEnableThePit(settings.enableThePit);}
+        if (typeof settings.enableSound === 'boolean') {setEnableSound(settings.enableSound);}
+        if (typeof settings.confirmCopyFrom === 'boolean') {setConfirmCopyFrom(settings.confirmCopyFrom);}
+        if (typeof settings.compactMakeTogglers === 'boolean') {setCompactMakeTogglers(settings.compactMakeTogglers);}
+        if (typeof settings.globalPromptPrefixEnabled === 'boolean') {setGlobalPromptPrefixEnabled(settings.globalPromptPrefixEnabled);}
+        if (settings.globalPromptPrefix !== undefined) {setGlobalPromptPrefix(settings.globalPromptPrefix);}
+        if (typeof settings.globalPromptSuffixEnabled === 'boolean') {setGlobalPromptSuffixEnabled(settings.globalPromptSuffixEnabled);}
+        if (settings.globalPromptSuffix !== undefined) {setGlobalPromptSuffix(settings.globalPromptSuffix);}
+        if (settings.listLimit) {setListLimit(settings.listLimit);}
+        if (settings.maxBulkLimit) {setMaxBulkLimit(settings.maxBulkLimit);}
+        if (typeof settings.collapseSections === 'boolean') {setCollapseSections(settings.collapseSections);}
+        if (typeof settings.navigatePostsWithArrows === 'boolean') {setNavigatePostsWithArrows(settings.navigatePostsWithArrows);}
+        
+        alert('Settings imported successfully!');
+      } catch {
+        alert('Failed to import settings. Make sure the file is valid JSON.');
+      }
+    };
+    input.click();
+  };
 
   const handlePurgeClick = () => {
     const newCount = purgeClickCount + 1;
@@ -210,36 +282,76 @@ export const SettingsView: React.FC = () => {
             />
           </div>
 
-          {/* Global Prompt Addon Setting */}
+          {/* Global Prompt Prefix Setting */}
           <div
             className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content={t('settings.tooltips.globalPromptAddon')}
+            data-tooltip-content="Text added BEFORE your prompt"
           >
             <label
               className="text-sm cursor-pointer flex items-center gap-1.5"
               style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="global-prompt-addon-toggle"
+              htmlFor="global-prompt-prefix-toggle"
             >
               <Icon path={mdiTextBoxPlus} size={0.7} color={colors.TEXT_PRIMARY} />
-              {t('settings.globalPromptAddon')}
+              Global Prefix
             </label>
             <Toggle
-              id="global-prompt-addon-toggle"
-              checked={globalPromptAddonEnabled}
+              id="global-prompt-prefix-toggle"
+              checked={globalPromptPrefixEnabled}
               onChange={(checked) => {
-                setGlobalPromptAddonEnabled(checked);
+                setGlobalPromptPrefixEnabled(checked);
               }}
             />
           </div>
 
-          {/* Global Prompt Addon Textarea */}
-          {globalPromptAddonEnabled && (
+          {/* Global Prompt Prefix Textarea */}
+          {globalPromptPrefixEnabled && (
             <textarea
-              value={globalPromptAddon}
-              onChange={(e) => setGlobalPromptAddon(e.target.value)}
-              placeholder={t('settings.globalPromptAddonPlaceholder')}
+              value={globalPromptPrefix}
+              onChange={(e) => setGlobalPromptPrefix(e.target.value)}
+              placeholder="e.g. cinematic, 4k, high quality"
               className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar backdrop-blur-xl"
-              rows={3}
+              rows={2}
+              style={{
+                backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
+                color: colors.TEXT_PRIMARY,
+                border: `1px solid ${colors.BORDER}`,
+                WebkitBackdropFilter: 'blur(12px)',
+                backdropFilter: 'blur(12px)',
+              }}
+            />
+          )}
+
+          {/* Global Prompt Suffix Setting */}
+          <div
+            className="flex items-center justify-between gap-2 cursor-help"
+            data-tooltip-content="Text added AFTER your prompt"
+          >
+            <label
+              className="text-sm cursor-pointer flex items-center gap-1.5"
+              style={{ color: colors.TEXT_PRIMARY }}
+              htmlFor="global-prompt-suffix-toggle"
+            >
+              <Icon path={mdiTextBoxPlus} size={0.7} color={colors.TEXT_PRIMARY} />
+              Global Suffix
+            </label>
+            <Toggle
+              id="global-prompt-suffix-toggle"
+              checked={globalPromptSuffixEnabled}
+              onChange={(checked) => {
+                setGlobalPromptSuffixEnabled(checked);
+              }}
+            />
+          </div>
+
+          {/* Global Prompt Suffix Textarea */}
+          {globalPromptSuffixEnabled && (
+            <textarea
+              value={globalPromptSuffix}
+              onChange={(e) => setGlobalPromptSuffix(e.target.value)}
+              placeholder="e.g. --style raw --v 6"
+              className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar backdrop-blur-xl"
+              rows={2}
               style={{
                 backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
                 color: colors.TEXT_PRIMARY,
@@ -581,6 +693,42 @@ export const SettingsView: React.FC = () => {
           >
             Reset Position
           </Button>
+        </div>
+      </CollapsibleSection>
+
+      {/* Backup & Restore Panel */}
+      <CollapsibleSection
+        title="Backup & Restore"
+        className="rounded-xl p-4 backdrop-blur-md border"
+        style={{
+          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
+          borderColor: `${colors.BORDER}50`,
+          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
+        }}
+      >
+        <div className="flex flex-col gap-2 mt-3">
+          <div className="flex gap-2">
+            <Button
+              onClick={handleExportSettings}
+              icon={mdiExport}
+              className="flex-1"
+            >
+              Export Settings
+            </Button>
+            <Button
+              onClick={handleImportSettings}
+              icon={mdiImport}
+              className="flex-1"
+            >
+              Import Settings
+            </Button>
+          </div>
+          <div
+            className="text-xs text-center"
+            style={{ color: colors.TEXT_SECONDARY }}
+          >
+            Export your settings to restore them after updates
+          </div>
         </div>
       </CollapsibleSection>
 

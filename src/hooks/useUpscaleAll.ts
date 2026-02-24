@@ -64,8 +64,8 @@ export const useUpscaleAll = (
             totalVideosAdded += processed.videosToUpscale.length;
           }
         }
-      } catch (error) {
-        console.error(`Failed to process post ${postId}:`, error);
+      } catch (_error) {
+        // Silently skip posts that fail to fetch
       }
     }
 

@@ -36,7 +36,7 @@ import { fetchLikedPosts } from '@/api/grokApi';
 export const PanelControls: React.FC = () => {
   const { isExpanded, toggleExpanded, setCurrentView, setExpanded } = useUIStore();
   const { t } = useTranslation();
-  const { globalPromptAddonEnabled, globalPromptAddon, rememberPostState, setRememberPostState, getThemeColors } = useSettingsStore();
+  const { rememberPostState, setRememberPostState, getThemeColors } = useSettingsStore();
   const { getCurrentPrompt } = usePromptStore();
   const { getNextPostId, getPrevPostId, setCurrentPostId: setStoreCurrentPostId, setPosts, posts } = usePostsStore();
   const { queue } = useUpscaleQueueStore();
@@ -82,11 +82,8 @@ export const PanelControls: React.FC = () => {
     loadPosts();
   }, [posts.length, setPosts]);
 
-  // Helper function to construct full prompt text with global addon
+  // Helper function to return prompt text (prefix/suffix applied in applyPromptAndMake)
   const getFullPromptText = (promptText: string): string => {
-    if (globalPromptAddonEnabled && globalPromptAddon.trim()) {
-      return `${promptText}, ${globalPromptAddon.trim()}`;
-    }
     return promptText;
   };
 

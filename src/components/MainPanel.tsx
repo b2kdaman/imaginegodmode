@@ -1,28 +1,29 @@
 /**
  * Main floating panel component
  */
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useUIStore } from '@/store/useUIStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
-import { useJobQueueStore } from '@/store/useJobQueueStore';
+import { usePowerToolsStore } from '@/store/usePowerToolsStore';
 import { PromptView } from './views/PromptView';
 import { OpsView } from './views/OpsView';
 import { SettingsView } from './views/SettingsView';
 import { HelpView } from './views/HelpView';
-import { QueueView } from './views/QueueView';
 import { PitView } from './views/PitView';
+import { QueueView } from './views/QueueView';
+import { PowerToolsView } from './views/PowerToolsView';
 import { UI_POSITION, Z_INDEX, TIMING } from '@/utils/constants';
 import { Tabs } from './inputs/Tabs';
 import { PanelControls } from './common/PanelControls';
 import { VersionBadge } from './common/VersionBadge';
 import { DragHandle } from './common/DragHandle';
+import { useAutoRetry } from '@/hooks/useAutoRetry';
 import { useUrlVisibility } from '@/hooks/useUrlVisibility';
 import { useTranslation } from '@/contexts/I18nContext';
 import { isMobileDevice } from '@/utils/deviceDetection';
-import { mdiTrayFull, mdiTextBox, mdiCheckboxMultipleMarkedOutline, mdiCog, mdiHelpCircle, mdiFire } from '@mdi/js';
+import { mdiTextBox, mdiCheckboxMultipleMarkedOutline, mdiCog, mdiHelpCircle, mdiFire, mdiWrench } from '@mdi/js';
 
-type ViewType = 'prompt' | 'ops' | 'settings' | 'help' | 'queue' | 'pit';
+type ViewType = 'prompt' | 'ops' | 'settings' | 'help' | 'queue' | 'pit' | 'powertools';
 
 const VIEW_COMPONENTS: Record<ViewType, React.FC> = {
   prompt: PromptView,
@@ -31,24 +32,27 @@ const VIEW_COMPONENTS: Record<ViewType, React.FC> = {
   help: HelpView,
   queue: QueueView,
   pit: PitView,
+  powertools: PowerToolsView,
 };
 
 export const MainPanel: React.FC = () => {
   const { isExpanded, currentView, setCurrentView } = useUIStore();
-  const { getThemeColors, getScale, enableThePit, panelPosition, setPanelPosition, resetPanelPosition } = useSettingsStore();
-  const { jobs } = useJobQueueStore();
+  const { getThemeColors, getScale, enableThePit, panelPosition, setPanelPosition, resetPanelPosition, panelSize, setPanelSize } = useSettingsStore();
+  const { autoRetryEnabled, cooldownRemaining } = usePowerToolsStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
   const scale = getScale();
   const isVisible = useUrlVisibility('/imagine');
+  useAutoRetry();
 
   // Dragging state
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Calculate active jobs count (pending + processing)
-  const activeJobsCount = jobs.filter((job) => job.status === 'pending' || job.status === 'processing').length;
+  // Resizing state
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
 
   // Animation state
   const [shouldRender, setShouldRender] = useState(isExpanded);
@@ -59,12 +63,8 @@ export const MainPanel: React.FC = () => {
   // Handle expand/collapse animation
   useEffect(() => {
     if (isExpanded) {
-      // Start with element rendered but in collapsed state
-      // Use setTimeout to avoid synchronous setState in effect
       const renderTimer = setTimeout(() => {
         setShouldRender(true);
-
-        // Trigger animation on next frame
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             setIsAnimatingIn(true);
@@ -73,15 +73,11 @@ export const MainPanel: React.FC = () => {
       }, 0);
       return () => clearTimeout(renderTimer);
     } else {
-      // Collapse animation
-      // Use setTimeout to avoid synchronous setState in effect
       const collapseTimer = setTimeout(() => {
         setIsAnimatingIn(false);
-
-        // Delay unmounting until animation completes
         const timer = setTimeout(() => {
           setShouldRender(false);
-        }, 300); // Match transition duration
+        }, 300);
         return () => clearTimeout(timer);
       }, 0);
       return () => clearTimeout(collapseTimer);
@@ -91,46 +87,38 @@ export const MainPanel: React.FC = () => {
   // Handle tab switch animation
   useEffect(() => {
     if (previousView !== currentView) {
-      // Use setTimeout to avoid synchronous setState in effect
       const transitionTimer = setTimeout(() => {
         setIsTransitioning(true);
         const timer = setTimeout(() => {
           setPreviousView(currentView as ViewType);
           setIsTransitioning(false);
-        }, 200); // Animation duration
+        }, 200);
         return () => clearTimeout(timer);
       }, 0);
       return () => clearTimeout(transitionTimer);
     }
   }, [currentView, previousView]);
 
-  // Auto-switch view based on URL
+  // Auto-switch view based on URL — but never away from powertools
   const lastUrl = useRef(window.location.href);
   useEffect(() => {
     const checkUrlAndSwitchView = () => {
       const currentUrl = window.location.href;
-
-      // Check if URL changed
       if (currentUrl !== lastUrl.current) {
         lastUrl.current = currentUrl;
 
-        // If on /favorites, switch to ops view
+        // Don't auto-switch if user is on powertools tab
+        if (currentView === 'powertools') { return; }
+
         if (currentUrl.includes('/favorites') && currentView !== 'ops') {
           setCurrentView('ops');
-        }
-        // If on a post page (/imagine/post/[id]), switch to prompt view
-        else if (currentUrl.includes('/imagine/post/') && currentView !== 'prompt') {
+        } else if (currentUrl.includes('/imagine/post/') && currentView !== 'prompt') {
           setCurrentView('prompt');
         }
       }
     };
-
-    // Check on mount
     checkUrlAndSwitchView();
-
-    // Check periodically for URL changes
     const interval = setInterval(checkUrlAndSwitchView, TIMING.URL_WATCHER_INTERVAL);
-
     return () => {
       clearInterval(interval);
     };
@@ -141,70 +129,88 @@ export const MainPanel: React.FC = () => {
     if (!isDragging) {
       return;
     }
-
     const handleMouseMove = (e: MouseEvent) => {
       if (!panelRef.current) {
         return;
       }
-
       const rect = panelRef.current.getBoundingClientRect();
       const newX = e.clientX - dragOffset.x;
       const newBottom = window.innerHeight - (e.clientY - dragOffset.y) - rect.height;
-
-      // Get panel dimensions
       const panelWidth = rect.width;
-
-      // Calculate boundaries (with some padding)
       const minX = 0;
       const maxX = window.innerWidth - panelWidth;
       const minBottom = 0;
       const maxBottom = window.innerHeight - rect.height;
-
-      // Constrain position within boundaries
       const constrainedX = Math.max(minX, Math.min(maxX, newX));
       const constrainedBottom = Math.max(minBottom, Math.min(maxBottom, newBottom));
-
       setPanelPosition({ x: constrainedX, y: constrainedBottom });
     };
-
     const handleMouseUp = () => {
       setIsDragging(false);
     };
-
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging, dragOffset, setPanelPosition]);
 
+  // Handle resize
+  useEffect(() => {
+    if (!isResizing) {
+      return;
+    }
+    const handleMouseMove = (e: MouseEvent) => {
+      const deltaX = e.clientX - resizeStart.x;
+      const deltaY = resizeStart.y - e.clientY;
+      const newWidth = Math.max(280, Math.min(600, resizeStart.width + deltaX));
+      const newHeight = Math.max(300, Math.min(900, resizeStart.height + deltaY));
+      setPanelSize({ width: newWidth, height: newHeight });
+    };
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing, resizeStart, setPanelSize]);
+
+  const handleResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const currentWidth = panelSize?.width || 360;
+    const currentHeight = panelSize?.height || 500;
+    setResizeStart({
+      x: e.clientX,
+      y: e.clientY,
+      width: currentWidth,
+      height: currentHeight,
+    });
+    setIsResizing(true);
+  };
+
   // Check on mount if panel position is out of bounds and reset if needed
   useEffect(() => {
-    // Only check if there's a saved position
     if (!panelPosition) {
       return;
     }
-
-    // Wait for panel to be rendered
     if (!panelRef.current) {
       return;
     }
-
     const rect = panelRef.current.getBoundingClientRect();
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
-
-    // Check if panel is completely out of bounds (not visible at all)
     const isCompletelyOutOfBounds =
-      rect.right < 0 ||  // Completely off left side
-      rect.left > windowWidth ||  // Completely off right side
-      rect.bottom < 0 ||  // Completely off top
-      rect.top > windowHeight;  // Completely off bottom
-
+      rect.right < 0 ||
+      rect.left > windowWidth ||
+      rect.bottom < 0 ||
+      rect.top > windowHeight;
     if (isCompletelyOutOfBounds) {
-      console.warn('[ImagineGodMode] Panel is completely out of bounds, resetting to default position');
+      console.warn('[Imagine God Mode] Panel is completely out of bounds, resetting to default position');
       resetPanelPosition();
     }
   }, [panelPosition, resetPanelPosition]);
@@ -215,59 +221,38 @@ export const MainPanel: React.FC = () => {
       if (!panelRef.current || !panelPosition) {
         return;
       }
-
       const rect = panelRef.current.getBoundingClientRect();
       const windowWidth = window.innerWidth;
       const windowHeight = window.innerHeight;
-
       let needsAdjustment = false;
       let newX = panelPosition.x;
       let newY = panelPosition.y;
-
-      // Account for scale when checking bounds
-      // The rect values are already scaled, so we need to work with them directly
-
-      // Check if panel is outside viewport bounds
-      // Left edge (panel going off left side)
       if (rect.left < 0) {
         newX = panelPosition.x - rect.left;
         needsAdjustment = true;
       }
-
-      // Right edge (panel going off right side)
       if (rect.right > windowWidth) {
         newX = panelPosition.x - (rect.right - windowWidth);
         needsAdjustment = true;
       }
-
-      // Top edge (panel going off top)
       if (rect.top < 0) {
         newY = panelPosition.y - rect.top;
         needsAdjustment = true;
       }
-
-      // Bottom edge (panel going off bottom)
       if (rect.bottom > windowHeight) {
         newY = panelPosition.y - (rect.bottom - windowHeight);
         needsAdjustment = true;
       }
-
-      // Update position if adjustment is needed
       if (needsAdjustment) {
         setPanelPosition({ x: newX, y: newY });
       }
     };
-
-    // Only check on window resize, not on every position change
-    // to avoid feedback loops
     window.addEventListener('resize', checkAndAdjustPosition);
-
     return () => {
       window.removeEventListener('resize', checkAndAdjustPosition);
     };
   }, [panelPosition, setPanelPosition]);
 
-  // Don't render if URL doesn't contain /imagine
   if (!isVisible) {
     return null;
   }
@@ -294,14 +279,6 @@ export const MainPanel: React.FC = () => {
       iconOnly: true,
       tooltip: t('tabs.settings')
     },
-    // Queue tab - icon only with badge
-    {
-      id: 'queue',
-      icon: mdiTrayFull,
-      badge: activeJobsCount,
-      iconOnly: true,
-      tooltip: t('tabs.queueTooltip'),
-    },
     {
       id: 'help',
       icon: mdiHelpCircle,
@@ -314,9 +291,14 @@ export const MainPanel: React.FC = () => {
       iconOnly: true,
       tooltip: 'The Pit'
     },
+    {
+      id: 'powertools',
+      icon: mdiWrench,
+      iconOnly: true,
+      tooltip: 'Power Tools'
+    },
   ];
 
-  // Filter tabs based on settings
   const tabs = allTabs.filter(tab => {
     if (tab.id === 'pit') {
       return enableThePit;
@@ -324,25 +306,18 @@ export const MainPanel: React.FC = () => {
     return true;
   });
 
-  // Determine bottom position based on device type
   const bottomPosition = isMobileDevice() ? UI_POSITION.BOTTOM_MOBILE : UI_POSITION.BOTTOM;
 
-  // Handle drag start
   const handleDragStart = (e: React.MouseEvent) => {
     if (!panelRef.current) {
       return;
     }
-
     const rect = panelRef.current.getBoundingClientRect();
-
-    // If this is the first drag (no panelPosition set), initialize it with current position
-    // This prevents jumping when transform origin changes from bottom-right to bottom-left
     if (!panelPosition) {
       const currentX = rect.left;
       const currentY = window.innerHeight - rect.bottom;
       setPanelPosition({ x: currentX, y: currentY });
     }
-
     setDragOffset({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
@@ -350,7 +325,6 @@ export const MainPanel: React.FC = () => {
     setIsDragging(true);
   };
 
-  // Calculate position styles
   const getPositionStyles = () => {
     if (panelPosition) {
       return {
@@ -380,15 +354,12 @@ export const MainPanel: React.FC = () => {
         WebkitUserSelect: 'none',
       }}
     >
-      {/* Main container */}
-      <div className="flex flex-col items-end gap-2 w-[360px]">
-        {/* Version badge above controls */}
+      <div 
+        className="flex flex-col items-end gap-2"
+        style={{ width: panelSize?.width || 360 }}
+      >
         <VersionBadge />
-
-        {/* Panel controls */}
         <PanelControls />
-
-        {/* Content wrapper with expand/collapse animation */}
         {shouldRender && (
           <div
             className="rounded-2xl p-4 shadow-2xl w-full overflow-hidden transition-all duration-300 ease-out relative"
@@ -397,22 +368,18 @@ export const MainPanel: React.FC = () => {
               backdropFilter: 'blur(12px)',
               WebkitBackdropFilter: 'blur(12px)',
               border: `1px solid ${colors.BORDER}`,
-              maxHeight: isAnimatingIn ? '800px' : '0px',
+              maxHeight: isAnimatingIn ? (panelSize?.height || 500) : '0px',
               opacity: isAnimatingIn ? 1 : 0,
               padding: isAnimatingIn ? '16px' : '0px 16px',
               transform: isAnimatingIn ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.95)',
               transformOrigin: panelPosition ? 'bottom left' : 'bottom right',
             }}
           >
-            {/* Drag handle */}
             <DragHandle
               onMouseDown={handleDragStart}
               tooltipContent={t('help.tooltips.dragPanel')}
             />
-
-            {/* View content with transition */}
-            <div className="relative">
-              {/* Previous view fading out */}
+            <div className="relative" style={{ maxHeight: (panelSize?.height || 500) - 120, overflowY: 'auto' }}>
               {isTransitioning && (
                 <div
                   className="absolute inset-0 transition-all duration-200 ease-out pointer-events-none"
@@ -424,8 +391,6 @@ export const MainPanel: React.FC = () => {
                   <PreviousViewComponent />
                 </div>
               )}
-
-              {/* Current view fading in */}
               <div
                 className="transition-all duration-200 ease-out"
                 style={{
@@ -436,13 +401,44 @@ export const MainPanel: React.FC = () => {
                 <CurrentView />
               </div>
             </div>
-
-            {/* Tabs */}
             <Tabs
               tabs={tabs}
               activeTab={currentView}
               onChange={(tabId) => setCurrentView(tabId as ViewType)}
               direction="up"
+            />
+            <div
+              className="flex items-center justify-center gap-1.5 mt-1 cursor-pointer"
+              onClick={() => {
+                const store = usePowerToolsStore.getState();
+                store.setAutoRetryEnabled(!store.autoRetryEnabled);
+              }}
+              title={autoRetryEnabled ? 'Auto Retry ON - Click to disable' : 'Auto Retry OFF - Click to enable'}
+            >
+              <span
+                className="w-2 h-2 rounded-full"
+                style={{
+                  backgroundColor: autoRetryEnabled ? '#22c55e' : '#ef4444',
+                  boxShadow: autoRetryEnabled ? '0 0 6px #22c55e' : '0 0 6px #ef4444',
+                }}
+              />
+              {cooldownRemaining > 0 && autoRetryEnabled && (
+                <span className="text-[10px] font-mono" style={{ color: colors.TEXT_SECONDARY }}>
+                  {cooldownRemaining}s
+                </span>
+              )}
+            </div>
+            {/* Resize handle */}
+            <div
+              onMouseDown={handleResizeStart}
+              className="absolute bottom-1 right-1 w-4 h-4 cursor-sw-resize opacity-50 hover:opacity-100 transition-opacity"
+              style={{
+                width: 0,
+                height: 0,
+                borderStyle: 'solid',
+                borderWidth: '0 0 12px 12px',
+                borderColor: `transparent transparent ${colors.TEXT_SECONDARY} transparent`,
+              }}
             />
           </div>
         )}

@@ -57,32 +57,46 @@ export interface SimpleApiResponse {
 /**
  * Fetch post data from Grok API
  * @param postId - Post ID to fetch
- * @returns Post data
+ * @returns Post data or null if post not found
  */
-export const fetchPostData = async (postId: string): Promise<PostData> => {
-  console.log('[ImagineGodMode API] Fetching post:', postId, 'URL:', API_ENDPOINTS.POST_GET);
+export const fetchPostData = async (postId: string): Promise<PostData | null> => {
+  try {
+    const res = await fetch(API_ENDPOINTS.POST_GET, {
+      method: 'POST',
+      headers: {
+        accept: '*/*',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({ id: postId }),
+      credentials: 'include',
+    });
 
-  const res = await fetch(API_ENDPOINTS.POST_GET, {
-    method: 'POST',
-    headers: {
-      accept: '*/*',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({ id: postId }),
-    credentials: 'include', // Include cookies for authentication
-  });
+    if (!res.ok) {
+      const text = await res.text();
+      try {
+        const errorData = JSON.parse(text);
+        if (errorData?.code === 5 || errorData?.message?.includes('not found')) {
+          return null;
+        }
+        if (errorData?.code === 16 || res.status === 401) {
+          console.warn('[ImagineGodMode] Not authenticated - please log in to Grok');
+          return null;
+        }
+      } catch {
+        // Not JSON, continue with normal error handling
+      }
+      if (res.status === 404 || res.status === 401) {
+        return null;
+      }
+      throw new Error(`HTTP ${res.status}: ${text}`);
+    }
 
-  console.log('[ImagineGodMode API] Response status:', res.status, res.statusText);
-
-  if (!res.ok) {
-    const text = await res.text();
-    console.error('[ImagineGodMode API] Error response:', text);
-    throw new Error(`HTTP ${res.status}: ${text}`);
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error('[ImagineGodMode] fetchPostData error:', error);
+    return null;
   }
-
-  const data = await res.json();
-  console.log('[ImagineGodMode API] Success:', data);
-  return data;
 };
 
 /**
@@ -93,32 +107,41 @@ export const fetchPostData = async (postId: string): Promise<PostData> => {
 export const fetchLikedPosts = async (limit: number = DEFAULT_POST_FETCH_LIMIT): Promise<LikedPostsResponse> => {
   console.log('[ImagineGodMode API] Fetching liked posts, limit:', limit);
 
-  const res = await fetch(API_ENDPOINTS.POST_LIST, {
-    method: 'POST',
-    headers: {
-      accept: '*/*',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      limit,
-      filter: {
-        source: MediaPostSource.Liked,
+  try {
+    const res = await fetch(API_ENDPOINTS.POST_LIST, {
+      method: 'POST',
+      headers: {
+        accept: '*/*',
+        'content-type': 'application/json',
       },
-    }),
-    credentials: 'include',
-  });
+      body: JSON.stringify({
+        limit,
+        filter: {
+          source: MediaPostSource.Liked,
+        },
+      }),
+      credentials: 'include',
+    });
 
-  console.log('[ImagineGodMode API] Liked posts response status:', res.status, res.statusText);
+    console.log('[ImagineGodMode API] Liked posts response status:', res.status, res.statusText);
 
-  if (!res.ok) {
-    const text = await res.text();
-    console.error('[ImagineGodMode API] Error response:', text);
-    throw new Error(`HTTP ${res.status}: ${text}`);
+    if (!res.ok) {
+      const text = await res.text();
+      console.error('[ImagineGodMode API] Error response:', text);
+      if (res.status === 401) {
+        console.warn('[ImagineGodMode] Not authenticated - please log in to Grok');
+        return { posts: [] };
+      }
+      throw new Error(`HTTP ${res.status}: ${text}`);
+    }
+
+    const data = await res.json();
+    console.log('[ImagineGodMode API] Liked posts success:', data);
+    return data;
+  } catch (error) {
+    console.error('[ImagineGodMode] fetchLikedPosts error:', error);
+    return { posts: [] };
   }
-
-  const data = await res.json();
-  console.log('[ImagineGodMode API] Liked posts success:', data);
-  return data;
 };
 
 /**
@@ -134,30 +157,39 @@ export const fetchUnlikedPosts = async (limit: number = DEFAULT_POST_FETCH_LIMIT
     source: MediaPostSource.Invalid,
   };
 
-  const res = await fetch(API_ENDPOINTS.POST_LIST, {
-    method: 'POST',
-    headers: {
-      accept: '*/*',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      limit,
-      filter,
-    }),
-    credentials: 'include',
-  });
+  try {
+    const res = await fetch(API_ENDPOINTS.POST_LIST, {
+      method: 'POST',
+      headers: {
+        accept: '*/*',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        limit,
+        filter,
+      }),
+      credentials: 'include',
+    });
 
-  console.log('[ImagineGodMode API] Unliked posts response status:', res.status, res.statusText);
+    console.log('[ImagineGodMode API] Unliked posts response status:', res.status, res.statusText);
 
-  if (!res.ok) {
-    const text = await res.text();
-    console.error('[ImagineGodMode API] Error response:', text);
-    throw new Error(`HTTP ${res.status}: ${text}`);
+    if (!res.ok) {
+      const text = await res.text();
+      console.error('[ImagineGodMode API] Error response:', text);
+      if (res.status === 401) {
+        console.warn('[ImagineGodMode] Not authenticated - please log in to Grok');
+        return { posts: [] };
+      }
+      throw new Error(`HTTP ${res.status}: ${text}`);
+    }
+
+    const data = await res.json();
+    console.log('[ImagineGodMode API] Unliked posts success, posts count:', data.posts?.length || 0);
+    return data;
+  } catch (error) {
+    console.error('[ImagineGodMode] fetchUnlikedPosts error:', error);
+    return { posts: [] };
   }
-
-  const data = await res.json();
-  console.log('[ImagineGodMode API] Unliked posts success, posts count:', data.posts?.length || 0);
-  return data;
 };
 
 /**

@@ -25,7 +25,7 @@ export const VersionBadge: React.FC = () => {
         className="text-[10px] font-medium"
         style={{ color: colors.TEXT_SECONDARY }}
       >
-        ImagineGodMode {t('common.version')} {VERSION}
+        Imagine God Mode {t('common.version')} {VERSION}
       </span>
       <span
         className="text-[9px]"
