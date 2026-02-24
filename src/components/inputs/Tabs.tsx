@@ -12,6 +12,10 @@ export interface Tab {
   label?: string;
   icon?: string;
   badge?: number;
+  badgeDot?: boolean;
+  badgeDotColor?: string;
+  iconPulse?: boolean;
+  badgeDotPulse?: boolean;
   iconOnly?: boolean;
   tooltip?: string;
 }
@@ -85,7 +89,7 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, direction
               {!isActive && getGlowOverlay(tab.id)}
               <span className="relative z-10 flex items-center gap-1.5">
                 {tab.icon && (
-                  <span className="-mx-1">
+                  <span className={`-mx-1 ${tab.iconPulse ? 'animate-pulse' : ''}`}>
                     <Icon path={tab.icon} size={0.8} color={isActive ? colors.TEXT_PRIMARY : colors.TEXT_SECONDARY} />
                   </span>
                 )}
@@ -101,6 +105,15 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, direction
                   >
                     {tab.badge}
                   </span>
+                )}
+                {tab.badgeDot && (
+                  <span
+                    className={`w-2 h-2 rounded-full absolute -top-0.5 -right-0.5 ${tab.badgeDotPulse ? 'animate-pulse' : ''}`}
+                    style={{
+                      backgroundColor: tab.badgeDotColor || colors.DANGER,
+                      boxShadow: `0 0 6px ${tab.badgeDotColor || colors.DANGER}`,
+                    }}
+                  />
                 )}
               </span>
             </button>

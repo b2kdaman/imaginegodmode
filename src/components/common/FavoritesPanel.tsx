@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { Button } from '@/components/inputs/Button';
-import { Icon } from '@/components/common/Icon';
+import { BaseModal } from '@/components/modals/BaseModal';
 import { mdiStar, mdiDelete, mdiContentCopy } from '@mdi/js';
 
 interface FavoritesPanelProps {
@@ -13,11 +13,7 @@ export const FavoritesPanel: React.FC<FavoritesPanelProps> = ({ onSelectPrompt }
   const { favorites, removeFavorite } = useFavoritesStore();
   const { getThemeColors } = useSettingsStore();
   const colors = getThemeColors();
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  if (favorites.length === 0 && !isExpanded) {
-    return null;
-  }
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCopyPrompt = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -25,35 +21,37 @@ export const FavoritesPanel: React.FC<FavoritesPanelProps> = ({ onSelectPrompt }
 
   const handleSelectPrompt = (text: string) => {
     onSelectPrompt?.(text);
-    setIsExpanded(false);
+    setIsModalOpen(false);
   };
 
   return (
     <div className="mt-3">
-      <div
-        className="flex items-center justify-between cursor-pointer py-1"
-        onClick={() => setIsExpanded(!isExpanded)}
+      <Button
+        onClick={() => setIsModalOpen(true)}
+        icon={mdiStar}
+        className="w-full text-sm"
+        tooltip="Open favorites"
       >
-        <div className="flex items-center gap-2">
-          <Icon path={mdiStar} size={0.8} color={colors.TEXT_SECONDARY} />
-          <span
-            className="text-xs font-medium"
-            style={{ color: colors.TEXT_SECONDARY }}
-          >
-            Favorites ({favorites.length})
-          </span>
-        </div>
-        <span
-          className="text-xs"
-          style={{ color: colors.TEXT_SECONDARY }}
-        >
-          {isExpanded ? '▲' : '▼'}
-        </span>
-      </div>
+        Favorites ({favorites.length})
+      </Button>
 
-      {isExpanded && (
+      <BaseModal
+        isOpen={isModalOpen}
+        title={`Favorites (${favorites.length})`}
+        onClose={() => setIsModalOpen(false)}
+        getThemeColors={getThemeColors}
+        maxWidth="md"
+        maxHeight="80vh"
+        footer={
+          <div className="flex justify-end">
+            <Button onClick={() => setIsModalOpen(false)} className="text-xs">
+              Close
+            </Button>
+          </div>
+        }
+      >
         <div
-          className="mt-2 rounded-lg p-2 max-h-48 overflow-y-auto custom-scrollbar"
+          className="mt-1 rounded-lg p-2 max-h-[64vh] overflow-y-auto custom-scrollbar"
           style={{
             backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
             border: `1px solid ${colors.BORDER}`,
@@ -78,7 +76,7 @@ export const FavoritesPanel: React.FC<FavoritesPanelProps> = ({ onSelectPrompt }
                 >
                   <div className="flex-1 min-w-0">
                     <p
-                      className="text-xs truncate"
+                      className="text-xs line-clamp-2"
                       style={{ color: colors.TEXT_PRIMARY }}
                       title={fav.text}
                     >
@@ -118,7 +116,7 @@ export const FavoritesPanel: React.FC<FavoritesPanelProps> = ({ onSelectPrompt }
             </div>
           )}
         </div>
-      )}
+      </BaseModal>
     </div>
   );
 };

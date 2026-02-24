@@ -22,7 +22,8 @@ import {
   mdiChevronDoubleRight,
   mdiFormatListBulletedSquare,
   mdiTrayFull,
-  mdiDatabase
+  mdiDatabase,
+  mdiHelpCircle
 } from '@mdi/js';
 import { applyPromptAndMake, applyPromptMakeAndNext, navigateToPost } from '@/utils/promptActions';
 import { getPrefix } from '@/utils/storage';
@@ -37,6 +38,7 @@ export const PanelControls: React.FC = () => {
   const { isExpanded, toggleExpanded, setCurrentView, setExpanded } = useUIStore();
   const { t } = useTranslation();
   const { rememberPostState, setRememberPostState, getThemeColors } = useSettingsStore();
+  const colors = getThemeColors();
   const { getCurrentPrompt } = usePromptStore();
   const { getNextPostId, getPrevPostId, setCurrentPostId: setStoreCurrentPostId, setPosts, posts } = usePostsStore();
   const { queue } = useUpscaleQueueStore();
@@ -172,8 +174,13 @@ export const PanelControls: React.FC = () => {
           variant="icon"
           onClick={() => setRememberPostState(!rememberPostState)}
           icon={mdiDatabase}
-          className={`shadow-lg ${rememberPostState ? '!bg-slate-400 !border-slate-400' : ''}`}
-          iconColor={rememberPostState ? UI_COLORS.BLACK : undefined}
+          className="shadow-lg"
+          style={rememberPostState ? {
+            backgroundColor: colors.GLOW_PRIMARY,
+            borderColor: colors.GLOW_PRIMARY,
+            color: colors.BACKGROUND_DARK,
+          } : undefined}
+          iconColor={rememberPostState ? colors.BACKGROUND_DARK : undefined}
           tooltip={
             rememberPostState
               ? "Remember Pack Per Post: ON - Each post remembers its pack"
@@ -228,8 +235,13 @@ export const PanelControls: React.FC = () => {
               variant="icon"
               onClick={() => setAutoNavigate(!autoNavigate)}
               icon={mdiAutorenew}
-              className={`shadow-lg ${autoNavigate ? '!bg-slate-400 !border-slate-400' : ''}`}
-              iconColor={autoNavigate ? UI_COLORS.BLACK : undefined}
+              className="shadow-lg"
+              style={autoNavigate ? {
+                backgroundColor: colors.GLOW_PRIMARY,
+                borderColor: colors.GLOW_PRIMARY,
+                color: colors.BACKGROUND_DARK,
+              } : undefined}
+              iconColor={autoNavigate ? colors.BACKGROUND_DARK : undefined}
               tooltip={t('panel.autoTooltip')}
             />
           )}
@@ -265,6 +277,19 @@ export const PanelControls: React.FC = () => {
           </div>
         </div>
       )}
+
+      <Button
+        variant="icon"
+        onClick={() => {
+          setCurrentView('help');
+          if (!isExpanded) {
+            setExpanded(true);
+          }
+        }}
+        icon={mdiHelpCircle}
+        className="shadow-lg"
+        tooltip={t('tabs.help')}
+      />
 
       <Button
         variant="icon"

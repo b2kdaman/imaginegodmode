@@ -21,7 +21,7 @@ import { useAutoRetry } from '@/hooks/useAutoRetry';
 import { useUrlVisibility } from '@/hooks/useUrlVisibility';
 import { useTranslation } from '@/contexts/I18nContext';
 import { isMobileDevice } from '@/utils/deviceDetection';
-import { mdiTextBox, mdiCheckboxMultipleMarkedOutline, mdiCog, mdiHelpCircle, mdiFire, mdiWrench } from '@mdi/js';
+import { mdiTextBox, mdiCheckboxMultipleMarkedOutline, mdiCog, mdiFire, mdiWrench, mdiTrayFull } from '@mdi/js';
 
 type ViewType = 'prompt' | 'ops' | 'settings' | 'help' | 'queue' | 'pit' | 'powertools';
 
@@ -38,7 +38,7 @@ const VIEW_COMPONENTS: Record<ViewType, React.FC> = {
 export const MainPanel: React.FC = () => {
   const { isExpanded, currentView, setCurrentView } = useUIStore();
   const { getThemeColors, getScale, enableThePit, panelPosition, setPanelPosition, resetPanelPosition, panelSize, setPanelSize } = useSettingsStore();
-  const { autoRetryEnabled, cooldownRemaining } = usePowerToolsStore();
+  const { autoRetryEnabled } = usePowerToolsStore();
   const { t } = useTranslation();
   const colors = getThemeColors();
   const scale = getScale();
@@ -280,10 +280,10 @@ export const MainPanel: React.FC = () => {
       tooltip: t('tabs.settings')
     },
     {
-      id: 'help',
-      icon: mdiHelpCircle,
+      id: 'queue',
+      icon: mdiTrayFull,
       iconOnly: true,
-      tooltip: t('tabs.help')
+      tooltip: t('tabs.queueTooltip')
     },
     {
       id: 'pit',
@@ -294,6 +294,10 @@ export const MainPanel: React.FC = () => {
     {
       id: 'powertools',
       icon: mdiWrench,
+      badgeDot: true,
+      badgeDotColor: autoRetryEnabled ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.2)',
+      iconPulse: autoRetryEnabled,
+      badgeDotPulse: autoRetryEnabled,
       iconOnly: true,
       tooltip: 'Power Tools'
     },
@@ -407,27 +411,6 @@ export const MainPanel: React.FC = () => {
               onChange={(tabId) => setCurrentView(tabId as ViewType)}
               direction="up"
             />
-            <div
-              className="flex items-center justify-center gap-1.5 mt-1 cursor-pointer"
-              onClick={() => {
-                const store = usePowerToolsStore.getState();
-                store.setAutoRetryEnabled(!store.autoRetryEnabled);
-              }}
-              title={autoRetryEnabled ? 'Auto Retry ON - Click to disable' : 'Auto Retry OFF - Click to enable'}
-            >
-              <span
-                className="w-2 h-2 rounded-full"
-                style={{
-                  backgroundColor: autoRetryEnabled ? '#22c55e' : '#ef4444',
-                  boxShadow: autoRetryEnabled ? '0 0 6px #22c55e' : '0 0 6px #ef4444',
-                }}
-              />
-              {cooldownRemaining > 0 && autoRetryEnabled && (
-                <span className="text-[10px] font-mono" style={{ color: colors.TEXT_SECONDARY }}>
-                  {cooldownRemaining}s
-                </span>
-              )}
-            </div>
             {/* Resize handle */}
             <div
               onMouseDown={handleResizeStart}
