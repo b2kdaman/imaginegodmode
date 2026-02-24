@@ -10,24 +10,27 @@ import { OpsView } from './views/OpsView';
 import { SettingsView } from './views/SettingsView';
 import { HelpView } from './views/HelpView';
 import { PitView } from './views/PitView';
+import { QueueView } from './views/QueueView';
 import { PowerToolsView } from './views/PowerToolsView';
 import { UI_POSITION, Z_INDEX, TIMING } from '@/utils/constants';
 import { Tabs } from './inputs/Tabs';
 import { PanelControls } from './common/PanelControls';
 import { VersionBadge } from './common/VersionBadge';
 import { DragHandle } from './common/DragHandle';
+import { useAutoRetry } from '@/hooks/useAutoRetry';
 import { useUrlVisibility } from '@/hooks/useUrlVisibility';
 import { useTranslation } from '@/contexts/I18nContext';
 import { isMobileDevice } from '@/utils/deviceDetection';
 import { mdiTextBox, mdiCheckboxMultipleMarkedOutline, mdiCog, mdiHelpCircle, mdiFire, mdiWrench } from '@mdi/js';
 
-type ViewType = 'prompt' | 'ops' | 'settings' | 'help' | 'pit' | 'powertools';
+type ViewType = 'prompt' | 'ops' | 'settings' | 'help' | 'queue' | 'pit' | 'powertools';
 
 const VIEW_COMPONENTS: Record<ViewType, React.FC> = {
   prompt: PromptView,
   ops: OpsView,
   settings: SettingsView,
   help: HelpView,
+  queue: QueueView,
   pit: PitView,
   powertools: PowerToolsView,
 };
@@ -40,6 +43,7 @@ export const MainPanel: React.FC = () => {
   const colors = getThemeColors();
   const scale = getScale();
   const isVisible = useUrlVisibility('/imagine');
+  useAutoRetry();
 
   // Dragging state
   const [isDragging, setIsDragging] = useState(false);

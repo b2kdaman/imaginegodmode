@@ -75,25 +75,33 @@ export const clickMakeVideoButton = (): void => {
  */
 export const applyPromptAndMake = (
   promptText: string,
-  _prefix: string = '',
+  prefix: string = '',
   delay: number = 100
 ): void => {
   const element = document.querySelector(SELECTORS.TEXTAREA) as HTMLElement | null;
 
   if (element && promptText) {
     const settings = useSettingsStore.getState();
-    let finalText = promptText;
+    const parts: string[] = [];
 
     // Apply global prefix if enabled
     if (settings.globalPromptPrefixEnabled && settings.globalPromptPrefix.trim()) {
-      finalText = `${settings.globalPromptPrefix.trim()}, ${finalText}`;
+      parts.push(settings.globalPromptPrefix.trim());
     }
+
+    // Apply per-post prefix if provided
+    if (prefix.trim()) {
+      parts.push(prefix.trim());
+    }
+
+    parts.push(promptText);
 
     // Apply global suffix if enabled
     if (settings.globalPromptSuffixEnabled && settings.globalPromptSuffix.trim()) {
-      finalText = `${finalText}, ${settings.globalPromptSuffix.trim()}`;
+      parts.push(settings.globalPromptSuffix.trim());
     }
 
+    const finalText = parts.join(', ');
     setTextareaValue(element, finalText);
 
     // Click the Make button after a short delay
@@ -109,12 +117,12 @@ export const applyPromptAndMake = (
  */
 export const applyPromptMakeAndNext = (
   promptText: string,
-  _prefix: string = '',
+  prefix: string = '',
   nextPostId: string | null,
   delay: number = 100
 ): void => {
   // First, apply prompt and make
-  applyPromptAndMake(promptText, '', delay);
+  applyPromptAndMake(promptText, prefix, delay);
 
   // Then navigate to next post after Make button is clicked
   if (nextPostId) {

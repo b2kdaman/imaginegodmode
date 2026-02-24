@@ -1,6 +1,5 @@
 import React from 'react';
 import { usePowerToolsStore } from '@/store/usePowerToolsStore';
-import { useAutoRetry } from '@/hooks/useAutoRetry';
 import { useSettingsStore } from '@/store/useSettingsStore';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -131,8 +130,6 @@ function CooldownBar({ remaining, total }: { remaining: number; total: number })
 }
 
 export const PowerToolsView: React.FC = () => {
-  useAutoRetry();
-
   const {
     autoRetryEnabled, maxRetries, cooldownSeconds,
     retryCount, retryStatus, cooldownRemaining,
