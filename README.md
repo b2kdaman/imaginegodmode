@@ -5,6 +5,11 @@ A multi-platform application for Grok media management built with React, TypeScr
 - **Chrome Extension**: Full-featured extension for Chrome/Edge browsers with all features
 - **iOS App**: Native iOS wrapper using WKWebView with extension functionality
 
+## Contributors
+
+- B2K
+- Buku
+
 ## Features
 
 - **Analytics**: Comprehensive Google Analytics 4 integration for anonymous usage tracking (always enabled, see [docs/PRIVACY.md](docs/PRIVACY.md))

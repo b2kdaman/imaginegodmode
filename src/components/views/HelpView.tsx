@@ -337,7 +337,7 @@ export const HelpView: React.FC = () => {
               <strong style={{ color: colors.TEXT_PRIMARY }}>Imagine God Mode v{VERSION}</strong>
             </p>
             <p>{t('help.about.description')}</p>
-            <p className="mt-2">by B2K, remixed by Imagine God Mode</p>
+            <p className="mt-2">by B2K, remixed by Imagine God Mode, with contributions from Buku</p>
             <p className="mt-1 text-[11px]">{t('help.about.firefoxSupport')}</p>
           </div>
         </div>

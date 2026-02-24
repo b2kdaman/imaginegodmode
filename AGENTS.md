@@ -29,6 +29,7 @@
 - No dedicated unit test suite is currently enforced.
 - Minimum validation for changes: `npm run lint` and a relevant build command.
 - Always run a Chrome build after code changes: `npm run build:chrome` (or `npm run build`).
+- Memo: after every code change, rebuild before commit/PR to verify the extension still packages correctly.
 - For UI changes, manually verify affected modals/views in the extension and include notes in PR.
 
 ## Commit & Pull Request Guidelines
