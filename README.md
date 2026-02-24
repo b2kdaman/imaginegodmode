@@ -1,5 +1,7 @@
 # ImagineGodMode
 
+[Discord](https://discord.gg/PEW3BCeG6B)
+
 A multi-platform application for Grok media management built with React, TypeScript, and Tailwind CSS.
 
 - **Chrome Extension**: Full-featured extension for Chrome/Edge browsers with all features
