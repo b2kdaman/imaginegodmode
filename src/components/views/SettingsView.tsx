@@ -60,6 +60,55 @@ export const SettingsView: React.FC = () => {
   const [purgeClickCount, setPurgeClickCount] = useState(0);
   const [isPurgeButtonHovered, setIsPurgeButtonHovered] = useState(false);
 
+  const panelStyle = {
+    background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
+    borderColor: `${colors.BORDER}50`,
+    boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
+  };
+
+  const promptTextAreaStyle = {
+    backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
+    color: colors.TEXT_PRIMARY,
+    border: `1px solid ${colors.BORDER}`,
+    WebkitBackdropFilter: 'blur(12px)',
+    backdropFilter: 'blur(12px)',
+  };
+
+  const renderToggleRow = ({
+    id,
+    label,
+    tooltip,
+    icon,
+    checked,
+    onChange,
+  }: {
+    id: string;
+    label: string;
+    tooltip: string;
+    icon: string;
+    checked: boolean;
+    onChange: (checked: boolean) => void;
+  }) => (
+    <div
+      className="flex items-center justify-between gap-2 cursor-help"
+      data-tooltip-content={tooltip}
+    >
+      <label
+        className="text-sm cursor-pointer flex items-center gap-1.5"
+        style={{ color: colors.TEXT_PRIMARY }}
+        htmlFor={id}
+      >
+        <Icon path={icon} size={0.7} color={colors.TEXT_PRIMARY} />
+        {label}
+      </label>
+      <Toggle
+        id={id}
+        checked={checked}
+        onChange={onChange}
+      />
+    </div>
+  );
+
   const handleExportSettings = () => {
     const settings = {
       theme,
@@ -102,7 +151,7 @@ export const SettingsView: React.FC = () => {
       try {
         const text = await file.text();
         const settings = JSON.parse(text);
-        
+
         if (settings.theme) {setTheme(settings.theme);}
         if (settings.size) {setSize(settings.size);}
         if (typeof settings.autoDownload === 'boolean') {setAutoDownload(settings.autoDownload);}
@@ -114,9 +163,9 @@ export const SettingsView: React.FC = () => {
         if (typeof settings.confirmCopyFrom === 'boolean') {setConfirmCopyFrom(settings.confirmCopyFrom);}
         if (typeof settings.compactMakeTogglers === 'boolean') {setCompactMakeTogglers(settings.compactMakeTogglers);}
         if (typeof settings.globalPromptPrefixEnabled === 'boolean') {setGlobalPromptPrefixEnabled(settings.globalPromptPrefixEnabled);}
-        if (settings.globalPromptPrefix !== undefined) {setGlobalPromptPrefix(settings.globalPromptPrefix);}
+        if (typeof settings.globalPromptPrefix === 'string') {setGlobalPromptPrefix(settings.globalPromptPrefix);}
         if (typeof settings.globalPromptSuffixEnabled === 'boolean') {setGlobalPromptSuffixEnabled(settings.globalPromptSuffixEnabled);}
-        if (settings.globalPromptSuffix !== undefined) {setGlobalPromptSuffix(settings.globalPromptSuffix);}
+        if (typeof settings.globalPromptSuffix === 'string') {setGlobalPromptSuffix(settings.globalPromptSuffix);}
         if (settings.listLimit) {setListLimit(settings.listLimit);}
         if (settings.maxBulkLimit) {setMaxBulkLimit(settings.maxBulkLimit);}
         if (typeof settings.collapseSections === 'boolean') {setCollapseSections(settings.collapseSections);}
@@ -175,11 +224,7 @@ export const SettingsView: React.FC = () => {
       <CollapsibleSection
         title={t('settings.packsAndPrompts')}
         className="rounded-xl p-4 backdrop-blur-md border"
-        style={{
-          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
-          borderColor: `${colors.BORDER}50`,
-          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
-        }}
+        style={panelStyle}
       >
         <div className="flex flex-col gap-3 mt-3">
           <Button
@@ -192,117 +237,67 @@ export const SettingsView: React.FC = () => {
           </Button>
 
           {/* Remember Post State Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content={t('settings.tooltips.rememberPostState')}
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="remember-post-state-toggle"
-            >
-              <Icon path={mdiDatabase} size={0.7} color={colors.TEXT_PRIMARY} />
-              {t('settings.rememberPostState')}
-            </label>
-            <Toggle
-              id="remember-post-state-toggle"
-              checked={rememberPostState}
-              onChange={(checked) => {
-                setRememberPostState(checked);
-                trackRememberPostStateToggled(checked);
-              }}
-            />
-          </div>
+          {renderToggleRow({
+            id: 'remember-post-state-toggle',
+            label: t('settings.rememberPostState'),
+            tooltip: t('settings.tooltips.rememberPostState'),
+            icon: mdiDatabase,
+            checked: rememberPostState,
+            onChange: (checked) => {
+              setRememberPostState(checked);
+              trackRememberPostStateToggled(checked);
+            },
+          })}
 
           {/* Simple Shortcut Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content={t('settings.tooltips.simpleShortcut')}
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="simple-shortcut-toggle"
-            >
-              <Icon path={mdiKeyboard} size={0.7} color={colors.TEXT_PRIMARY} />
-              {t('settings.simpleShortcut')}
-            </label>
-            <Toggle
-              id="simple-shortcut-toggle"
-              checked={simpleShortcut}
-              onChange={(checked) => {
-                setSimpleShortcut(checked);
-                trackSimpleShortcutToggled(checked);
-              }}
-            />
-          </div>
+          {renderToggleRow({
+            id: 'simple-shortcut-toggle',
+            label: t('settings.simpleShortcut'),
+            tooltip: t('settings.tooltips.simpleShortcut'),
+            icon: mdiKeyboard,
+            checked: simpleShortcut,
+            onChange: (checked) => {
+              setSimpleShortcut(checked);
+              trackSimpleShortcutToggled(checked);
+            },
+          })}
 
           {/* Confirm Copy From Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content={t('settings.tooltips.confirmCopyFrom')}
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="confirm-copy-from-toggle"
-            >
-              <Icon path={mdiAlertCircleOutline} size={0.7} color={colors.TEXT_PRIMARY} />
-              {t('settings.confirmCopyFrom')}
-            </label>
-            <Toggle
-              id="confirm-copy-from-toggle"
-              checked={confirmCopyFrom}
-              onChange={(checked) => {
-                setConfirmCopyFrom(checked);
-                trackConfirmCopyFromToggled(checked);
-              }}
-            />
-          </div>
+          {renderToggleRow({
+            id: 'confirm-copy-from-toggle',
+            label: t('settings.confirmCopyFrom'),
+            tooltip: t('settings.tooltips.confirmCopyFrom'),
+            icon: mdiAlertCircleOutline,
+            checked: confirmCopyFrom,
+            onChange: (checked) => {
+              setConfirmCopyFrom(checked);
+              trackConfirmCopyFromToggled(checked);
+            },
+          })}
 
           {/* Compact Make Togglers Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content="Show compact toggle buttons next to Make button instead of full row"
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="compact-make-togglers-toggle"
-            >
-              <Icon path={mdiViewCompactOutline} size={0.7} color={colors.TEXT_PRIMARY} />
-              Compact Make Togglers
-            </label>
-            <Toggle
-              id="compact-make-togglers-toggle"
-              checked={compactMakeTogglers}
-              onChange={(checked) => {
-                setCompactMakeTogglers(checked);
-              }}
-            />
-          </div>
+          {renderToggleRow({
+            id: 'compact-make-togglers-toggle',
+            label: 'Compact Make Togglers',
+            tooltip: 'Show compact toggle buttons next to Make button instead of full row',
+            icon: mdiViewCompactOutline,
+            checked: compactMakeTogglers,
+            onChange: (checked) => {
+              setCompactMakeTogglers(checked);
+            },
+          })}
 
           {/* Global Prompt Prefix Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content="Text added BEFORE your prompt"
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="global-prompt-prefix-toggle"
-            >
-              <Icon path={mdiTextBoxPlus} size={0.7} color={colors.TEXT_PRIMARY} />
-              Global Prefix
-            </label>
-            <Toggle
-              id="global-prompt-prefix-toggle"
-              checked={globalPromptPrefixEnabled}
-              onChange={(checked) => {
-                setGlobalPromptPrefixEnabled(checked);
-              }}
-            />
-          </div>
+          {renderToggleRow({
+            id: 'global-prompt-prefix-toggle',
+            label: 'Global Prefix',
+            tooltip: 'Text added BEFORE your prompt',
+            icon: mdiTextBoxPlus,
+            checked: globalPromptPrefixEnabled,
+            onChange: (checked) => {
+              setGlobalPromptPrefixEnabled(checked);
+            },
+          })}
 
           {/* Global Prompt Prefix Textarea */}
           {globalPromptPrefixEnabled && (
@@ -312,37 +307,21 @@ export const SettingsView: React.FC = () => {
               placeholder="e.g. cinematic, 4k, high quality"
               className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar backdrop-blur-xl"
               rows={2}
-              style={{
-                backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
-                color: colors.TEXT_PRIMARY,
-                border: `1px solid ${colors.BORDER}`,
-                WebkitBackdropFilter: 'blur(12px)',
-                backdropFilter: 'blur(12px)',
-              }}
+              style={promptTextAreaStyle}
             />
           )}
 
           {/* Global Prompt Suffix Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content="Text added AFTER your prompt"
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="global-prompt-suffix-toggle"
-            >
-              <Icon path={mdiTextBoxPlus} size={0.7} color={colors.TEXT_PRIMARY} />
-              Global Suffix
-            </label>
-            <Toggle
-              id="global-prompt-suffix-toggle"
-              checked={globalPromptSuffixEnabled}
-              onChange={(checked) => {
-                setGlobalPromptSuffixEnabled(checked);
-              }}
-            />
-          </div>
+          {renderToggleRow({
+            id: 'global-prompt-suffix-toggle',
+            label: 'Global Suffix',
+            tooltip: 'Text added AFTER your prompt',
+            icon: mdiTextBoxPlus,
+            checked: globalPromptSuffixEnabled,
+            onChange: (checked) => {
+              setGlobalPromptSuffixEnabled(checked);
+            },
+          })}
 
           {/* Global Prompt Suffix Textarea */}
           {globalPromptSuffixEnabled && (
@@ -352,13 +331,7 @@ export const SettingsView: React.FC = () => {
               placeholder="e.g. --style raw --v 6"
               className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none custom-scrollbar backdrop-blur-xl"
               rows={2}
-              style={{
-                backgroundColor: `${colors.BACKGROUND_MEDIUM}aa`,
-                color: colors.TEXT_PRIMARY,
-                border: `1px solid ${colors.BORDER}`,
-                WebkitBackdropFilter: 'blur(12px)',
-                backdropFilter: 'blur(12px)',
-              }}
+              style={promptTextAreaStyle}
             />
           )}
         </div>
@@ -368,80 +341,46 @@ export const SettingsView: React.FC = () => {
       <CollapsibleSection
         title={t('settings.behavior')}
         className="rounded-xl p-4 backdrop-blur-md border"
-        style={{
-          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
-          borderColor: `${colors.BORDER}50`,
-          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
-        }}
+        style={panelStyle}
       >
         <div className="flex flex-col gap-3 mt-3">
           {/* Auto Download Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content={t('settings.tooltips.autoDownload')}
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="auto-download-toggle"
-            >
-              <Icon path={mdiDownloadCircle} size={0.7} color={colors.TEXT_PRIMARY} />
-              {t('settings.autoDownload')}
-            </label>
-            <Toggle
-              id="auto-download-toggle"
-              checked={autoDownload}
-              onChange={(checked) => {
-                setAutoDownload(checked);
-                trackAutoDownloadToggled(checked);
-              }}
-            />
-          </div>
+          {renderToggleRow({
+            id: 'auto-download-toggle',
+            label: t('settings.autoDownload'),
+            tooltip: t('settings.tooltips.autoDownload'),
+            icon: mdiDownloadCircle,
+            checked: autoDownload,
+            onChange: (checked) => {
+              setAutoDownload(checked);
+              trackAutoDownloadToggled(checked);
+            },
+          })}
 
           {/* Enable Sound Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content={t('settings.tooltips.enableSound')}
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="enable-sound-toggle"
-            >
-              <Icon path={mdiVolumeHigh} size={0.7} color={colors.TEXT_PRIMARY} />
-              {t('settings.enableSound')}
-            </label>
-            <Toggle
-              id="enable-sound-toggle"
-              checked={enableSound}
-              onChange={(checked) => {
-                setEnableSound(checked);
-                trackSoundToggled(checked);
-              }}
-            />
-          </div>
+          {renderToggleRow({
+            id: 'enable-sound-toggle',
+            label: t('settings.enableSound'),
+            tooltip: t('settings.tooltips.enableSound'),
+            icon: mdiVolumeHigh,
+            checked: enableSound,
+            onChange: (checked) => {
+              setEnableSound(checked);
+              trackSoundToggled(checked);
+            },
+          })}
 
           {/* Navigate Posts with Arrows Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content={t('help.tooltips.navigatePostsWithArrows')}
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="navigate-posts-arrows-toggle"
-            >
-              <Icon path={mdiKeyboard} size={0.7} color={colors.TEXT_PRIMARY} />
-              {t('settings.navigatePostsWithArrows')}
-            </label>
-            <Toggle
-              id="navigate-posts-arrows-toggle"
-              checked={navigatePostsWithArrows}
-              onChange={(checked) => {
-                setNavigatePostsWithArrows(checked);
-              }}
-            />
-          </div>
+          {renderToggleRow({
+            id: 'navigate-posts-arrows-toggle',
+            label: t('settings.navigatePostsWithArrows'),
+            tooltip: t('help.tooltips.navigatePostsWithArrows'),
+            icon: mdiKeyboard,
+            checked: navigatePostsWithArrows,
+            onChange: (checked) => {
+              setNavigatePostsWithArrows(checked);
+            },
+          })}
 
           {/* List Limit Setting */}
           <div className="flex flex-col gap-2">
@@ -528,11 +467,7 @@ export const SettingsView: React.FC = () => {
       <CollapsibleSection
         title={t('settings.appearance')}
         className="rounded-xl p-4 backdrop-blur-md border"
-        style={{
-          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
-          borderColor: `${colors.BORDER}50`,
-          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
-        }}
+        style={panelStyle}
       >
         <div className="flex flex-col gap-3 mt-3">
           {/* Theme Setting */}
@@ -618,71 +553,41 @@ export const SettingsView: React.FC = () => {
           </div>
 
           {/* Hide Unsave Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content={t('settings.tooltips.hideUnsave')}
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="hide-unsave-toggle"
-            >
-              <Icon path={mdiEyeOff} size={0.7} color={colors.TEXT_PRIMARY} />
-              {t('settings.hideUnsave')}
-            </label>
-            <Toggle
-              id="hide-unsave-toggle"
-              checked={hideUnsave}
-              onChange={(checked) => {
-                setHideUnsave(checked);
-                trackHideUnsaveToggled(checked);
-              }}
-            />
-          </div>
+          {renderToggleRow({
+            id: 'hide-unsave-toggle',
+            label: t('settings.hideUnsave'),
+            tooltip: t('settings.tooltips.hideUnsave'),
+            icon: mdiEyeOff,
+            checked: hideUnsave,
+            onChange: (checked) => {
+              setHideUnsave(checked);
+              trackHideUnsaveToggled(checked);
+            },
+          })}
 
           {/* Enable The Pit Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content={t('settings.tooltips.enableThePit')}
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="enable-pit-toggle"
-            >
-              <Icon path={mdiFlare} size={0.7} color={colors.TEXT_PRIMARY} />
-              {t('settings.enableThePit')}
-            </label>
-            <Toggle
-              id="enable-pit-toggle"
-              checked={enableThePit}
-              onChange={(checked) => {
-                setEnableThePit(checked);
-              }}
-            />
-          </div>
+          {renderToggleRow({
+            id: 'enable-pit-toggle',
+            label: t('settings.enableThePit'),
+            tooltip: t('settings.tooltips.enableThePit'),
+            icon: mdiFlare,
+            checked: enableThePit,
+            onChange: (checked) => {
+              setEnableThePit(checked);
+            },
+          })}
 
           {/* Collapse Sections Setting */}
-          <div
-            className="flex items-center justify-between gap-2 cursor-help"
-            data-tooltip-content={t('settings.tooltips.collapseSections')}
-          >
-            <label
-              className="text-sm cursor-pointer flex items-center gap-1.5"
-              style={{ color: colors.TEXT_PRIMARY }}
-              htmlFor="collapse-sections-toggle"
-            >
-              <Icon path={mdiResize} size={0.7} color={colors.TEXT_PRIMARY} />
-              {t('settings.collapseSections')}
-            </label>
-            <Toggle
-              id="collapse-sections-toggle"
-              checked={collapseSections}
-              onChange={(checked) => {
-                setCollapseSections(checked);
-              }}
-            />
-          </div>
+          {renderToggleRow({
+            id: 'collapse-sections-toggle',
+            label: t('settings.collapseSections'),
+            tooltip: t('settings.tooltips.collapseSections'),
+            icon: mdiResize,
+            checked: collapseSections,
+            onChange: (checked) => {
+              setCollapseSections(checked);
+            },
+          })}
 
           {/* Reset Panel Position Button */}
           <Button
@@ -700,11 +605,7 @@ export const SettingsView: React.FC = () => {
       <CollapsibleSection
         title="Backup & Restore"
         className="rounded-xl p-4 backdrop-blur-md border"
-        style={{
-          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
-          borderColor: `${colors.BORDER}50`,
-          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
-        }}
+        style={panelStyle}
       >
         <div className="flex flex-col gap-2 mt-3">
           <div className="flex gap-2">
@@ -736,11 +637,7 @@ export const SettingsView: React.FC = () => {
       <CollapsibleSection
         title={t('settings.purge')}
         className="rounded-xl p-4 backdrop-blur-md border"
-        style={{
-          background: `linear-gradient(135deg, ${colors.BACKGROUND_MEDIUM}e6 0%, ${colors.BACKGROUND_DARK}f2 100%)`,
-          borderColor: `${colors.BORDER}50`,
-          boxShadow: `0 8px 32px 0 ${colors.BACKGROUND_DARK}66, inset 0 1px 0 0 ${colors.TEXT_SECONDARY}0d`,
-        }}
+        style={panelStyle}
       >
         {/* Purge All Button */}
         <div className="flex flex-col gap-2 mt-3">

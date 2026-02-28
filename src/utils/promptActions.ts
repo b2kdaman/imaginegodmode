@@ -6,22 +6,49 @@
 import { SELECTORS } from './constants';
 import { useSettingsStore } from '@/store/useSettingsStore';
 
+const findPostLink = (targetPath: string): HTMLAnchorElement | null => {
+  const links = document.querySelectorAll('a[href]');
+
+  for (const link of links) {
+    const href = link.getAttribute('href');
+
+    if (!href) {
+      continue;
+    }
+
+    try {
+      const url = new URL(href, window.location.origin);
+
+      if (url.pathname === targetPath) {
+        return link as HTMLAnchorElement;
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  return null;
+};
+
 /**
- * Navigate to a post by updating the URL using history.pushState
- * This allows the host React app to handle the navigation without page reload
+ * Navigate to a post using the same mechanisms the host app expects.
+ * Prefer clicking a real link so the SPA router can intercept it. Fall back
+ * to standard browser navigation if no matching link is present.
  */
 export const navigateToPost = (postId: string): boolean => {
-  const targetUrl = `/imagine/post/${postId}`;
+  const targetPath = `/imagine/post/${postId}`;
+  const targetUrl = new URL(targetPath, window.location.origin);
+  const matchingLink = findPostLink(targetPath);
 
-  console.log('[ImagineGodMode] Navigating to post via history.pushState:', postId);
+  if (matchingLink) {
+    console.log('[ImagineGodMode] Navigating to post via link click:', postId);
+    matchingLink.click();
+    return true;
+  }
 
-  // Update the URL using history.pushState
-  window.history.pushState({}, '', targetUrl);
-
-  // Dispatch a popstate event to notify the React app of the URL change
-  window.dispatchEvent(new PopStateEvent('popstate'));
-
-  return true; // Navigation succeeded
+  console.log('[ImagineGodMode] Navigating to post via location.assign:', postId);
+  window.location.assign(targetUrl.toString());
+  return true;
 };
 
 /**

@@ -16,6 +16,47 @@ import {
   trackPackImported,
 } from '@/utils/analytics';
 
+const DEFAULT_PACK_NAME = 'Default';
+
+const createEmptyPrompt = (): PromptItem => ({ text: '', rating: 0 });
+
+const createDefaultPromptState = () => ({
+  packs: { [DEFAULT_PACK_NAME]: [createEmptyPrompt()] },
+  packOrder: [DEFAULT_PACK_NAME],
+  currentPack: DEFAULT_PACK_NAME,
+  currentIndex: 0,
+});
+
+const ensurePromptList = (prompts: PromptItem[]): PromptItem[] => (
+  prompts.length === 0 ? [createEmptyPrompt()] : prompts
+);
+
+const updatePromptAtIndex = (
+  prompts: PromptItem[],
+  index: number,
+  updates: Partial<PromptItem>
+): PromptItem[] | null => {
+  if (prompts.length === 0 || !prompts[index]) {
+    return null;
+  }
+
+  const nextPrompts = [...prompts];
+  nextPrompts[index] = {
+    ...nextPrompts[index],
+    ...updates,
+  };
+
+  return nextPrompts;
+};
+
+const normalizePackOrder = (packs: Packs, savedPackOrder?: string[]) => {
+  const packNames = Object.keys(packs);
+  const packOrder = savedPackOrder ?? packNames;
+  const missingPacks = packNames.filter((name) => !packOrder.includes(name));
+
+  return [...packOrder, ...missingPacks].filter((name) => packNames.includes(name));
+};
+
 interface PromptStore {
   // State
   packs: Packs;
@@ -69,10 +110,7 @@ interface PromptStore {
 
 export const usePromptStore = create<PromptStore>((set, get) => ({
   // Initial state
-  packs: { Default: [{ text: '', rating: 0 }] },
-  packOrder: ['Default'],
-  currentPack: 'Default',
-  currentIndex: 0,
+  ...createDefaultPromptState(),
   isLoading: false,
 
   // Load from chrome storage
@@ -94,19 +132,9 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
         ? data.currentPack
         : packNames[0];
 
-      // Restore pack order or create default order
-      let packOrder = data.packOrder || packNames;
-      // Ensure all packs are in the order (add missing ones)
-      const missingPacks = packNames.filter(name => !packOrder.includes(name));
-      if (missingPacks.length > 0) {
-        packOrder = [...packOrder, ...missingPacks];
-      }
-      // Remove deleted packs from order
-      packOrder = packOrder.filter(name => packNames.includes(name));
-
       set({
         packs: data.packs,
-        packOrder,
+        packOrder: normalizePackOrder(data.packs, data.packOrder),
         currentPack: validCurrentPack,
         currentIndex: data.currentIndex || 0,
         isLoading: false,
@@ -135,7 +163,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     // Safety check: ensure packs exists
     if (!packs) {
       set({
-        packs: { [name]: [{ text: '', rating: 0 }] },
+        packs: { [name]: [createEmptyPrompt()] },
         packOrder: [name],
         currentPack: name,
         currentIndex: 0,
@@ -148,7 +176,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
       set({
         packs: {
           ...packs,
-          [name]: [{ text: '', rating: 0 }],
+          [name]: [createEmptyPrompt()],
         },
         packOrder: [...packOrder, name],
         currentPack: name,
@@ -169,13 +197,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
     // If deleting the last pack, create a new default pack
     if (packNames.length <= 1) {
-      const defaultPack = 'Default';
-      set({
-        packs: { [defaultPack]: [{ text: '', rating: 0 }] },
-        packOrder: [defaultPack],
-        currentPack: defaultPack,
-        currentIndex: 0,
-      });
+      set(createDefaultPromptState());
       get().saveToStorage();
       trackPackDeleted();
       return;
@@ -211,13 +233,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
     // If deleting all packs, create a new default pack
     if (packNames.length >= allPackNames.length) {
-      const defaultPack = 'Default';
-      set({
-        packs: { [defaultPack]: [{ text: '', rating: 0 }] },
-        packOrder: [defaultPack],
-        currentPack: defaultPack,
-        currentIndex: 0,
-      });
+      set(createDefaultPromptState());
       get().saveToStorage();
       // Track each deletion
       packNames.forEach(() => trackPackDeleted());
@@ -279,12 +295,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
   clearAllPacks: () => {
     // Reset to default state with one empty pack
-    set({
-      packs: { Default: [{ text: '', rating: 0 }] },
-      packOrder: ['Default'],
-      currentPack: 'Default',
-      currentIndex: 0,
-    });
+    set(createDefaultPromptState());
     get().saveToStorage();
   },
 
@@ -301,7 +312,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     set({
       packs: {
         ...packs,
-        [currentPack]: [...currentPrompts, { text: '', rating: 0 }],
+        [currentPack]: [...currentPrompts, createEmptyPrompt()],
       },
       currentIndex: currentPrompts.length,
     });
@@ -332,22 +343,16 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
   updatePromptText: (text) => {
     const { packs, currentPack, currentIndex } = get();
-    const currentPrompts = [...(packs[currentPack] || [])];
+    const nextPrompts = updatePromptAtIndex(packs[currentPack] || [], currentIndex, { text });
 
-    // Ensure we have prompts and valid index
-    if (currentPrompts.length === 0 || !currentPrompts[currentIndex]) {
+    if (!nextPrompts) {
       return;
     }
-
-    currentPrompts[currentIndex] = {
-      ...currentPrompts[currentIndex],
-      text,
-    };
 
     set({
       packs: {
         ...packs,
-        [currentPack]: currentPrompts,
+        [currentPack]: nextPrompts,
       },
     });
     get().saveToStorage();
@@ -355,21 +360,16 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
   updatePromptTitle: (title) => {
     const { packs, currentPack, currentIndex } = get();
-    const currentPrompts = [...(packs[currentPack] || [])];
+    const nextPrompts = updatePromptAtIndex(packs[currentPack] || [], currentIndex, { title });
 
-    if (currentPrompts.length === 0 || !currentPrompts[currentIndex]) {
+    if (!nextPrompts) {
       return;
     }
-
-    currentPrompts[currentIndex] = {
-      ...currentPrompts[currentIndex],
-      title,
-    };
 
     set({
       packs: {
         ...packs,
-        [currentPack]: currentPrompts,
+        [currentPack]: nextPrompts,
       },
     });
     get().saveToStorage();
@@ -377,22 +377,16 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
 
   updatePromptRating: (rating) => {
     const { packs, currentPack, currentIndex } = get();
-    const currentPrompts = [...(packs[currentPack] || [])];
+    const nextPrompts = updatePromptAtIndex(packs[currentPack] || [], currentIndex, { rating });
 
-    // Ensure we have prompts and valid index
-    if (currentPrompts.length === 0 || !currentPrompts[currentIndex]) {
+    if (!nextPrompts) {
       return;
     }
-
-    currentPrompts[currentIndex] = {
-      ...currentPrompts[currentIndex],
-      rating,
-    };
 
     set({
       packs: {
         ...packs,
-        [currentPack]: currentPrompts,
+        [currentPack]: nextPrompts,
       },
     });
     get().saveToStorage();
@@ -461,9 +455,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     sourcePrompts.splice(promptIndex, 1);
 
     // If source pack is now empty, add an empty prompt
-    const finalSourcePrompts = sourcePrompts.length === 0
-      ? [{ text: '', rating: 0 }]
-      : sourcePrompts;
+    const finalSourcePrompts = ensurePromptList(sourcePrompts);
 
     // Add to target pack
     const targetPrompts = [...packs[targetPack], promptToMove];
@@ -493,7 +485,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
       const updates: Partial<Pick<PromptStore, 'packs' | 'currentIndex'>> = {
         packs: {
           ...packs,
-          [packName]: [{ text: '', rating: 0 }],
+          [packName]: [createEmptyPrompt()],
         },
       };
 
@@ -539,7 +531,7 @@ export const usePromptStore = create<PromptStore>((set, get) => ({
     const newPrompts = prompts.filter((_, i) => !indicesSet.has(i));
 
     // If deleting all prompts, keep one empty prompt
-    const finalPrompts = newPrompts.length === 0 ? [{ text: '', rating: 0 }] : newPrompts;
+    const finalPrompts = ensurePromptList(newPrompts);
 
     // If deleting from current pack, reset to first prompt
     const updates: Partial<Pick<PromptStore, 'packs' | 'currentIndex'>> = {
