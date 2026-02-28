@@ -23,6 +23,10 @@ interface SettingsState {
   enableSound: boolean;
   confirmCopyFrom: boolean;
   compactMakeTogglers: boolean;
+  persistMakeToggles: boolean;
+  savedMakeRandomEnabled: boolean;
+  savedMakeAutoEnabled: boolean;
+  savedMakeNextEnabled: boolean;
   globalPromptPrefixEnabled: boolean;
   globalPromptPrefix: string;
   globalPromptSuffixEnabled: boolean;
@@ -49,6 +53,10 @@ interface SettingsState {
   setEnableSound: (enableSound: boolean) => void;
   setConfirmCopyFrom: (confirmCopyFrom: boolean) => void;
   setCompactMakeTogglers: (compact: boolean) => void;
+  setPersistMakeToggles: (persist: boolean) => void;
+  setSavedMakeRandomEnabled: (enabled: boolean) => void;
+  setSavedMakeAutoEnabled: (enabled: boolean) => void;
+  setSavedMakeNextEnabled: (enabled: boolean) => void;
   setGlobalPromptPrefixEnabled: (enabled: boolean) => void;
   setGlobalPromptPrefix: (prefix: string) => void;
   setGlobalPromptSuffixEnabled: (enabled: boolean) => void;
@@ -86,6 +94,10 @@ export const useSettingsStore = create<SettingsState>()(
       enableSound: true,
       confirmCopyFrom: true,
       compactMakeTogglers: false,
+      persistMakeToggles: false,
+      savedMakeRandomEnabled: false,
+      savedMakeAutoEnabled: false,
+      savedMakeNextEnabled: false,
       globalPromptPrefixEnabled: false,
       globalPromptPrefix: '',
       globalPromptSuffixEnabled: false,
@@ -114,6 +126,10 @@ export const useSettingsStore = create<SettingsState>()(
       setEnableSound: (enableSound: boolean) => set({ enableSound }),
       setConfirmCopyFrom: (confirmCopyFrom: boolean) => set({ confirmCopyFrom }),
       setCompactMakeTogglers: (compactMakeTogglers: boolean) => set({ compactMakeTogglers }),
+      setPersistMakeToggles: (persistMakeToggles: boolean) => set({ persistMakeToggles }),
+      setSavedMakeRandomEnabled: (savedMakeRandomEnabled: boolean) => set({ savedMakeRandomEnabled }),
+      setSavedMakeAutoEnabled: (savedMakeAutoEnabled: boolean) => set({ savedMakeAutoEnabled }),
+      setSavedMakeNextEnabled: (savedMakeNextEnabled: boolean) => set({ savedMakeNextEnabled }),
       setGlobalPromptPrefixEnabled: (globalPromptPrefixEnabled: boolean) => set({ globalPromptPrefixEnabled }),
       setGlobalPromptPrefix: (globalPromptPrefix: string) => set({ globalPromptPrefix }),
       setGlobalPromptSuffixEnabled: (globalPromptSuffixEnabled: boolean) => set({ globalPromptSuffixEnabled }),
@@ -152,6 +168,10 @@ export const useSettingsStore = create<SettingsState>()(
         enableSound: state.enableSound,
         confirmCopyFrom: state.confirmCopyFrom,
         compactMakeTogglers: state.compactMakeTogglers,
+        persistMakeToggles: state.persistMakeToggles,
+        savedMakeRandomEnabled: state.savedMakeRandomEnabled,
+        savedMakeAutoEnabled: state.savedMakeAutoEnabled,
+        savedMakeNextEnabled: state.savedMakeNextEnabled,
         globalPromptPrefixEnabled: state.globalPromptPrefixEnabled,
         globalPromptPrefix: state.globalPromptPrefix,
         globalPromptSuffixEnabled: state.globalPromptSuffixEnabled,

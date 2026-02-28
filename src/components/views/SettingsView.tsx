@@ -49,7 +49,7 @@ import {
 } from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, compactMakeTogglers, globalPromptPrefixEnabled, globalPromptPrefix, globalPromptSuffixEnabled, globalPromptSuffix, listLimit, maxBulkLimit, collapseSections, navigatePostsWithArrows, setPanelPosition, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setCompactMakeTogglers, setGlobalPromptPrefixEnabled, setGlobalPromptPrefix, setGlobalPromptSuffixEnabled, setGlobalPromptSuffix, setListLimit, setMaxBulkLimit, setCollapseSections, setNavigatePostsWithArrows, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, compactMakeTogglers, persistMakeToggles, savedMakeRandomEnabled, savedMakeAutoEnabled, savedMakeNextEnabled, globalPromptPrefixEnabled, globalPromptPrefix, globalPromptSuffixEnabled, globalPromptSuffix, listLimit, maxBulkLimit, collapseSections, navigatePostsWithArrows, setPanelPosition, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setCompactMakeTogglers, setPersistMakeToggles, setSavedMakeRandomEnabled, setSavedMakeAutoEnabled, setSavedMakeNextEnabled, setGlobalPromptPrefixEnabled, setGlobalPromptPrefix, setGlobalPromptSuffixEnabled, setGlobalPromptSuffix, setListLimit, setMaxBulkLimit, setCollapseSections, setNavigatePostsWithArrows, getThemeColors } = useSettingsStore();
   const { clearAllPacks } = usePromptStore();
   const { userId } = useUserStore();
   const { t, locale, setLocale } = useTranslation();
@@ -121,6 +121,10 @@ export const SettingsView: React.FC = () => {
       enableSound,
       confirmCopyFrom,
       compactMakeTogglers,
+      persistMakeToggles,
+      savedMakeRandomEnabled,
+      savedMakeAutoEnabled,
+      savedMakeNextEnabled,
       globalPromptPrefixEnabled,
       globalPromptPrefix,
       globalPromptSuffixEnabled,
@@ -162,6 +166,10 @@ export const SettingsView: React.FC = () => {
         if (typeof settings.enableSound === 'boolean') {setEnableSound(settings.enableSound);}
         if (typeof settings.confirmCopyFrom === 'boolean') {setConfirmCopyFrom(settings.confirmCopyFrom);}
         if (typeof settings.compactMakeTogglers === 'boolean') {setCompactMakeTogglers(settings.compactMakeTogglers);}
+        if (typeof settings.persistMakeToggles === 'boolean') {setPersistMakeToggles(settings.persistMakeToggles);}
+        if (typeof settings.savedMakeRandomEnabled === 'boolean') {setSavedMakeRandomEnabled(settings.savedMakeRandomEnabled);}
+        if (typeof settings.savedMakeAutoEnabled === 'boolean') {setSavedMakeAutoEnabled(settings.savedMakeAutoEnabled);}
+        if (typeof settings.savedMakeNextEnabled === 'boolean') {setSavedMakeNextEnabled(settings.savedMakeNextEnabled);}
         if (typeof settings.globalPromptPrefixEnabled === 'boolean') {setGlobalPromptPrefixEnabled(settings.globalPromptPrefixEnabled);}
         if (typeof settings.globalPromptPrefix === 'string') {setGlobalPromptPrefix(settings.globalPromptPrefix);}
         if (typeof settings.globalPromptSuffixEnabled === 'boolean') {setGlobalPromptSuffixEnabled(settings.globalPromptSuffixEnabled);}
@@ -284,6 +292,17 @@ export const SettingsView: React.FC = () => {
             checked: compactMakeTogglers,
             onChange: (checked) => {
               setCompactMakeTogglers(checked);
+            },
+          })}
+
+          {renderToggleRow({
+            id: 'persist-make-toggles-toggle',
+            label: 'Remember Make Toggles',
+            tooltip: 'Keep Random, Auto, and Next toggle selections when moving between posts',
+            icon: mdiDatabase,
+            checked: persistMakeToggles,
+            onChange: (checked) => {
+              setPersistMakeToggles(checked);
             },
           })}
 

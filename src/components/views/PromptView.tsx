@@ -69,7 +69,22 @@ export const PromptView: React.FC = () => {
     savePostState,
     setCurrentIndex,
   } = usePromptStore();
-  const { getThemeColors, rememberPostState, confirmCopyFrom, compactMakeTogglers, globalPromptPrefix, globalPromptSuffix, listLimit } = useSettingsStore();
+  const {
+    getThemeColors,
+    rememberPostState,
+    confirmCopyFrom,
+    compactMakeTogglers,
+    persistMakeToggles,
+    savedMakeRandomEnabled,
+    savedMakeAutoEnabled,
+    savedMakeNextEnabled,
+    setSavedMakeRandomEnabled,
+    setSavedMakeAutoEnabled,
+    setSavedMakeNextEnabled,
+    globalPromptPrefix,
+    globalPromptSuffix,
+    listLimit,
+  } = useSettingsStore();
   const { getNextPostId, getPrevPostId, setCurrentPostId, setPosts, posts: _postsInStore, currentPostId: _currentPostIdInStore } = usePostsStore();
   const { addFavorite, removeFavorite, isFavorite, favorites } = useFavoritesStore();
   const { trackPromptUsed } = useAnalyticsStore();
@@ -100,9 +115,64 @@ export const PromptView: React.FC = () => {
   // Refs to break circular dependencies
   const handleMakeClickRef = React.useRef<(() => void) | null>(null);
   const handleMakeAndNextClickRef = React.useRef<(() => void) | null>(null);
+  const previousPersistMakeTogglesRef = React.useRef(persistMakeToggles);
+  const hasInitializedPersistedTogglesRef = React.useRef(false);
 
   // Load liked posts hook
   const { loadLikedPosts } = useLikedPostsLoader(() => {});
+
+  useEffect(() => {
+    if (!persistMakeToggles) {
+      previousPersistMakeTogglesRef.current = false;
+      return;
+    }
+
+    if (!previousPersistMakeTogglesRef.current) {
+      setSavedMakeRandomEnabled(isRandomEnabled);
+      setSavedMakeAutoEnabled(isAutoEnabled);
+      setSavedMakeNextEnabled(isGoToNextEnabled);
+      hasInitializedPersistedTogglesRef.current = true;
+    } else if (!hasInitializedPersistedTogglesRef.current) {
+      setIsRandomEnabled(savedMakeRandomEnabled);
+      setIsAutoEnabled(savedMakeAutoEnabled);
+      setIsGoToNextEnabled(savedMakeNextEnabled);
+      hasInitializedPersistedTogglesRef.current = true;
+    }
+
+    previousPersistMakeTogglesRef.current = true;
+  }, [
+    persistMakeToggles,
+    isRandomEnabled,
+    isAutoEnabled,
+    isGoToNextEnabled,
+    savedMakeRandomEnabled,
+    savedMakeAutoEnabled,
+    savedMakeNextEnabled,
+    setSavedMakeRandomEnabled,
+    setSavedMakeAutoEnabled,
+    setSavedMakeNextEnabled,
+  ]);
+
+  const setRandomEnabled = useCallback((enabled: boolean) => {
+    setIsRandomEnabled(enabled);
+    if (persistMakeToggles) {
+      setSavedMakeRandomEnabled(enabled);
+    }
+  }, [persistMakeToggles, setSavedMakeRandomEnabled]);
+
+  const setAutoEnabled = useCallback((enabled: boolean) => {
+    setIsAutoEnabled(enabled);
+    if (persistMakeToggles) {
+      setSavedMakeAutoEnabled(enabled);
+    }
+  }, [persistMakeToggles, setSavedMakeAutoEnabled]);
+
+  const setGoToNextEnabled = useCallback((enabled: boolean) => {
+    setIsGoToNextEnabled(enabled);
+    if (persistMakeToggles) {
+      setSavedMakeNextEnabled(enabled);
+    }
+  }, [persistMakeToggles, setSavedMakeNextEnabled]);
 
   // Long press cleanup function
   const stopLongPress = useCallback(() => {
@@ -377,8 +447,8 @@ export const PromptView: React.FC = () => {
       autoTimeoutRef.current = null;
     }
     setIsAutoRunning(false);
-    setIsAutoEnabled(false);
-  }, []);
+    setAutoEnabled(false);
+  }, [setAutoEnabled]);
 
   const startAutoLoop = useCallback(() => {
     setIsAutoRunning(true);
@@ -789,7 +859,7 @@ export const PromptView: React.FC = () => {
             <Button
               variant="icon"
               icon={mdiShuffle}
-              onClick={() => setIsRandomEnabled(!isRandomEnabled)}
+              onClick={() => setRandomEnabled(!isRandomEnabled)}
               tooltip="Random: Pick random prompt from pack"
               style={isRandomEnabled ? {
                 backgroundColor: colors.TEXT_PRIMARY,
@@ -820,7 +890,7 @@ export const PromptView: React.FC = () => {
                 if (isAutoRunning) {
                   stopAutoLoop();
                 } else {
-                  setIsAutoEnabled(!isAutoEnabled);
+                  setAutoEnabled(!isAutoEnabled);
                 }
               }}
               tooltip={isAutoRunning ? "Stop auto loop" : "Auto: Loop through posts (starts on Make click)"}
@@ -849,7 +919,7 @@ export const PromptView: React.FC = () => {
             <Button
               variant="icon"
               icon={mdiSkipNext}
-              onClick={() => setIsGoToNextEnabled(!isGoToNextEnabled)}
+              onClick={() => setGoToNextEnabled(!isGoToNextEnabled)}
               tooltip="Next: Navigate to next post after making"
               disabled={!getNextPostId()}
               style={isGoToNextEnabled ? {
@@ -922,7 +992,7 @@ export const PromptView: React.FC = () => {
                 <Toggle
                   id="next-toggle"
                   checked={isGoToNextEnabled}
-                  onChange={setIsGoToNextEnabled}
+                  onChange={setGoToNextEnabled}
                 />
               </div>
             </div>
@@ -941,7 +1011,7 @@ export const PromptView: React.FC = () => {
                 <Toggle
                   id="random-toggle"
                   checked={isRandomEnabled}
-                  onChange={setIsRandomEnabled}
+                  onChange={setRandomEnabled}
                 />
               </div>
 
@@ -961,7 +1031,7 @@ export const PromptView: React.FC = () => {
                     if (isAutoRunning) {
                       stopAutoLoop();
                     } else {
-                      setIsAutoEnabled(checked);
+                      setAutoEnabled(checked);
                     }
                   }}
                 />

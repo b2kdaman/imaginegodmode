@@ -171,6 +171,7 @@ A multi-platform application for Grok media management built with React, TypeScr
   - Disabled when no next post available
   - Uses fetched posts from "Upscale All Liked" or "Show Unliked"
   - 1-second delay between Make and navigation for proper execution
+  - Optional "Remember Make Toggles" setting keeps Random, Auto, and Next selections when moving between posts
   - **Random Prompt Mode**: Toggle to randomly select prompts from current pack on each iteration
     - Shuffle icon button for easy identification
     - When enabled, randomly picks a different prompt from the pack after each Make + Next
@@ -401,8 +402,9 @@ open ios/imagineGodMode/imagineGodMode.xcodeproj
    - Configure List Limit to control how many liked posts to fetch (100/200/500/1000)
      - Default is 100 (recommended)
      - Warning: Using limits different from 100 might lead to a ban
-     - Automatically refetches data when changed
+   - Automatically refetches data when changed
    - Toggle Remember Pack Per Post to control per-post state persistence (enabled by default)
+   - Toggle Remember Make Toggles to persist Random/Auto/Next selections across post navigation (disabled by default)
    - Toggle Simple Shortcut to use Ctrl/Cmd+Enter instead of Ctrl/Cmd+Shift+Enter for applying prompts
    - Toggle Hide Unsave to hide the "Unsave" button from the page (off by default)
    - Toggle Enable The Pit to show/hide The Pit tab for experimental video generation (off by default)
@@ -531,7 +533,7 @@ grkgoondl/
 - **usePromptStore**: Manages prompts, packs, ratings, and import/export operations
 - **useMediaStore**: Handles media URLs, upscaling, and status
 - **useUIStore**: Controls UI state (expanded/collapsed, view mode)
-- **useSettingsStore**: Manages theme, size, auto-download, list-limit, remember-post-state, simple-shortcut, hide-unsave, enable-the-pit, enable-sound, confirm-copy-from, and collapsible-sections preferences with localStorage persistence
+- **useSettingsStore**: Manages theme, size, auto-download, list-limit, remember-post-state, remember-make-toggles, simple-shortcut, hide-unsave, enable-the-pit, enable-sound, confirm-copy-from, and collapsible-sections preferences with localStorage persistence
 - **useJobQueueStore**: Unified job queue managing all batch operations (upscale, download, unlike, relike, purge)
   - Single queue for all job types with sequential processing
   - Real-time progress tracking per job (processed items, percentage)
@@ -576,7 +578,7 @@ grkgoondl/
 **Views** (src/components/views/)
 - **PromptView**: Prompt management interface with "Make + Next" workflow button
 - **OpsView**: Media controls with job queue-based upscaling, downloads, bulk operations (Upscale All Liked, Unlike Multiple Posts, Delete Multiple Posts)
-- **SettingsView**: Theme, size, language, auto-download, list-limit, remember-post-state, simple-shortcut, hide-unsave, enable-sound, confirm-copy-from, collapsible-sections preferences, data management with import/export, and purge all data functionality
+- **SettingsView**: Theme, size, language, auto-download, list-limit, remember-post-state, remember-make-toggles, simple-shortcut, hide-unsave, enable-sound, confirm-copy-from, collapsible-sections preferences, data management with import/export, and purge all data functionality
 - **HelpView**: Help and documentation interface
 - **QueueView**: Legacy view - functionality replaced by JobQueueIndicator floating component
 - **PitView**: Automated video generation interface with post selection, prompt configuration, generation settings, real-time progress tracking, and moderation detection
@@ -739,7 +741,7 @@ This Chrome extension is a complete rewrite of the original Tampermonkey userscr
 - API architecture refactored: content script handles authenticated calls, background worker handles downloads
 - Message passing includes retry mechanism (3 attempts) to handle service worker wake-up delays
 - Download queue system processes files sequentially with configurable delays between downloads
-- Settings persist in localStorage for instant theme/size/language/auto-download/list-limit/remember-post-state/simple-shortcut/hide-unsave/enable-the-pit/enable-sound/confirm-copy-from/collapsible-sections application on load
+- Settings persist in localStorage for instant theme/size/language/auto-download/list-limit/remember-post-state/remember-make-toggles/simple-shortcut/hide-unsave/enable-the-pit/enable-sound/confirm-copy-from/collapsible-sections application on load
 - **Hide Unsave Feature**: Dynamic CSS injection to hide Unsave button when enabled
   - Uses `useEffect` hook to inject/remove style element
   - CSS selector targets `button[aria-label="Unsave"]`
