@@ -419,7 +419,7 @@ export const useJobQueueStore = create<JobQueueStore>()(
           console.log(`[JobQueue] Downloading ${i + 1}/${limitedItems.length}: ${item.filename}`);
 
           try {
-            const response = await downloadMedia([item.url]);
+            const response = await downloadMedia([{ url: item.url, filename: item.filename }]);
 
             if (response.success) {
               item.status = 'completed';

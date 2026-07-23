@@ -22,6 +22,7 @@ import { useUrlVisibility } from '@/hooks/useUrlVisibility';
 import { useTranslation } from '@/contexts/I18nContext';
 import { isMobileDevice } from '@/utils/deviceDetection';
 import { mdiTextBox, mdiCheckboxMultipleMarkedOutline, mdiCog, mdiFire, mdiWrench, mdiTrayFull } from '@mdi/js';
+import { getPostContextKey, getPostIdFromUrl } from '@/utils/helpers';
 
 type ViewType = 'prompt' | 'ops' | 'settings' | 'help' | 'queue' | 'pit' | 'powertools';
 
@@ -100,19 +101,20 @@ export const MainPanel: React.FC = () => {
   }, [currentView, previousView]);
 
   // Auto-switch view based on URL — but never away from powertools
-  const lastUrl = useRef(window.location.href);
+  const lastContext = useRef(getPostContextKey());
   useEffect(() => {
     const checkUrlAndSwitchView = () => {
       const currentUrl = window.location.href;
-      if (currentUrl !== lastUrl.current) {
-        lastUrl.current = currentUrl;
+      const currentContext = getPostContextKey();
+      if (currentContext !== lastContext.current) {
+        lastContext.current = currentContext;
 
         // Don't auto-switch if user is on powertools tab
         if (currentView === 'powertools') { return; }
 
         if (currentUrl.includes('/favorites') && currentView !== 'ops') {
           setCurrentView('ops');
-        } else if (currentUrl.includes('/imagine/post/') && currentView !== 'prompt') {
+        } else if (getPostIdFromUrl() && currentView !== 'prompt') {
           setCurrentView('prompt');
         }
       }

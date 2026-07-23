@@ -142,7 +142,7 @@ export const useDownloadQueueStore = create<DownloadQueueStore>()(
 
           try {
             // Download single file
-            const response = await downloadMedia([item.url]);
+            const response = await downloadMedia([{ url: item.url, filename: item.filename }]);
 
             if (response.success) {
               console.log(`[DownloadQueue] Downloaded: ${item.filename}`);

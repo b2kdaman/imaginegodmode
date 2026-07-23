@@ -1,6 +1,6 @@
 /**
- * Background service worker for Chrome and Firefox extension
- * Handles downloads only - API calls made directly from content script
+ * Background service worker for Chrome and Firefox extension.
+ * Handles durable browser download tasks; API calls run in the content script.
  */
 
 import { MessagePayload, MessageResponse } from '../types';
@@ -8,7 +8,11 @@ import { extractFilename } from '../utils/helpers';
 import { TIMING } from '../utils/constants';
 import { browserAPI } from '../utils/browserAPI';
 
-// Message listener
+interface DownloadTask {
+  url: string;
+  filename?: string;
+}
+
 browserAPI.runtime.onMessage.addListener((message: MessagePayload, _sender, sendResponse) => {
   handleMessage(message)
     .then(sendResponse)
@@ -19,22 +23,26 @@ browserAPI.runtime.onMessage.addListener((message: MessagePayload, _sender, send
       });
     });
 
-  // Return true to indicate we will send response asynchronously
   return true;
 });
 
-/**
- * Handle messages from content script
- */
 async function handleMessage(message: MessagePayload): Promise<MessageResponse> {
   switch (message.type) {
     case 'DOWNLOAD_MEDIA':
-      if (message.data && typeof message.data === 'object' && 'urls' in message.data) {
-        return handleDownloadMedia((message.data as { urls: string[] }).urls);
+      if (message.data && typeof message.data === 'object') {
+        if ('tasks' in message.data && Array.isArray(message.data.tasks)) {
+          return handleDownloadTasks(message.data.tasks as DownloadTask[]);
+        }
+        // Backward compatibility for messages from an older content script.
+        if ('urls' in message.data && Array.isArray(message.data.urls)) {
+          return handleDownloadTasks(
+            (message.data.urls as string[]).map((url) => ({ url }))
+          );
+        }
       }
       return {
         success: false,
-        error: 'Invalid message data',
+        error: 'Invalid download task data',
       };
 
     default:
@@ -45,35 +53,32 @@ async function handleMessage(message: MessagePayload): Promise<MessageResponse> 
   }
 }
 
-/**
- * Download media files using browser downloads API
- */
-async function handleDownloadMedia(urls: string[]): Promise<MessageResponse> {
+async function handleDownloadTasks(tasks: DownloadTask[]): Promise<MessageResponse> {
   try {
     const downloadIds: number[] = [];
 
-    for (let i = 0; i < urls.length; i++) {
-      const url = urls[i];
-      const filename = extractFilename(url, i);
+    for (let i = 0; i < tasks.length; i++) {
+      const task = tasks[i];
+      if (!task || typeof task.url !== 'string' || !task.url) {
+        throw new Error(`Invalid download task at index ${i}`);
+      }
 
-      // Download using browser API
+      const filename = task.filename || extractFilename(task.url, i);
       const downloadId = await browserAPI.downloads.download({
-        url,
+        url: task.url,
         filename,
         saveAs: false,
       });
-
       downloadIds.push(downloadId);
 
-      // Add delay between downloads
-      if (i < urls.length - 1) {
+      if (i < tasks.length - 1) {
         await new Promise((resolve) => setTimeout(resolve, TIMING.DOWNLOAD_DELAY));
       }
     }
 
     return {
       success: true,
-      data: { downloadIds, count: urls.length },
+      data: { downloadIds, count: tasks.length },
     };
   } catch (error) {
     return {

@@ -57,9 +57,10 @@ export interface SimpleApiResponse {
 /**
  * Fetch post data from Grok API
  * @param postId - Post ID to fetch
+ * @param requestUserId - Current Grok user ID, when available
  * @returns Post data or null if post not found
  */
-export const fetchPostData = async (postId: string): Promise<PostData | null> => {
+export const fetchPostData = async (postId: string, requestUserId?: string): Promise<PostData | null> => {
   try {
     const res = await fetch(API_ENDPOINTS.POST_GET, {
       method: 'POST',
@@ -67,7 +68,7 @@ export const fetchPostData = async (postId: string): Promise<PostData | null> =>
         accept: '*/*',
         'content-type': 'application/json',
       },
-      body: JSON.stringify({ id: postId }),
+      body: JSON.stringify({ id: postId, ...(requestUserId ? { requestUserId } : {}) }),
       credentials: 'include',
     });
 
@@ -99,6 +100,195 @@ export const fetchPostData = async (postId: string): Promise<PostData | null> =>
   }
 };
 
+interface ConversationAssetMetadata {
+  assetId?: string;
+  mimeType?: string;
+  createTime?: string;
+  summary?: string;
+  previewImageKey?: string;
+  key?: string;
+  auxKeys?: Record<string, string>;
+  isDeleted?: boolean;
+  width?: number;
+  height?: number;
+  hdKey?: string;
+  hd1080Key?: string;
+}
+
+interface ConversationResponse {
+  responseId?: string;
+  sender?: string;
+  fileAttachments?: string[];
+  fileAttachmentAssetMetadata?: ConversationAssetMetadata[];
+}
+
+interface ConversationResponsesPayload {
+  conversationId?: string;
+  responses?: ConversationResponse[];
+}
+
+const isHumanResponse = (response: ConversationResponse): boolean =>
+  response.sender?.toLowerCase() === 'human';
+
+const GROK_ASSET_ORIGIN = 'https://assets.grok.com/';
+
+const normalizeAssetUrl = (value?: string): string => {
+  if (!value) {
+    return '';
+  }
+
+  try {
+    return new URL(value, GROK_ASSET_ORIGIN).toString();
+  } catch {
+    return value;
+  }
+};
+
+const getAssetUrl = (asset: ConversationAssetMetadata): string =>
+  normalizeAssetUrl(
+    asset.key || asset.previewImageKey || asset.auxKeys?.['preview-image']
+  );
+
+const fetchMissingConversationAssets = async (
+  assetIds: string[]
+): Promise<ConversationAssetMetadata[]> => {
+  if (assetIds.length === 0) {
+    return [];
+  }
+
+  const params = new URLSearchParams({ pageSize: String(assetIds.length) });
+  assetIds.forEach((assetId) => params.append('assetIds', assetId));
+
+  try {
+    const res = await fetch(`/rest/assets?${params.toString()}`, {
+      method: 'GET',
+      headers: { accept: '*/*' },
+      credentials: 'include',
+    });
+    if (!res.ok) {
+      return [];
+    }
+
+    const data = await res.json() as { assets?: ConversationAssetMetadata[] };
+    return data.assets || [];
+  } catch (error) {
+    console.warn('[ImagineGodMode] Failed to backfill conversation assets:', error);
+    return [];
+  }
+};
+
+/**
+ * Fetch all media attached to an Imagine conversation.
+ *
+ * Grok's newer Imagine pages use the conversation query parameter to hydrate
+ * their filmstrip from app-chat responses instead of /rest/media/post/get.
+ */
+export const fetchConversationPostData = async (
+  conversationId: string
+): Promise<PostData | null> => {
+  try {
+    const params = new URLSearchParams({
+      conversationKind: 'CONVERSATION_KIND_IMAGINE',
+    });
+    const res = await fetch(
+      `/rest/app-chat/conversations/${encodeURIComponent(conversationId)}/responses?${params.toString()}`,
+      {
+        method: 'GET',
+        headers: { accept: '*/*' },
+        credentials: 'include',
+      }
+    );
+
+    if (!res.ok) {
+      console.warn(
+        '[ImagineGodMode] Conversation response fetch failed:',
+        res.status,
+        res.statusText
+      );
+      return null;
+    }
+
+    const payload = await res.json() as ConversationResponsesPayload;
+    const responses = payload.responses || [];
+    const firstHumanResponseId = responses
+      .filter(isHumanResponse)
+      .sort((a, b) => (a.responseId || '').localeCompare(b.responseId || ''))[0]
+      ?.responseId;
+
+    const includedResponses = responses.filter(
+      (response) => !isHumanResponse(response) || response.responseId === firstHumanResponseId
+    );
+    const directAssets = includedResponses.flatMap(
+      (response) => response.fileAttachmentAssetMetadata || []
+    );
+    const directAssetIds = new Set(
+      directAssets
+        .map((asset) => asset.assetId)
+        .filter((assetId): assetId is string => !!assetId)
+    );
+    const missingAssetIds = Array.from(new Set(
+      includedResponses
+        .flatMap((response) => response.fileAttachments || [])
+        .filter((assetId) => !directAssetIds.has(assetId))
+    ));
+    const backfilledAssets = await fetchMissingConversationAssets(missingAssetIds);
+
+    const assetsById = new Map<string, ConversationAssetMetadata>();
+    [...directAssets, ...backfilledAssets].forEach((asset) => {
+      if (asset.assetId) {
+        assetsById.set(asset.assetId, asset);
+      }
+    });
+
+    const media = Array.from(assetsById.values())
+      .filter((asset) => !asset.isDeleted && !!getAssetUrl(asset))
+      .sort((a, b) => (a.createTime || '').localeCompare(b.createTime || ''))
+      .map((asset) => {
+        const isVideo = asset.mimeType?.startsWith('video/') === true;
+        return {
+          id: asset.assetId || '',
+          userId: '',
+          createTime: asset.createTime || '',
+          prompt: asset.summary || '',
+          mediaType: isVideo ? 'MEDIA_POST_TYPE_VIDEO' : 'MEDIA_POST_TYPE_IMAGE',
+          mediaUrl: getAssetUrl(asset),
+          mimeType: asset.mimeType || (isVideo ? 'video/mp4' : 'image/jpeg'),
+          audioUrls: [],
+          childPosts: [],
+          resolution: asset.width && asset.height
+            ? { width: asset.width, height: asset.height }
+            : undefined,
+          thumbnailImageUrl: normalizeAssetUrl(
+            asset.previewImageKey || asset.auxKeys?.['preview-image']
+          ) || undefined,
+          hdMediaUrl: normalizeAssetUrl(asset.hd1080Key || asset.hdKey) || undefined,
+        };
+      });
+
+    const resolvedConversationId = payload.conversationId || conversationId;
+    const images = media.filter((asset) => !asset.mimeType.startsWith('video/'));
+    const videos = media.filter((asset) => asset.mimeType.startsWith('video/'));
+
+    return {
+      post: {
+        id: resolvedConversationId,
+        userId: '',
+        createTime: media[0]?.createTime || '',
+        prompt: '',
+        mediaType: '',
+        mediaUrl: '',
+        mimeType: '',
+        audioUrls: [],
+        childPosts: [],
+        images,
+        videos,
+      },
+    };
+  } catch (error) {
+    console.error('[ImagineGodMode] fetchConversationPostData error:', error);
+    return null;
+  }
+};
 /**
  * Fetch liked posts from Grok API
  * @param limit - Maximum number of posts to fetch

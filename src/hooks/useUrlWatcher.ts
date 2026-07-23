@@ -5,19 +5,20 @@
 import { useEffect, useRef } from 'react';
 import { useMediaStore } from '@/store/useMediaStore';
 import { TIMING } from '@/utils/constants';
+import { getPostContextKey } from '@/utils/helpers';
 
 export const useUrlWatcher = (onUrlChange?: () => void) => {
-  const lastUrl = useRef(window.location.href);
+  const lastContext = useRef(getPostContextKey());
   const { reset } = useMediaStore();
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const currentUrl = window.location.href;
+      const currentContext = getPostContextKey();
 
-      if (currentUrl !== lastUrl.current) {
-        console.log('[ImagineGodMode] URL changed, resetting state and refetching data');
+      if (currentContext !== lastContext.current) {
+        console.log('[ImagineGodMode] Post context changed, resetting state and refetching data');
         reset();
-        lastUrl.current = currentUrl;
+        lastContext.current = currentContext;
 
         // Trigger refetch callback if provided
         if (onUrlChange) {

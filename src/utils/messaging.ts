@@ -3,7 +3,7 @@
  */
 
 import { MessagePayload, MessageResponse, PostData } from '@/types';
-import { fetchPostData, upscaleVideo } from '@/api/grokApi';
+import { fetchConversationPostData, fetchPostData, upscaleVideo } from '@/api/grokApi';
 import { browserAPI } from './browserAPI';
 
 /**
@@ -79,22 +79,32 @@ export const sendMessageToBackground = async <T = unknown>(
   };
 };
 
+export interface DownloadTask {
+  url: string;
+  filename?: string;
+}
+
 /**
- * Download media using Chrome downloads API via background script
+ * Submit download tasks to the background service worker.
  */
-export const downloadMedia = async (urls: string[]): Promise<MessageResponse> => {
+export const downloadMedia = async (
+  items: Array<string | DownloadTask>
+): Promise<MessageResponse> => {
+  const tasks = items.map((item) =>
+    typeof item === 'string' ? { url: item } : item
+  );
+
   return sendMessageToBackground({
     type: 'DOWNLOAD_MEDIA',
-    data: { urls },
+    data: { tasks },
   });
 };
-
 /**
  * Fetch post data directly from content script
  */
-export const fetchPost = async (postId: string): Promise<MessageResponse<PostData>> => {
+export const fetchPost = async (postId: string, requestUserId?: string): Promise<MessageResponse<PostData>> => {
   try {
-    const data = await fetchPostData(postId);
+    const data = await fetchPostData(postId, requestUserId);
     if (!data) {
       return {
         success: false,
@@ -113,6 +123,31 @@ export const fetchPost = async (postId: string): Promise<MessageResponse<PostDat
   }
 };
 
+/**
+ * Fetch the media collection behind a newer Imagine conversation page.
+ */
+export const fetchConversationPost = async (
+  conversationId: string
+): Promise<MessageResponse<PostData>> => {
+  try {
+    const data = await fetchConversationPostData(conversationId);
+    if (!data) {
+      return {
+        success: false,
+        error: 'Conversation media not found',
+      };
+    }
+    return {
+      success: true,
+      data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to fetch conversation media',
+    };
+  }
+};
 /**
  * Upscale video directly from content script
  */

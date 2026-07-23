@@ -21,6 +21,7 @@ export interface AppState {
 
 export interface MediaUrl {
   url: string;
+  previewUrl?: string;
   type: 'image' | 'video';
   isHD?: boolean;
   id?: string;
@@ -45,6 +46,8 @@ export interface ChildPost {
   originalPostId?: string;
   audioUrls: string[];
   childPosts: ChildPost[];
+  images?: ChildPost[];
+  videos?: ChildPost[];
   originalPrompt?: string;
   mode?: string;
   resolution?: {
@@ -67,8 +70,18 @@ export interface PostData {
     mimeType: string;
     audioUrls: string[];
     childPosts: ChildPost[];
+    images?: ChildPost[];
+    videos?: ChildPost[];
     originalPrompt?: string;
     mode?: string;
+    resolution?: {
+      width: number;
+      height: number;
+    };
+    modelName?: string;
+    thumbnailImageUrl?: string;
+    hdMediaUrl?: string;
+    originalPostId?: string;
   };
 }
 

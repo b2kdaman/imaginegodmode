@@ -37,7 +37,7 @@ import { fetchLikedPosts } from '@/api/grokApi';
 export const PanelControls: React.FC = () => {
   const { isExpanded, toggleExpanded, setCurrentView, setExpanded } = useUIStore();
   const { t } = useTranslation();
-  const { rememberPostState, setRememberPostState, getThemeColors } = useSettingsStore();
+  const { rememberPostState, setRememberPostState, showUpscaleControls, getThemeColors } = useSettingsStore();
   const colors = getThemeColors();
   const { getCurrentPrompt } = usePromptStore();
   const { getNextPostId, getPrevPostId, setCurrentPostId: setStoreCurrentPostId, setPosts, posts } = usePostsStore();
@@ -245,13 +245,15 @@ export const PanelControls: React.FC = () => {
               tooltip={t('panel.autoTooltip')}
             />
           )}
-          <Button
-            variant="icon"
-            onClick={openModal}
-            icon={mdiFormatListBulletedSquare}
-            className="shadow-lg"
-            tooltip={t('panel.upscaleAllLikedTooltip')}
-          />
+          {showUpscaleControls && (
+            <Button
+              variant="icon"
+              onClick={openModal}
+              icon={mdiFormatListBulletedSquare}
+              className="shadow-lg"
+              tooltip={t('panel.upscaleAllLikedTooltip')}
+            />
+          )}
         </>
       )}
 
@@ -303,7 +305,7 @@ export const PanelControls: React.FC = () => {
 
       {/* Upscale All Modal */}
       <UpscaleAllModal
-        isOpen={isModalOpen}
+        isOpen={showUpscaleControls && isModalOpen}
         posts={likedPosts}
         mode="upscale"
         onClose={closeModal}

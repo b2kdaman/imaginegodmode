@@ -5,13 +5,75 @@
 import { URL_CONFIG, DEFAULTS } from './constants';
 
 /**
- * Extract post ID from current URL
+ * Extract a post ID from a Grok post URL.
+ */
+const extractPostId = (url: string): string | null => {
+  try {
+    const parsed = new URL(url, window.location.origin);
+    const parts = parsed.pathname.split('/').filter(Boolean);
+    if (parts[0] === 'imagine' && parts[1] === 'post') {
+      return parts[URL_CONFIG.POST_ID_INDEX] || null;
+    }
+  } catch {
+    // Ignore malformed or transient SPA metadata.
+  }
+
+  return null;
+};
+
+/**
+ * Extract post ID from the current Grok page.
+ *
+ * Grok can keep window.location at /imagine while opening a post as an
+ * overlay. In that state the canonical link is the authoritative active post.
  * @returns Post ID or null if not found
  */
 export const getPostIdFromUrl = (): string | null => {
-  const parts = window.location.pathname.split('/').filter(Boolean);
-  // expected: ["imagine", "post", "<id>"]
-  return parts[URL_CONFIG.POST_ID_INDEX] || null;
+  const locationPostId = extractPostId(window.location.href);
+  if (locationPostId) {
+    return locationPostId;
+  }
+
+  const canonicalUrl = document
+    .querySelector<HTMLLinkElement>('link[rel="canonical"][href*="/imagine/post/"]')
+    ?.href;
+
+  return canonicalUrl ? extractPostId(canonicalUrl) : null;
+};
+
+/**
+ * Extract the Imagine conversation ID used by Grok's newer filmstrip API.
+ */
+export const getConversationIdFromUrl = (): string | null => {
+  try {
+    const conversationId = new URL(window.location.href).searchParams
+      .get('conversation')
+      ?.trim();
+
+    return conversationId && /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(conversationId)
+      ? conversationId
+      : null;
+  } catch {
+    return null;
+  }
+};
+/**
+ * Extract the root media container ID used by Grok's filmstrip request.
+ *
+ * On direct post pages the path identifies the selected child entity, while
+ * the conversation query parameter identifies the container whose images and
+ * videos populate the filmstrip.
+ */
+export const getPostContainerIdFromUrl = (): string | null => {
+  return getConversationIdFromUrl() || getPostIdFromUrl();
+};
+
+/**
+ * Return a stable key that changes for both normal navigation and Grok's
+ * same-URL post overlays.
+ */
+export const getPostContextKey = (): string => {
+  return `${window.location.href}|${getPostIdFromUrl() || ''}`;
 };
 
 /**

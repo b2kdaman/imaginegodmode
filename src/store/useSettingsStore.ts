@@ -16,6 +16,7 @@ interface SettingsState {
   theme: Theme;
   size: Size;
   autoDownload: boolean;
+  showUpscaleControls: boolean;
   rememberPostState: boolean;
   simpleShortcut: boolean;
   hideUnsave: boolean;
@@ -46,6 +47,7 @@ interface SettingsState {
   setTheme: (theme: Theme) => void;
   setSize: (size: Size) => void;
   setAutoDownload: (autoDownload: boolean) => void;
+  setShowUpscaleControls: (showUpscaleControls: boolean) => void;
   setRememberPostState: (rememberPostState: boolean) => void;
   setSimpleShortcut: (simpleShortcut: boolean) => void;
   setHideUnsave: (hideUnsave: boolean) => void;
@@ -87,6 +89,7 @@ export const useSettingsStore = create<SettingsState>()(
       theme: 'dark',
       size: 'medium',
       autoDownload: false,
+      showUpscaleControls: false,
       rememberPostState: true,
       simpleShortcut: false,
       hideUnsave: false,
@@ -119,6 +122,7 @@ export const useSettingsStore = create<SettingsState>()(
       setTheme: (theme: Theme) => set({ theme }),
       setSize: (size: Size) => set({ size }),
       setAutoDownload: (autoDownload: boolean) => set({ autoDownload }),
+      setShowUpscaleControls: (showUpscaleControls: boolean) => set({ showUpscaleControls }),
       setRememberPostState: (rememberPostState: boolean) => set({ rememberPostState }),
       setSimpleShortcut: (simpleShortcut: boolean) => set({ simpleShortcut }),
       setHideUnsave: (hideUnsave: boolean) => set({ hideUnsave }),
@@ -161,6 +165,7 @@ export const useSettingsStore = create<SettingsState>()(
         theme: state.theme,
         size: state.size,
         autoDownload: state.autoDownload,
+        showUpscaleControls: state.showUpscaleControls,
         rememberPostState: state.rememberPostState,
         simpleShortcut: state.simpleShortcut,
         hideUnsave: state.hideUnsave,

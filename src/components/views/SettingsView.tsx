@@ -20,6 +20,7 @@ import {
   mdiResize,
   mdiTranslate,
   mdiDownloadCircle,
+  mdiImageSizeSelectLarge,
   mdiDatabase,
   mdiKeyboard,
   mdiEyeOff,
@@ -49,7 +50,7 @@ import {
 } from '@/utils/analytics';
 
 export const SettingsView: React.FC = () => {
-  const { theme, size, autoDownload, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, compactMakeTogglers, persistMakeToggles, savedMakeRandomEnabled, savedMakeAutoEnabled, savedMakeNextEnabled, globalPromptPrefixEnabled, globalPromptPrefix, globalPromptSuffixEnabled, globalPromptSuffix, listLimit, maxBulkLimit, collapseSections, navigatePostsWithArrows, setPanelPosition, setTheme, setSize, setAutoDownload, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setCompactMakeTogglers, setPersistMakeToggles, setSavedMakeRandomEnabled, setSavedMakeAutoEnabled, setSavedMakeNextEnabled, setGlobalPromptPrefixEnabled, setGlobalPromptPrefix, setGlobalPromptSuffixEnabled, setGlobalPromptSuffix, setListLimit, setMaxBulkLimit, setCollapseSections, setNavigatePostsWithArrows, getThemeColors } = useSettingsStore();
+  const { theme, size, autoDownload, showUpscaleControls, rememberPostState, simpleShortcut, hideUnsave, enableThePit, enableSound, confirmCopyFrom, compactMakeTogglers, persistMakeToggles, savedMakeRandomEnabled, savedMakeAutoEnabled, savedMakeNextEnabled, globalPromptPrefixEnabled, globalPromptPrefix, globalPromptSuffixEnabled, globalPromptSuffix, listLimit, maxBulkLimit, collapseSections, navigatePostsWithArrows, setPanelPosition, setTheme, setSize, setAutoDownload, setShowUpscaleControls, setRememberPostState, setSimpleShortcut, setHideUnsave, setEnableThePit, setEnableSound, setConfirmCopyFrom, setCompactMakeTogglers, setPersistMakeToggles, setSavedMakeRandomEnabled, setSavedMakeAutoEnabled, setSavedMakeNextEnabled, setGlobalPromptPrefixEnabled, setGlobalPromptPrefix, setGlobalPromptSuffixEnabled, setGlobalPromptSuffix, setListLimit, setMaxBulkLimit, setCollapseSections, setNavigatePostsWithArrows, getThemeColors } = useSettingsStore();
   const { clearAllPacks } = usePromptStore();
   const { userId } = useUserStore();
   const { t, locale, setLocale } = useTranslation();
@@ -114,6 +115,7 @@ export const SettingsView: React.FC = () => {
       theme,
       size,
       autoDownload,
+      showUpscaleControls,
       rememberPostState,
       simpleShortcut,
       hideUnsave,
@@ -159,6 +161,7 @@ export const SettingsView: React.FC = () => {
         if (settings.theme) {setTheme(settings.theme);}
         if (settings.size) {setSize(settings.size);}
         if (typeof settings.autoDownload === 'boolean') {setAutoDownload(settings.autoDownload);}
+        if (typeof settings.showUpscaleControls === 'boolean') {setShowUpscaleControls(settings.showUpscaleControls);}
         if (typeof settings.rememberPostState === 'boolean') {setRememberPostState(settings.rememberPostState);}
         if (typeof settings.simpleShortcut === 'boolean') {setSimpleShortcut(settings.simpleShortcut);}
         if (typeof settings.hideUnsave === 'boolean') {setHideUnsave(settings.hideUnsave);}
@@ -374,6 +377,15 @@ export const SettingsView: React.FC = () => {
               setAutoDownload(checked);
               trackAutoDownloadToggled(checked);
             },
+          })}
+
+          {renderToggleRow({
+            id: 'show-upscale-controls-toggle',
+            label: 'Show upscale controls',
+            tooltip: "Show upscale buttons. Grok's current upscale flow may consume paid or economy credits.",
+            icon: mdiImageSizeSelectLarge,
+            checked: showUpscaleControls,
+            onChange: setShowUpscaleControls,
           })}
 
           {/* Enable Sound Setting */}

@@ -25,7 +25,7 @@ import { JobType } from '@/types';
 const JOB_TYPE_INFO: Record<JobType, { icon: string; label: string; color?: string }> = {
   'process-for-upscale': { icon: mdiCog, label: 'Processing Posts' },
   upscale: { icon: mdiImageSizeSelectLarge, label: 'Upscaling' },
-  download: { icon: mdiDownload, label: 'Downloading' },
+  download: { icon: mdiDownload, label: 'Download' },
   unlike: { icon: mdiHeartBroken, label: 'Unliking', color: UI_COLORS.DANGER },
   relike: { icon: mdiHeart, label: 'Re-liking' },
   'purge-liked': { icon: mdiDelete, label: 'Purging Liked Posts', color: UI_COLORS.DANGER },
@@ -78,7 +78,7 @@ export const QueueView: React.FC = () => {
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <div className="text-base opacity-50" style={{ color: colors.TEXT_SECONDARY }}>
-          Queue is empty
+          No tasks
         </div>
       </div>
     );
@@ -89,7 +89,7 @@ export const QueueView: React.FC = () => {
       {/* Header */}
       <div className="pb-3">
         <h2 className="text-base font-medium" style={{ color: colors.TEXT_PRIMARY }}>
-          Job Queue
+          Tasks
         </h2>
       </div>
 
